@@ -119,6 +119,7 @@ SOURCES += \
     gui/swap_tracks_dialog.cpp \
     gui/track_visibility_memory_handler.cpp \
     gui/transpose_song_dialog.cpp \
+    instrument/sequence_property.cpp \
     instrument/waveform_adpcm.cpp \
     io/btb_io.cpp \
     io/bti_io.cpp \
@@ -209,7 +210,6 @@ SOURCES += \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
-    instrument/command_sequence.cpp \
     instrument/effect_iterator.cpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.cpp \
     gui/module_properties_dialog.cpp \
@@ -306,6 +306,7 @@ HEADERS += \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
     instrument/instrument_property_defs.hpp \
+    instrument/sequence_property.hpp \
     instrument/waveform_adpcm.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \
@@ -391,7 +392,6 @@ HEADERS += \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
-    instrument/command_sequence.hpp \
     instrument/sequence_iterator_interface.hpp \
     instrument/effect_iterator.hpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.hpp \

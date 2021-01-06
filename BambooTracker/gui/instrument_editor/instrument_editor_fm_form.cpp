@@ -369,7 +369,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->opSeqEditor->setLabelDiaplayMode(true);
 	setOperatorSequenceEditor();
 
-	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param = getOperatorSequenceParameter();
@@ -378,8 +378,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
-					 this, [&]() {
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
+					 this, [&] {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param = getOperatorSequenceParameter();
 			bt_.lock()->removeOperatorSequenceFMSequenceData(param, ui->opSeqNumSpinBox->value());
@@ -387,7 +387,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param = getOperatorSequenceParameter();
@@ -424,7 +424,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param = getOperatorSequenceParameter();
@@ -434,7 +434,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param = getOperatorSequenceParameter();
@@ -458,7 +458,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->arpTypeComboBox->addItem(tr("Fixed"), static_cast<int>(SequenceType::FixedSequence));
 	ui->arpTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->addArpeggioFMSequenceData(ui->arpNumSpinBox->value(), row);
@@ -466,15 +466,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
-					 this, [&]() {
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
+					 this, [&] {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removeArpeggioFMSequenceData(ui->arpNumSpinBox->value());
 			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setArpeggioFMSequenceData(ui->arpNumSpinBox->value(), col, row);
@@ -506,7 +506,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changeArpeggioFMLoop(ui->arpNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -514,7 +514,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setArpeggioFMRelease(ui->arpNumSpinBox->value(), release);
@@ -549,7 +549,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->ptTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
 	ui->ptTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->addPitchFMSequenceData(ui->ptNumSpinBox->value(), row);
@@ -557,7 +557,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
 					 this, [&]() {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removePitchFMSequenceData(ui->ptNumSpinBox->value());
@@ -565,7 +565,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setPitchFMSequenceData(ui->ptNumSpinBox->value(), col, row);
@@ -597,7 +597,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changePitchFMLoop(ui->ptNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -605,7 +605,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setPitchFMRelease(ui->ptNumSpinBox->value(), release);
@@ -1474,7 +1474,7 @@ void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
 	ui->opSeqEditor->clearData();
 	setOperatorSequenceEditor();
 	for (auto& unit : instFM->getOperatorSequenceSequence(param)) {
-		ui->opSeqEditor->addSequenceCommand(unit.data);
+		ui->opSeqEditor->addSequenceData(unit.data);
 	}
 	for (auto& loop : instFM->getOperatorSequenceLoopRoot(param).getAllLoops()) {
 		ui->opSeqEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
@@ -1634,7 +1634,7 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 	ui->arpNumSpinBox->setValue(instFM->getArpeggioNumber(param));
 	ui->arpEditor->clearData();
 	for (auto& unit : instFM->getArpeggioSequence(param)) {
-		ui->arpEditor->addSequenceCommand(unit.data);
+		ui->arpEditor->addSequenceData(unit.data);
 	}
 	for (auto& loop : instFM->getArpeggioLoopRoot(param).getAllLoops()) {
 		ui->arpEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
@@ -1734,7 +1734,7 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	ui->ptNumSpinBox->setValue(instFM->getPitchNumber(param));
 	ui->ptEditor->clearData();
 	for (auto& unit : instFM->getPitchSequence(param)) {
-		ui->ptEditor->addSequenceCommand(unit.data);
+		ui->ptEditor->addSequenceData(unit.data);
 	}
 	for (auto& loop : instFM->getPitchLoopRoot(param).getAllLoops()) {
 		ui->ptEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());

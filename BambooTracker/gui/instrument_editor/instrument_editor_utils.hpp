@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,15 +28,9 @@
 
 #include <set>
 #include <QString>
-#include "command_sequence.hpp"
-#include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 
 namespace inst_edit_utils
 {
-// TODO: DELETE
-ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::PermittedReleaseFlag type);
-// TODO: DELETE
-VisualizedInstrumentMacroEditor::PermittedReleaseFlag convertReleaseTypeForUI(ReleaseType type);
 QString generateUsersString(const std::multiset<int>& users);
 }
 

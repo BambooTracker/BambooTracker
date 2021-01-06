@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "command_sequence.hpp"
+#include "sequence_property.hpp"
 
 using FMOperatorSequenceUnit = InstrumentSequenceBaseUnit;
 using FMOperatorSequenceIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;

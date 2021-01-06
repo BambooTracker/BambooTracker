@@ -33,7 +33,7 @@ const InstrumentSequenceBaseUnit ARP_CENTER(48);
 }
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
-	: SequenceIterator<InstrumentSequenceBaseUnit>(2),
+	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(2),
 	  started_(false),
 	  second_(second + ARP_CENTER.data),
 	  third_(third + ARP_CENTER.data)
@@ -125,7 +125,7 @@ int WavingEffectIterator::end()
 }
 
 NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
-	: SequenceIterator<InstrumentSequenceBaseUnit>(0),
+	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0),
 	  started_(false)
 {
 	int d = seminote * calc_pitch::SEMINOTE_PITCH;

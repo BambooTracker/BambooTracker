@@ -38,31 +38,6 @@
 #include <QRegularExpressionMatch>
 #include "gui/event_guard.hpp"
 #include "enum_hash.hpp"
-// TODO: TMP, REMOVE
-#include "instrument_editor_utils.hpp"
-
-// TODO: TMP
-namespace
-{
-const std::unordered_map<VisualizedInstrumentMacroEditor::PermittedReleaseFlag, InstrumentSequenceRelease::ReleaseTypeImproved> REL_TYPE_MAP2 = {
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::NO_RELEASE, InstrumentSequenceRelease::NoRelease },
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::FIXED_RELEASE, InstrumentSequenceRelease::FixedRelease },
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::ABSOLUTE_RELEASE, InstrumentSequenceRelease::AbsoluteRelease },
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::RELATIVE_RELEASE, InstrumentSequenceRelease::RelativeRelease }
-};
-
-InstrumentSequenceRelease::ReleaseTypeImproved convertReleaseTypeForData2(VisualizedInstrumentMacroEditor::PermittedReleaseFlag type)
-{
-	return REL_TYPE_MAP2.at(type);
-}
-
-VisualizedInstrumentMacroEditor::PermittedReleaseFlag convertReleaseTypeForUI2(InstrumentSequenceRelease::ReleaseTypeImproved type)
-{
-	return std::find_if(REL_TYPE_MAP2.begin(), REL_TYPE_MAP2.end(), [type](const auto& pair) {
-		return (pair.second == type);
-	})->first;
-}
-}
 
 VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent)
 	: QWidget(parent),
@@ -164,18 +139,18 @@ int VisualizedInstrumentMacroEditor::getSequenceLength() const
 	return static_cast<int>(cols_.size());
 }
 
-void VisualizedInstrumentMacroEditor::setSequenceCommand(int row, int col, QString str, int data)
+void VisualizedInstrumentMacroEditor::setSequenceData(int row, int col, QString str, int subdata)
 {
 	size_t idx = static_cast<size_t>(col);
 	cols_.at(idx).row = row;
 	cols_.at(idx).text = str;
-	cols_.at(idx).data = data;
+	cols_.at(idx).data = subdata;
 
 	ui->panel->update();
 
 	printMML();
 
-	emit sequenceCommandChanged(row, col);
+	emit sequenceDataChanged(row, col);
 }
 
 void VisualizedInstrumentMacroEditor::setText(int col, QString text)
@@ -183,9 +158,9 @@ void VisualizedInstrumentMacroEditor::setText(int col, QString text)
 	cols_.at(static_cast<size_t>(col)).text = text;
 }
 
-void VisualizedInstrumentMacroEditor::setData(int col, int data)
+void VisualizedInstrumentMacroEditor::setSubdata(int col, int subdata)
 {
-	cols_.at(static_cast<size_t>(col)).data = data;
+	cols_.at(static_cast<size_t>(col)).data = subdata;
 	printMML();
 }
 
@@ -204,9 +179,9 @@ void VisualizedInstrumentMacroEditor::setMultipleReleaseState(bool enabled)
 	isMultiReleaseState_ = enabled;
 }
 
-void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, int data)
+void VisualizedInstrumentMacroEditor::addSequenceData(int row, QString str, int subdata)
 {
-	cols_.push_back({ row, data, str });
+	cols_.push_back({ row, subdata, str });
 
 	updateColumnWidth();
 	ui->panel->update();
@@ -215,10 +190,10 @@ void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, i
 
 	printMML();
 
-	emit sequenceCommandAdded(row, static_cast<int>(cols_.size()) - 1);
+	emit sequenceDataAdded(row, static_cast<int>(cols_.size()) - 1);
 }
 
-void VisualizedInstrumentMacroEditor::removeSequenceCommand()
+void VisualizedInstrumentMacroEditor::removeSequenceData()
 {
 	if (cols_.size() == 1) return;
 
@@ -247,7 +222,7 @@ void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 
 	printMML();
 
-	emit sequenceCommandRemoved();
+	emit sequenceDataRemoved();
 }
 
 void VisualizedInstrumentMacroEditor::addLoop(int begin, int end, int times)
@@ -266,7 +241,6 @@ void VisualizedInstrumentMacroEditor::addLoop(int begin, int end, int times)
 	printMML();
 
 	emit loopAdded(InstrumentSequenceLoop(begin, end, times));
-	onLoopChanged();
 }
 
 void VisualizedInstrumentMacroEditor::setSequenceType(SequenceType type)
@@ -286,12 +260,6 @@ void VisualizedInstrumentMacroEditor::setRelease(const InstrumentSequenceRelease
 {
 	release_ = release;
 	printMML();
-}
-
-// TODO: DEPRECATED
-void VisualizedInstrumentMacroEditor::setRelease(PermittedReleaseFlag type, int point)
-{
-	setRelease(InstrumentSequenceRelease(convertReleaseTypeForData2(type), point));
 }
 
 void VisualizedInstrumentMacroEditor::clearData()
@@ -463,7 +431,7 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 	painter.setPen(palette_->instSeqReleaseTextColor);
 	painter.drawText(1, releaseBaseY_, tr("Release"));
 
-	static const std::unordered_map<InstrumentSequenceRelease::ReleaseTypeImproved, QString> DISP_TEXT_MAP = {
+	static const std::unordered_map<InstrumentSequenceRelease::ReleaseType, QString> DISP_TEXT_MAP = {
 		{ InstrumentSequenceRelease::NoRelease, "" },
 		{ InstrumentSequenceRelease::FixedRelease, tr("Fixed") },
 		{ InstrumentSequenceRelease::AbsoluteRelease, tr("Absolute") },
@@ -516,7 +484,7 @@ void VisualizedInstrumentMacroEditor::printMML()
 	QString text = "";
 	std::vector<Loop> lstack;
 
-	static const std::unordered_map<InstrumentSequenceRelease::ReleaseTypeImproved, QString> DISP_REL_MAP = {
+	static const std::unordered_map<InstrumentSequenceRelease::ReleaseType, QString> DISP_REL_MAP = {
 		{ InstrumentSequenceRelease::NoRelease, "" },
 		{ InstrumentSequenceRelease::FixedRelease, "| " },
 		{ InstrumentSequenceRelease::AbsoluteRelease, "/ " },
@@ -577,9 +545,7 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 	std::deque<int> lbstack;
 	std::deque<InstrumentSequenceLoop> loopStack;
 	InstrumentSequenceRelease release(InstrumentSequenceRelease::NoRelease);
-	// TODO: DEPRECATED
 	std::vector<size_t> lstack;
-	// ===========
 
 	int cnt = 0;
 	while (!text.isEmpty()) {
@@ -674,10 +640,10 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 	if (!lbstack.empty()) return;
 	if (release.isEnabled() && release.getBeginPos() >= static_cast<int>(column.size())) return;
 
-	while (cols_.size() > 1) removeSequenceCommand();
-	setSequenceCommand(column.front().row, 0);
+	while (cols_.size() > 1) removeSequenceData();
+	setSequenceData(column.front().row, 0);
 	for (size_t i = 1; i < column.size(); ++i) {
-		addSequenceCommand(column[i].row);
+		addSequenceData(column[i].row);
 	}
 
 	loops_ = loop;
@@ -685,12 +651,9 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 	for (const InstrumentSequenceLoop l : loopStack) {
 		emit loopAdded(l);
 	}
-	onLoopChanged();
 
 	release_ = release;
-	emit releaseChangedImproved(release);
-	// TODO: DEPRECATE
-	emit releaseChanged(convertReleaseTypeForUI2(release.getType()), release.getBeginPos());
+	emit releaseChanged(release);
 
 	ui->panel->update();
 }
@@ -834,7 +797,7 @@ void VisualizedInstrumentMacroEditor::moveLoop()
 		else return;
 	}
 
-	emit loopChangedImproved(prevBegin, prevEnd,
+	emit loopChanged(prevBegin, prevEnd,
 							 InstrumentSequenceLoop(tgtLoopRef.begin, tgtLoopRef.end, tgtLoopRef.times));
 	printMML();
 }
@@ -997,8 +960,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						++loops_[static_cast<size_t>(i)].times;
 						printMML();
 						auto& l = loops_[static_cast<size_t>(i)];
-						emit loopChangedImproved(l.begin, l.end, InstrumentSequenceLoop(l.begin, l.end, l.times));
-						onLoopChanged();
+						emit loopChanged(l.begin, l.end, InstrumentSequenceLoop(l.begin, l.end, l.times));
 					}
 					break;
 				}
@@ -1008,7 +970,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						if (loops_[static_cast<size_t>(i)].times > 1) {
 							--loops_[static_cast<size_t>(i)].times;
 							auto& l = loops_[static_cast<size_t>(i)];
-							emit loopChangedImproved(l.begin, l.end, InstrumentSequenceLoop(l.begin, l.end, l.times));
+							emit loopChanged(l.begin, l.end, InstrumentSequenceLoop(l.begin, l.end, l.times));
 						}
 						else {	// Erase loop
 							auto& l = loops_[static_cast<size_t>(i)];
@@ -1016,7 +978,6 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 							loops_.erase(loops_.begin() + i);
 						}
 						printMML();
-						onLoopChanged();
 					}
 					break;
 				}
@@ -1034,9 +995,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						if (!release_.isEnabled()) release_.setType(InstrumentSequenceRelease::FixedRelease);
 						release_.setBeginPos(pressCol_);
 						printMML();
-						emit releaseChangedImproved(release_);
-						// TODO: DEPRECATED
-						emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
+						emit releaseChanged(release_);
 					}
 					else if (isMultiReleaseState_) {	// Change release type
 						switch (release_.getType()) {
@@ -1052,9 +1011,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 							break;
 						}
 						printMML();
-						emit releaseChangedImproved(release_);
-						// TODO: DEPRECATED
-						emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
+						emit releaseChanged(release_);
 					}
 					break;
 				}
@@ -1063,9 +1020,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 					if (pressCol_ >= release_.getBeginPos()) {	// Erase release
 						release_.disable();
 						printMML();
-						emit releaseChangedImproved(release_);
-						// TODO: DEPRECATED
-						emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
+						emit releaseChanged(release_);
 					}
 					break;
 				}
@@ -1075,7 +1030,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 			}
 		}
 		else {
-			setSequenceCommand(detectRowNumberForMouseEvent(hovCol_, hovRow_), hovCol_);
+			setSequenceData(detectRowNumberForMouseEvent(hovCol_, hovRow_), hovCol_);
 			prevPressRow_ = hovRow_;
 			prevPressCol_ = hovCol_;
 		}
@@ -1091,7 +1046,6 @@ void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event
 	if (grabLoop_ != -1) {	// Move loop
 		if (event->button() == Qt::LeftButton) {
 			moveLoop();
-			onLoopChanged();
 		}
 	}
 	else if (isGrabRelease_) {	// Move release
@@ -1099,9 +1053,7 @@ void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event
 			if (hovCol_ > -1) {
 				release_.setBeginPos(hovCol_);
 				printMML();
-				emit releaseChangedImproved(release_);
-				// TODO: DEPRECATED
-				emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
+				emit releaseChanged(release_);
 			}
 		}
 	}
@@ -1125,7 +1077,7 @@ void VisualizedInstrumentMacroEditor::mouseMoveEventInView()
 		if (prevPressRow_ != hovRow_ || prevPressCol_ != hovCol_) {
 			prevPressRow_ = hovRow_;
 			prevPressCol_ = hovCol_;
-			setSequenceCommand(detectRowNumberForMouseEvent(hovCol_, hovRow_), hovCol_);
+			setSequenceData(detectRowNumberForMouseEvent(hovCol_, hovRow_), hovCol_);
 		}
 	}
 }
@@ -1201,12 +1153,12 @@ void VisualizedInstrumentMacroEditor::wheelEventInView(QWheelEvent* event)
 
 void VisualizedInstrumentMacroEditor::on_colIncrToolButton_clicked()
 {
-	addSequenceCommand(defaultRow_);
+	addSequenceData(defaultRow_);
 }
 
 void VisualizedInstrumentMacroEditor::on_colDecrToolButton_clicked()
 {
-	removeSequenceCommand();
+	removeSequenceData();
 }
 
 void VisualizedInstrumentMacroEditor::on_verticalScrollBar_valueChanged(int value)
@@ -1226,18 +1178,6 @@ void VisualizedInstrumentMacroEditor::on_lineEdit_editingFinished()
 {
 	interpretMML();
 	printMML();
-}
-
-void VisualizedInstrumentMacroEditor::onLoopChanged()
-{
-	std::vector<int> begins, ends, times;
-	for (auto& l : loops_) {
-		begins.push_back(l.begin);
-		ends.push_back(l.end);
-		times.push_back(l.times);
-	}
-
-	emit loopChanged(std::move(begins), std::move(ends), std::move(times));
 }
 
 void VisualizedInstrumentMacroEditor::updateColumnWidth()

@@ -116,7 +116,7 @@ private:
 	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
 	void transferReadyHistory();
 
-	using ArpeggioIterInterface = std::unique_ptr<SequenceIterator<ArpeggioUnit>>;
+	using ArpeggioIterInterface = std::unique_ptr<SequenceIteratorInterface<ArpeggioUnit>>;
 	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 								 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
 	void checkPortamento(const ArpeggioIterInterface& arpIt, int prtm, bool hasKeyOnBefore,

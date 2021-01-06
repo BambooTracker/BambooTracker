@@ -33,32 +33,11 @@ enum class SequenceType
 	RelativeSequence
 };
 
+template<class T>
 class SequenceIteratorInterface
 {
 public:
 	virtual ~SequenceIteratorInterface() = default;
-	/// -1: sequence end
-	/// else: position in the sequence
-	virtual int getPosition() const = 0;
-	/// 0: absolute
-	/// 1: fixed
-	/// 2: relative
-	virtual SequenceType getSequenceType() const = 0;
-	virtual int getCommandType() const = 0;
-	virtual int getCommandData() const = 0;
-	virtual int next(bool isReleaseBegin = false) = 0;
-	virtual int front() = 0;
-	virtual int end() = 0;
-};
-
-
-//========================================================
-
-template<class T>
-class SequenceIterator
-{
-public:
-	virtual ~SequenceIterator() = default;
 
 	static constexpr int END_SEQ_POS = -1;
 	inline int pos() const noexcept { return pos_; }
@@ -73,6 +52,6 @@ public:
 	virtual int end() = 0;
 
 protected:
-	explicit SequenceIterator(int initPos = 0) : pos_(initPos) {}
+	explicit SequenceIteratorInterface(int initPos = 0) : pos_(initPos) {}
 	int pos_;
 };

@@ -2035,6 +2035,11 @@ std::vector<int> OPNAController::getOperatorsInLevel(int level, int al)
 }
 
 //---------- SSG ----------//
+namespace
+{
+constexpr int UNUSED_NOISE_PERIOD = -1;
+}
+
 /********** Key on-off **********/
 void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam)
 {
@@ -2368,7 +2373,7 @@ void OPNAController::initSSG()
 		keyToneSSG_[ch].octave = -1;
 		keyToneSSG_[ch].pitch = 0;	// Dummy
 		sumPitchSSG_[ch] = 0;
-		tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
+		tnSSG_[ch] = { false, false, UNUSED_NOISE_PERIOD };
 		baseVolSSG_[ch] = NSTEP_SSG_VOLUME - 1;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
@@ -3010,7 +3015,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 		if (tnSSG_[ch].isNoise) {
 			mixerSSG_ |= SSGNoiseFlag(ch);
 			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
+			tnSSG_[ch].noisePeriod_ = UNUSED_NOISE_PERIOD;
 		}
 	}
 	else if (type == 65) {	// None
@@ -3022,7 +3027,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 		if (tnSSG_[ch].isNoise) {
 			mixerSSG_ |= SSGNoiseFlag(ch);
 			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
+			tnSSG_[ch].noisePeriod_ = UNUSED_NOISE_PERIOD;
 		}
 	}
 	else if (type > 32) {	// Tone&Noise

@@ -35,7 +35,7 @@
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
 #include "waveform_adpcm.hpp"
-#include "command_sequence.hpp"
+#include "sequence_property.hpp"
 #include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"

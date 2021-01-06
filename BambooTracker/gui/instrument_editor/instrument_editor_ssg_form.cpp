@@ -31,7 +31,7 @@
 #include <stdexcept>
 #include "gui/event_guard.hpp"
 #include "calc_pitch.hpp"
-#include "command_sequence.hpp"
+#include "sequence_property.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
 #include "misc.hpp"
@@ -76,7 +76,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->waveEditor->AddRow(tr("SMInvSaw"), false);
 	ui->waveEditor->autoFitLabelWidth();
 
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			if (isModulatedWaveformSSG(row)) {
@@ -90,7 +90,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
 					 this, [&] {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removeWaveformSSGSequenceData(ui->waveNumSpinBox->value());
@@ -98,7 +98,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			if (isModulatedWaveformSSG(row)) {
@@ -136,7 +136,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changeWaveformSSGLoop(ui->waveNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -144,7 +144,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setWaveformSSGRelease(ui->waveNumSpinBox->value(), release);
@@ -154,7 +154,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	});
 
 	//========== Tone/Noise ==========//
-	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->addToneNoiseSSGSequenceData(ui->tnNumSpinBox->value(), row);
@@ -162,7 +162,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
 					 this, [&] {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removeToneNoiseSSGSequenceData(ui->tnNumSpinBox->value());
@@ -170,7 +170,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setToneNoiseSSGSequenceData(ui->tnNumSpinBox->value(), col, row);
@@ -202,7 +202,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changeToneNoiseSSGLoop(ui->tnNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -210,7 +210,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setToneNoiseSSGRelease(ui->tnNumSpinBox->value(), release);
@@ -235,7 +235,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 				| VisualizedInstrumentMacroEditor::PermittedReleaseFlag::RELATIVE_RELEASE
 				| VisualizedInstrumentMacroEditor::PermittedReleaseFlag::FIXED_RELEASE);
 
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			if (row >= 16) {
@@ -249,7 +249,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
 					 this, [&] {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removeEnvelopeSSGSequenceData(ui->envNumSpinBox->value());
@@ -257,7 +257,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			if (row >= 16) {
@@ -295,7 +295,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changeEnvelopeSSGLoop(ui->envNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -303,7 +303,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setEnvelopeSSGRelease(ui->envNumSpinBox->value(), release);
@@ -317,7 +317,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->arpTypeComboBox->addItem(tr("Fixed"), static_cast<int>(SequenceType::FixedSequence));
 	ui->arpTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->addArpeggioSSGSequenceData(ui->arpNumSpinBox->value(), row);
@@ -325,7 +325,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
 					 this, [&] {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removeArpeggioSSGSequenceData(ui->arpNumSpinBox->value());
@@ -333,7 +333,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setArpeggioSSGSequenceData(ui->arpNumSpinBox->value(), col, row);
@@ -365,7 +365,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changeArpeggioSSGLoop(ui->arpNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -373,7 +373,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setArpeggioSSGRelease(ui->arpNumSpinBox->value(), release);
@@ -399,7 +399,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
 	ui->ptTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
 					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->addPitchSSGSequenceData(ui->ptNumSpinBox->value(), row);
@@ -407,7 +407,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
 					 this, [&] {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->removePitchSSGSequenceData(ui->ptNumSpinBox->value());
@@ -415,7 +415,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setPitchSSGSequenceData(ui->ptNumSpinBox->value(), col, row);
@@ -447,7 +447,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->changePitchSSGLoop(ui->ptNumSpinBox->value(), prevBegin, prevEnd, loop);
@@ -455,7 +455,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](InstrumentSequenceRelease release) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setPitchSSGRelease(ui->ptNumSpinBox->value(), release);
@@ -575,7 +575,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 				str = QString::number(unit.subdata);
 			}
 		}
-		ui->waveEditor->addSequenceCommand(unit.data, str, unit.subdata);
+		ui->waveEditor->addSequenceData(unit.data, str, unit.subdata);
 	}
 	for (auto& loop : instSSG->getWaveformLoopRoot().getAllLoops()) {
 		ui->waveEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
@@ -596,7 +596,7 @@ SSGWaveformUnit InstrumentEditorSSGForm::setWaveformSequenceColumn(int col, int 
 	if (button == ui->squareMaskRawRadioButton) {
 		SSGWaveformUnit unit = SSGWaveformUnit::makeRawUnit(wfRow, ui->squareMaskRawSpinBox->value());
 		ui->waveEditor->setText(col, QString::number(unit.subdata));
-		ui->waveEditor->setData(col, unit.subdata);
+		ui->waveEditor->setSubdata(col, unit.subdata);
 		return unit;
 	}
 	else {
@@ -604,7 +604,7 @@ SSGWaveformUnit InstrumentEditorSSGForm::setWaveformSequenceColumn(int col, int 
 															  ui->squareMaskMaskSpinBox->value());
 		ui->waveEditor->setText(col, QString::number(ui->squareMaskToneSpinBox->value()) + "/"
 								+ QString::number(ui->squareMaskMaskSpinBox->value()));
-		ui->waveEditor->setData(col, unit.subdata);
+		ui->waveEditor->setSubdata(col, unit.subdata);
 		return unit;
 	}
 }
@@ -668,7 +668,7 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 	ui->tnNumSpinBox->setValue(instSSG->getToneNoiseNumber());
 	ui->tnEditor->clearData();
 	for (auto& unit : instSSG->getToneNoiseSequence()) {
-		ui->tnEditor->addSequenceCommand(unit.data);
+		ui->tnEditor->addSequenceData(unit.data);
 	}
 	for (auto& loop : instSSG->getToneNoiseLoopRoot().getAllLoops()) {
 		ui->tnEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
@@ -745,7 +745,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 				str = QString::number(unit.subdata);
 			}
 		}
-		ui->envEditor->addSequenceCommand(unit.data, str, unit.subdata);
+		ui->envEditor->addSequenceData(unit.data, str, unit.subdata);
 	}
 	for (auto& loop : instSSG->getEnvelopeLoopRoot().getAllLoops()) {
 		ui->envEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
@@ -765,7 +765,7 @@ SSGEnvelopeUnit InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col, int 
 	if (ui->hardFreqButtonGroup->checkedButton() == ui->hardFreqRawRadioButton) {
 		SSGEnvelopeUnit unit = SSGEnvelopeUnit::makeRawUnit(envRow, ui->hardFreqRawSpinBox->value());
 		ui->envEditor->setText(col, QString::number(unit.subdata));
-		ui->envEditor->setData(col, unit.subdata);
+		ui->envEditor->setSubdata(col, unit.subdata);
 		return unit;
 	}
 	else {
@@ -773,7 +773,7 @@ SSGEnvelopeUnit InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col, int 
 															  ui->hardFreqHardSpinBox->value());
 		ui->envEditor->setText(col, QString::number(ui->hardFreqToneSpinBox->value()) + "/"
 							   + QString::number(ui->hardFreqHardSpinBox->value()));
-		ui->envEditor->setData(col, unit.subdata);
+		ui->envEditor->setSubdata(col, unit.subdata);
 		return unit;
 	}
 }
@@ -836,7 +836,7 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 	ui->arpNumSpinBox->setValue(instSSG->getArpeggioNumber());
 	ui->arpEditor->clearData();
 	for (auto& unit : instSSG->getArpeggioSequence()) {
-		ui->arpEditor->addSequenceCommand(unit.data);
+		ui->arpEditor->addSequenceData(unit.data);
 	}
 	for (auto& loop : instSSG->getArpeggioLoopRoot().getAllLoops()) {
 		ui->arpEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
@@ -922,7 +922,7 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	ui->ptNumSpinBox->setValue(instSSG->getPitchNumber());
 	ui->ptEditor->clearData();
 	for (auto& unit : instSSG->getPitchSequence()) {
-		ui->ptEditor->addSequenceCommand(unit.data);
+		ui->ptEditor->addSequenceData(unit.data);
 	}
 	for (auto& loop : instSSG->getPitchLoopRoot().getAllLoops()) {
 		ui->ptEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());

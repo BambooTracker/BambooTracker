@@ -40,7 +40,7 @@
 #include <QString>
 #include <vector>
 #include <memory>
-#include "instrument/command_sequence.hpp"
+#include "instrument/sequence_property.hpp"
 #include "gui/color_palette.hpp"
 
 namespace Ui {
@@ -62,19 +62,20 @@ public:
 	void setDefaultRow(int row);
 	int getSequenceLength() const;
 
-	void setSequenceCommand(int row, int col, QString str = "", int data = -1);
+	void setSequenceData(int row, int col, QString str = "", int subdata = -1);
 	void setText(int col, QString text);
-	void setData(int col, int data);
+	void setSubdata(int col, int subdata);
 
 	int getSequenceAt(int col) const;
 	int getSequenceDataAt(int col) const;
 
 	void setMultipleReleaseState(bool enabled);
 
-	void addSequenceCommand(int row, QString str = "", int data = -1);
-	void removeSequenceCommand();
-	void clearSequenceCommand();
+	void addSequenceData(int row, QString str = "", int subdata = -1);
+	void removeSequenceData();
+	void clearSequenceData();
 
+	// NOTE: It is desirable to use loop class
 	void addLoop(int begin, int end, int times);
 
 	void setSequenceType(SequenceType type);
@@ -89,8 +90,6 @@ public:
 
 	void setPermittedReleaseTypes(int types);
 	void setRelease(const InstrumentSequenceRelease& release);
-	// TODO: DEPRECATED
-	void setRelease(PermittedReleaseFlag type, int point);
 
 	void clearData();
 	void clearRow();
@@ -105,18 +104,14 @@ public:
 	void setMMLDisplay0As(int n);
 
 signals:
-	void sequenceCommandChanged(int row, int col);
-	void sequenceCommandAdded(int row, int col);
-	void sequenceCommandRemoved();
+	void sequenceDataChanged(int row, int col);
+	void sequenceDataAdded(int row, int col);
+	void sequenceDataRemoved();
 	void loopCleared();
 	void loopAdded(InstrumentSequenceLoop loop);
 	void loopRemoved(int begin, int end);
-	void loopChangedImproved(int prevBegin, int prevEnd, InstrumentSequenceLoop loop);
-	void releaseChangedImproved(InstrumentSequenceRelease release);
-	// TODO: DEPRECATED
-	void loopChanged(std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void releaseChanged(PermittedReleaseFlag type, int point);
-	//===============
+	void loopChanged(int prevBegin, int prevEnd, InstrumentSequenceLoop loop);
+	void releaseChanged(InstrumentSequenceRelease release);
 
 protected:
 	bool eventFilter(QObject*object, QEvent* event) override;
@@ -165,6 +160,7 @@ protected:
 
 	virtual int detectRowNumberForMouseEvent(int col, int internalRow) const;
 
+	// NOTE: It is desirable to use loop class
 	struct Loop
 	{
 		int begin, end, times;
@@ -194,8 +190,6 @@ private slots:
 	void on_colDecrToolButton_clicked();
 	void on_verticalScrollBar_valueChanged(int value);
 	void on_lineEdit_editingFinished();
-	// TODO: DEPRECATED
-	void onLoopChanged();
 
 private:
 	Ui::VisualizedInstrumentMacroEditor *ui;

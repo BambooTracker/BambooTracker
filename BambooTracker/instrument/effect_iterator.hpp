@@ -26,9 +26,9 @@
 #pragma once
 #include <vector>
 #include "sequence_iterator_interface.hpp"
-#include "command_sequence.hpp"
+#include "sequence_property.hpp"
 
-class ArpeggioEffectIterator : public SequenceIterator<InstrumentSequenceBaseUnit>
+class ArpeggioEffectIterator : public SequenceIteratorInterface<InstrumentSequenceBaseUnit>
 {
 public:
 	ArpeggioEffectIterator(int second, int third);
@@ -46,7 +46,7 @@ private:
 	InstrumentSequenceBaseUnit second_, third_;
 };
 
-class WavingEffectIterator : public SequenceIterator<InstrumentSequenceBaseUnit>
+class WavingEffectIterator : public SequenceIteratorInterface<InstrumentSequenceBaseUnit>
 {
 public:
 	WavingEffectIterator(int period, int depth);
@@ -64,7 +64,7 @@ private:
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
 
-class NoteSlideEffectIterator : public SequenceIterator<InstrumentSequenceBaseUnit>
+class NoteSlideEffectIterator : public SequenceIteratorInterface<InstrumentSequenceBaseUnit>
 {
 public:
 	NoteSlideEffectIterator(int speed, int seminote);

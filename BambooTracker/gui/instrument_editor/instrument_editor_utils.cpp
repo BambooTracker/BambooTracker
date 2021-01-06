@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,36 +24,11 @@
  */
 
 #include "instrument_editor_utils.hpp"
-#include <unordered_map>
 #include <algorithm>
 #include <QStringList>
-#include "enum_hash.hpp"
 
 namespace inst_edit_utils
 {
-namespace
-{
-// TODO: DELETE
-const std::unordered_map<VisualizedInstrumentMacroEditor::PermittedReleaseFlag, ReleaseType> REL_TYPE_MAP = {
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::NO_RELEASE, ReleaseType::NoRelease },
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::FIXED_RELEASE, ReleaseType::FixedRelease },
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::ABSOLUTE_RELEASE, ReleaseType::AbsoluteRelease },
-	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::RELATIVE_RELEASE, ReleaseType::RelativeRelease }
-};
-}
-
-ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::PermittedReleaseFlag type)
-{
-	return REL_TYPE_MAP.at(type);
-}
-
-VisualizedInstrumentMacroEditor::PermittedReleaseFlag convertReleaseTypeForUI(ReleaseType type)
-{
-	return std::find_if(REL_TYPE_MAP.begin(), REL_TYPE_MAP.end(), [type](const auto& pair) {
-		return (pair.second == type);
-	})->first;
-}
-
 QString generateUsersString(const std::multiset<int>& users)
 {
 	QStringList l;
