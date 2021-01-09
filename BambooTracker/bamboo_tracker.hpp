@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -291,9 +291,9 @@ public:
 	// Export
 	bool exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar);
 	bool exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-					 io::GD3Tag tag, std::function<bool()> bar);
-	bool exportToS98(io::BinaryContainer& container, int target, bool tagEnabled, io::S98Tag tag,
-					 int rate, std::function<bool()> bar);
+					 const io::GD3Tag& tag, std::function<bool()> bar);
+	bool exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
+					 const io::S98Tag& tag, int rate, std::function<bool()> bar);
 
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);

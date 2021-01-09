@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1441,7 +1441,7 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 }
 
 bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-								io::GD3Tag tag, std::function<bool()> bar)
+								const io::GD3Tag& tag, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1521,7 +1521,7 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 }
 
 bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
-								io::S98Tag tag, int rate, std::function<bool()> bar)
+								const io::S98Tag& tag, int rate, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(rate);

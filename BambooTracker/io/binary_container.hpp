@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <deque>
 #include <vector>
 #include <cstdint>
 #include <string>
@@ -34,57 +35,87 @@ namespace io
 class BinaryContainer
 {
 public:
-	explicit BinaryContainer(size_t defCapacity = 0);
-	explicit BinaryContainer(std::vector<char> buf);
-	size_t size() const noexcept;
+	using container_type = std::deque<uint8_t>;
+	using value_type = container_type::value_type;
+	using size_type = container_type::size_type;
+	using iterator = container_type::iterator;
+	using const_iterator = container_type::const_iterator;
+	using reverse_iterator = container_type::reverse_iterator;
+	using const_reverse_iterator = container_type::const_reverse_iterator;
+
+	explicit BinaryContainer();
+	explicit BinaryContainer(const std::vector<uint8_t>& buf);
+	explicit BinaryContainer(std::vector<uint8_t>&& buf);
+
+	inline iterator begin() noexcept { return buf_.begin(); }
+	inline const_iterator begin() const noexcept { return buf_.begin(); }
+
+	inline iterator end() noexcept { return buf_.end(); }
+	inline const_iterator end() const noexcept { return buf_.end(); }
+
+	inline const_iterator cbegin() const noexcept { return buf_.cbegin(); }
+	inline const_iterator cend() const noexcept { return buf_.cend(); }
+
+	inline reverse_iterator rbegin() noexcept { return buf_.rbegin(); }
+	inline const_reverse_iterator rbegin() const noexcept { return buf_.rbegin(); }
+
+	inline reverse_iterator rend() noexcept { return buf_.rend(); }
+	inline const_reverse_iterator rend() const noexcept { return buf_.rend(); }
+
+	inline const_reverse_iterator crbegin() const noexcept { return buf_.crbegin(); }
+	inline const_reverse_iterator crend() const noexcept { return buf_.crend(); }
+
+	inline void push_back(uint8_t v) { appendUint8(v); }
+
+	inline size_type size() const noexcept { return buf_.size(); }
 	void clear();
-	void reserve(size_t capacity);
+	inline void resize(size_type size) { buf_.resize(size); }
 
-	void setEndian(bool isLittleEndian) noexcept;
-	bool isLittleEndian() const noexcept;
+	inline void setEndian(bool isLittleEndian) noexcept { isLE_ = isLittleEndian; }
+	inline bool isLittleEndian() const noexcept { return isLE_; }
 
-	void appendInt8(const int8_t v);
-	void appendUint8(const uint8_t v);
-	void appendInt16(const int16_t v);
-	void appendUint16(const uint16_t v);
-	void appendInt32(const int32_t v);
-	void appendUint32(const uint32_t v);
-	void appendChar(const char c);
-	void appendString(const std::string str);
-	void appendArray(const uint8_t* array, size_t size);
+	void appendInt8(int8_t v);
+	void appendUint8(uint8_t v);
+	void appendInt16(int16_t v);
+	void appendUint16(uint16_t v);
+	void appendInt32(int32_t v);
+	void appendUint32(uint32_t v);
+	void appendChar(char c);
+	void appendString(const std::string& str);
+	void appendArray(const uint8_t* array, size_type size);
 	void appendVector(const std::vector<uint8_t>& vec);
-	void appendVector(const std::vector<char>& vec);
+	void appendVector(std::vector<uint8_t>&& vec);
 	void appendBinaryContainer(const BinaryContainer& bc);
+	void appendBinaryContainer(BinaryContainer&& bc);
 
-	void writeInt8(size_t offset, const int8_t v);
-	void writeUint8(size_t offset, const uint8_t v);
-	void writeInt16(size_t offset, const int16_t v);
-	void writeUint16(size_t offset, const uint16_t v);
-	void writeInt32(size_t offset, const int32_t v);
-	void writeUint32(size_t offset, const uint32_t v);
-	void writeChar(size_t offset, const char c);
-	void writeString(size_t offset, const std::string str);
+	void writeInt8(size_type offset, int8_t v);
+	void writeUint8(size_type offset, uint8_t v);
+	void writeInt16(size_type offset, int16_t v);
+	void writeUint16(size_type offset, uint16_t v);
+	void writeInt32(size_type offset, int32_t v);
+	void writeUint32(size_type offset, uint32_t v);
+	void writeChar(size_type offset, char c);
+	void writeString(size_type offset, const std::string& str);
 
-	int8_t readInt8(size_t offset) const;
-	uint8_t readUint8(size_t offset) const;
-	int16_t readInt16(size_t offset) const;
-	uint16_t readUint16(size_t offset) const;
-	int32_t readInt32(size_t offset) const;
-	uint32_t readUint32(size_t offset) const;
-	char readChar(size_t offset) const;
-	std::string readString(size_t offset, size_t length) const;
+	int8_t readInt8(size_type offset) const;
+	uint8_t readUint8(size_type offset) const;
+	int16_t readInt16(size_type offset) const;
+	uint16_t readUint16(size_type offset) const;
+	int32_t readInt32(size_type offset) const;
+	uint32_t readUint32(size_type offset) const;
+	char readChar(size_type offset) const;
+	std::string readString(size_type offset, size_type length) const;
 
-	BinaryContainer getSubcontainer(size_t offset, size_t length) const;
+	BinaryContainer getSubcontainer(size_type offset, size_type length) const;
 
-	const char* getPointer() const;
 	std::vector<uint8_t> toVector() const;
 
 private:
-	std::vector<char> buf_;
+	container_type buf_;
 	bool isLE_;
 
-	void append(std::vector<char> a);
-	void write(size_t offset, std::vector<char> a);
-	std::vector<unsigned char> read(size_t offset, size_t size) const;
+	void append(const std::vector<uint8_t>&& a);
+	void write(size_t offset, const std::vector<uint8_t>&& a);
+	std::vector<uint8_t> read(size_type offset, size_type size) const;
 };
 }

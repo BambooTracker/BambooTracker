@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -44,9 +44,9 @@ struct GD3Tag
 	std::string notes;
 };
 
-void writeVgm(BinaryContainer& container, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>& samples, uint32_t clock, uint32_t rate,
 			  bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
-			  bool gd3TagEnabled, GD3Tag tag);
+			  bool gd3TagEnabled, const GD3Tag& tag);
 
 // S98 ----------
 struct S98Tag
@@ -62,8 +62,8 @@ struct S98Tag
 	std::string system;
 };
 
-void writeS98(BinaryContainer& container, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
-			  bool loopFlag, uint32_t loopPoint, bool tagEnabled, S98Tag tag);
+void writeS98(BinaryContainer& container, int target, const std::vector<uint8_t>& samples, uint32_t clock, uint32_t rate,
+			  bool loopFlag, uint32_t loopPoint, bool tagEnabled, const S98Tag& tag);
 
 enum ExportTargetFlag
 {

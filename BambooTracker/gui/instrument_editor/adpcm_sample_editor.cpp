@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -318,15 +318,19 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 {
 	std::unique_ptr<io::WavContainer> wav;
 	try {
-		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, io::FileType::WAV, this);
-			return;
+		io::BinaryContainer container;
+		{
+			QFile fp(file);
+			if (!fp.open(QIODevice::ReadOnly)) {
+				FileIOErrorMessageBox::openError(file, true, io::FileType::WAV, this);
+				return;
+			}
+			QByteArray array = fp.readAll();
+			fp.close();
+			std::move(array.begin(), array.end(), std::back_inserter(container));
 		}
-		QByteArray array = fp.readAll();
-		fp.close();
 
-		wav = std::make_unique<io::WavContainer>(io::BinaryContainer(std::vector<char>(array.begin(), array.end())));
+		wav = std::make_unique<io::WavContainer>(container);
 	}
 	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();

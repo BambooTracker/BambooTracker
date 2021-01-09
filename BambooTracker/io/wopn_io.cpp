@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,8 @@ AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
 	};
 
 	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
-	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
+	auto&& mem = ctr.toVector();
+	wopn.reset(WOPN_LoadBankFromMem(mem.data(), mem.size(), nullptr));
 	if (!wopn)
 		throw FileCorruptionError(FileType::Bank, 0);
 

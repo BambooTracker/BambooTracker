@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1689,16 +1689,17 @@ void MainWindow::funcLoadInstrument(QString file)
 	}
 
 	try {
-		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, io::FileType::Inst, this);
-			return;
-		}
-		QByteArray array = fp.readAll();
-		fp.close();
-
 		io::BinaryContainer contaner;
-		contaner.appendVector(std::vector<char>(array.begin(), array.end()));
+		{
+			QFile fp(file);
+			if (!fp.open(QIODevice::ReadOnly)) {
+				FileIOErrorMessageBox::openError(file, true, io::FileType::Inst, this);
+				return;
+			}
+			QByteArray&& array = fp.readAll();
+			fp.close();
+			std::move(array.begin(), array.end(), std::back_inserter(contaner));
+		}
 		bt_->loadInstrument(contaner, file.toStdString(), n);
 
 		auto inst = bt_->getInstrument(n);
@@ -1735,15 +1736,19 @@ void MainWindow::saveInstrument()
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
 	try {
-		io::BinaryContainer container;
-		bt_->saveInstrument(container, n);
-
+		QByteArray bytes;
+		{
+			io::BinaryContainer container;
+			bt_->saveInstrument(container, n);
+			bytes.reserve(container.size());
+			std::move(container.begin(), container.end(), std::back_inserter(bytes));
+		}
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
 			FileIOErrorMessageBox::openError(file, false, io::FileType::Inst, this);
 			return;
 		}
-		fp.write(container.getPointer(), container.size());
+		fp.write(bytes);
 		fp.close();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
@@ -1786,16 +1791,17 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	std::unique_ptr<AbstractBank> bank;
 	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
-		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, io::FileType::Bank, this);
-			return;
-		}
-		QByteArray array = fp.readAll();
-		fp.close();
-
 		io::BinaryContainer container;
-		container.appendVector(std::vector<char>(array.begin(), array.end()));
+		{
+			QFile fp(file);
+			if (!fp.open(QIODevice::ReadOnly)) {
+				FileIOErrorMessageBox::openError(file, true, io::FileType::Bank, this);
+				return;
+			}
+			QByteArray&& array = fp.readAll();
+			fp.close();
+			std::move(array.begin(), array.end(), std::back_inserter(container));
+		}
 
 		bank.reset(io::BankIO::getInstance().loadBank(container, file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
@@ -1939,15 +1945,18 @@ void MainWindow::exportInstrumentsToBank()
 	std::sort(sel.begin(), sel.end());
 
 	try {
-		io::BinaryContainer container;
-		bt_->exportInstruments(container, sel);
-
+		QByteArray bytes;
+		{
+			io::BinaryContainer container;
+			bt_->exportInstruments(container, sel);
+			bytes.reserve(container.size());
+			std::move(container.begin(), container.end(), std::back_inserter(bytes));
+		}
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
 			FileIOErrorMessageBox::openError(file, false, io::FileType::Bank, this);
 			return;
-		}
-		fp.write(container.getPointer(), container.size());
+		}fp.write(bytes);
 		fp.close();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
@@ -2082,14 +2091,15 @@ void MainWindow::openModule(QString file)
 		if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
 		else stream_->stop();
 
-		io::BinaryContainer container;
 		QFile fp(file);
 		if (fp.open(QIODevice::ReadOnly)) {
+			io::BinaryContainer container;
+			{
+				QByteArray&& array = fp.readAll();
+				fp.close();
+				std::move(array.begin(), array.end(), std::back_inserter(container));
+			}
 
-			QByteArray array = fp.readAll();
-			fp.close();
-
-			container.appendVector(std::vector<char>(array.begin(), array.end()));
 			bt_->loadModule(container);
 			bt_->setModulePath(file.toStdString());
 
@@ -2098,7 +2108,7 @@ void MainWindow::openModule(QString file)
 			config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 			changeFileHistory(file);
 
-			goto AFTER_LOADING;	// Skip error handling section
+			goto AFTER_MOD_LOADING;	// Skip error handling section
 		}
 		else {
 			FileIOErrorMessageBox::openError(file, true, io::FileType::Mod, this);
@@ -2118,7 +2128,7 @@ void MainWindow::openModule(QString file)
 	bt_->makeNewModule();
 	loadModule();
 
-AFTER_LOADING:	// Post process of module loading
+AFTER_MOD_LOADING:	// Post process of module loading
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
 	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
@@ -3078,15 +3088,19 @@ bool MainWindow::on_actionSave_triggered()
 		if (!backupModule(path)) return false;
 
 		try {
-			io::BinaryContainer container;
-			bt_->saveModule(container);
-
+			QByteArray bytes;
+			{
+				io::BinaryContainer container;
+				bt_->saveModule(container);
+				bytes.reserve(container.size());
+				std::move(container.begin(), container.end(), std::back_inserter(bytes));
+			}
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
 				FileIOErrorMessageBox::openError(path, false, io::FileType::Mod, this);
 				return false;
 			}
-			fp.write(container.getPointer(), container.size());
+			fp.write(bytes);
 			fp.close();
 
 			isModifiedForNotCommand_ = false;
@@ -3125,15 +3139,20 @@ bool MainWindow::on_actionSave_As_triggered()
 
 	bt_->setModulePath(file.toStdString());
 	try {
-		io::BinaryContainer container;
-		bt_->saveModule(container);
+		QByteArray bytes;
+		{
+			io::BinaryContainer container;
+			bt_->saveModule(container);
+			bytes.reserve(container.size());
+			std::move(container.begin(), container.end(), std::back_inserter(bytes));
+		}
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
 			FileIOErrorMessageBox::openError(file, false, io::FileType::Mod, this);
 			return false;
 		}
-		fp.write(container.getPointer(), container.size());
+		fp.write(bytes);
 		fp.close();
 
 		isModifiedForNotCommand_ = false;
@@ -3302,33 +3321,34 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
-		const uint16_t nCh = 2;
-		const int loopCnt = diag.getLoopCount();
-		size_t defCap = static_cast<size_t>(rate * nCh * loopCnt
-											* bt_->calculateSongLength(bt_->getCurrentSongNumber()));
-		io::WavContainer container(defCap, rate, nCh, 16);
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
 				   return progress.wasCanceled();
 	};
 
-		bool res = bt_->exportToWav(container, loopCnt, bar);
-		if (res) {
-			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
-			}
-			else {
-				io::BinaryContainer&& bc = container.createWavBinary();
-				fp.write(bc.getPointer(), bc.size());
-				fp.close();
-				bar();
-
-				config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
-			}
+		QByteArray bytes;
+		{
+			const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
+			const uint16_t nCh = 2;
+			const int loopCnt = diag.getLoopCount();
+			io::WavContainer container(rate, nCh, 16);
+			if (!bt_->exportToWav(container, loopCnt, bar))
+				goto AFTER_WAV_WRITE;	// Jump if cancelled
+			bytes.reserve(container.size());
+			std::move(container.begin(), container.end(), std::back_inserter(bytes));
 		}
+
+		QFile fp(path);
+		if (!fp.open(QIODevice::WriteOnly)) {
+			FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
+			goto AFTER_WAV_WRITE;	// Jump to post process
+		}
+		fp.write(bytes);
+		fp.close();
+		bar();
+
+		config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 	}
 	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
@@ -3337,6 +3357,7 @@ void MainWindow::on_actionWAV_triggered()
 		FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
 	}
 
+AFTER_WAV_WRITE:
 	stream_->start();
 }
 
@@ -3367,27 +3388,30 @@ void MainWindow::on_actionVGM_triggered()
 	stream_->stop();
 
 	try {
-		io::BinaryContainer container;
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
 				   return progress.wasCanceled();
 	};
 
-		bool res = bt_->exportToVgm(container, diag.getExportTarget(), diag.enabledGD3(), tag, bar);
-		if (res) {
-			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, io::FileType::VGM, this);
-			}
-			else {
-				fp.write(container.getPointer(), container.size());
-				fp.close();
-				bar();
-
-				config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
-			}
+		QByteArray bytes;
+		{
+			io::BinaryContainer container;
+			if (!bt_->exportToVgm(container, diag.getExportTarget(), diag.enabledGD3(), tag, bar))
+				goto AFTER_VGM_WRITE;	// Jump if cancelled
+			bytes.reserve(container.size());
+			std::move(container.begin(), container.end(), std::back_inserter(bytes));
 		}
+		QFile fp(path);
+		if (!fp.open(QIODevice::WriteOnly)) {
+			FileIOErrorMessageBox::openError(path, false, io::FileType::VGM, this);
+			goto AFTER_VGM_WRITE;	// Jump if cancelled
+		}
+		fp.write(bytes);
+		fp.close();
+		bar();
+
+		config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 	}
 	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
@@ -3396,6 +3420,7 @@ void MainWindow::on_actionVGM_triggered()
 		FileIOErrorMessageBox(path, false, io::FileType::VGM, QString(e.what()), this).exec();
 	}
 
+AFTER_VGM_WRITE:
 	stream_->start();
 }
 
@@ -3426,28 +3451,32 @@ void MainWindow::on_actionS98_triggered()
 	stream_->stop();
 
 	try {
-		io::BinaryContainer container;
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
 				   return progress.wasCanceled();
 	};
 
-		bool res = bt_->exportToS98(container, diag.getExportTarget(), diag.enabledTag(),
-									tag, diag.getResolution(), bar);
-		if (res) {
-			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, io::FileType::S98, this);
-			}
-			else {
-				fp.write(container.getPointer(), container.size());
-				fp.close();
-				bar();
-
-				config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
-			}
+		QByteArray bytes;
+		{
+			io::BinaryContainer container;
+			if (!bt_->exportToS98(container, diag.getExportTarget(), diag.enabledTag(),
+								  tag, diag.getResolution(), bar))
+				goto AFTER_S98_WRITE;	// Jump if cancelled
+			bytes.reserve(container.size());
+			std::move(container.begin(), container.end(), std::back_inserter(bytes));
 		}
+
+		QFile fp(path);
+		if (!fp.open(QIODevice::WriteOnly)) {
+			FileIOErrorMessageBox::openError(path, false, io::FileType::S98, this);
+			goto AFTER_S98_WRITE;	// Jump to post process
+		}
+		fp.write(bytes);
+		fp.close();
+		bar();
+
+		config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 	}
 	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
@@ -3456,6 +3485,7 @@ void MainWindow::on_actionS98_triggered()
 		FileIOErrorMessageBox(path, false, io::FileType::S98, QString(e.what()), this).exec();
 	}
 
+AFTER_S98_WRITE:
 	stream_->start();
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,7 +36,8 @@ AbstractInstrument* OpniIO::load(const BinaryContainer& ctr, const std::string& 
 {
 	(void)fileName;
 	OPNIFile opni;
-	if (WOPN_LoadInstFromMem(&opni, const_cast<char*>(ctr.getPointer()), static_cast<size_t>(ctr.size())) != 0)
+	auto&& mem = ctr.toVector();
+	if (WOPN_LoadInstFromMem(&opni, mem.data(), mem.size()) != 0)
 		throw FileCorruptionError(FileType::Inst, 0);
 
 	return loadWOPNInstrument(opni.inst, instMan, instNum);

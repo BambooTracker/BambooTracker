@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -57,7 +57,7 @@ AbstractBank* FfIO::load(const BinaryContainer& ctr) const
 		csr += 7;
 
 		// Empty
-		if (std::all_of(block.getPointer(), block.getPointer() + 25,
+		if (std::all_of(block.begin(), block.end(),
 						[](const char c) { return c == 0; }) && name.empty())
 			continue;
 

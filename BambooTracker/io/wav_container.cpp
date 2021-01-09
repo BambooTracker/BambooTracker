@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,27 +35,70 @@ inline void assertValue(bool f, size_t pos)
 {
 	if (!f) throw io::FileCorruptionError(io::FileType::WAV, pos);
 }
+
+enum WavOffset : size_t
+{
+	RIFF_OFFS = 0,
+	FILE_SIZE_OFFS = 4,
+	WAVE_OFFS = 8,
+	FMT_OFS = 12,
+	FMT_SIZE_OFFS = 16,
+	FORMAT_OFFS = 20,
+	NCH_OFFS = 22,
+	RATE_OFFS = 24,
+	BYTE_RATE_OFFS = 28,
+	BLOCK_SIZE_OFFS = 32,
+	BIT_SIZE_OFFS = 34,
+	DATA_OFFS = 36,
+	DATA_SIZE_OFFS = 40,
+	PREPARED_SIZE = 44
+};
 }
 
 namespace io
 {
-WavContainer::WavContainer(size_t defCapacity, uint32_t rate, uint16_t nCh, uint16_t bitSize)
+WavContainer::WavContainer(uint32_t rate, uint16_t nCh, uint16_t bitSize)
 	: nCh_(nCh),
 	  bitSize_(bitSize),
-	  rate_(rate),
-	  buf_(defCapacity)
+	  rate_(rate)
 {
+	// RIFF header
+	buf_.appendString("RIFF");
+	uint16_t byteSize = bitSize_ / 8;
+	buf_.appendUint32(36);
+	buf_.appendString("WAVE");
+
+	// fmt chunk
+	buf_.appendString("fmt ");
+	uint32_t chunkOfs = 16;
+	buf_.appendUint32(chunkOfs);
+	uint16_t fmtId = 1;	// Raw linear PCM
+	buf_.appendUint16(fmtId);
+	buf_.appendUint16(nCh_);
+	buf_.appendUint32(rate_);
+	uint16_t blockSize = byteSize * nCh_;
+	uint32_t byteRate = blockSize * rate_;
+	buf_.appendUint32(byteRate);
+	buf_.appendUint16(blockSize);
+	buf_.appendUint16(bitSize_);
+
+	// Data chunk
+	buf_.appendString("data");
+	buf_.appendUint32(0);
 }
 
 WavContainer::WavContainer(const BinaryContainer& bc)
 {
+	buf_.resize(PREPARED_SIZE);
 	size_t p = 0;
 	assertValue(bc.readString(p, 4) == "RIFF", p);
+	buf_.writeString(RIFF_OFFS, "RIFF");
 	p += 4;
 	uint32_t fileSize = bc.readUint32(p) + 8;
 	assertValue(fileSize == bc.size(), p);
 	p += 4;
 	assertValue(bc.readString(p, 4) == "WAVE", p);
+	buf_.writeString(WAVE_OFFS, "WAVE");
 	p += 4;
 
 	while (p < fileSize) {
@@ -63,28 +106,38 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 		p += 4;
 
 		if (id == "fmt ") {
+			buf_.writeString(FMT_OFS, "fmt ");
 			uint32_t fmtSize = bc.readUint32(p);
+			buf_.writeUint32(FMT_SIZE_OFFS, 16);
 			size_t fmtp = p + 4;
 			p = fmtp + fmtSize;
 			assertValue(bc.readUint16(fmtp) == 1, fmtp);	// Only support linear PCM
+			buf_.writeUint16(FORMAT_OFFS, 1);
 			fmtp += 2;
 			nCh_ = bc.readUint16(fmtp);
+			buf_.writeUint16(NCH_OFFS, nCh_);
 			fmtp += 2;
 			rate_ = bc.readUint32(fmtp);
+			buf_.writeUint32(RATE_OFFS, rate_);
 			fmtp += 4;
-			uint32_t byteRate = bc.readUint32(fmtp);
+			byteRate_ = bc.readUint32(fmtp);
+			buf_.writeUint32(BYTE_RATE_OFFS, byteRate_);
 			fmtp += 4;
-			uint16_t blockSize = bc.readUint16(fmtp);
-			assertValue(byteRate == blockSize * rate_, fmtp);
+			blockSize_ = bc.readUint16(fmtp);
+			assertValue(byteRate_ == blockSize_ * rate_, fmtp);
+			buf_.writeUint16(BLOCK_SIZE_OFFS, blockSize_);
 			fmtp += 2;
 			bitSize_ = bc.readUint16(fmtp);
 			assertValue(bitSize_ == 16, fmtp);	// Only support 16-bit
-			assertValue(blockSize == nCh_ * bitSize_ / 8, fmtp);
+			assertValue(blockSize_ == nCh_ * bitSize_ / 8, fmtp);
+			buf_.writeUint16(BIT_SIZE_OFFS, bitSize_);
 			fmtp += 2;
 		}
 		else if (id == "data") {
+			buf_.writeString(DATA_OFFS, "data");
 			uint32_t dataSize = bc.readUint32(p);
 			assertValue(p + dataSize <= bc.size(), p);
+			buf_.writeUint32(DATA_SIZE_OFFS, dataSize);
 			p += 4;
 			buf_.appendBinaryContainer(bc.getSubcontainer(p, dataSize));
 			p += dataSize;
@@ -93,97 +146,60 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 			p += (bc.readUint32(p) + 4);	// Jump to next chunk
 		}
 	}
+
+	buf_.writeUint32(FILE_SIZE_OFFS, buf_.size() - 8);
 }
 
-void WavContainer::setChannelCount(uint16_t n) noexcept
+void WavContainer::setChannelCount(uint16_t n)
 {
 	nCh_ = n;
+	buf_.writeUint16(NCH_OFFS, nCh_);
+	updateBlockSize();
 }
 
-uint16_t WavContainer::getChannelCount() const noexcept
-{
-	return nCh_;
-}
-
-void WavContainer::setBitSize(uint16_t size) noexcept
+void WavContainer::setBitSize(uint16_t size)
 {
 	bitSize_ = size;
+	buf_.writeUint16(BIT_SIZE_OFFS, bitSize_);
+	updateBlockSize();
 }
 
-uint16_t WavContainer::getBitSize() const noexcept
-{
-	return bitSize_;
-}
-
-void WavContainer::setSampleRate(uint32_t rate) noexcept
+void WavContainer::setSampleRate(uint32_t rate)
 {
 	rate_ = rate;
+	buf_.writeUint16(rate, rate);
+	updateBlockSize();
+	updateByteRate();
 }
 
-uint32_t WavContainer::getSampleRate() const noexcept
+WavContainer::size_type WavContainer::getSampleCount() const
 {
-	return rate_;
+	return (buf_.size() - PREPARED_SIZE) * bitSize_ / 8 / nCh_;
 }
 
-size_t WavContainer::getSampleCount() const
-{
-	return buf_.size() * bitSize_ / 8 / nCh_;
-}
-
-void WavContainer::appendSample(const int16_t* sample, size_t nSamples)
+void WavContainer::appendSample(const int16_t* sample, size_type nSamples)
 {
 	size_t dataSize = nCh_ * nSamples * sizeof(int16_t);
 	buf_.appendArray(reinterpret_cast<const uint8_t*>(sample), dataSize);
+	updateSizeDataAfterAppendSample();
 }
 
 void WavContainer::appendSample(const std::vector<int16_t>& sample)
 {
 	size_t dataSize = sample.size() * sizeof(int16_t);
 	buf_.appendArray(reinterpret_cast<const uint8_t*>(sample.data()), dataSize);
+	updateSizeDataAfterAppendSample();
 }
 
 void WavContainer::appendSample(const BinaryContainer& sample)
 {
 	buf_.appendBinaryContainer(sample);
+	updateSizeDataAfterAppendSample();
 }
 
 BinaryContainer WavContainer::getSample() const noexcept
 {
-	return buf_;
-}
-
-BinaryContainer WavContainer::createWavBinary()
-{
-	BinaryContainer bc;
-
-	// RIFF header
-	bc.appendString("RIFF");
-	uint16_t byteSize = bitSize_ / 8;
-	uint32_t dataSize = buf_.size() / byteSize;
-	uint32_t offset = dataSize + 36;
-	bc.appendUint32(offset);
-	bc.appendString("WAVE");
-
-	// fmt chunk
-	bc.appendString("fmt ");
-	uint32_t chunkOfs = 16;
-	bc.appendUint32(chunkOfs);
-	uint16_t fmtId = 1;	// Raw linear PCM
-	bc.appendUint16(fmtId);
-	bc.appendUint16(nCh_);
-	bc.appendUint32(rate_);
-	uint16_t blockSize = byteSize * nCh_;
-	uint32_t byteRate = blockSize * rate_;
-	bc.appendUint32(byteRate);
-	bc.appendUint16(blockSize);
-	bc.appendUint16(bitSize_);
-
-	// Data chunk
-	bc.appendString("data");
-	bc.appendUint32(buf_.size());
-	bc.appendBinaryContainer(buf_);
-
-	return bc;
+	return buf_.getSubcontainer(PREPARED_SIZE, buf_.size() - PREPARED_SIZE);
 }
 
 //	WavContainer* WavContainer::resample(const WavContainer* src, uint32_t rate)
@@ -239,4 +255,22 @@ BinaryContainer WavContainer::createWavBinary()
 
 //		return tgt.release();
 //	}
+
+void WavContainer::updateBlockSize()
+{
+	blockSize_ = nCh_ * bitSize_ / 8;
+	buf_.writeUint16(BLOCK_SIZE_OFFS, blockSize_);
+}
+
+void WavContainer::updateByteRate()
+{
+	byteRate_ = blockSize_ * rate_;
+	buf_.writeUint32(BYTE_RATE_OFFS, byteRate_);
+}
+
+void WavContainer::updateSizeDataAfterAppendSample()
+{
+	buf_.writeUint32(FILE_SIZE_OFFS, buf_.size() - 8);
+	buf_.writeUint32(DATA_SIZE_OFFS, buf_.size() - PREPARED_SIZE);
+}
 }
