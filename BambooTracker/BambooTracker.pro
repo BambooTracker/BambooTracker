@@ -119,8 +119,8 @@ SOURCES += \
     gui/swap_tracks_dialog.cpp \
     gui/track_visibility_memory_handler.cpp \
     gui/transpose_song_dialog.cpp \
+    instrument/sample_adpcm.cpp \
     instrument/sequence_property.cpp \
-    instrument/waveform_adpcm.cpp \
     io/btb_io.cpp \
     io/bti_io.cpp \
     io/btm_io.cpp \
@@ -306,8 +306,8 @@ HEADERS += \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
     instrument/instrument_property_defs.hpp \
+    instrument/sample_adpcm.hpp \
     instrument/sequence_property.hpp \
-    instrument/waveform_adpcm.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \
     io/btm_io.hpp \

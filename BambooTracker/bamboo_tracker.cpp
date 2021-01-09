@@ -811,9 +811,14 @@ bool BambooTracker::getSampleADPCMRepeatEnabled(int sampNum) const
 	return instMan_->isSampleADPCMRepeatable(sampNum);
 }
 
-void BambooTracker::storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample)
+void BambooTracker::storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample)
 {
 	instMan_->storeSampleADPCMRawSample(sampNum, sample);
+}
+
+void BambooTracker::storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample)
+{
+	instMan_->storeSampleADPCMRawSample(sampNum, std::move(sample));
 }
 
 std::vector<uint8_t> BambooTracker::getSampleADPCMRawSample(int sampNum) const

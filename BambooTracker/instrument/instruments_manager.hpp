@@ -34,7 +34,7 @@
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
-#include "waveform_adpcm.hpp"
+#include "sample_adpcm.hpp"
 #include "sequence_property.hpp"
 #include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
@@ -333,7 +333,8 @@ public:
 	int getSampleADPCMRootDeltaN(int sampNum) const;
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool isSampleADPCMRepeatable(int sampNum) const;
-	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample);
+	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
+	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	void clearSampleADPCMRawSample(int sampNum);
 	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
 	void setSampleADPCMStartAddress(int sampNum, size_t addr);

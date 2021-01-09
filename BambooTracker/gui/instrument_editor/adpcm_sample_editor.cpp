@@ -365,11 +365,9 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	std::vector<uint8_t> adpcm((raw.size() + 1) / 2);
 	codec::ymb_encode(raw.data(), adpcm.data(), static_cast<long>(raw.size()));
 
-	const int ROOT_KEY = 60;	//C5
-
-	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), adpcm);
-	ui->rootKeyComboBox->setCurrentIndex(ROOT_KEY % 12);
-	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+	ui->rootKeyComboBox->setCurrentIndex(SampleADPCM::DEF_ROOT_KEY % 12);
+	ui->rootKeySpinBox->setValue(SampleADPCM::DEF_ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
 
 	emit modified();

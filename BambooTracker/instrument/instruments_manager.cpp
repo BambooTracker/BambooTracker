@@ -2195,7 +2195,12 @@ bool InstrumentsManager::isSampleADPCMRepeatable(int sampNum) const
 	return sampADPCM_.at(static_cast<size_t>(sampNum))->isRepeatable();
 }
 
-void InstrumentsManager::storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample)
+void InstrumentsManager::storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample)
+{
+	sampADPCM_.at(static_cast<size_t>(sampNum))->storeSample(sample);
+}
+
+void InstrumentsManager::storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample)
 {
 	sampADPCM_.at(static_cast<size_t>(sampNum))->storeSample(sample);
 }

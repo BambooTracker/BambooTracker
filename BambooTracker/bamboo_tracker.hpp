@@ -221,7 +221,8 @@ public:
 	int getSampleADPCMRootDeltaN(int sampNum) const;
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool getSampleADPCMRepeatEnabled(int sampNum) const;
-	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample);
+	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
+	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
 	void clearSampleADPCMRawSample(int sampNum);
 	void assignSampleADPCMRawSamples();
