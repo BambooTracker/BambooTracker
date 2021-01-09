@@ -24,32 +24,16 @@
  */
 
 #include "instrument.hpp"
+#include "instruments_manager.hpp"
 #include <algorithm>
 
-AbstractInstrument::AbstractInstrument(int number, std::string name, InstrumentsManager* owner)
+AbstractInstrument::AbstractInstrument(int number, SoundSource src, InstrumentType type, const std::string& name, InstrumentsManager* owner)
 	: owner_(owner),
 	  number_(number),
-	  name_(name)
-{}
-
-int AbstractInstrument::getNumber() const
+	  name_(name),
+	  sndSrc_(src),
+	  instType_(type)
 {
-	return number_;
-}
-
-void AbstractInstrument::setNumber(int n)
-{
-	number_ = n;
-}
-
-std::string AbstractInstrument::getName() const
-{
-	return name_;
-}
-
-void AbstractInstrument::setName(std::string name)
-{
-	name_ = name;
 }
 
 bool AbstractInstrument::isRegisteredWithManager() const
@@ -59,8 +43,8 @@ bool AbstractInstrument::isRegisteredWithManager() const
 
 /****************************************/
 
-InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
-	AbstractInstrument(number, name, owner),
+InstrumentFM::InstrumentFM(int number, const std::string& name, InstrumentsManager* owner) :
+	AbstractInstrument(number, SoundSource::FM, InstrumentType::FM, name, owner),
 	envNum_(0),
 	lfoEnabled_(false),
 	lfoNum_(0)
@@ -182,44 +166,9 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	};
 }
 
-SoundSource InstrumentFM::getSoundSource() const
-{
-	return SoundSource::FM;
-}
-
-InstrumentType InstrumentFM::getType() const
-{
-	return InstrumentType::FM;
-}
-
 AbstractInstrument* InstrumentFM::clone()
 {
-	auto c = new InstrumentFM(number_, name_, owner_);
-	c->setEnvelopeNumber(envNum_);
-	c->setLFOEnabled(lfoEnabled_);
-	c->setLFONumber(lfoNum_);
-	for (auto pair : opSeqEnabled_)	{
-		c->setOperatorSequenceEnabled(pair.first, pair.second);
-		c->setOperatorSequenceNumber(pair.first, opSeqNum_.at(pair.first));
-	}
-	for (auto pair : arpEnabled_) {
-		c->setArpeggioEnabled(pair.first, pair.second);
-		c->setArpeggioNumber(pair.first, arpNum_.at(pair.first));
-		c->setPitchEnabled(pair.first, ptEnabled_.at(pair.first));
-		c->setPitchNumber(pair.first, ptNum_.at(pair.first));
-		c->setEnvelopeResetEnabled(pair.first, envResetEnabled_.at(pair.first));
-	}
-	return c;
-}
-
-void InstrumentFM::setEnvelopeNumber(int n)
-{
-	envNum_ = n;
-}
-
-int InstrumentFM::getEnvelopeNumber() const
-{
-	return envNum_;
+	return new InstrumentFM(*this);
 }
 
 int InstrumentFM::getEnvelopeParameter(FMEnvelopeParameter param) const
@@ -232,39 +181,9 @@ bool InstrumentFM::getOperatorEnabled(int n) const
 	return owner_->getEnvelopeFMOperatorEnabled(envNum_, n);
 }
 
-void InstrumentFM::setLFOEnabled(bool enabled)
-{
-	lfoEnabled_ = enabled;
-}
-
-bool InstrumentFM::getLFOEnabled() const
-{
-	return lfoEnabled_;
-}
-
-void InstrumentFM::setLFONumber(int n)
-{
-	lfoNum_ = n;
-}
-
-int InstrumentFM::getLFONumber() const
-{
-	return lfoNum_;
-}
-
 int InstrumentFM::getLFOParameter(FMLFOParameter param) const
 {
 	return owner_->getLFOFMparameter(lfoNum_, param);
-}
-
-void InstrumentFM::setEnvelopeResetEnabled(FMOperatorType op, bool enabled)
-{
-	envResetEnabled_.at(op) = enabled;
-}
-
-bool InstrumentFM::getEnvelopeResetEnabled(FMOperatorType op) const
-{
-	return envResetEnabled_.at(op);
 }
 
 void InstrumentFM::setOperatorSequenceEnabled(FMEnvelopeParameter param, bool enabled)
@@ -397,10 +316,20 @@ PitchIter InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
 	return owner_->getPitchFMIterator(ptNum_.at(op));
 }
 
+void InstrumentFM::setEnvelopeResetEnabled(FMOperatorType op, bool enabled)
+{
+	envResetEnabled_.at(op) = enabled;
+}
+
+bool InstrumentFM::getEnvelopeResetEnabled(FMOperatorType op) const
+{
+	return envResetEnabled_.at(op);
+}
+
 /****************************************/
 
-InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, name, owner),
+InstrumentSSG::InstrumentSSG(int number, const std::string& name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::SSG, InstrumentType::SSG, name, owner),
 	  wfEnabled_(false),
 	  wfNum_(0),
 	  tnEnabled_(false),
@@ -414,50 +343,9 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 {
 }
 
-SoundSource InstrumentSSG::getSoundSource() const
-{
-	return SoundSource::SSG;
-}
-
-InstrumentType InstrumentSSG::getType() const
-{
-	return InstrumentType::SSG;
-}
-
 AbstractInstrument* InstrumentSSG::clone()
 {
-	auto c = new InstrumentSSG(number_, name_, owner_);
-	c->setWaveformEnabled(wfEnabled_);
-	c->setWaveformNumber(wfNum_);
-	c->setToneNoiseEnabled(tnEnabled_);
-	c->setToneNoiseNumber(tnNum_);
-	c->setEnvelopeEnabled(envEnabled_);
-	c->setEnvelopeNumber(envNum_);
-	c->setArpeggioEnabled(arpEnabled_);
-	c->setArpeggioNumber(arpNum_);
-	c->setPitchEnabled(ptEnabled_);
-	c->setPitchNumber(ptNum_);
-	return c;
-}
-
-void InstrumentSSG::setWaveformEnabled(bool enabled)
-{
-	wfEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getWaveformEnabled() const
-{
-	return wfEnabled_;
-}
-
-void InstrumentSSG::setWaveformNumber(int n)
-{
-	wfNum_ = n;
-}
-
-int InstrumentSSG::getWaveformNumber() const
-{
-	return wfNum_;
+	return new InstrumentSSG(*this);
 }
 
 std::vector<SSGWaveformUnit> InstrumentSSG::getWaveformSequence() const
@@ -480,26 +368,6 @@ SSGWaveformIter InstrumentSSG::getWaveformSequenceIterator() const
 	return owner_->getWaveformSSGIterator(wfNum_);
 }
 
-void InstrumentSSG::setToneNoiseEnabled(bool enabled)
-{
-	tnEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getToneNoiseEnabled() const
-{
-	return tnEnabled_;
-}
-
-void InstrumentSSG::setToneNoiseNumber(int n)
-{
-	tnNum_ = n;
-}
-
-int InstrumentSSG::getToneNoiseNumber() const
-{
-	return tnNum_;
-}
-
 std::vector<SSGToneNoiseUnit> InstrumentSSG::getToneNoiseSequence() const
 {
 	return owner_->getToneNoiseSSGSequence(tnNum_);
@@ -520,26 +388,6 @@ SSGToneNoiseIter InstrumentSSG::getToneNoiseSequenceIterator() const
 	return owner_->getToneNoiseSSGIterator(tnNum_);
 }
 
-void InstrumentSSG::setEnvelopeEnabled(bool enabled)
-{
-	envEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getEnvelopeEnabled() const
-{
-	return envEnabled_;
-}
-
-void InstrumentSSG::setEnvelopeNumber(int n)
-{
-	envNum_ = n;
-}
-
-int InstrumentSSG::getEnvelopeNumber() const
-{
-	return envNum_;
-}
-
 std::vector<SSGEnvelopeUnit> InstrumentSSG::getEnvelopeSequence() const
 {
 	return owner_->getEnvelopeSSGSequence(envNum_);
@@ -558,26 +406,6 @@ InstrumentSequenceRelease InstrumentSSG::getEnvelopeRelease() const
 SSGEnvelopeIter InstrumentSSG::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeSSGIterator(envNum_);
-}
-
-void InstrumentSSG::setArpeggioEnabled(bool enabled)
-{
-	arpEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getArpeggioEnabled() const
-{
-	return arpEnabled_;
-}
-
-void InstrumentSSG::setArpeggioNumber(int n)
-{
-	arpNum_ = n;
-}
-
-int InstrumentSSG::getArpeggioNumber() const
-{
-	return arpNum_;
 }
 
 SequenceType InstrumentSSG::getArpeggioType() const
@@ -603,26 +431,6 @@ InstrumentSequenceRelease InstrumentSSG::getArpeggioRelease() const
 ArpeggioIter InstrumentSSG::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioSSGIterator(arpNum_);
-}
-
-void InstrumentSSG::setPitchEnabled(bool enabled)
-{
-	ptEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getPitchEnabled() const
-{
-	return ptEnabled_;
-}
-
-void InstrumentSSG::setPitchNumber(int n)
-{
-	ptNum_ = n;
-}
-
-int InstrumentSSG::getPitchNumber() const
-{
-	return ptNum_;
 }
 
 SequenceType InstrumentSSG::getPitchType() const
@@ -652,8 +460,8 @@ PitchIter InstrumentSSG::getPitchSequenceIterator() const
 
 /****************************************/
 
-InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, name, owner),
+InstrumentADPCM::InstrumentADPCM(int number, const std::string& name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::ADPCM, InstrumentType::ADPCM, name, owner),
 	  sampNum_(0),
 	  envEnabled_(false),
 	  envNum_(0),
@@ -664,37 +472,9 @@ InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManage
 {
 }
 
-SoundSource InstrumentADPCM::getSoundSource() const
-{
-	return SoundSource::ADPCM;
-}
-
-InstrumentType InstrumentADPCM::getType() const
-{
-	return InstrumentType::ADPCM;
-}
-
 AbstractInstrument* InstrumentADPCM::clone()
 {
-	auto c = new InstrumentADPCM(number_, name_, owner_);
-	c->setSampleNumber(sampNum_);
-	c->setEnvelopeEnabled(envEnabled_);
-	c->setEnvelopeNumber(envNum_);
-	c->setArpeggioEnabled(arpEnabled_);
-	c->setArpeggioNumber(arpNum_);
-	c->setPitchEnabled(ptEnabled_);
-	c->setPitchNumber(ptNum_);
-	return c;
-}
-
-void InstrumentADPCM::setSampleNumber(int n)
-{
-	sampNum_ = n;
-}
-
-int InstrumentADPCM::getSampleNumber() const
-{
-	return sampNum_;
+	return new InstrumentADPCM(*this);
 }
 
 int InstrumentADPCM::getSampleRootKeyNumber() const
@@ -727,26 +507,6 @@ size_t InstrumentADPCM::getSampleStopAddress() const
 	return owner_->getSampleADPCMStopAddress(sampNum_);
 }
 
-void InstrumentADPCM::setEnvelopeEnabled(bool enabled)
-{
-	envEnabled_ = enabled;
-}
-
-bool InstrumentADPCM::getEnvelopeEnabled() const
-{
-	return envEnabled_;
-}
-
-void InstrumentADPCM::setEnvelopeNumber(int n)
-{
-	envNum_ = n;
-}
-
-int InstrumentADPCM::getEnvelopeNumber() const
-{
-	return envNum_;
-}
-
 std::vector<ADPCMEnvelopeUnit> InstrumentADPCM::getEnvelopeSequence() const
 {
 	return owner_->getEnvelopeADPCMSequence(envNum_);
@@ -765,26 +525,6 @@ InstrumentSequenceRelease InstrumentADPCM::getEnvelopeRelease() const
 ADPCMEnvelopeIter InstrumentADPCM::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeADPCMIterator(envNum_);
-}
-
-void InstrumentADPCM::setArpeggioEnabled(bool enabled)
-{
-	arpEnabled_ = enabled;
-}
-
-bool InstrumentADPCM::getArpeggioEnabled() const
-{
-	return arpEnabled_;
-}
-
-void InstrumentADPCM::setArpeggioNumber(int n)
-{
-	arpNum_ = n;
-}
-
-int InstrumentADPCM::getArpeggioNumber() const
-{
-	return arpNum_;
 }
 
 SequenceType InstrumentADPCM::getArpeggioType() const
@@ -810,26 +550,6 @@ InstrumentSequenceRelease InstrumentADPCM::getArpeggioRelease() const
 ArpeggioIter InstrumentADPCM::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioADPCMIterator(arpNum_);
-}
-
-void InstrumentADPCM::setPitchEnabled(bool enabled)
-{
-	ptEnabled_ = enabled;
-}
-
-bool InstrumentADPCM::getPitchEnabled() const
-{
-	return ptEnabled_;
-}
-
-void InstrumentADPCM::setPitchNumber(int n)
-{
-	ptNum_ = n;
-}
-
-int InstrumentADPCM::getPitchNumber() const
-{
-	return ptNum_;
 }
 
 SequenceType InstrumentADPCM::getPitchType() const
@@ -859,31 +579,14 @@ PitchIter InstrumentADPCM::getPitchSequenceIterator() const
 
 /****************************************/
 
-InstrumentDrumkit::InstrumentDrumkit(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, name, owner)
+InstrumentDrumkit::InstrumentDrumkit(int number, const std::string& name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::ADPCM, InstrumentType::Drumkit, name, owner)
 {
-}
-
-SoundSource InstrumentDrumkit::getSoundSource() const
-{
-	return SoundSource::ADPCM;
-}
-
-InstrumentType InstrumentDrumkit::getType() const
-{
-	return InstrumentType::Drumkit;
 }
 
 AbstractInstrument* InstrumentDrumkit::clone()
 {
-	auto c = new InstrumentDrumkit(number_, name_, owner_);
-
-	for (const auto& pair : kit_) {
-		c->setSampleEnabled(pair.first, true);
-		c->setSampleNumber(pair.first, pair.second.sampNum);
-		c->setPitch(pair.first, pair.second.pitch);
-	}
-	return c;
+	return new InstrumentDrumkit(*this);
 }
 
 std::vector<int> InstrumentDrumkit::getAssignedKeys() const

@@ -49,20 +49,6 @@ class InstrumentSSG;
 class InstrumentADPCM;
 class InstrumentDrumkit;
 
-namespace SSGWaveformType {
-enum : int
-{
-	UNSET = SSGWaveformUnit::ERR_DATA,
-	SQUARE = 0,
-	TRIANGLE = 1,
-	SAW = 2,
-	INVSAW = 3,
-	SQM_TRIANGLE = 4,
-	SQM_SAW = 5,
-	SQM_INVSAW = 6
-};
-}
-
 class InstrumentsManager
 {
 public:
