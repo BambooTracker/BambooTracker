@@ -1210,8 +1210,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				csr += 2;
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
-					csr += 2;
-					if (version < Version::toBCD(1, 5, 1)) csr += 4;
+					csr += 6;	// Skip subdata
 					if (l == 0)
 						instManLocked->setEnvelopeADPCMSequenceData(idx, 0, data);
 					else
@@ -2259,6 +2258,7 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& unit : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(0);	// Dummy set　for past format
 			}
 			auto loops = instManLocked->getEnvelopeADPCMLoopRoot(idx).getAllLoops();
 			ctr.appendUint16(static_cast<uint16_t>(loops.size()));

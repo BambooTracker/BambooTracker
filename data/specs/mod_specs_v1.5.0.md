@@ -1,5 +1,5 @@
 # BambooTracker Module File (.btm) Format Specification
-v1.5.0 - 2020-04-28
+v1.5.0 - 2020-04-28 (Modified descriptions: 2021-01-09)
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -228,10 +228,10 @@ Sequence-type data block (e.g. FM arpeggio, SSG envelope) is defined as:
 
 And repeat sequence data units.
 
-| Type   | Field        | Description                                                                                                                            |
-| ------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor. For details, see the subsection *Sequence Unit*.                     |
-| int32  | Unit subdata | Unit subdata. Only used by SSG waveform and envelope, and omitted in other sequences. For details, see the subsection *Sequence Unit*. |
+| Type   | Field        | Description                                                                                                                                                                                   |
+| ------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor. For details, see the subsection *Sequence Unit*.                                                                            |
+| int32  | Unit subdata | Unit subdata. Only used by SSG waveform, envelope and ADPCM envelope (Always 0 or -1 set in ADPCM envelope), and omitted in other sequences. For details, see the subsection *Sequence Unit*. |
 
 After sequences, loops are stored.
 

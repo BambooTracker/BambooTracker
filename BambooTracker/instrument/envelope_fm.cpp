@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,81 +25,58 @@
 
 #include "envelope_fm.hpp"
 
-constexpr EnvelopeFM::FMOperator EnvelopeFM::DEF_OP[4];
+namespace
+{
+const std::unordered_map<FMEnvelopeParameter, int> DEF_PARAMS = {
+	{ FMEnvelopeParameter::AL, 4 },
+	{ FMEnvelopeParameter::FB, 0 },
+	{ FMEnvelopeParameter::AR1, 31 },
+	{ FMEnvelopeParameter::DR1, 0 },
+	{ FMEnvelopeParameter::SR1, 0 },
+	{ FMEnvelopeParameter::RR1, 7 },
+	{ FMEnvelopeParameter::SL1, 0 },
+	{ FMEnvelopeParameter::TL1, 32 },
+	{ FMEnvelopeParameter::KS1, 0 },
+	{ FMEnvelopeParameter::ML1, 0 },
+	{ FMEnvelopeParameter::DT1, 0 },
+	{ FMEnvelopeParameter::SSGEG1, -1 },
+	{ FMEnvelopeParameter::AR2, 31 },
+	{ FMEnvelopeParameter::DR2, 0 },
+	{ FMEnvelopeParameter::SR2, 0 },
+	{ FMEnvelopeParameter::RR2, 7 },
+	{ FMEnvelopeParameter::SL2, 0 },
+	{ FMEnvelopeParameter::TL2, 0 },
+	{ FMEnvelopeParameter::KS2, 0 },
+	{ FMEnvelopeParameter::ML2, 0 },
+	{ FMEnvelopeParameter::DT2, 0 },
+	{ FMEnvelopeParameter::SSGEG2, -1 },
+	{ FMEnvelopeParameter::AR3, 31 },
+	{ FMEnvelopeParameter::DR3, 0 },
+	{ FMEnvelopeParameter::SR3, 0 },
+	{ FMEnvelopeParameter::RR3, 7 },
+	{ FMEnvelopeParameter::SL3, 0 },
+	{ FMEnvelopeParameter::TL3, 32 },
+	{ FMEnvelopeParameter::KS3, 0 },
+	{ FMEnvelopeParameter::ML3, 0 },
+	{ FMEnvelopeParameter::DT3, 0 },
+	{ FMEnvelopeParameter::SSGEG3, -1 },
+	{ FMEnvelopeParameter::AR4, 31 },
+	{ FMEnvelopeParameter::DR4, 0 },
+	{ FMEnvelopeParameter::SR4, 0 },
+	{ FMEnvelopeParameter::RR4, 7 },
+	{ FMEnvelopeParameter::SL4, 0 },
+	{ FMEnvelopeParameter::TL4, 0 },
+	{ FMEnvelopeParameter::KS4, 0 },
+	{ FMEnvelopeParameter::ML4, 0 },
+	{ FMEnvelopeParameter::DT4, 0 },
+	{ FMEnvelopeParameter::SSGEG4, -1 }
+};
+}
 
 EnvelopeFM::EnvelopeFM(int num)
 	: AbstractInstrumentProperty(num)
 {
 	clearParameters();
-	initParamMap();
-}
-
-void EnvelopeFM::initParamMap()
-{
-	paramMap_ = {
-		{ FMEnvelopeParameter::AL, al_ },
-		{ FMEnvelopeParameter::FB, fb_ },
-		{ FMEnvelopeParameter::AR1, op_[0].ar_ },
-		{ FMEnvelopeParameter::DR1, op_[0].dr_ },
-		{ FMEnvelopeParameter::SR1, op_[0].sr_ },
-		{ FMEnvelopeParameter::RR1, op_[0].rr_ },
-		{ FMEnvelopeParameter::SL1, op_[0].sl_ },
-		{ FMEnvelopeParameter::TL1, op_[0].tl_ },
-		{ FMEnvelopeParameter::KS1, op_[0].ks_ },
-		{ FMEnvelopeParameter::ML1, op_[0].ml_ },
-		{ FMEnvelopeParameter::DT1, op_[0].dt_ },
-		{ FMEnvelopeParameter::SSGEG1, op_[0].ssgeg_ },
-		{ FMEnvelopeParameter::AR2, op_[1].ar_ },
-		{ FMEnvelopeParameter::DR2, op_[1].dr_ },
-		{ FMEnvelopeParameter::SR2, op_[1].sr_ },
-		{ FMEnvelopeParameter::RR2, op_[1].rr_ },
-		{ FMEnvelopeParameter::SL2, op_[1].sl_ },
-		{ FMEnvelopeParameter::TL2, op_[1].tl_ },
-		{ FMEnvelopeParameter::KS2, op_[1].ks_ },
-		{ FMEnvelopeParameter::ML2, op_[1].ml_ },
-		{ FMEnvelopeParameter::DT2, op_[1].dt_ },
-		{ FMEnvelopeParameter::SSGEG2, op_[1].ssgeg_ },
-		{ FMEnvelopeParameter::AR3, op_[2].ar_ },
-		{ FMEnvelopeParameter::DR3, op_[2].dr_ },
-		{ FMEnvelopeParameter::SR3, op_[2].sr_ },
-		{ FMEnvelopeParameter::RR3, op_[2].rr_ },
-		{ FMEnvelopeParameter::SL3, op_[2].sl_ },
-		{ FMEnvelopeParameter::TL3, op_[2].tl_ },
-		{ FMEnvelopeParameter::KS3, op_[2].ks_ },
-		{ FMEnvelopeParameter::ML3, op_[2].ml_ },
-		{ FMEnvelopeParameter::DT3, op_[2].dt_ },
-		{ FMEnvelopeParameter::SSGEG3, op_[2].ssgeg_ },
-		{ FMEnvelopeParameter::AR4, op_[3].ar_ },
-		{ FMEnvelopeParameter::DR4, op_[3].dr_ },
-		{ FMEnvelopeParameter::SR4, op_[3].sr_ },
-		{ FMEnvelopeParameter::RR4, op_[3].rr_ },
-		{ FMEnvelopeParameter::SL4, op_[3].sl_ },
-		{ FMEnvelopeParameter::TL4, op_[3].tl_ },
-		{ FMEnvelopeParameter::KS4, op_[3].ks_ },
-		{ FMEnvelopeParameter::ML4, op_[3].ml_ },
-		{ FMEnvelopeParameter::DT4, op_[3].dt_ },
-		{ FMEnvelopeParameter::SSGEG4, op_[3].ssgeg_ }
-	};
-}
-
-EnvelopeFM::EnvelopeFM(const EnvelopeFM& other)
-	: AbstractInstrumentProperty(other)
-{
-	al_ = other.al_;
-	fb_ = other.fb_;
-
-	for (int i = 0; i < 4; ++i)
-		op_[i] = other.op_[i];
-
-	initParamMap();
-}
-
-bool operator==(const EnvelopeFM& a, const EnvelopeFM& b) {
-	if (a.al_ != b.al_ || a.fb_ != b.fb_) return false;
-	for (int i = 0; i< 4; ++i) {
-		if (a.op_[0] != b.op_[0]) return false;
-	}
-	return true;
 }
 
 std::unique_ptr<EnvelopeFM> EnvelopeFM::clone()
@@ -111,48 +88,31 @@ std::unique_ptr<EnvelopeFM> EnvelopeFM::clone()
 
 bool EnvelopeFM::getOperatorEnabled(int num) const
 {
-	return op_[num].enabled_;
+	return isEnabledOp_.test(num);
 }
 
 void EnvelopeFM::setOperatorEnabled(int num, bool enabled)
 {
-	op_[num].enabled_ = enabled;
+	isEnabledOp_.set(num, enabled);
 }
 
 int EnvelopeFM::getParameterValue(FMEnvelopeParameter param) const
 {
-	return paramMap_.at(param);
+	return params_.at(param);
 }
 
 void EnvelopeFM::setParameterValue(FMEnvelopeParameter param, int value)
 {
-	paramMap_.at(param) = value;
+	params_.at(param) = value;
 }
 
 bool EnvelopeFM::isEdited() const
 {
-	if (al_ != DEF_AL || fb_ != DEF_FB) return true;
-	for (int i = 0; i < 4; ++i) {
-		if (op_[i].enabled_ != DEF_OP[i].enabled_
-				|| op_[i].ar_ != DEF_OP[i].ar_
-				|| op_[i].dr_ != DEF_OP[i].dr_
-				|| op_[i].sr_ != DEF_OP[i].sr_
-				|| op_[i].rr_ != DEF_OP[i].rr_
-				|| op_[i].sl_ != DEF_OP[i].sl_
-				|| op_[i].tl_ != DEF_OP[i].tl_
-				|| op_[i].ks_ != DEF_OP[i].ks_
-				|| op_[i].ml_ != DEF_OP[i].ml_
-				|| op_[i].dt_ != DEF_OP[i].dt_)
-			return true;
-	}
-	return false;
+	return (params_ != DEF_PARAMS || !isEnabledOp_.all());
 }
 
 void EnvelopeFM::clearParameters()
 {
-	al_ = DEF_AL;
-	fb_ = DEF_FB;
-	for (int i = 0; i < 4; ++i) {
-		op_[i] = DEF_OP[i];
-	}
+	params_ = DEF_PARAMS;
+	isEnabledOp_.set();
 }

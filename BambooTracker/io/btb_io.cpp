@@ -739,6 +739,7 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& unit : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(0);	// Dummy set　for past format
 			}
 			auto loops = instMan.lock()->getEnvelopeADPCMLoopRoot(idx).getAllLoops();
 			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
@@ -1726,8 +1727,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 					envCsr += 2;
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = propCtr.readUint16(envCsr);
-						envCsr += 2;
-						if (bankVersion < Version::toBCD(1, 2, 1)) envCsr += 4;
+						envCsr += 6;	// Skip subdata
 						if (l == 0)
 							instManLocked->setEnvelopeADPCMSequenceData(envNum, 0, data);
 						else

@@ -1494,8 +1494,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					csr += 2;
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
-						csr += 2;
-						if (fileVersion < Version::toBCD(1, 4, 1)) csr += 4;
+						csr += 6;	// Skip subdata
 						if (l == 0)
 							instManLocked->setEnvelopeADPCMSequenceData(idx, 0, data);
 						else
@@ -2271,6 +2270,7 @@ void BtiIO::save(BinaryContainer& ctr,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& unit : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(0);	// Dummy set　for past format
 			}
 			auto loops = instManLocked->getEnvelopeADPCMLoopRoot(envNum).getAllLoops();
 			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
