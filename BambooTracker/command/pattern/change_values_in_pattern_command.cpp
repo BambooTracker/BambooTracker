@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,6 +25,7 @@
 
 #include "change_values_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
+#include "opna_defs.hpp"
 #include "misc.hpp"
 
 ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(

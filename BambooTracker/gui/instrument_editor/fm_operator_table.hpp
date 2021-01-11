@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,7 +39,6 @@
 #include "gui/labeled_vertical_slider.hpp"
 #include "gui/color_palette.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
 namespace Ui {
 	class FMOperatorTable;
@@ -94,9 +93,6 @@ private:
 	std::vector<QString> envelopeTypes_;
 	bool isDTNegative_;
 	bool isIgnoreEvent_;
-
-	static const int DT_SIGN_TBL_[8];
-	static const int DT_UNSIGN_TBL_[7];
 
 	// Envelope graph
 	QPixmap envmap_;

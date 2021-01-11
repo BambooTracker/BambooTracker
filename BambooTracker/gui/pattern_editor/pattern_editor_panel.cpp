@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,10 +43,13 @@
 #include <QRegularExpressionMatch>
 #include <QMetaMethod>
 #include <QIcon>
+#include "midi/midi.hpp"
+#include "command/pattern/set_effect_value_to_step_command.hpp"
+#include "jamming.hpp"
+#include "note.hpp"
+#include "opna_defs.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
-#include "midi/midi.hpp"
-#include "jamming.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_utils.hpp"
@@ -3225,7 +3228,7 @@ void PatternEditorPanel::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	if (!bt_->isJamMode()) {
 		bool release = ((status & 0xf0) == 0x80) || velocity == 0;
 		if (!release) {
-			std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
+			std::pair<int, Note> octaveAndNote = note_utils::noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
 			setStepKeyOn(octaveAndNote.second, octaveAndNote.first);
 		}
 	}

@@ -86,7 +86,6 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
-    calc_pitch.cpp \
     chip/c86ctl/c86ctl_wrapper.cpp \
     chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
@@ -152,6 +151,7 @@ SOURCES += \
     chip/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
+    note.cpp \
     playback.cpp \
     song_length_calculator.cpp \
     audio/audio_stream.cpp \
@@ -250,7 +250,6 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
-    calc_pitch.hpp \
     chip/codec/ymb_codec.hpp \
     chip/c86ctl/c86ctl.h \
     chip/c86ctl/c86ctl_wrapper.hpp \
@@ -328,6 +327,8 @@ HEADERS += \
     io/y12_io.hpp \
     jamming.hpp \
     module/effect.hpp \
+    note.hpp \
+    opna_defs.hpp \
     playback.hpp \
     song_length_calculator.hpp \
     audio/audio_stream.hpp \

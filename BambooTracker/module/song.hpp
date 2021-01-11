@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,7 +30,12 @@
 #include <string>
 #include <unordered_map>
 #include "track.hpp"
-#include "misc.hpp"
+
+enum class SongType
+{
+	Standard,
+	FM3chExpanded
+};
 
 struct SongStyle
 {
@@ -102,6 +107,15 @@ public:
 	Bookmark getPreviousBookmark(int order, int step) const;
 	Bookmark getNextBookmark(int order, int step) const;
 	size_t getBookmarkSize() const;
+
+	inline static size_t getFMChannelCount(SongType type)
+	{
+		switch (type) {
+		case SongType::Standard:		return 6;
+		case SongType::FM3chExpanded:	return 9;
+		default:	throw std::invalid_argument("Invalid SongType.");
+		}
+	}
 
 private:
 	int num_;

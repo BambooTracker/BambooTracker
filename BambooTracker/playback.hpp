@@ -32,6 +32,7 @@
 #include "module.hpp"
 #include "effect.hpp"
 #include "enum_hash.hpp"
+#include "opna_defs.hpp"
 
 class OPNAController;
 class InstrumentsManager;

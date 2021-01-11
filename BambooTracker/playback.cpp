@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@
 #include "opna_controller.hpp"
 #include "instruments_manager.hpp"
 #include "tick_counter.hpp"
-#include "misc.hpp"
+#include "note.hpp"
 
 namespace
 {
@@ -75,7 +75,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 
 	/* opna mode is changed in BambooTracker class */
 
-	size_t fmch = getFMChannelCount(songStyle_.type);
+	size_t fmch = Song::getFMChannelCount(songStyle_.type);
 	isNoteDelay_[SoundSource::FM] = std::vector<bool>(fmch);
 	keyOnBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
 	stepBeginBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
@@ -488,7 +488,7 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 		break;
 	default:	// Key on
 	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
+		std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(noteNum);
 		opnaCtrl_->keyOnFM(ch, octNote.second, octNote.first, 0);
 		break;
 	}
@@ -541,7 +541,7 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 		break;
 	default:	// Key on
 	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
+		std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(noteNum);
 		opnaCtrl_->keyOnSSG(ch, octNote.second, octNote.first, 0);
 		break;
 	}
@@ -626,7 +626,7 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 		break;
 	default:	// Key on
 	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
+		std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(noteNum);
 		opnaCtrl_->keyOnADPCM(octNote.second, octNote.first, 0);
 		break;
 	}
@@ -1567,7 +1567,7 @@ void PlaybackManager::setChannelRetrieving(bool enabled)
 
 void PlaybackManager::retrieveChannelStates()
 {
-	size_t fmch = getFMChannelCount(songStyle_.type);
+	size_t fmch = Song::getFMChannelCount(songStyle_.type);
 
 	std::vector<int> tonesCntFM(fmch), tonesCntSSG(3);
 	int tonesCntADPCM = 0;
@@ -2160,7 +2160,7 @@ void PlaybackManager::retrieveChannelStates()
 	for (size_t ch = 0; ch < fmch; ++ch) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (toneFM.at(ch).at(i) >= 0) {
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[ch][i]);
+				std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(toneFM[ch][i]);
 				opnaCtrl_->updateEchoBufferFM(static_cast<int>(ch), octNote.first, octNote.second, 0);
 			}
 		}
@@ -2169,7 +2169,7 @@ void PlaybackManager::retrieveChannelStates()
 	for (size_t ch = 0; ch < 3; ++ch) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (toneSSG.at(ch).at(i) >= 0) {
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[ch][i]);
+				std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(toneSSG[ch][i]);
 				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(ch), octNote.first, octNote.second, 0);
 			}
 		}
@@ -2177,7 +2177,7 @@ void PlaybackManager::retrieveChannelStates()
 	}
 	for (size_t i = 0; i < 3; ++i) {
 		if (toneADPCM.at(i) >= 0) {
-			std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneADPCM[i]);
+			std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(toneADPCM[i]);
 			opnaCtrl_->updateEchoBufferADPCM(octNote.first, octNote.second, 0);
 		}
 	}

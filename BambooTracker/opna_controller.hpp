@@ -29,13 +29,16 @@
 #include <memory>
 #include <unordered_map>
 #include <deque>
+#include "song.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
 #include "chip/opna.hpp"
 #include "chip/scci/scci.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
+#include "opna_defs.hpp"
+
+enum class Note;
 
 struct ToneDetail
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -49,7 +49,6 @@
 #include "song.hpp"
 #include "gui/pattern_editor/pattern_position.hpp"
 #include "gui/color_palette.hpp"
-#include "misc.hpp"
 
 class PatternEditorPanel : public QWidget
 {

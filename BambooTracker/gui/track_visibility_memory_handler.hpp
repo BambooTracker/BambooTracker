@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,20 +27,13 @@
 #define TRACK_VISIBILITY_MEMORY_HANDLER_HPP
 
 #include <vector>
-#include <QString>
-#include "misc.hpp"
 
-class TrackVisibilityMemoryHandler
+enum class SongType;
+
+namespace io
 {
-public:
-	static bool saveTrackVisibilityMemory(const SongType type, const std::vector<int>& visTracks);
-	static bool loadTrackVisibilityMemory(SongType& type, std::vector<int>& visTracks);
-
-private:
-	const static QString ORGANIZATION_;
-	const static QString FILE_;
-
-	TrackVisibilityMemoryHandler();
-};
+bool saveTrackVisibilityMemory(const SongType type, const std::vector<int>& visTracks);
+bool loadTrackVisibilityMemory(SongType& type, std::vector<int>& visTracks);
+}
 
 #endif // TRACK_VISIBILITY_MEMORY_HANDLER_HPP

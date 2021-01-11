@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,30 +23,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef EFFECT_LIST_DIALOG_HPP
-#define EFFECT_LIST_DIALOG_HPP
+#pragma once
 
-#include <QDialog>
-#include <unordered_set>
-#include "effect.hpp"
-#include "enum_hash.hpp"
-
-namespace Ui {
-	class EffectListDialog;
-}
-
-class EffectListDialog : public QDialog
+enum class SoundSource : int
 {
-	Q_OBJECT
-
-public:
-	explicit EffectListDialog(QWidget *parent = nullptr);
-	~EffectListDialog();
-
-private:
-	Ui::EffectListDialog *ui;
-
-	void addRow(EffectType effect, std::unordered_set<SoundSource> types);
+	FM = 1,
+	SSG = 2,
+	RHYTHM = 4,
+	ADPCM = 8
 };
 
-#endif // EFFECT_LIST_DIALOG_HPP
+constexpr int NSTEP_FM_VOLUME = 0x80;
+constexpr int NSTEP_SSG_VOLUME = 0x10;
+constexpr int NSTEP_RHYTHM_VOLUME = 0x20;
+constexpr int NSTEP_ADPCM_VOLUME = 0x100;

@@ -24,7 +24,7 @@
  */
 
 #include "effect_iterator.hpp"
-#include "calc_pitch.hpp"
+#include "note.hpp"
 #include <cstddef>
 
 namespace
@@ -128,7 +128,7 @@ NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
 	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0),
 	  started_(false)
 {
-	int d = seminote * calc_pitch::SEMINOTE_PITCH;
+	int d = seminote * note_utils::SEMINOTE_PITCH;
 	if (speed) {
 		int prev = 0;
 		for (int i = 0; i <= speed; ++i) {

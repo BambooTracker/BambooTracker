@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,9 +31,6 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_drumkit_form.hpp"
-#include "misc.hpp"
-
-InstrumentFormManager::InstrumentFormManager() {}
 
 void InstrumentFormManager::updateByConfiguration()
 {

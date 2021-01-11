@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,17 +26,41 @@
 #pragma once
 
 #include <cstdint>
-#include "misc.hpp"
+#include <utility>
 
-namespace calc_pitch
+enum class Note : int
 {
-enum : int { SEMINOTE_PITCH = 32 };
+	C	= 0,
+	CS	= 32,
+	D	= 64,
+	DS	= 96,
+	E	= 128,
+	F	= 160,
+	FS	= 192,
+	G	= 224,
+	GS	= 256,
+	A	= 288,
+	AS	= 320,
+	B	= 352
+};
 
-uint16_t calculateFNumber(Note note, int octave, int calc_pitch, int finePitch);
-uint16_t calculateSSGSquareTP(Note note, int octave, int calc_pitch, int finePitch);
+namespace note_utils
+{
+std::pair<int, Note> noteNumberToOctaveAndNote(int num);
+int octaveAndNoteToNoteNumber(int octave, Note note);
+
+constexpr int SEMINOTE_PITCH = 32;
+
+inline int octaveAndNoteToPitch(int octave, Note note)
+{
+	return octaveAndNoteToNoteNumber(octave, note) * SEMINOTE_PITCH;
+}
+
+uint16_t calculateFNumber(Note note, int octave, int note_utils, int finePitch);
+uint16_t calculateSSGSquareTP(Note note, int octave, int note_utils, int finePitch);
 uint16_t calculateSSGSquareTP(int n);
-uint16_t calculateSSGTriangleEP(Note note, int octave, int calc_pitch, int finePitch);
-uint16_t calculateSSGSawEP(Note note, int octave, int calc_pitch, int finePitch);
+uint16_t calculateSSGTriangleEP(Note note, int octave, int note_utils, int finePitch);
+uint16_t calculateSSGSawEP(Note note, int octave, int note_utils, int finePitch);
 
-int calculatePitchIndex(int octave, Note note, int calc_pitch);
-}	// namespace calc_pitch
+int calculatePitchIndex(int octave, Note note, int note_utils);
+}

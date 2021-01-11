@@ -34,7 +34,7 @@
 #include "sequence_property.hpp"
 #include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
+#include "opna_defs.hpp"
 
 class InstrumentsManager;
 

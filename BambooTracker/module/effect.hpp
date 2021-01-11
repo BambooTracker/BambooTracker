@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +27,7 @@
 
 #include <string>
 #include "step.hpp"
-#include "misc.hpp"
+#include "opna_defs.hpp"
 
 enum class EffectType
 {
@@ -43,9 +43,6 @@ struct Effect
 {
 	EffectType type;
 	int value;
-
-	static EffectType toEffectType(SoundSource src, std::string id);
-		static Effect makeEffectData(SoundSource src, std::string id, int value);
 };
 
 namespace effect_utils

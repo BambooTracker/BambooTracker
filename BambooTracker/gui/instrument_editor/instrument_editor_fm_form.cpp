@@ -41,7 +41,6 @@
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
-#include "misc.hpp"
 #include "gui/gui_utils.hpp"
 
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,14 +26,22 @@
 #include "configuration_handler.hpp"
 #include <vector>
 #include <unordered_map>
+#include <QString>
+#include <QSettings>
+#include "configuration.hpp"
 #include "jamming.hpp"
-#include"enum_hash.hpp"
+#include "enum_hash.hpp"
+#include "gui/gui_utils.hpp"
 
+namespace io
+{
+namespace
+{
 // config path (*nix): ~/.config/<organization>/<application>.ini
-const QString ConfigurationHandler::ORGANIZATION_ = "BambooTracker";
-const QString ConfigurationHandler::APPLICATION_ = "BambooTracker";
+const QString ORG_NAME = "BambooTracker";
+const QString APP_NAME = "BambooTracker";
 
-const std::unordered_map<Configuration::ShortcutAction, QString> ConfigurationHandler::SHORTCUTS_NAME_MAP_ = {
+const std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP = {
 	{ Configuration::KeyOff, "keyOff" },
 	{ Configuration::OctaveUp, "octaveUp" },
 	{ Configuration::OctaveDown, "octaveDown" },
@@ -105,7 +113,7 @@ const std::unordered_map<Configuration::ShortcutAction, QString> ConfigurationHa
 	{ Configuration::JamVolumeDown, "jamVolumeDown" }
 };
 
-const std::unordered_map<JamKey, QString> ConfigurationHandler::JAM_KEY_NAME_MAP_ = {
+const std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP = {
 	{JamKey::LowC,     "lowC"},
 	{JamKey::LowCS,    "lowCS"},
 	{JamKey::LowD,     "lowD"},
@@ -138,13 +146,12 @@ const std::unordered_map<JamKey, QString> ConfigurationHandler::JAM_KEY_NAME_MAP
 	{JamKey::HighCS2, "highHighCS"},
 	{JamKey::HighD2,  "highHighD"}
 };
+}
 
-ConfigurationHandler::ConfigurationHandler() {}
-
-bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config)
+bool saveConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ConfigurationHandler::ORGANIZATION_, ConfigurationHandler::APPLICATION_);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, APP_NAME);
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //
@@ -226,11 +233,11 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		// Keys
 		settings.beginGroup("Keys");
 		for (const auto& pair : configLocked->getShortcuts()) {
-			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP_.at(pair.first), gui_utils::utf8ToQString(pair.second));
+			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP.at(pair.first), gui_utils::utf8ToQString(pair.second));
 		}
 		settings.setValue("noteEntryLayout", static_cast<int>(configLocked->getNoteEntryLayout()));
 		for (const auto& pair : configLocked->getCustomLayoutKeys()) {
-			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP_.at(pair.second), gui_utils::utf8ToQString(pair.first));
+			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP.at(pair.second), gui_utils::utf8ToQString(pair.first));
 		}
 		settings.endGroup();
 
@@ -290,10 +297,10 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 	}
 }
 
-bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config)
+bool loadConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ConfigurationHandler::ORGANIZATION_, ConfigurationHandler::APPLICATION_);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, APP_NAME);
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //
@@ -387,7 +394,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		// Keys
 		settings.beginGroup("Keys");
 		std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
-		for (const auto& pair : SHORTCUTS_NAME_MAP_) {
+		for (const auto& pair : SHORTCUTS_NAME_MAP) {
 			std::string def = configLocked->getShortcuts().at(pair.first);
 			shortcuts[pair.first] = settings.value("shortcut_" + pair.second, gui_utils::utf8ToQString(def)).toString().toUtf8().toStdString();
 		}
@@ -396,7 +403,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 											 settings.value("noteEntryLayout",
 															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
 		std::unordered_map<std::string, JamKey> customLayoutNewKeys;
-		for (const auto& pair : JAM_KEY_NAME_MAP_) {
+		for (const auto& pair : JAM_KEY_NAME_MAP) {
 			JamKey currentlyWantedJamKey = pair.first;
 			customLayoutNewKeys[
 					settings.value("customLayout_" + pair.second,
@@ -472,4 +479,5 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 	} catch (...) {
 		return false;
 	}
+}
 }

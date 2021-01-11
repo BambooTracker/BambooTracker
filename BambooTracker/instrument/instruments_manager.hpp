@@ -37,7 +37,6 @@
 #include "sequence_property.hpp"
 #include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
 enum class InstrumentType;
 class AbstractInstrument;

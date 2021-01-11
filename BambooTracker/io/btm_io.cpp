@@ -26,7 +26,7 @@
 #include "btm_io.hpp"
 #include "file_io_error.hpp"
 #include "version.hpp"
-#include "calc_pitch.hpp"
+#include "note.hpp"
 #include "effect.hpp"
 #include "io_utils.hpp"
 
@@ -828,7 +828,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 						subdata = ctr.readUint16(csr);
 						csr += 2;
 						if (subdata != -1)
-							subdata = calc_pitch::calculateSSGSquareTP(subdata);
+							subdata = note_utils::calculateSSGSquareTP(subdata);
 					}
 					SSGWaveformUnit unit;
 					switch (data) {

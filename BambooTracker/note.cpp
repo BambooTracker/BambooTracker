@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,10 +23,36 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "calc_pitch.hpp"
+#include "note.hpp"
+#include <algorithm>
+#include "misc.hpp"
 
-namespace calc_pitch
+namespace note_utils
 {
+namespace
+{
+constexpr Note NOTE_NUM_CONV[12] = {
+	Note::C, Note::CS, Note::D, Note::DS, Note::E, Note::F,
+	Note::FS, Note::G, Note::GS, Note::A, Note::AS, Note::B
+};
+}
+
+std::pair<int, Note> noteNumberToOctaveAndNote(int num)
+{
+	if (num < 0) return std::make_pair(0, Note::C);
+
+	int oct = num / 12;
+	if (oct > 7) return std::make_pair(7, Note::B);
+
+	return std::make_pair(oct, NOTE_NUM_CONV[num % 12]);
+}
+
+int octaveAndNoteToNoteNumber(int octave, Note note)
+{
+	auto&& it = std::find(std::begin(NOTE_NUM_CONV), std::end(NOTE_NUM_CONV), note);
+	return 12 * octave + std::distance(std::begin(NOTE_NUM_CONV), it);
+}
+
 namespace
 {
 const uint16_t centTableFM[3072] = {

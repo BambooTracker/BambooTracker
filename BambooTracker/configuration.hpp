@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,14 +31,29 @@
 #include <unordered_map>
 #include <vector>
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
 enum class JamKey : int;
+
+enum class FMEnvelopeTextType : int
+{
+	Skip, AL, FB,
+	AR1, DR1, SR1, RR1, SL1, TL1, KS1, ML1, DT1,
+	AR2, DR2, SR2, RR2, SL2, TL2, KS2, ML2, DT2,
+	AR3, DR3, SR3, RR3, SL3, TL3, KS3, ML3, DT3,
+	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4
+};
 
 struct FMEnvelopeText
 {
 	std::string name;
 	std::vector<FMEnvelopeTextType> texts;
+};
+
+enum class RealChipInterface
+{
+	NONE = 0,
+	SCCI = 1,
+	C86CTL = 2
 };
 
 class Configuration

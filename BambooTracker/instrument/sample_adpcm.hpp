@@ -28,6 +28,7 @@
 #include <vector>
 #include <cstdint>
 #include <memory>
+#include <cmath>
 #include "abstract_instrument_property.hpp"
 
 class SampleADPCM : public AbstractInstrumentProperty
@@ -59,6 +60,11 @@ public:
 	void clearParameters() override;
 
 	static constexpr int DEF_ROOT_KEY = 60;	// C5
+
+	inline static int calcADPCMDeltaN(unsigned int rate)
+	{
+		return static_cast<int>(std::round((rate << 16) / 55500.));
+	}
 
 private:
 	int rootKeyNum_, rootDeltaN_;

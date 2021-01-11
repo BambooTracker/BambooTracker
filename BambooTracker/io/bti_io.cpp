@@ -31,7 +31,7 @@
 #include "enum_hash.hpp"
 #include "version.hpp"
 #include "file_io_error.hpp"
-#include "calc_pitch.hpp"
+#include "note.hpp"
 #include "io_utils.hpp"
 
 namespace io
@@ -1101,7 +1101,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 							subdata = ctr.readUint16(csr);
 							csr += 2;
 							if (subdata != -1)
-								subdata = calc_pitch::calculateSSGSquareTP(subdata);
+								subdata = note_utils::calculateSSGSquareTP(subdata);
 						}
 						SSGWaveformUnit unit;
 						switch (data) {

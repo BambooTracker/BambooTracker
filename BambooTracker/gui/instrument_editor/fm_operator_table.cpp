@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,8 +31,11 @@
 #include <QClipboard>
 #include "gui/event_guard.hpp"
 
-const int FMOperatorTable::DT_SIGN_TBL_[8] = { 0, 1, 2, 3, 0, -1, -2, -3 };
-const int FMOperatorTable::DT_UNSIGN_TBL_[7] = { 7, 6, 5, 0, 1, 2, 3 };
+namespace
+{
+constexpr int DT_SIGN_TBL_[8] = { 0, 1, 2, 3, 0, -1, -2, -3 };
+constexpr int DT_UNSIGN_TBL_[7] = { 7, 6, 5, 0, 1, 2, 3 };
+}
 
 FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	QFrame(parent),

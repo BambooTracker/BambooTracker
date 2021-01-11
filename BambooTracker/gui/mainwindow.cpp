@@ -762,7 +762,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	SongType memSongType;
 	std::vector<int> visTracks;
 	if (config.lock()->getRestoreTrackVisibility()
-			&& TrackVisibilityMemoryHandler::loadTrackVisibilityMemory(memSongType, visTracks)) {
+			&& io::loadTrackVisibilityMemory(memSongType, visTracks)) {
 		SongType songType = bt_->getSongStyle(bt_->getCurrentSongNumber()).type;
 		visTracks = gui_utils::adaptVisibleTrackList(visTracks, songType, songType);
 	}
@@ -1111,7 +1111,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	instForms_->closeAll();
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
-	TrackVisibilityMemoryHandler::saveTrackVisibilityMemory(
+	io::saveTrackVisibilityMemory(
 				bt_->getSongStyle(bt_->getCurrentSongNumber()).type,
 				ui->patternEditor->getVisibleTracks());
 
@@ -2989,7 +2989,7 @@ void MainWindow::on_actionConfiguration_triggered()
 
 	if (diag.exec() == QDialog::Accepted) {
 		changeConfiguration();
-		ConfigurationHandler::saveConfiguration(config_.lock());
+		io::saveConfiguration(config_.lock());
 		ColorPaletteHandler::savePalette(palette_.get());
 	}
 }

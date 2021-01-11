@@ -30,11 +30,10 @@
 #include <utility>
 #include <stdexcept>
 #include "gui/event_guard.hpp"
-#include "calc_pitch.hpp"
+#include "note.hpp"
 #include "sequence_property.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
-#include "misc.hpp"
 #include "gui/gui_utils.hpp"
 
 namespace

@@ -49,9 +49,11 @@
 #include "io/wav_container.hpp"
 #include "io/export_io.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
+#include "opna_defs.hpp"
 
 class AbstractBank;
+enum class EffectDisplayControl;
+enum class Note;
 
 class BambooTracker
 {

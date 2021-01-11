@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,6 +48,19 @@
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "color_palette_handler.hpp"
 #include "gui_utils.hpp"
+
+namespace
+{
+inline Qt::CheckState toCheckState(bool enabled)
+{
+	return enabled ? Qt::Checked : Qt::Unchecked;
+}
+
+inline bool fromCheckState(Qt::CheckState state)
+{
+	return (state == Qt::Checked) ? true : false;
+}
+}
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
 										 std::weak_ptr<const AudioStream> stream, QWidget *parent)

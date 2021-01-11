@@ -27,7 +27,6 @@
 #include <cmath>
 #include <memory>
 #include "file_io_error.hpp"
-#include "misc.hpp"
 
 namespace io
 {

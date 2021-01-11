@@ -35,7 +35,9 @@
 #include "io/instrument_io.hpp"
 #include "io/bank_io.hpp"
 #include "bank.hpp"
+#include "note.hpp"
 #include "song_length_calculator.hpp"
+#include "opna_defs.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
@@ -1098,7 +1100,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 													: GrooveState::ValidByGlobal);
 
 	std::unordered_map<SoundSource, int> pairs = {
-		{ SoundSource::FM, getFMChannelCount(songStyle_.type) },
+		{ SoundSource::FM, Song::getFMChannelCount(songStyle_.type) },
 		{ SoundSource::SSG, 3 },
 		{ SoundSource::RHYTHM, 6 },
 		{ SoundSource::ADPCM, 1 },
@@ -1165,7 +1167,7 @@ bool BambooTracker::isJamMode() const
 
 void BambooTracker::jamKeyOn(JamKey key, bool volumeSet)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
+	int keyNum = note_utils::octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOn(key, keyNum, attrib, volumeSet);
 }
@@ -1178,7 +1180,7 @@ void BambooTracker::jamKeyOn(int keyNum, bool volumeSet)
 
 void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
+	int keyNum = note_utils::octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
 		funcJamKeyOn(key, keyNum, attrib, volumeSet, inst);
@@ -1249,7 +1251,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		Note note;
 		int octave, pitch;
 		if (key == JamKey::MidiKey) {
-			auto octNote = noteNumberToOctaveAndNote(onInfo.keyNum);
+			auto octNote = note_utils::noteNumberToOctaveAndNote(onInfo.keyNum);
 			note = octNote.second;
 			octave = octNote.first;
 		}
@@ -1306,7 +1308,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
+	int keyNum = note_utils::octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOff(key, keyNum, attrib);
 }
@@ -1319,7 +1321,7 @@ void BambooTracker::jamKeyOff(int keyNum)
 
 void BambooTracker::jamKeyOffForced(JamKey key, SoundSource src)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
+	int keyNum = note_utils::octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
 		funcJamKeyOff(key, keyNum, attrib);
@@ -2364,7 +2366,7 @@ int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, in
 
 void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool instMask, bool volMask)
 {
-	int nn = octaveAndNoteToNoteNumber(octave, note);
+	int nn = note_utils::octaveAndNoteToNoteNumber(octave, note);
 	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source;
 
 	int in = -1;

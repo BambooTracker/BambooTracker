@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "ui_fm_envelope_set_edit_dialog.h"
 #include <QTreeWidgetItem>
+#include "configuration.hpp"
 
 FMEnvelopeSetEditDialog::FMEnvelopeSetEditDialog(std::vector<FMEnvelopeTextType> set, QWidget *parent) :
 	QDialog(parent),

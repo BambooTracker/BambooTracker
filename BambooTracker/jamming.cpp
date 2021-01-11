@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,6 +28,7 @@
 #include <numeric>
 #include <functional>
 #include <stdexcept>
+#include "note.hpp"
 
 namespace jam_utils
 {
@@ -128,23 +129,6 @@ int calculateJamKeyOctave(int baseOctave, JamKey &key)
 JamManager::JamManager()
 	: isJamMode_(true), isPoly_(true)
 {
-	reset();
-}
-
-bool JamManager::toggleJamMode()
-{
-	isJamMode_ = !isJamMode_;
-	return isJamMode_;
-}
-
-bool JamManager::isJamMode() const noexcept
-{
-	return isJamMode_;
-}
-
-void JamManager::polyphonic(bool flag)
-{
-	isPoly_ = flag;
 	reset();
 }
 

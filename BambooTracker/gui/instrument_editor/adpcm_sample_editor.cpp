@@ -50,6 +50,7 @@
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
+#include "misc.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
@@ -368,7 +369,7 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
 	ui->rootKeyComboBox->setCurrentIndex(SampleADPCM::DEF_ROOT_KEY % 12);
 	ui->rootKeySpinBox->setValue(SampleADPCM::DEF_ROOT_KEY / 12);
-	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
+	ui->rootRateSpinBox->setValue(SampleADPCM::calcADPCMDeltaN(wav->getSampleRate()));
 
 	emit modified();
 	emit sampleAssignRequested();

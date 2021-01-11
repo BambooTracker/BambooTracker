@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +27,7 @@
 
 #include <cstdint>
 #include <string>
-#include "misc.hpp"
+#include <stdexcept>
 
 class Version
 {
@@ -68,9 +68,12 @@ private:
 	static constexpr unsigned int bankFileMinor		= 2;
 	static constexpr unsigned int bankFileRevision	= 0;
 
-	Version() {}
+	Version() = default;
+
+	static uint8_t uitobcd(const uint8_t v);
 };
 
+//===============================================
 inline uint32_t Version::ofApplicationInBCD()
 {
 	return toBCD(appMajor, appMinor, appRevision);
@@ -122,4 +125,13 @@ inline uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned 
 inline std::string Version::toString(unsigned int major, unsigned int minor, unsigned int revision)
 {
 	return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(revision);
+}
+
+inline uint8_t Version::uitobcd(const uint8_t v)
+{
+	if (v > 99) throw std::out_of_range("Out of range.");
+
+	uint8_t high = v / 10;
+	uint8_t low = v % 10;
+	return static_cast<uint8_t>(high << 4) + low;
 }
