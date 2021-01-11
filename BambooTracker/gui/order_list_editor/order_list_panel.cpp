@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1116,9 +1116,9 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	paste->setShortcutVisibleInContextMenu(true);
 #endif
 	auto shortcuts = config_->getShortcuts();
-	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
-	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
-	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
+	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DuplicateOrder)));
+	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ClonePatterns)));
+	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CloneOrder)));
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 

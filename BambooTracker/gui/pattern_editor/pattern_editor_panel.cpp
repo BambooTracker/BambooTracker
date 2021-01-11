@@ -1863,7 +1863,7 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1877,7 +1877,7 @@ void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1891,7 +1891,7 @@ void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursor
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1905,7 +1905,7 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1950,7 +1950,7 @@ PatternPosition PatternEditorPanel::getPasteLeftAbovePosition(
 {
 	PatternPosition pos;
 	Configuration::PasteMode mode = config_->getPasteMode();
-	if ((mode == Configuration::SELECTION || mode == Configuration::FILL)
+	if ((mode == Configuration::PasteMode::Selection || mode == Configuration::PasteMode::Fill)
 			&& selLeftAbovePos_.colInTrack != -1) {
 		pos = selLeftAbovePos_;
 		pos.colInTrack = pasteCol;
@@ -2226,28 +2226,28 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
-	pasteMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteMix)));
-	pasteOver->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
-	pasteIns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
+	pasteMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteMix)));
+	pasteOver->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteOverwrite)));
+	pasteIns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteInsert)));
 	erase->setShortcut(QKeySequence(Qt::Key_Delete));
-	select->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectAll)));
-	interpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	reverse->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Reverse)));
-	replace->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
-	expand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
-	shrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
-	deNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
-	inNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
-	deOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
-	inOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	fdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
-	finVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
-	cdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
-	cinVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
-	toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-	solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
-	exeff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	sheff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	select->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectAll)));
+	interpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Interpolate)));
+	reverse->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Reverse)));
+	replace->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ReplaceInstrument)));
+	expand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandPattern)));
+	shrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkPattern)));
+	deNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseNote)));
+	inNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseNote)));
+	deOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseOctave)));
+	inOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseOctave)));
+	fdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FineDecreaseValues)));
+	finVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FineIncreaseValues)));
+	cdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CoarseDecreaseValues)));
+	cinVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CoarseIncreaseValuse)));
+	toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleTrack)));
+	solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SoloTrack)));
+	exeff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandEffect)));
+	sheff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkEffect)));
 
 	if (bt_->isJamMode() || pos.order < 0 || pos.trackVisIdx < 0) {
 		copy->setEnabled(false);
@@ -2384,14 +2384,14 @@ void PatternEditorPanel::onShortcutUpdated()
 {
 	auto shortcuts = config_->getShortcuts();
 
-	hlUpSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevHighlighted)));
-	hlUpWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::PrevHighlighted)));
-	hlDnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextHighlighted)));
-	hlDnWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::NextHighlighted)));
-	keyOffSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::KeyOff)));
-	echoBufSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
-	expandColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	shrinkColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	hlUpSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PrevHighlighted)));
+	hlUpWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::ShortcutAction::PrevHighlighted)));
+	hlDnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::NextHighlighted)));
+	hlDnWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::ShortcutAction::NextHighlighted)));
+	keyOffSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::KeyOff)));
+	echoBufSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::EchoBuffer)));
+	expandColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandEffect)));
+	shrinkColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkEffect)));
 }
 
 void PatternEditorPanel::setPatternHighlight1Count(int count)
@@ -2992,8 +2992,8 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			solo->setShortcutVisibleInContextMenu(true);
 #endif
 			auto shortcuts = config_->getShortcuts();
-			toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-			solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
+			toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleTrack)));
+			solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SoloTrack)));
 			if (mousePressPos_.trackVisIdx < 0) {
 				toggle->setEnabled(false);
 				solo->setEnabled(false);

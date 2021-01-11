@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,109 @@
 #include "configuration.hpp"
 #include "jamming.hpp"
 
+namespace
+{
+const std::unordered_map<std::string, JamKey> KEY_MAP_QWERTY = {
+	{u8"Z",         JamKey::LowC},
+	{u8"S",         JamKey::LowCS},
+	{u8"X",         JamKey::LowD},
+	{u8"D",         JamKey::LowDS},
+	{u8"C",         JamKey::LowE},
+	{u8"V",         JamKey::LowF},
+	{u8"G",         JamKey::LowFS},
+	{u8"B",         JamKey::LowG},
+	{u8"H",         JamKey::LowGS},
+	{u8"N",         JamKey::LowA},
+	{u8"J",         JamKey::LowAS},
+	{u8"M",         JamKey::LowB},
+	{u8",",         JamKey::LowC2},
+	{u8"L",         JamKey::LowCS2},
+	{u8".",         JamKey::LowD2},
+
+	{u8"Q",         JamKey::HighC},
+	{u8"2",         JamKey::HighCS},
+	{u8"W",         JamKey::HighD},
+	{u8"3",         JamKey::HighDS},
+	{u8"E",         JamKey::HighE},
+	{u8"R",         JamKey::HighF},
+	{u8"5",         JamKey::HighFS},
+	{u8"T",         JamKey::HighG},
+	{u8"6",         JamKey::HighGS},
+	{u8"Y",         JamKey::HighA},
+	{u8"7",         JamKey::HighAS},
+	{u8"U",         JamKey::HighB},
+	{u8"I",         JamKey::HighC2},
+	{u8"9",         JamKey::HighCS2},
+	{u8"O",         JamKey::HighD2},
+};
+const std::unordered_map<std::string, JamKey> KEY_MAP_QWERTZ = {
+	{u8"Y",         JamKey::LowC},
+	{u8"S",         JamKey::LowCS},
+	{u8"X",         JamKey::LowD},
+	{u8"D",         JamKey::LowDS},
+	{u8"C",         JamKey::LowE},
+	{u8"V",         JamKey::LowF},
+	{u8"G",         JamKey::LowFS},
+	{u8"B",         JamKey::LowG},
+	{u8"H",         JamKey::LowGS},
+	{u8"N",         JamKey::LowA},
+	{u8"J",         JamKey::LowAS},
+	{u8"M",         JamKey::LowB},
+	{u8",",         JamKey::LowC2},
+	{u8"L",         JamKey::LowCS2},
+	{u8".",         JamKey::LowD2},
+
+	{u8"Q",         JamKey::HighC},
+	{u8"2",         JamKey::HighCS},
+	{u8"W",         JamKey::HighD},
+	{u8"3",         JamKey::HighDS},
+	{u8"E",         JamKey::HighE},
+	{u8"R",         JamKey::HighF},
+	{u8"5",         JamKey::HighFS},
+	{u8"T",         JamKey::HighG},
+	{u8"6",         JamKey::HighGS},
+	{u8"Z",         JamKey::HighA},
+	{u8"7",         JamKey::HighAS},
+	{u8"U",         JamKey::HighB},
+	{u8"I",         JamKey::HighC2},
+	{u8"9",         JamKey::HighCS2},
+	{u8"O",         JamKey::HighD2},
+};
+const std::unordered_map<std::string, JamKey> KEY_MAP_AZERTY = {
+	{u8"W",         JamKey::LowC},
+	{u8"S",         JamKey::LowCS},
+	{u8"X",         JamKey::LowD},
+	{u8"D",         JamKey::LowDS},
+	{u8"C",         JamKey::LowE},
+	{u8"V",         JamKey::LowF},
+	{u8"G",         JamKey::LowFS},
+	{u8"B",         JamKey::LowG},
+	{u8"H",         JamKey::LowGS},
+	{u8"N",         JamKey::LowA},
+	{u8"J",         JamKey::LowAS},
+	{u8",",         JamKey::LowB},
+	{u8";",         JamKey::LowC2},
+	{u8"L",         JamKey::LowCS2},
+	{u8".",         JamKey::LowD2},
+
+	{u8"A",         JamKey::HighC},
+	{u8"É",         JamKey::HighCS},   //é - \xc9
+	{u8"Z",         JamKey::HighD},
+	{u8"\"",        JamKey::HighDS},
+	{u8"E",         JamKey::HighE},
+	{u8"R",         JamKey::HighF},
+	{u8"(",         JamKey::HighFS},
+	{u8"T",         JamKey::HighG},
+	{u8"-",         JamKey::HighGS},
+	{u8"Y",         JamKey::HighA},
+	{u8"È",         JamKey::HighAS},   //è - \xc8
+	{u8"U",         JamKey::HighB},
+	{u8"I",         JamKey::HighC2},
+	{u8"Ç",         JamKey::HighCS2}, //ç - \xc7
+	{u8"O",         JamKey::HighD2},
+};
+}
+
 Configuration::Configuration()
 {
 	// Internal //
@@ -38,7 +141,7 @@ Configuration::Configuration()
 	visibleToolbar_ = true;
 	visibleStatusBar_ = true;
 	visibleWaveView_ = true;
-	pasteMode_ = PasteMode::CURSOR;
+	pasteMode_ = PasteMode::Cursor;
 
 	// Mainwindow state
 	mainW_ = 930;
@@ -59,12 +162,12 @@ Configuration::Configuration()
 	instKitH_ = 430;
 
 	// Toolbar state
-	mainTb_.setPosition(ToolbarConfiguration::TOP_POS);
+	mainTb_.setPosition(ToolbarPosition::TopPosition);
 	mainTb_.setNumber(0);
 	mainTb_.setBreakBefore(false);
 	mainTb_.setX(-1);	// Dummy
 	mainTb_.setY(-1);	// Dummy
-	subTb_.setPosition(ToolbarConfiguration::TOP_POS);
+	subTb_.setPosition(ToolbarPosition::TopPosition);
 	subTb_.setNumber(1);
 	subTb_.setBreakBefore(false);
 	subTb_.setX(-1);	// Dummy
@@ -102,77 +205,77 @@ Configuration::Configuration()
 
 	// Keys
 	shortcuts_ = {
-		{ KeyOff, u8"-" },
-		{ OctaveUp, u8"Num+*" },
-		{ OctaveDown, u8"Num+/" },
-		{ EchoBuffer, u8"^" },
-		{ PlayAndStop, u8"Return" },
-		{ Play, u8"" },
-		{ PlayFromStart, u8"F5" },
-		{ PlayPattern, u8"F6" },
-		{ PlayFromCursor, u8"F7" },
-		{ PlayFromMarker, u8"Ctrl+F7" },
-		{ PlayStep, u8"Ctrl+Return" },
-		{ Stop, u8"F8" },
-		{ FocusOnPattern, u8"F2" },
-		{ FocusOnOrder, u8"F3" },
-		{ FocusOnInstrument, u8"F4" },
-		{ ToggleEditJam, u8"Space" },
-		{ SetMarker, u8"Ctrl+B" },
-		{ PasteMix, u8"Ctrl+M" },
-		{ PasteOverwrite, u8"" },
-		{ PasteInsert, u8"" },
-		{ SelectAll, u8"Ctrl+A" },
-		{ Deselect, u8"Esc" },
-		{ SelectRow, u8"" },
-		{ SelectColumn, u8"" },
-		{ SelectPattern, u8"" },
-		{ SelectOrder, u8"" },
-		{ GoToStep, u8"Alt+G" },
-		{ ToggleTrack, u8"Alt+F9" },
-		{ SoloTrack, u8"Alt+F10" },
-		{ Interpolate, u8"Ctrl+G" },
-		{ Reverse, u8"Ctrl+R" },
-		{ GoToPrevOrder, u8"Ctrl+Left" },
-		{ GoToNextOrder, u8"Ctrl+Right" },
-		{ ToggleBookmark, u8"Ctrl+K" },
-		{ PrevBookmark, u8"Ctrl+PgUp" },
-		{ NextBookmark, u8"Ctrl+PgDown" },
-		{ DecreaseNote, u8"Ctrl+F1" },
-		{ IncreaseNote, u8"Ctrl+F2" },
-		{ DecreaseOctave, u8"Ctrl+F3" },
-		{ IncreaseOctave, u8"Ctrl+F4" },
-		{ PrevInstrument, u8"Alt+Left" },
-		{ NextInstrument, u8"Alt+Right" },
-		{ MaskInstrument, u8"" },
-		{ MaskVolume, u8"" },
-		{ EditInstrument, u8"Ctrl+I" },
-		{ FollowMode, u8"ScrollLock" },
-		{ DuplicateOrder, u8"Ctrl+D" },
-		{ ClonePatterns, u8"Alt+D" },
-		{ CloneOrder, u8"" },
-		{ ReplaceInstrument, u8"Alt+S" },
-		{ ExpandPattern, u8"" },
-		{ ShrinkPattern, u8"" },
-		{ FineDecreaseValues, u8"Shift+F1" },
-		{ FineIncreaseValues, u8"Shift+F2" },
-		{ CoarseDecreaseValues, u8"Shift+F3" },
-		{ CoarseIncreaseValuse, u8"Shift+F4" },
-		{ ExpandEffect, u8"Alt+L" },
-		{ ShrinkEffect, u8"Alt+K" },
-		{ PrevHighlighted, u8"Ctrl+Up" },
-		{ NextHighlighted, u8"Ctrl+Down" },
-		{ IncreasePatternSize, u8"" },
-		{ DecreasePatternSize, u8"" },
-		{ IncreaseEditStep, u8"" },
-		{ DecreaseEditStep, u8"" },
-		{ DisplayEffectList, u8"F1" },
-		{ PreviousSong, u8"" },
-		{ NextSong, u8"" },
-		{ JamVolumeUp, u8"" },
-		{ JamVolumeDown, u8"" }
+		{ ShortcutAction::KeyOff, u8"-" },
+		{ ShortcutAction::OctaveUp, u8"Num+*" },
+		{ ShortcutAction::OctaveDown, u8"Num+/" },
+		{ ShortcutAction::EchoBuffer, u8"^" },
+		{ ShortcutAction::PlayAndStop, u8"Return" },
+		{ ShortcutAction::Play, u8"" },
+		{ ShortcutAction::PlayFromStart, u8"F5" },
+		{ ShortcutAction::PlayPattern, u8"F6" },
+		{ ShortcutAction::PlayFromCursor, u8"F7" },
+		{ ShortcutAction::PlayFromMarker, u8"Ctrl+F7" },
+		{ ShortcutAction::PlayStep, u8"Ctrl+Return" },
+		{ ShortcutAction::Stop, u8"F8" },
+		{ ShortcutAction::FocusOnPattern, u8"F2" },
+		{ ShortcutAction::FocusOnOrder, u8"F3" },
+		{ ShortcutAction::FocusOnInstrument, u8"F4" },
+		{ ShortcutAction::ToggleEditJam, u8"Space" },
+		{ ShortcutAction::SetMarker, u8"Ctrl+B" },
+		{ ShortcutAction::PasteMix, u8"Ctrl+M" },
+		{ ShortcutAction::PasteOverwrite, u8"" },
+		{ ShortcutAction::PasteInsert, u8"" },
+		{ ShortcutAction::SelectAll, u8"Ctrl+A" },
+		{ ShortcutAction::Deselect, u8"Esc" },
+		{ ShortcutAction::SelectRow, u8"" },
+		{ ShortcutAction::SelectColumn, u8"" },
+		{ ShortcutAction::SelectPattern, u8"" },
+		{ ShortcutAction::SelectOrder, u8"" },
+		{ ShortcutAction::GoToStep, u8"Alt+G" },
+		{ ShortcutAction::ToggleTrack, u8"Alt+F9" },
+		{ ShortcutAction::SoloTrack, u8"Alt+F10" },
+		{ ShortcutAction::Interpolate, u8"Ctrl+G" },
+		{ ShortcutAction::Reverse, u8"Ctrl+R" },
+		{ ShortcutAction::GoToPrevOrder, u8"Ctrl+Left" },
+		{ ShortcutAction::GoToNextOrder, u8"Ctrl+Right" },
+		{ ShortcutAction::ToggleBookmark, u8"Ctrl+K" },
+		{ ShortcutAction::PrevBookmark, u8"Ctrl+PgUp" },
+		{ ShortcutAction::NextBookmark, u8"Ctrl+PgDown" },
+		{ ShortcutAction::DecreaseNote, u8"Ctrl+F1" },
+		{ ShortcutAction::IncreaseNote, u8"Ctrl+F2" },
+		{ ShortcutAction::DecreaseOctave, u8"Ctrl+F3" },
+		{ ShortcutAction::IncreaseOctave, u8"Ctrl+F4" },
+		{ ShortcutAction::PrevInstrument, u8"Alt+Left" },
+		{ ShortcutAction::NextInstrument, u8"Alt+Right" },
+		{ ShortcutAction::MaskInstrument, u8"" },
+		{ ShortcutAction::MaskVolume, u8"" },
+		{ ShortcutAction::EditInstrument, u8"Ctrl+I" },
+		{ ShortcutAction::FollowMode, u8"ScrollLock" },
+		{ ShortcutAction::DuplicateOrder, u8"Ctrl+D" },
+		{ ShortcutAction::ClonePatterns, u8"Alt+D" },
+		{ ShortcutAction::CloneOrder, u8"" },
+		{ ShortcutAction::ReplaceInstrument, u8"Alt+S" },
+		{ ShortcutAction::ExpandPattern, u8"" },
+		{ ShortcutAction::ShrinkPattern, u8"" },
+		{ ShortcutAction::FineDecreaseValues, u8"Shift+F1" },
+		{ ShortcutAction::FineIncreaseValues, u8"Shift+F2" },
+		{ ShortcutAction::CoarseDecreaseValues, u8"Shift+F3" },
+		{ ShortcutAction::CoarseIncreaseValuse, u8"Shift+F4" },
+		{ ShortcutAction::ExpandEffect, u8"Alt+L" },
+		{ ShortcutAction::ShrinkEffect, u8"Alt+K" },
+		{ ShortcutAction::PrevHighlighted, u8"Ctrl+Up" },
+		{ ShortcutAction::NextHighlighted, u8"Ctrl+Down" },
+		{ ShortcutAction::IncreasePatternSize, u8"" },
+		{ ShortcutAction::DecreasePatternSize, u8"" },
+		{ ShortcutAction::IncreaseEditStep, u8"" },
+		{ ShortcutAction::DecreaseEditStep, u8"" },
+		{ ShortcutAction::DisplayEffectList, u8"F1" },
+		{ ShortcutAction::PreviousSong, u8"" },
+		{ ShortcutAction::NextSong, u8"" },
+		{ ShortcutAction::JamVolumeUp, u8"" },
+		{ ShortcutAction::JamVolumeDown, u8"" }
 	};
-	noteEntryLayout_ = QWERTY;
+	noteEntryLayout_ = KeyboardLayout::QWERTY;
 
 	// Sound //
 	sndAPI_ = u8"";
@@ -609,111 +712,12 @@ Configuration::Configuration()
 	};
 
 	// Layouts
-	const std::unordered_map<std::string, JamKey> mappingQWERTY = {
-		{u8"Z",         JamKey::LowC},
-		{u8"S",         JamKey::LowCS},
-		{u8"X",         JamKey::LowD},
-		{u8"D",         JamKey::LowDS},
-		{u8"C",         JamKey::LowE},
-		{u8"V",         JamKey::LowF},
-		{u8"G",         JamKey::LowFS},
-		{u8"B",         JamKey::LowG},
-		{u8"H",         JamKey::LowGS},
-		{u8"N",         JamKey::LowA},
-		{u8"J",         JamKey::LowAS},
-		{u8"M",         JamKey::LowB},
-		{u8",",         JamKey::LowC2},
-		{u8"L",         JamKey::LowCS2},
-		{u8".",         JamKey::LowD2},
-
-		{u8"Q",         JamKey::HighC},
-		{u8"2",         JamKey::HighCS},
-		{u8"W",         JamKey::HighD},
-		{u8"3",         JamKey::HighDS},
-		{u8"E",         JamKey::HighE},
-		{u8"R",         JamKey::HighF},
-		{u8"5",         JamKey::HighFS},
-		{u8"T",         JamKey::HighG},
-		{u8"6",         JamKey::HighGS},
-		{u8"Y",         JamKey::HighA},
-		{u8"7",         JamKey::HighAS},
-		{u8"U",         JamKey::HighB},
-		{u8"I",         JamKey::HighC2},
-		{u8"9",         JamKey::HighCS2},
-		{u8"O",         JamKey::HighD2},
-	};
-	const std::unordered_map<std::string, JamKey> mappingQWERTZ = {
-		{u8"Y",         JamKey::LowC},
-		{u8"S",         JamKey::LowCS},
-		{u8"X",         JamKey::LowD},
-		{u8"D",         JamKey::LowDS},
-		{u8"C",         JamKey::LowE},
-		{u8"V",         JamKey::LowF},
-		{u8"G",         JamKey::LowFS},
-		{u8"B",         JamKey::LowG},
-		{u8"H",         JamKey::LowGS},
-		{u8"N",         JamKey::LowA},
-		{u8"J",         JamKey::LowAS},
-		{u8"M",         JamKey::LowB},
-		{u8",",         JamKey::LowC2},
-		{u8"L",         JamKey::LowCS2},
-		{u8".",         JamKey::LowD2},
-
-		{u8"Q",         JamKey::HighC},
-		{u8"2",         JamKey::HighCS},
-		{u8"W",         JamKey::HighD},
-		{u8"3",         JamKey::HighDS},
-		{u8"E",         JamKey::HighE},
-		{u8"R",         JamKey::HighF},
-		{u8"5",         JamKey::HighFS},
-		{u8"T",         JamKey::HighG},
-		{u8"6",         JamKey::HighGS},
-		{u8"Z",         JamKey::HighA},
-		{u8"7",         JamKey::HighAS},
-		{u8"U",         JamKey::HighB},
-		{u8"I",         JamKey::HighC2},
-		{u8"9",         JamKey::HighCS2},
-		{u8"O",         JamKey::HighD2},
-	};
-	const std::unordered_map<std::string, JamKey> mappingAZERTY = {
-		{u8"W",         JamKey::LowC},
-		{u8"S",         JamKey::LowCS},
-		{u8"X",         JamKey::LowD},
-		{u8"D",         JamKey::LowDS},
-		{u8"C",         JamKey::LowE},
-		{u8"V",         JamKey::LowF},
-		{u8"G",         JamKey::LowFS},
-		{u8"B",         JamKey::LowG},
-		{u8"H",         JamKey::LowGS},
-		{u8"N",         JamKey::LowA},
-		{u8"J",         JamKey::LowAS},
-		{u8",",         JamKey::LowB},
-		{u8";",         JamKey::LowC2},
-		{u8"L",         JamKey::LowCS2},
-		{u8".",         JamKey::LowD2},
-
-		{u8"A",         JamKey::HighC},
-		{u8"É",         JamKey::HighCS},   //é - \xc9
-		{u8"Z",         JamKey::HighD},
-		{u8"\"",        JamKey::HighDS},
-		{u8"E",         JamKey::HighE},
-		{u8"R",         JamKey::HighF},
-		{u8"(",         JamKey::HighFS},
-		{u8"T",         JamKey::HighG},
-		{u8"-",         JamKey::HighGS},
-		{u8"Y",         JamKey::HighA},
-		{u8"È",         JamKey::HighAS},   //è - \xc8
-		{u8"U",         JamKey::HighB},
-		{u8"I",         JamKey::HighC2},
-		{u8"Ç",         JamKey::HighCS2}, //ç - \xc7
-		{u8"O",         JamKey::HighD2},
-	};
-	mappingCustom = {};
+	mappingCustom_ = {};
 	mappingLayouts = {
-		{ Custom, mappingCustom },
-		{ QWERTY, mappingQWERTY },
-		{ QWERTZ, mappingQWERTZ },
-		{ AZERTY, mappingAZERTY }
+		{ KeyboardLayout::Custom, mappingCustom_ },
+		{ KeyboardLayout::QWERTY, KEY_MAP_QWERTY },
+		{ KeyboardLayout::QWERTZ, KEY_MAP_QWERTZ },
+		{ KeyboardLayout::AZERTY, KEY_MAP_AZERTY }
 	};
 
 	// Appearance
@@ -727,237 +731,8 @@ Configuration::Configuration()
 	odrRowFontSize_ = 10;
 }
 
-// Internal //
-void Configuration::setFollowMode(bool enabled) { followMode_ = enabled; }
-
-bool Configuration::getFollowMode() const { return followMode_; }
-
-void Configuration::setWorkingDirectory(std::string path) { workDir_ = path; }
-
-std::string Configuration::getWorkingDirectory() const { return workDir_; }
-
-void Configuration::setInstrumentOpenFormat(int i) { instOpenFormat_ = i; }
-
-int Configuration::getInstrumentOpenFormat() const { return instOpenFormat_; }
-
-void Configuration::setBankOpenFormat(int i) { bankOpenFormat_ = i; }
-
-int Configuration::getBankOpenFormat() const { return bankOpenFormat_; }
-
-void Configuration::setInstrumentMask(bool enabled) { instMask_ = enabled; }
-
-bool Configuration::getInstrumentMask() const { return instMask_; }
-
-void Configuration::setVolumeMask(bool enabled) { volMask_ = enabled; }
-
-bool Configuration::getVolumeMask() const { return volMask_; }
-
-void Configuration::setVisibleToolbar(bool visible) { visibleToolbar_ = visible; }
-
-bool Configuration::getVisibleToolbar() const { return visibleToolbar_; }
-
-void Configuration::setVisibleStatusBar(bool visible) { visibleStatusBar_ = visible; }
-
-bool Configuration::getVisibleStatusBar() const { return visibleStatusBar_; }
-
-void Configuration::setVisibleWaveView(bool visible) { visibleWaveView_ = visible; }
-
-bool Configuration::getVisibleWaveView() const { return visibleWaveView_; }
-
-void Configuration::setPasteMode(PasteMode mode) { pasteMode_ = mode; }
-
-Configuration::PasteMode Configuration::getPasteMode() const { return pasteMode_; }
-
-// Mainwindow state
-void Configuration::setMainWindowWidth(int w) { mainW_ = w; }
-
-int Configuration::getMainWindowWidth() const { return mainW_; }
-
-void Configuration::setMainWindowHeight(int h) { mainH_ = h; }
-
-int Configuration::getMainWindowHeight() const { return mainH_; }
-
-void Configuration::setMainWindowMaximized(bool isMax) { mainMax_ = isMax; }
-
-bool Configuration::getMainWindowMaximized() const { return mainMax_; }
-
-void Configuration::setMainWindowX(int x) { mainX_ = x; }
-
-int Configuration::getMainWindowX() const { return mainX_; }
-
-void Configuration::setMainWindowY(int y) { mainY_ = y; }
-
-int Configuration::getMainWindowY() const { return mainY_; }
-
-void Configuration::setMainWindowVerticalSplit(int y) { mainVSplit_ = y; }
-
-int Configuration::getMainWindowVerticalSplit() const { return mainVSplit_; }
-
-// Instrument editor state
-void Configuration::setInstrumentFMWindowWidth(int w) { instFMW_ = w; }
-
-int Configuration::getInstrumentFMWindowWidth() const { return instFMW_; }
-
-void Configuration::setInstrumentFMWindowHeight(int h) { instFMH_ = h; }
-
-int Configuration::getInstrumentFMWindowHeight() const { return instFMH_; }
-
-void Configuration::setInstrumentSSGWindowWidth(int w) { instSSGW_ = w; }
-
-int Configuration::getInstrumentSSGWindowWidth() const { return instSSGW_; }
-
-void Configuration::setInstrumentSSGWindowHeight(int h) { instSSGH_ = h; }
-
-int Configuration::getInstrumentSSGWindowHeight() const { return instSSGH_; }
-
-void Configuration::setInstrumentADPCMWindowWidth(int w) { instADPCMW_ = w; }
-
-int Configuration::getInstrumentADPCMWindowWidth() const { return instADPCMW_; }
-
-void Configuration::setInstrumentADPCMWindowHeight(int h) { instADPCMH_ = h; }
-
-int Configuration::getInstrumentADPCMWindowHeight() const { return instADPCMH_; }
-
-void Configuration::setInstrumentDrumkitWindowWidth(int w) { instKitW_ = w; }
-
-int Configuration::getInstrumentDrumkitWindowWidth() const { return instKitW_; }
-
-void Configuration::setInstrumentDrumkitWindowHeight(int h) { instKitH_ = h; }
-
-int Configuration::getInstrumentDrumkitWindowHeight() const { return instKitH_; }
-
-// Toolbar state
-using TBConfig = Configuration::ToolbarConfiguration;
-void TBConfig::setPosition(ToolbarPosition pos) { pos_ = pos; }
-
-TBConfig::ToolbarPosition TBConfig::getPosition() const { return pos_; }
-
-void TBConfig::setNumber(int n) { num_ = n; }
-
-int TBConfig::getNumber() const { return num_; }
-
-void TBConfig::setBreakBefore(bool enabled) { hasBreakBefore_ = enabled; }
-
-bool TBConfig::hasBreakBefore() const { return hasBreakBefore_; }
-
-void TBConfig::setX(int x) { x_ = x; }
-
-int TBConfig::getX() const { return x_; }
-
-void TBConfig::setY(int y) { y_ = y; }
-
-int TBConfig::getY() const { return y_; }
-
-TBConfig& Configuration::getMainToolbarConfiguration() { return mainTb_; }
-
-TBConfig& Configuration::getSubToolbarConfiguration() { return subTb_; }
-
-// General //
-// General settings
-void Configuration::setWarpCursor(bool enabled) { warpCursor_ = enabled; }
-
-bool Configuration::getWarpCursor() const { return warpCursor_; }
-
-void Configuration::setWarpAcrossOrders(bool enabled) { warpAcrossOrders_ = enabled; }
-
-bool Configuration::getWarpAcrossOrders() const { return warpAcrossOrders_; }
-
-void Configuration::setShowRowNumberInHex(bool enabled) { showRowNumHex_ = enabled; }
-
-bool Configuration::getShowRowNumberInHex() const { return showRowNumHex_; }
-
-void Configuration::setShowPreviousNextOrders(bool enabled) { showPrevNextOrders_ = enabled; }
-
-bool Configuration::getShowPreviousNextOrders() const { return showPrevNextOrders_; }
-
-void Configuration::setBackupModules(bool enabled) { backupModules_ = enabled; }
-
-bool Configuration::getBackupModules() const { return backupModules_; }
-
-void Configuration::setDontSelectOnDoubleClick(bool enabled) { dontSelectOnDoubleClick_ = enabled; }
-
-bool Configuration::getDontSelectOnDoubleClick() const { return dontSelectOnDoubleClick_; }
-
-void Configuration::setReverseFMVolumeOrder(bool enabled) { reverseFMVolumeOrder_= enabled; }
-
-bool Configuration::getReverseFMVolumeOrder() const { return reverseFMVolumeOrder_; }
-
-void Configuration::setMoveCursorToRight(bool enabled) { moveCursorToRight_ = enabled; }
-
-bool Configuration::getMoveCursorToRight() const { return moveCursorToRight_; }
-
-void Configuration::setRetrieveChannelState(bool enabled) { retrieveChannelState_ = enabled; }
-
-bool Configuration::getRetrieveChannelState() const { return retrieveChannelState_; }
-
-void Configuration::setEnableTranslation(bool enabled) { enableTranslation_ = enabled; }
-
-bool Configuration::getEnableTranslation() const { return enableTranslation_; }
-
-void Configuration::setShowFMDetuneAsSigned(bool enabled) { showFMDetuneSigned_ = enabled; }
-
-bool Configuration::getShowFMDetuneAsSigned() const { return showFMDetuneSigned_; }
-
-void Configuration::setFill00ToEffectValue(bool enabled) { fill00ToEffectValue_ = enabled; }
-
-bool Configuration::getFill00ToEffectValue() const { return fill00ToEffectValue_; }
-
-void Configuration::setMoveCursorByHorizontalScroll(bool enabled) { moveCursorHScroll_ = enabled; }
-
-bool Configuration::getMoveCursorByHorizontalScroll() const { return moveCursorHScroll_; }
-
-void Configuration::setOverwriteUnusedUneditedPropety(bool enabled) { overwriteUnusedUnedited_ = enabled; }
-
-bool Configuration::getOverwriteUnusedUneditedPropety() const { return overwriteUnusedUnedited_; }
-
-void Configuration::setWriteOnlyUsedSamples(bool enabled) { writeOnlyUsedSamples_ = enabled; }
-
-bool Configuration::getWriteOnlyUsedSamples() const { return writeOnlyUsedSamples_; }
-
-void Configuration::setReflectInstrumentNumberChange(bool enabled) { reflectInstNumChange_ = enabled; }
-
-bool Configuration::getReflectInstrumentNumberChange() const { return reflectInstNumChange_; }
-
-void Configuration::setFixJammingVolume(bool enabled) { fixJamVol_ = enabled; }
-
-bool Configuration::getFixJammingVolume() const { return fixJamVol_; }
-
-void Configuration::setMuteHiddenTracks(bool enabled) { muteHiddenTracks_ = enabled; }
-
-bool Configuration::getMuteHiddenTracks() const { return muteHiddenTracks_; }
-
-void Configuration::setRestoreTrackVisibility(bool enabled) { restoreTrackVis_ = enabled; }
-
-bool Configuration::getRestoreTrackVisibility() const { return restoreTrackVis_; }
-
-// Edit settings
-void Configuration::setPageJumpLength(size_t length) { pageJumpLength_ = length; }
-
-size_t Configuration::getPageJumpLength() const { return pageJumpLength_; }
-
-void Configuration::setEditableStep(size_t step) { editableStep_ = step; }
-
-size_t Configuration::getEditableStep() const { return editableStep_; }
-
-void Configuration::setKeyRepetition(bool enabled) { keyRepetision_ = enabled; }
-
-bool Configuration::getKeyRepetition() const { return keyRepetision_; }
-
-// Wave view
-void Configuration::setWaveViewFrameRate(int rate) { waveViewFps_ = rate; }
-
-int Configuration::getWaveViewFrameRate() const { return waveViewFps_; }
-
 // Keys
-void Configuration::setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts) { shortcuts_ = shortcuts; }
-
-std::unordered_map<Configuration::ShortcutAction, std::string> Configuration::getShortcuts() const { return shortcuts_; }
-
-void Configuration::setNoteEntryLayout(KeyboardLayout layout) { noteEntryLayout_ = layout; }
-
-Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const { return noteEntryLayout_; }
-
-void Configuration::setCustomLayoutKeys(std::unordered_map<std::string, JamKey> mapping)
+void Configuration::setCustomLayoutKeys(const std::unordered_map<std::string, JamKey>& mapping)
 {
 	mappingLayouts[KeyboardLayout::Custom] = mapping;
 }
@@ -966,92 +741,3 @@ std::unordered_map<std::string, JamKey> Configuration::getCustomLayoutKeys() con
 {
 	return mappingLayouts.at(KeyboardLayout::Custom);
 }
-
-// Sound //
-void Configuration::setSoundAPI(std::string api) { sndAPI_ = api; }
-
-std::string Configuration::getSoundAPI() const { return sndAPI_; }
-
-void Configuration::setSoundDevice(std::string device) { sndDevice_ = device; }
-
-std::string Configuration::getSoundDevice() const { return sndDevice_; }
-
-void Configuration::setRealChipInterface(RealChipInterface type) { realChip_ = type; }
-
-RealChipInterface Configuration::getRealChipInterface() const { return realChip_; }
-
-void Configuration::setEmulator(int emulator) { emulator_ = emulator; }
-
-int Configuration::getEmulator() const { return emulator_; }
-
-void Configuration::setSampleRate(uint32_t rate) { sampleRate_ = rate; }
-
-uint32_t Configuration::getSampleRate() const { return sampleRate_; }
-
-void Configuration::setBufferLength(size_t length) { bufferLength_ = length; }
-
-size_t Configuration::getBufferLength() const { return bufferLength_; }
-
-// Midi //
-void Configuration::setMidiEnabled(const bool enabled) { midiEnabled_ = enabled; }
-
-bool Configuration::getMidiEnabled() const { return midiEnabled_; }
-
-void Configuration::setMidiAPI(const std::string& api) { midiAPI_ = api; }
-
-std::string Configuration::getMidiAPI() const { return midiAPI_; }
-
-void Configuration::setMidiInputPort(const std::string& port) { midiInPort_ = port; }
-
-std::string Configuration::getMidiInputPort() const { return midiInPort_; }
-
-// Mixer //
-void Configuration::setMixerVolumeMaster(int percentage) { mixerVolumeMaster_ = percentage; }
-
-int Configuration::getMixerVolumeMaster() const { return mixerVolumeMaster_; }
-
-void Configuration::setMixerVolumeFM(double dB) { mixerVolumeFM_ = dB; }
-
-double Configuration::getMixerVolumeFM() const { return mixerVolumeFM_; }
-
-void Configuration::setMixerVolumeSSG(double dB) { mixerVolumeSSG_ = dB; }
-
-double Configuration::getMixerVolumeSSG() const { return mixerVolumeSSG_; }
-
-// Input //
-void Configuration::setFMEnvelopeTexts(std::vector<FMEnvelopeText> texts) { fmEnvelopeTexts_ = texts; }
-
-std::vector<FMEnvelopeText> Configuration::getFMEnvelopeTexts() const { return fmEnvelopeTexts_; }
-
-// Appearrance
-void Configuration::setPatternEditorHeaderFont(std::string font) { ptnHdFont_ = font; }
-
-std::string Configuration::getPatternEditorHeaderFont() const { return ptnHdFont_; }
-
-void Configuration::setPatternEditorHeaderFontSize(int size) { ptnHdFontSize_ = size; }
-
-int Configuration::getPatternEditorHeaderFontSize() const { return ptnHdFontSize_; }
-
-void Configuration::setPatternEditorRowsFont(std::string font) { ptnRowFont_ = font; }
-
-std::string Configuration::getPatternEditorRowsFont() const { return ptnRowFont_; }
-
-void Configuration::setPatternEditorRowsFontSize(int size) { ptnRowFontSize_ = size; }
-
-int Configuration::getPatternEditorRowsFontSize() const { return ptnRowFontSize_; }
-
-void Configuration::setOrderListHeaderFont(std::string font) { odrHdFont_ = font; }
-
-std::string Configuration::getOrderListHeaderFont() const { return odrHdFont_; }
-
-void Configuration::setOrderListHeaderFontSize(int size) { odrHdFontSize_ = size; }
-
-int Configuration::getOrderListHeaderFontSize() const { return odrHdFontSize_; }
-
-void Configuration::setOrderListRowsFont(std::string font) { odrRowFont_ = font; }
-
-std::string Configuration::getOrderListRowsFont() const { return odrRowFont_; }
-
-void Configuration::setOrderListRowsFontSize(int size) { odrRowFontSize_ = size; }
-
-int Configuration::getOrderListRowsFontSize() const { return odrRowFontSize_; }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,7 +29,6 @@
 #include <atomic>
 #include <memory>
 #include <cstdint>
-#include <unordered_map>
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QListWidgetItem>
@@ -186,13 +185,6 @@ private:
 
 	// Toolbar
 	QSpinBox *octave_, *highlight1_, *highlight2_, *volume_;
-	using ToolbarPos = Configuration::ToolbarConfiguration::ToolbarPosition;
-	const std::unordered_map<ToolbarPos, Qt::ToolBarArea> TB_POS_ = {
-		{ToolbarPos::TOP_POS, Qt::TopToolBarArea },
-		{ ToolbarPos::BOTTOM_POS, Qt::BottomToolBarArea },
-		{ ToolbarPos::LEFT_POS, Qt::LeftToolBarArea },
-		{ ToolbarPos::RIGHT_POS, Qt::RightToolBarArea }
-	};
 
 	// Status bars
 	QLabel *statusDetail_, *statusStyle_, *statusInst_, *statusOctave_;
