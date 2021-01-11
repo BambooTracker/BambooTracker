@@ -169,7 +169,7 @@ apt install \
 
 ```bash
 pacman -S \
-qt5-tools qt5-multimedia \
+qt5-tools \
 pulseaudio \
 jack \ 
 alsa-plugins #uncertain about this one though
