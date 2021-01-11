@@ -170,9 +170,11 @@ The following optional dependencies exist:
 ```bash
 apt install \
   build-essential \
-  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins qttools5-dev-tools \
+  qt5-default qttools5-dev-tools \
   libasound2-dev \
   libpulse-dev \
+  librtaudio-dev \ #optionally
+  librtmidi-dev \ #optionally
   libjack-jackd2-dev # for JACK2, or libjack-dev for JACK1
 ```
 
@@ -182,6 +184,8 @@ pacman -S \
   qt5-tools \
   pulseaudio \
   jack \ 
+  rtaudio \ #optionally
+  rtmidi \ #optionally
   alsa-plugins #uncertain about this one though
 ```
 
