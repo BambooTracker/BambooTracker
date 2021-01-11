@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,5 +39,5 @@ void RemoveInstrumentCommand::redo()
 
 void RemoveInstrumentCommand::undo()
 {
-	manager_.lock()->addInstrument(std::move(inst_));
+	manager_.lock()->addInstrument(inst_.release());
 }

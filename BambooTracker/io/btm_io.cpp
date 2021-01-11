@@ -158,7 +158,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 					iCsr += 1;
 				}
 			}
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instFM));
+			instManLocked->addInstrument(instFM);
 			break;
 		}
 		case 0x01:	// SSG
@@ -184,7 +184,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 			instSSG->setPitchEnabled((0x80 & tmp) ? false : true);
 			instSSG->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instSSG));
+			instManLocked->addInstrument(instSSG);
 			break;
 		}
 		case 0x02:	// ADPCM
@@ -203,7 +203,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 			instADPCM->setPitchEnabled((0x80 & tmp) ? false : true);
 			instADPCM->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instADPCM));
+			instManLocked->addInstrument(instADPCM);
 			break;
 		}
 		case 0x03:	// Drumkit
@@ -216,7 +216,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 				instKit->setSampleNumber(key, ctr.readUint8(iCsr++));
 				instKit->setPitch(key, ctr.readInt8(iCsr++));
 			}
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instKit));
+			instManLocked->addInstrument(instKit);
 			break;
 		}
 		default:
@@ -1686,7 +1686,7 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 	ctr.appendString("INSTRMNT");
 	size_t instOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument section offset
-	std::vector<int> instIdcs = instManLocked->getEntriedInstrumentIndices();
+	std::vector<int> instIdcs = instManLocked->getInstrumentIndices();
 	ctr.appendUint8(static_cast<uint8_t>(instIdcs.size()));
 	for (auto& idx : instIdcs) {
 		if (std::shared_ptr<AbstractInstrument> inst = instManLocked->getInstrumentSharedPtr(idx)) {

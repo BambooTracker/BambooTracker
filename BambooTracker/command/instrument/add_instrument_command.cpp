@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,7 +47,7 @@ AddInstrumentCommand::AddInstrumentCommand(std::weak_ptr<InstrumentsManager> man
 
 void AddInstrumentCommand::redo()
 {
-	if (inst_) manager_.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(inst_->clone()));
+	if (inst_) manager_.lock()->addInstrument(inst_->clone());
 	else manager_.lock()->addInstrument(num_, type_, name_);
 }
 

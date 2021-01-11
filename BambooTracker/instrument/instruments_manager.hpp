@@ -30,7 +30,6 @@
 #include <array>
 #include <vector>
 #include <set>
-#include <unordered_map>
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
@@ -54,8 +53,8 @@ class InstrumentsManager
 public:
 	explicit InstrumentsManager(bool unedited);
 
-	void addInstrument(int instNum, InstrumentType type, std::string name);
-	void addInstrument(std::unique_ptr<AbstractInstrument> inst);
+	void addInstrument(int instNum, InstrumentType type, const std::string& name);
+	void addInstrument(AbstractInstrument* newInstPtr);
 	std::unique_ptr<AbstractInstrument> removeInstrument(int instNum);
 	void cloneInstrument(int cloneInstNum, int resInstNum);
 	void deepCloneInstrument(int cloneInstNum, int resInstNum);
@@ -64,11 +63,9 @@ public:
 	void clearAll();
 	std::vector<int> getInstrumentIndices() const;
 
-	void setInstrumentName(int instNum, std::string name);
+	void setInstrumentName(int instNum, const std::string& name);
 	std::string getInstrumentName(int instNum) const;
 	std::vector<std::string> getInstrumentNameList() const;
-
-	std::vector<int> getEntriedInstrumentIndices() const;
 
 	void clearUnusedInstrumentProperties();
 
@@ -76,7 +73,7 @@ public:
 
 	std::vector<std::vector<int>> checkDuplicateInstruments() const;
 
-	void setPropertyFindMode(bool unedited);
+	inline void setPropertyFindMode(bool unedited) noexcept { regardingUnedited_ = unedited; }
 
 private:
 	std::array<std::shared_ptr<AbstractInstrument>, 128> insts_;
@@ -176,15 +173,6 @@ private:
 	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<InstrumentSequenceProperty<FMOperatorSequenceUnit>>, 128>> opSeqFM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpFM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptFM_;
-
-	static const FMEnvelopeParameter ENV_FM_PARAMS_[38];
-	static const FMOperatorType FM_OP_TYPES_[5];
-
-	int cloneFMEnvelope(int srcNum);
-	int cloneFMLFO(int srcNum);
-	int cloneFMOperatorSequence(FMEnvelopeParameter param, int srcNum);
-	int cloneFMArpeggio(int srcNum);
-	int cloneFMPitch(int srcNum);
 
 	bool equalPropertiesFM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 
@@ -301,12 +289,6 @@ private:
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptSSG_;
 
-	int cloneSSGWaveform(int srcNum);
-	int cloneSSGToneNoise(int srcNum);
-	int cloneSSGEnvelope(int srcNum);
-	int cloneSSGArpeggio(int srcNum);
-	int cloneSSGPitch(int srcNum);
-
 	bool equalPropertiesSSG(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 
 	//----- ADPCM methods -----
@@ -402,11 +384,6 @@ private:
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ADPCMEnvelopeUnit>>, 128> envADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptADPCM_;
-
-	int cloneADPCMSample(int srcNum);
-	int cloneADPCMEnvelope(int srcNum);
-	int cloneADPCMArpeggio(int srcNum);
-	int cloneADPCMPitch(int srcNum);
 
 	bool equalPropertiesADPCM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 

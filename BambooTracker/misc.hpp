@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,6 +27,7 @@
 
 #include <utility>
 #include <algorithm>
+#include <vector>
 #include <cmath>
 #include <stdexcept>
 
@@ -73,11 +74,6 @@ enum class FMEnvelopeTextType : int
 	AR2, DR2, SR2, RR2, SL2, TL2, KS2, ML2, DT2,
 	AR3, DR3, SR3, RR3, SL3, TL3, KS3, ML3, DT3,
 	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4
-};
-
-enum class FMOperatorType : int
-{
-	All, Op1, Op2, Op3, Op4
 };
 
 enum class EffectDisplayControl
@@ -197,6 +193,17 @@ DECL_MAYBE_UNUSED
 inline T clamp(T value, T low, T high)
 {
 	return std::min(std::max(value, low), high);
+}
+
+template <class InputIterator, class Predicate>
+DECL_MAYBE_UNUSED
+inline auto findIndicesIf(InputIterator first, InputIterator last, Predicate pred)
+{
+	std::vector<typename std::iterator_traits<InputIterator>::difference_type> idcs;
+	for (auto it = first; (it = std::find_if(it, last, pred)) != last; ++it) {
+		idcs.push_back(std::distance(first, it));
+	}
+	return idcs;
 }
 
 DECL_MAYBE_UNUSED

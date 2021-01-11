@@ -30,6 +30,11 @@
 using FMOperatorSequenceUnit = InstrumentSequenceBaseUnit;
 using FMOperatorSequenceIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
+enum class FMOperatorType
+{
+	All, Op1, Op2, Op3, Op4
+};
+
 using ArpeggioUnit = InstrumentSequenceBaseUnit;
 using ArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 

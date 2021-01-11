@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,9 +24,9 @@
  */
 
 #include "pattern.hpp"
+#include <algorithm>
 #include "effect.hpp"
 #include "misc.hpp"
-#include <algorithm>
 
 namespace
 {
@@ -92,19 +92,16 @@ void Pattern::deletePreviousStep(int n)
 
 bool Pattern::hasEvent() const
 {
-	auto endIt = steps_.begin() + static_cast<int>(size_);
-	return std::any_of(steps_.begin(), endIt,
+	auto endIt = steps_.cbegin() + static_cast<int>(size_);
+	return std::any_of(steps_.cbegin(), endIt,
 					   [](const Step& step) { return step.hasEvent(); });
 }
 
 std::vector<int> Pattern::getEditedStepIndices() const
 {
-	std::vector<int> list;
-	for (size_t i = 0; i < size_; ++i) {
-		if (steps_.at(i).hasEvent())
-			list.push_back(static_cast<int>(i));
-	}
-	return list;
+	auto endIt = steps_.cbegin() + static_cast<int>(size_);
+	return findIndicesIf(steps_.cbegin(), endIt,
+						 [](const Step& step) { return step.hasEvent(); });
 }
 
 std::unordered_set<int> Pattern::getRegisteredInstruments() const
