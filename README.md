@@ -16,12 +16,26 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 
 [日本語](./README_ja.md)
 
-## Downloads
-### Windows
+## Table of Contents
+1. [Downloads](#Downloads)
+2. [Wiki](#Wiki)
+3. [Discord](#Discord)
+4. [Key commands](#Key-commands)
+5. [Effect list](#Effect-list)
+6. [File I/O](#File-I/O)
+7. [Language](#Language)
+8. [Building](#Building)
+9. [Packaging status](#Packaging-status)
+10. [Changelog](#Changelog)
+11. [License](#License)
+12. [Credits](#Credits)
+
+## Downloads <a name="Downloads"></a>
+### Windows 
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
-### macOS
+### macOS 
 #### GitHub Builds
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -31,7 +45,7 @@ Alternatively, you can install the latest BambooTracker release via the [Nix pac
 
 `nix-env -iA nixpkgs.bambootracker`
 
-### Linux / BSD
+### Linux / BSD 
 #### Debian / Ubuntu
 `apt install bambootracker`
 
@@ -47,25 +61,25 @@ Alternatively, you can install the latest BambooTracker release via the [Nix pac
 #### Other
 - See chapter "Building"
 
-## Wiki
+## Wiki <a name="Wiki"></a>
 Wiki explains the BambooTracker interface etc.
 
 - [BambooTracker Wiki (GitHub Wiki)](https://github.com/rerrahkr/BambooTracker/wiki)
 
-## Discord
+## Discord <a name="Discord"></a>
 We can chat, help and listen tunes on Discord.
 
 - [Official Discord Server](https://discord.gg/gBscTMF)
 
-## Key commands
+## Key commands <a name="Key-commands"></a>
 
 Please refer to [this](./KEYCOMMANDS.md) list.
 
-## Effect list
+## Effect list <a name="Effect-list"></a>
 
 Please refer to [this](./EFFECTLIST.md) list.
 
-## File I/O
+## File I/O <a name="File-I/O"></a>
 ### Module
 The tracker enables to open and save to .btm (BambooTracker module file).
 
@@ -104,7 +118,7 @@ The tracker can export a song to the following files:
 - .vgm (VGM file)
 - .s98 (S98 file)
 
-## Language
+## Language <a name="Language"></a>
 BambooTracker supports following languages:
 
 - English (default)
@@ -112,7 +126,7 @@ BambooTracker supports following languages:
 - Polski / Polish
 - 日本語 / Japanese
 
-## Building
+## Building <a name="Building"></a>
 ### Dependencies
 To build BambooTracker, you'll need the following required dependencies:
 
@@ -243,21 +257,21 @@ The base files (executable + i18n) can be installed into your system like this:
 make install
 ```
 
-## Packaging status
+## Packaging status <a name="Packaging-status"></a>
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/bambootracker.svg)](https://repology.org/project/bambootracker/versions)
 
 For miscellaneous files like the example demos, skins, license informations etc, you'll have to copy them to the appropriate directories yourself.
 
-## Changelog
+## Changelog <a name="Changelog"></a>
 *See [CHANGELOG.md](./CHANGELOG.md).*
 
-## License
+## License <a name="License"></a>
 This program and its source code are licensed under the GNU General License Version 2.
 
 *See [LICENSE](./LICENSE) and [list.md](./licenses/list.md) for details.*
 
-## Credits
+## Credits <a name="Credits"></a>
 I would like to thank the following people for making it:
 
 - Qt team for Qt framework
