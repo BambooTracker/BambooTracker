@@ -165,10 +165,10 @@ apt install \
 ##### Arch Linux/Manjaro/Artix:
 ```bash
 pacman -S \
-qt5-tools \
-pulseaudio \
-jack \ 
-alsa-plugins #uncertain about this one though
+  qt5-tools \
+  pulseaudio \
+  jack \ 
+  alsa-plugins #uncertain about this one though
 ```
 
 ##### FreeBSD
