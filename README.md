@@ -59,11 +59,11 @@ We can chat, help and listen tunes on Discord.
 
 ## Key commands
 
-Please refer to [this] list. (./KEYCOMMANDS.md)
+Please refer to [this](./KEYCOMMANDS.md) list.
 
 ## Effect list
 
-Please refer to [this] list. (./EFFECTLIST.md)
+Please refer to [this](./EFFECTLIST.md) list.
 
 ## File I/O
 ### Module
