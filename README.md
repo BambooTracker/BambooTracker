@@ -163,10 +163,6 @@ apt install \
 ```
 
 ##### Arch Linux/Manjaro/Artix:
-**TODO** 
-
-- check out AUR package and request fixing it if needed
-
 ```bash
 pacman -S \
 qt5-tools \
@@ -219,6 +215,9 @@ If you want to build with any of the optional dependencies, append the following
 
 - **PulseAudio Support**: `export BT_OPTIONS="$BT_OPTIONS CONFIG+=use_pulse"`
 - **JACK Support**: `export BT_OPTIONS="$BT_OPTIONS CONFIG+=use_jack"`
+- **OSS4 Support**: `export BT_OPTIONS="$BT_OPTIONS CONFIG+=use_oss"`
+- **Forego some Unixoid-prefered files and Linux FHS paths during installation**: `export BT_OPTIONS="$BT_OPTIONS CONFIG+=install_flat"`
+- **Skip installation of non-essential files.**: `export BT_OPTIONS="$BT_OPTIONS CONFIG+=install_minimal"`
 
 Then configure (don't cd into BambooTracker!)
 ```
