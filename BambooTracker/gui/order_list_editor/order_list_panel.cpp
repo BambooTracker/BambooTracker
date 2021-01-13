@@ -47,6 +47,7 @@
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands_qt.hpp"
 #include "gui/gui_utils.hpp"
+#include "misc.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -852,7 +853,7 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJ
 	}
 
 	if (trackChanged) {	// Update horizontal position
-		int trackVisIdx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), bt_->getCurrentTrackAttribute().number));
+		int trackVisIdx = std::distance(visTracks_.begin(), utils::find(visTracks_, bt_->getCurrentTrackAttribute().number));
 		int prevTrackIdx = std::exchange(curPos_.trackVisIdx, trackVisIdx);
 		if (prevTrackIdx < curPos_.trackVisIdx) {
 			while (calculateColumnsWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx) > geometry().width()) {

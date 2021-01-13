@@ -87,6 +87,7 @@
 #include "gui/track_visibility_memory_handler.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/gui_utils.hpp"
+#include "misc.hpp"
 
 namespace
 {
@@ -1016,9 +1017,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		mainTbConfig.setY(ui->mainToolBar->y());
 	}
 	else {
-		mainTbConfig.setPosition(std::find_if(TB_POS_.begin(), TB_POS_.end(), [mainTbArea](auto pair) {
-			return (pair.second == mainTbArea);
-		})->first);
+		mainTbConfig.setPosition(utils::findMapValue(TB_POS_, mainTbArea)->first);
 		mainTbConfig.setNumber(0);
 		mainTbConfig.setBreakBefore(false);
 	}
@@ -1028,9 +1027,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		subTbConfig.setY(ui->subToolBar->y());
 	}
 	else {
-		subTbConfig.setPosition(std::find_if(TB_POS_.begin(), TB_POS_.end(), [subTbArea](auto pair) {
-			return (pair.second == subTbArea);
-		})->first);
+		subTbConfig.setPosition(utils::findMapValue(TB_POS_, mainTbArea)->first);
 		subTbConfig.setNumber(0);
 		subTbConfig.setBreakBefore(false);
 	}

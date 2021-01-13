@@ -33,7 +33,10 @@ enum class SoundSource : int
 	ADPCM = 8
 };
 
+namespace opna_defs
+{
 constexpr int NSTEP_FM_VOLUME = 0x80;
 constexpr int NSTEP_SSG_VOLUME = 0x10;
 constexpr int NSTEP_RHYTHM_VOLUME = 0x20;
 constexpr int NSTEP_ADPCM_VOLUME = 0x100;
+}

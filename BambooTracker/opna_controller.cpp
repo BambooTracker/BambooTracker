@@ -929,7 +929,7 @@ void OPNAController::setBrightnessFM(int ch, int value)
 	std::vector<int> ops = getOperatorsInLevel(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL));
 	for (auto& op : ops) {
 		FMEnvelopeParameter param = PARAM_TL_[op];
-		int v = clamp(envFM_[inch]->getParameterValue(param) + value, 0, 127);
+		int v = utils::clamp(envFM_[inch]->getParameterValue(param) + value, 0, 127);
 		writeFMEnveropeParameterToRegister(inch, param, v);
 		isBrightFM_[inch][op] = true;
 		opSeqItFM_[inch].at(param).reset();
@@ -1887,44 +1887,44 @@ void OPNAController::checkVolumeEffectFM(int ch)
 		int al = envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL);
 		if (isCarrier(0, al)) {	// Operator 1
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
-			opna_->setRegister(0x40 + bch, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		if (isCarrier(1, al)) {	// Operator 2
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL2) + v;
-			opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		if (isCarrier(2, al)) {	// Operator 3
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL3) + v;
-			opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		if (isCarrier(3, al)) {	// Operator 4
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL4) + v;
-			opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		break;
 	}
 	case FMOperatorType::Op1:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
-		opna_->setRegister(0x40 + bch, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	case FMOperatorType::Op2:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL2) + v;
-		opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	case FMOperatorType::Op3:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL3) + v;
-		opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	case FMOperatorType::Op4:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL4) + v;
-		opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	}
@@ -2145,7 +2145,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 /********** Set volume **********/
 void OPNAController::setVolumeSSG(int ch, int volume)
 {
-	if (volume < NSTEP_SSG_VOLUME) {
+	if (volume < opna_defs::NSTEP_SSG_VOLUME) {
 		baseVolSSG_[ch] = volume;
 		tmpVolSSG_[ch] = -1;
 
@@ -2155,7 +2155,7 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 
 void OPNAController::setTemporaryVolumeSSG(int ch, int volume)
 {
-	if (volume < NSTEP_SSG_VOLUME) {
+	if (volume < opna_defs::NSTEP_SSG_VOLUME) {
 		tmpVolSSG_[ch] = volume;
 
 		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
@@ -2176,7 +2176,7 @@ void OPNAController::setRealVolumeSSG(int ch)
 	if (auto& treIt = treItSSG_[ch]) volume += treIt->data().data;
 	volume += sumVolSldSSG_[ch];
 
-	volume = clamp(volume, 0, 15);
+	volume = utils::clamp(volume, 0, 15);
 
 	opna_->setRegister(0x08 + static_cast<uint32_t>(ch), static_cast<uint8_t>(volume));
 	needEnvSetSSG_[ch] = false;
@@ -2375,7 +2375,7 @@ void OPNAController::initSSG()
 		keyToneSSG_[ch].pitch = 0;	// Dummy
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, UNUSED_NOISE_PERIOD };
-		baseVolSSG_[ch] = NSTEP_SSG_VOLUME - 1;	// Init volume
+		baseVolSSG_[ch] = opna_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
 		isBuzzEffSSG_[ch] = false;
@@ -3305,7 +3305,7 @@ void OPNAController::setKeyOffFlagRhythm(int ch)
 /********** Set volume **********/
 void OPNAController::setVolumeRhythm(int ch, int volume)
 {
-	if (volume < NSTEP_RHYTHM_VOLUME) {
+	if (volume < opna_defs::NSTEP_RHYTHM_VOLUME) {
 		volRhythm_[ch] = volume;
 		tmpVolRhythm_[ch] = -1;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
@@ -3320,7 +3320,7 @@ void OPNAController::setMasterVolumeRhythm(int volume)
 
 void OPNAController::setTemporaryVolumeRhythm(int ch, int volume)
 {
-	if (volume < NSTEP_RHYTHM_VOLUME) {
+	if (volume < opna_defs::NSTEP_RHYTHM_VOLUME) {
 		tmpVolRhythm_[ch] = volume;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
 	}
@@ -3342,7 +3342,7 @@ void OPNAController::initRhythm()
 	opna_->setRegister(0x11, 0x3f);	// Rhythm total volume
 
 	for (int ch = 0; ch < 6; ++ch) {
-		volRhythm_[ch] = NSTEP_RHYTHM_VOLUME - 1;	// Init volume
+		volRhythm_[ch] = opna_defs::NSTEP_RHYTHM_VOLUME - 1;	// Init volume
 		tmpVolRhythm_[ch] = -1;
 
 		// Init pan
@@ -3552,7 +3552,7 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 /********** Set volume **********/
 void OPNAController::setVolumeADPCM(int volume)
 {
-	if (volume < NSTEP_ADPCM_VOLUME) {
+	if (volume < opna_defs::NSTEP_ADPCM_VOLUME) {
 		baseVolADPCM_ = volume;
 		tmpVolADPCM_ = -1;
 
@@ -3562,7 +3562,7 @@ void OPNAController::setVolumeADPCM(int volume)
 
 void OPNAController::setTemporaryVolumeADPCM(int volume)
 {
-	if (volume < NSTEP_ADPCM_VOLUME) {
+	if (volume < opna_defs::NSTEP_ADPCM_VOLUME) {
 		tmpVolADPCM_ = volume;
 
 		if (isKeyOnADPCM_) setRealVolumeADPCM();
@@ -3574,12 +3574,12 @@ void OPNAController::setRealVolumeADPCM()
 	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
 	if (envItADPCM_) {
 		int type = envItADPCM_->data().data;
-		if (type >= 0) volume -= (NSTEP_ADPCM_VOLUME - 1 - type);
+		if (type >= 0) volume -= (opna_defs::NSTEP_ADPCM_VOLUME - 1 - type);
 	}
 	if (treItADPCM_) volume += treItADPCM_->data().data;
 	volume += sumVolSldADPCM_;
 
-	volume = clamp(volume, 0, NSTEP_ADPCM_VOLUME - 1);
+	volume = utils::clamp(volume, 0, opna_defs::NSTEP_ADPCM_VOLUME - 1);
 
 	opna_->setRegister(0x10b, static_cast<uint8_t>(volume));
 	needEnvSetADPCM_ = false;
@@ -3718,7 +3718,7 @@ void OPNAController::initADPCM()
 	keyToneADPCM_.octave = -1;
 	keyToneADPCM_.pitch = 0;	// Dummy
 	sumPitchADPCM_ = 0;
-	baseVolADPCM_ = NSTEP_ADPCM_VOLUME - 1;	// Init volume
+	baseVolADPCM_ = opna_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
 	tmpVolADPCM_ = -1;
 	panADPCM_ = 0xc0;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
@@ -3949,8 +3949,8 @@ void OPNAController::writePitchADPCM()
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
-		int key = clamp(note_utils::octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
-						+ transposeADPCM_ / note_utils::SEMINOTE_PITCH, 0, 95);
+		int key = utils::clamp(note_utils::octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
+							   + transposeADPCM_ / note_utils::SEMINOTE_PITCH, 0, 95);
 		if (refInstKit_->getSampleEnabled(key)) {
 			int diff = note_utils::SEMINOTE_PITCH * refInstKit_->getPitch(key);
 			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));

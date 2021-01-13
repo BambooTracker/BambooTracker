@@ -59,7 +59,7 @@ void TransposeNoteInPatternCommand::redo()
 			Step& st = command_utils::getStep(sng, track, order_, step);
 			int n = st.getNoteNumber();
 			if (st.hasGeneralNote()) {
-				st.setNoteNumber(clamp(n + seminote_, 0, 95));
+				st.setNoteNumber(utils::clamp(n + seminote_, 0, 95));
 			}
 		}
 	}

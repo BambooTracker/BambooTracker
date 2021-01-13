@@ -1128,6 +1128,6 @@ uint16_t calculateSSGSawEP(Note note, int octave, int pitch, int finePitch)
 int calculatePitchIndex(int octave, Note note, int pitch)
 {
 	int idx = 384 * octave + static_cast<int>(note) + pitch;
-	return clamp(idx, 0, 3071);
+	return utils::clamp(idx, 0, 3071);
 }
 }

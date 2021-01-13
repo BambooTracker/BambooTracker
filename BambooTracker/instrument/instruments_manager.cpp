@@ -28,6 +28,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <functional>
+#include <type_traits>
 #include "instrument.hpp"
 #include "misc.hpp"
 
@@ -116,34 +117,38 @@ inline auto makeEnvelopeADPCMSharedPtr(int n)
 								ADPCMEnvelopeUnit(255), ADPCMEnvelopeUnit(), 127);
 }
 
-// Utility
+// Utility functor
 template <class propArray>
 struct IsUsed
 {
-bool operator()(decltype(std::declval<const propArray>().front()) prop) const
-{
-	return prop->isUserInstrument();
-}
+	using ArgType = typename std::add_const<propArray>::type::const_reference;
+	bool operator()(ArgType prop) const
+	{
+		return prop->isUserInstrument();
+	}
 };
 
 template <class propArray>
 struct IsEdited
 {
-bool operator()(decltype(std::declval<const propArray>().front()) prop) const
-{
-	return prop->isEdited();
-}
+	using ArgType = typename std::add_const<propArray>::type::const_reference;
+	bool operator()(ArgType prop) const
+	{
+		return prop->isEdited();
+	}
 };
 
 template <class propArray>
 struct IsUsedOrEdited
 {
-bool operator()(decltype(std::declval<const propArray>().front()) prop) const
-{
-	return (prop->isUserInstrument() || prop->isEdited());
-}
+	using ArgType = typename std::add_const<propArray>::type::const_reference;
+	bool operator()(ArgType prop) const
+	{
+		return (prop->isUserInstrument() || prop->isEdited());
+	}
 };
 
+// Common process for properties
 template <class propArray>
 int cloneProperty(propArray& aryRef, int srcNum)
 {
@@ -667,8 +672,7 @@ void InstrumentsManager::clearAll()
 
 std::vector<int> InstrumentsManager::getInstrumentIndices() const
 {
-	return findIndicesIf(insts_.cbegin(), insts_.cend(),
-						 [](decltype(insts_)::const_reference inst) { return inst; });
+	return utils::findIndicesIf(insts_, [](decltype(insts_)::const_reference inst) { return inst; });
 }
 
 void InstrumentsManager::setInstrumentName(int instNum, const std::string& name)
@@ -683,11 +687,9 @@ std::string InstrumentsManager::getInstrumentName(int instNum) const
 
 std::vector<std::string> InstrumentsManager::getInstrumentNameList() const
 {
-	std::vector<std::string> names;
-	for (auto& inst : insts_) {
-		if (inst) names.push_back(inst->getName());
-	}
-	return names;
+	using InstRef = decltype(insts_)::const_reference;
+	return utils::transformIf(insts_, [](InstRef inst) { return inst; },
+	[](InstRef inst) { return inst->getName(); });
 }
 
 void InstrumentsManager::clearUnusedInstrumentProperties()
@@ -815,7 +817,7 @@ std::multiset<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 
 std::vector<int> InstrumentsManager::getEnvelopeFMEntriedIndices() const
 {
-	return findIndicesIf(envFM_.cbegin(), envFM_.cend(), IsEdited<decltype(envFM_)>());
+	return utils::findIndicesIf(envFM_, IsEdited<decltype(envFM_)>());
 }
 
 int InstrumentsManager::findFirstAssignableEnvelopeFM() const
@@ -867,7 +869,7 @@ std::multiset<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
 
 std::vector<int> InstrumentsManager::getLFOFMEntriedIndices() const
 {
-	return findIndicesIf(lfoFM_.cbegin(), lfoFM_.cend(), IsEdited<decltype(lfoFM_)>());
+	return utils::findIndicesIf(lfoFM_, IsEdited<decltype(lfoFM_)>());
 }
 
 int InstrumentsManager::findFirstAssignableLFOFM() const
@@ -972,7 +974,7 @@ std::multiset<int> InstrumentsManager::getOperatorSequenceFMUsers(FMEnvelopePara
 
 std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const
 {
-	return findIndicesIf(opSeqFM_.at(param).cbegin(), opSeqFM_.at(param).cend(), IsUsedOrEdited<decltype(opSeqFM_.at(param))>());
+	return utils::findIndicesIf(opSeqFM_.at(param), IsUsedOrEdited<decltype(opSeqFM_)::mapped_type>());
 }
 
 int InstrumentsManager::findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const
@@ -1087,7 +1089,7 @@ std::multiset<int> InstrumentsManager::getArpeggioFMUsers(int arpNum) const
 
 std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 {
-	return findIndicesIf(arpFM_.cbegin(), arpFM_.cend(), IsUsedOrEdited<decltype(arpFM_)>());
+	return utils::findIndicesIf(arpFM_, IsUsedOrEdited<decltype(arpFM_)>());
 }
 
 int InstrumentsManager::findFirstAssignableArpeggioFM() const
@@ -1207,7 +1209,7 @@ void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOper
 
 std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 {
-	return findIndicesIf(ptFM_.cbegin(), ptFM_.cend(), IsUsedOrEdited<decltype(ptFM_)>());
+	return utils::findIndicesIf(ptFM_, IsUsedOrEdited<decltype(ptFM_)>());
 }
 
 int InstrumentsManager::findFirstAssignablePitchFM() const
@@ -1348,7 +1350,7 @@ std::multiset<int> InstrumentsManager::getWaveformSSGUsers(int wfNum) const
 
 std::vector<int> InstrumentsManager::getWaveformSSGEntriedIndices() const
 {
-	return findIndicesIf(wfSSG_.cbegin(), wfSSG_.cend(), IsUsedOrEdited<decltype(wfSSG_)>());
+	return utils::findIndicesIf(wfSSG_, IsUsedOrEdited<decltype(wfSSG_)>());
 }
 
 int InstrumentsManager::findFirstAssignableWaveformSSG() const
@@ -1453,7 +1455,7 @@ std::multiset<int> InstrumentsManager::getToneNoiseSSGUsers(int tnNum) const
 
 std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 {
-	return findIndicesIf(tnSSG_.cbegin(), tnSSG_.cend(), IsUsedOrEdited<decltype(tnSSG_)>());
+	return utils::findIndicesIf(tnSSG_, IsUsedOrEdited<decltype(tnSSG_)>());
 }
 
 int InstrumentsManager::findFirstAssignableToneNoiseSSG() const
@@ -1558,7 +1560,7 @@ std::multiset<int> InstrumentsManager::getEnvelopeSSGUsers(int envNum) const
 
 std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 {
-	return findIndicesIf(envSSG_.cbegin(), envSSG_.cend(), IsUsedOrEdited<decltype(envSSG_)>());
+	return utils::findIndicesIf(envSSG_, IsUsedOrEdited<decltype(envSSG_)>());
 }
 
 int InstrumentsManager::findFirstAssignableEnvelopeSSG() const
@@ -1673,7 +1675,7 @@ std::multiset<int> InstrumentsManager::getArpeggioSSGUsers(int arpNum) const
 
 std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 {
-	return findIndicesIf(arpSSG_.cbegin(), arpSSG_.cend(), IsUsedOrEdited<decltype(arpSSG_)>());
+	return utils::findIndicesIf(arpSSG_, IsUsedOrEdited<decltype(arpSSG_)>());
 }
 
 int InstrumentsManager::findFirstAssignableArpeggioSSG() const
@@ -1788,7 +1790,7 @@ std::multiset<int> InstrumentsManager::getPitchSSGUsers(int ptNum) const
 
 std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
 {
-	return findIndicesIf(ptSSG_.cbegin(), ptSSG_.cend(), IsUsedOrEdited<decltype(ptSSG_)>());
+	return utils::findIndicesIf(ptSSG_, IsUsedOrEdited<decltype(ptSSG_)>());
 }
 
 int InstrumentsManager::findFirstAssignablePitchSSG() const
@@ -1921,12 +1923,12 @@ std::multiset<int> InstrumentsManager::getSampleADPCMUsers(int sampNum) const
 
 std::vector<int> InstrumentsManager::getSampleADPCMEntriedIndices() const
 {
-	return findIndicesIf(sampADPCM_.cbegin(), sampADPCM_.cend(), IsEdited<decltype(sampADPCM_)>());
+	return utils::findIndicesIf(sampADPCM_, IsEdited<decltype(sampADPCM_)>());
 }
 
 std::vector<int> InstrumentsManager::getSampleADPCMValidIndices() const
 {
-	return findIndicesIf(sampADPCM_.cbegin(), sampADPCM_.cend(), IsUsedOrEdited<decltype(sampADPCM_)>());
+	return utils::findIndicesIf(sampADPCM_, IsUsedOrEdited<decltype(sampADPCM_)>());
 }
 
 void InstrumentsManager::clearUnusedSamplesADPCM()
@@ -2039,7 +2041,7 @@ std::multiset<int> InstrumentsManager::getEnvelopeADPCMUsers(int envNum) const
 
 std::vector<int> InstrumentsManager::getEnvelopeADPCMEntriedIndices() const
 {
-	return findIndicesIf(envADPCM_.cbegin(), envADPCM_.cend(), IsUsedOrEdited<decltype(envADPCM_)>());
+	return utils::findIndicesIf(envADPCM_, IsUsedOrEdited<decltype(envADPCM_)>());
 }
 
 int InstrumentsManager::findFirstAssignableEnvelopeADPCM() const
@@ -2154,7 +2156,7 @@ std::multiset<int> InstrumentsManager::getArpeggioADPCMUsers(int arpNum) const
 
 std::vector<int> InstrumentsManager::getArpeggioADPCMEntriedIndices() const
 {
-	return findIndicesIf(arpADPCM_.cbegin(), arpADPCM_.cend(), IsUsedOrEdited<decltype(arpADPCM_)>());
+	return utils::findIndicesIf(arpADPCM_, IsUsedOrEdited<decltype(arpADPCM_)>());
 }
 
 int InstrumentsManager::findFirstAssignableArpeggioADPCM() const
@@ -2269,7 +2271,7 @@ std::multiset<int> InstrumentsManager::getPitchADPCMUsers(int ptNum) const
 
 std::vector<int> InstrumentsManager::getPitchADPCMEntriedIndices() const
 {
-	return findIndicesIf(ptADPCM_.cbegin(), ptADPCM_.cend(), IsUsedOrEdited<decltype(ptADPCM_)>());
+	return utils::findIndicesIf(ptADPCM_, IsUsedOrEdited<decltype(ptADPCM_)>());
 }
 
 int InstrumentsManager::findFirstAssignablePitchADPCM() const

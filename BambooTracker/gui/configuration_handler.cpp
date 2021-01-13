@@ -32,6 +32,7 @@
 #include "jamming.hpp"
 #include "enum_hash.hpp"
 #include "gui/gui_utils.hpp"
+#include "misc.hpp"
 
 namespace io
 {
@@ -407,9 +408,8 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 			JamKey currentlyWantedJamKey = pair.first;
 			customLayoutNewKeys[
 					settings.value("customLayout_" + pair.second,
-								   QString::fromStdString((*std::find_if(configLocked->mappingLayouts.at(Configuration::KeyboardLayout::QWERTY).begin(),
-																		 configLocked->mappingLayouts.at(Configuration::KeyboardLayout::QWERTY).end(),
-																		 [currentlyWantedJamKey](const std::pair<std::string, JamKey>& t) -> bool {
+								   QString::fromStdString((*utils::findIf(configLocked->mappingLayouts.at(Configuration::KeyboardLayout::QWERTY),
+																		  [currentlyWantedJamKey](const std::pair<std::string, JamKey>& t) -> bool {
 				return (t.second) == currentlyWantedJamKey;})
 														   ).first)).toString().toUtf8().toStdString()]
 					= currentlyWantedJamKey;

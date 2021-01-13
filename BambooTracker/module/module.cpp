@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "module.hpp"
 #include <algorithm>
 #include <iterator>
+#include "misc.hpp"
 
 Module::Module(const std::string& filePath, const std::string& title,
 			   const std::string& author, const std::string& copyright,
@@ -88,9 +89,7 @@ void Module::sortSongs(const std::vector<int>& numbers)
 
 Song& Module::getSong(int num)
 {
-	auto it = std::find_if(songs_.begin(), songs_.end(),
-						   [num](Song& s) { return s.getNumber() == num; });
-	return *it;
+	return *utils::findIf(songs_, [num](Song& s) { return s.getNumber() == num; });;
 }
 
 void Module::addGroove()

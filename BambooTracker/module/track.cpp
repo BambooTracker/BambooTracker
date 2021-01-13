@@ -87,7 +87,7 @@ Pattern& Track::getPatternFromOrderNumber(int num)
 
 int Track::searchFirstUneditedUnusedPattern() const
 {
-	auto it = std::find_if(patterns_.cbegin(), patterns_.cend(), [](const Pattern& pattern) {
+	auto it = utils::findIf(patterns_, [](const Pattern& pattern) {
 		return (!pattern.hasEvent() && !pattern.getUsedCount());
 	});
 	return (it == patterns_.cend() ? -1 : std::distance(patterns_.cbegin(), it));
@@ -105,8 +105,7 @@ int Track::clonePattern(int num)
 
 std::vector<int> Track::getEditedPatternIndices() const
 {
-	return findIndicesIf(patterns_.cbegin(), patterns_.cend(),
-						 [](const Pattern& pattern) { return pattern.hasEvent(); });
+	return utils::findIndicesIf(patterns_, [](const Pattern& pattern) { return pattern.hasEvent(); });
 }
 
 std::unordered_set<int> Track::getRegisteredInstruments() const

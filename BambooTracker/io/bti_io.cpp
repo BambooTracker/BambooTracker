@@ -33,6 +33,7 @@
 #include "file_io_error.hpp"
 #include "note.hpp"
 #include "io_utils.hpp"
+#include "misc.hpp"
 
 namespace io
 {
@@ -1732,7 +1733,7 @@ void BtiIO::save(BinaryContainer& ctr,
 			for (auto& t : FM_OP_TYPES) {
 				if (instFM->getArpeggioEnabled(t)) {
 					int n = instFM->getArpeggioNumber(t);
-					if (std::find(fmArpNums.begin(), fmArpNums.end(), n) == fmArpNums.end())
+					if (utils::find(fmArpNums, n) == fmArpNums.end())
 						fmArpNums.push_back(n);
 				}
 			}
@@ -1767,7 +1768,7 @@ void BtiIO::save(BinaryContainer& ctr,
 			for (auto& t : FM_OP_TYPES) {
 				if (instFM->getPitchEnabled(t)) {
 					int n = instFM->getPitchNumber(t);
-					if (std::find(fmPtNums.begin(), fmPtNums.end(), n) == fmPtNums.end())
+					if (utils::find(fmPtNums, n) == fmPtNums.end())
 						fmPtNums.push_back(n);
 				}
 			}

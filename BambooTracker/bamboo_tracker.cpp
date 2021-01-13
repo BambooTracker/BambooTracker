@@ -38,6 +38,7 @@
 #include "note.hpp"
 #include "song_length_calculator.hpp"
 #include "opna_defs.hpp"
+#include "misc.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
@@ -1186,8 +1187,7 @@ void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, 
 		funcJamKeyOn(key, keyNum, attrib, volumeSet, inst);
 	}
 	else {
-		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		auto it = utils::findIf(songStyle_.trackAttribs, [src](const TrackAttribute& attrib) { return attrib.source == src; });
 		funcJamKeyOn(key, keyNum, *it, volumeSet, inst);
 	}
 }
@@ -1199,8 +1199,7 @@ void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, 
 		funcJamKeyOn(JamKey::MidiKey, keyNum, attrib, volumeSet, inst);
 	}
 	else {
-		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		auto it = utils::findIf(songStyle_.trackAttribs, [src](const TrackAttribute& attrib) { return attrib.source == src; });
 		funcJamKeyOn(JamKey::MidiKey, keyNum, *it, volumeSet, inst);
 	}
 }
@@ -1212,7 +1211,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 	if (attrib.source == SoundSource::RHYTHM) {
 		if (volumeSet)
-			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, NSTEP_RHYTHM_VOLUME - 1));
+			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, opna_defs::NSTEP_RHYTHM_VOLUME - 1));
 		opnaCtrl_->setKeyOnFlagRhythm(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
@@ -1272,7 +1271,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			if (volumeSet) {
 				int vol;
 				if (volFMReversed_) vol = effect_utils::reverseFmVolume(curVolume_, true);
-				else vol = std::min(curVolume_, NSTEP_FM_VOLUME - 1);
+				else vol = std::min(curVolume_, opna_defs::NSTEP_FM_VOLUME - 1);
 				opnaCtrl_->setVolumeFM(onInfo.channelInSource, vol);
 			}
 			if (songStyle_.type == SongType::FM3chExpanded && onInfo.channelInSource == 2) {
@@ -1327,8 +1326,7 @@ void BambooTracker::jamKeyOffForced(JamKey key, SoundSource src)
 		funcJamKeyOff(key, keyNum, attrib);
 	}
 	else {
-		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		auto it = utils::findIf(songStyle_.trackAttribs, [src](const TrackAttribute& attrib) { return attrib.source == src; });
 		funcJamKeyOff(key, keyNum, *it);
 	}
 }
@@ -1340,8 +1338,7 @@ void BambooTracker::jamKeyOffForced(int keyNum, SoundSource src)
 		funcJamKeyOff(JamKey::MidiKey, keyNum, attrib);
 	}
 	else {
-		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		auto it = utils::findIf(songStyle_.trackAttribs, [src](const TrackAttribute& attrib) { return attrib.source == src; });
 		funcJamKeyOff(JamKey::MidiKey, keyNum, *it);
 	}
 }

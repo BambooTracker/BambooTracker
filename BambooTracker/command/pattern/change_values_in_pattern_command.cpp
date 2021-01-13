@@ -91,13 +91,13 @@ void ChangeValuesInPatternCommand::redo()
 			switch (col) {
 			case 1:
 				if (st.hasInstrument())
-					st.setInstrumentNumber(clamp(diff_ + *valit++, 0, 127));
+					st.setInstrumentNumber(utils::clamp(diff_ + *valit++, 0, 127));
 				break;
 			case 2:
 				if (st.hasVolume()) {
 					int d = (tr.getAttribute().source == SoundSource::FM && fmReverse_) ? -diff_
 																						: diff_;
-					st.setVolume(clamp(d + *valit++, 0, 255));
+					st.setVolume(utils::clamp(d + *valit++, 0, 255));
 				}
 				break;
 			default:
@@ -106,7 +106,7 @@ void ChangeValuesInPatternCommand::redo()
 					int ec = col - 3;
 					int ei = ec / 2;
 					if (ec % 2 && st.hasEffectValue(ei))
-						st.setEffectValue(ei, clamp(diff_ + *valit++, 0, 255));
+						st.setEffectValue(ei, utils::clamp(diff_ + *valit++, 0, 255));
 				}
 				break;
 			}

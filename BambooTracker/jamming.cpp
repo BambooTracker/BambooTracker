@@ -29,6 +29,7 @@
 #include <functional>
 #include <stdexcept>
 #include "note.hpp"
+#include "misc.hpp"
 
 namespace jam_utils
 {
@@ -146,8 +147,7 @@ std::vector<JamKeyInfo> JamManager::keyOn(JamKey key, int channel, SoundSource s
 			keyDataList.push_back(onData);
 		}
 		else {
-			auto&& it = std::find_if(keyOnTable_.begin(),
-									 keyOnTable_.end(),
+			auto&& it = utils::findIf(keyOnTable_,
 									 [&](JamKeyInfo x) { return (x.source == source && x.key == key); });
 			if (it == keyOnTable_.end()) {
 				if (isPoly_) onData.channelInSource = unusedCh.front();
@@ -166,9 +166,7 @@ std::vector<JamKeyInfo> JamManager::keyOn(JamKey key, int channel, SoundSource s
 		}
 	}
 	else {
-		auto&& it = std::find_if(keyOnTable_.begin(),
-								 keyOnTable_.end(),
-								 [&](JamKeyInfo x) { return (x.source == source); });
+		auto&& it = utils::findIf(keyOnTable_, [&](JamKeyInfo x) { return (x.source == source); });
 		JamKeyInfo del = *it;
 		if (isPoly_) onData.channelInSource = del.channelInSource;
 		keyDataList.push_back(onData);
@@ -187,7 +185,7 @@ JamKeyInfo JamManager::keyOff(JamKey key, int keyNum)
 	auto cond = (key == JamKey::MidiKey)
 				? std::function<bool(JamKeyInfo)>([&](JamKeyInfo x) -> bool { return (x.key == JamKey::MidiKey && x.keyNum == keyNum); })
 			: std::function<bool(JamKeyInfo)>([&](JamKeyInfo x) -> bool { return (x.key == key); });
-	auto&& it = std::find_if(keyOnTable_.begin(), keyOnTable_.end(), cond);
+	auto&& it = utils::findIf(keyOnTable_, cond);
 	if (it == keyOnTable_.end()) {
 		keyData.channelInSource = -1;	// Already released
 	}

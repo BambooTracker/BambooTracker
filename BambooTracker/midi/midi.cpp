@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,8 @@
 
 #include "midi.hpp"
 #include <stdio.h>
-#include <algorithm>
 #include "RtMidi.h"
+#include "misc.hpp"
 
 namespace
 {
@@ -77,7 +77,7 @@ std::vector<std::string> MidiInterface::getAvailableApis() const
 bool MidiInterface::isAvailableApi(const std::string& api) const
 {
 	const std::vector<std::string> apis = getAvailableApis();
-	return (std::find(apis.begin(), apis.end(), api) != apis.end());
+	return (utils::find(apis, api) != apis.end());
 }
 
 bool MidiInterface::switchApi(std::string api, std::string* errDetail)

@@ -56,8 +56,8 @@ inline Effect validateEffect(SoundSource src, const Step::PlainEffect& plain)
 
 inline int reverseFmVolume(int volume, bool over0 = false) noexcept
 {
-	return (volume < NSTEP_FM_VOLUME) ? (NSTEP_FM_VOLUME - 1 - volume)
-									  : over0 ? 0 : volume;
+	return (volume < opna_defs::NSTEP_FM_VOLUME) ? (opna_defs::NSTEP_FM_VOLUME - 1 - volume)
+												 : over0 ? 0 : volume;
 }
 
 inline int reverseFmBrightness(int value) noexcept

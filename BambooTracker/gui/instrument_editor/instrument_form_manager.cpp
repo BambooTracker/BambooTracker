@@ -31,6 +31,7 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_drumkit_form.hpp"
+#include "misc.hpp"
 
 void InstrumentFormManager::updateByConfiguration()
 {
@@ -183,8 +184,7 @@ InstrumentType InstrumentFormManager::getFormInstrumentType(int n) const
 int InstrumentFormManager::checkActivatedFormNumber() const
 {
 	const QWidget* win = QApplication::activeWindow();
-	auto it = std::find_if(map_.begin(), map_.end(),
-						   [win](const std::pair<const int, std::shared_ptr<QWidget>> p) {
+	auto it = utils::findIf(map_, [win](const std::pair<const int, std::shared_ptr<QWidget>> p) {
 		return p.second.get() == win;
 	});
 

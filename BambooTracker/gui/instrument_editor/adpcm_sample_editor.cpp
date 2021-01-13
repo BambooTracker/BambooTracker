@@ -478,13 +478,13 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	}
 	else {
 		cursorSamp_.setX(
-					ui->horizontalScrollBar->value() + (viewedSampLen_ - 1) * clamp(cx, 0, w - 1) / (w - 1));
+					ui->horizontalScrollBar->value() + (viewedSampLen_ - 1) * utils::clamp(cx, 0, w - 1) / (w - 1));
 	}
 
 	// Detect y
 	const double centerY = rect.height() >> 1;
 	int y = std::numeric_limits<int16_t>::max() * (centerY - cy) / centerY;
-	cursorSamp_.setY(clamp(y, static_cast<int>(std::numeric_limits<int16_t>::min()),
+	cursorSamp_.setY(utils::clamp(y, static_cast<int>(std::numeric_limits<int16_t>::min()),
 						   static_cast<int>(std::numeric_limits<int16_t>::max())));
 
 	// Update position view

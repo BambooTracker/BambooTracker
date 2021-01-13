@@ -100,8 +100,8 @@ bool Pattern::hasEvent() const
 std::vector<int> Pattern::getEditedStepIndices() const
 {
 	auto endIt = steps_.cbegin() + static_cast<int>(size_);
-	return findIndicesIf(steps_.cbegin(), endIt,
-						 [](const Step& step) { return step.hasEvent(); });
+	return utils::findIndicesIf(steps_.cbegin(), endIt,
+								[](const Step& step) { return step.hasEvent(); });
 }
 
 std::unordered_set<int> Pattern::getRegisteredInstruments() const
@@ -126,7 +126,7 @@ void Pattern::transpose(int seminotes, const std::vector<int>& excludeInsts)
 		int note = step.getNoteNumber();
 		if (step.hasGeneralNote() && std::none_of(excludeInsts.begin(), excludeInsts.end(),
 									  [a = step.getInstrumentNumber()](int b) { return a == b; })) {
-			step.setNoteNumber(clamp(note + seminotes, 0, 95));
+			step.setNoteNumber(utils::clamp(note + seminotes, 0, 95));
 		}
 	}
 }

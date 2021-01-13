@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,6 +24,7 @@
  */
 
 #include "sequence_property.hpp"
+#include "misc.hpp"
 
 InstrumentSequenceBaseUnit::InstrumentSequenceBaseUnit() noexcept
 	: data(ERR_DATA)
@@ -108,7 +109,7 @@ InstrumentSequenceLoop::InstrumentSequenceLoop(int begin, int end, int times)
 void InstrumentSequenceLoop::setBeginPos(int pos)
 {
 	if (begin_ < pos && hasInnerLoop()) {
-		auto&& it = std::find_if(childs_.begin(), childs_.end(), [pos](const auto& pair) {
+		auto&& it = utils::findIf(childs_, [pos](const auto& pair) {
 			return pos <= pair.second->end_;
 		});
 		if (it == childs_.end()) {

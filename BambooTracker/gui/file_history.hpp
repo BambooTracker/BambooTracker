@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -41,7 +41,6 @@ public:
 	bool empty() const;
 
 private:
-	static const int HISTORY_SIZE_;
 	std::deque<QString> list_;
 };
 

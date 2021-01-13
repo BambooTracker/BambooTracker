@@ -28,6 +28,7 @@
 #include <utility>
 #include <stdexcept>
 #include "opna_defs.hpp"
+#include "misc.hpp"
 
 Bookmark::Bookmark(const std::string& argname, int argorder, int argstep)
 	: name(argname), order(argorder), step(argstep)
@@ -215,11 +216,11 @@ void Song::transpose(int seminotes, const std::vector<int>& excludeInsts)
 
 void Song::swapTracks(int track1, int track2)
 {
-	auto it1 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+	auto it1 = utils::findIf(tracks_, [&](const Track& t) {
 		return t.getAttribute().number == track1;
 	});
 	if (it1 == tracks_.end()) throw std::invalid_argument("Invalid track number");
-	auto it2 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+	auto it2 = utils::findIf(tracks_, [&](const Track& t) {
 		return t.getAttribute().number == track2;
 	});
 	if (it2 == tracks_.end()) throw std::invalid_argument("Invalid track number");

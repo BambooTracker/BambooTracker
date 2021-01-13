@@ -53,6 +53,7 @@
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_utils.hpp"
+#include "misc.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -989,10 +990,10 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		else {
 			int volLim = 0;	// Dummy set
 			switch (src) {
-			case SoundSource::FM:		volLim = NSTEP_FM_VOLUME	;	break;
-			case SoundSource::SSG:		volLim = NSTEP_SSG_VOLUME;		break;
-			case SoundSource::RHYTHM:	volLim = NSTEP_RHYTHM_VOLUME;	break;
-			case SoundSource::ADPCM:	volLim = NSTEP_ADPCM_VOLUME;	break;
+			case SoundSource::FM:		volLim = opna_defs::NSTEP_FM_VOLUME	;	break;
+			case SoundSource::SSG:		volLim = opna_defs::NSTEP_SSG_VOLUME;		break;
+			case SoundSource::RHYTHM:	volLim = opna_defs::NSTEP_RHYTHM_VOLUME;	break;
+			case SoundSource::ADPCM:	volLim = opna_defs::NSTEP_ADPCM_VOLUME;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
@@ -1461,7 +1462,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 	}
 
 	if (trackChanged) {
-		int trackVisIdx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), bt_->getCurrentTrackAttribute().number));
+		int trackVisIdx = std::distance(visTracks_.begin(), utils::find(visTracks_, bt_->getCurrentTrackAttribute().number));
 		int oldTrackVisIdx = std::exchange(curPos_.trackVisIdx, trackVisIdx);
 		curPos_.colInTrack = 0;
 		if (oldTrackVisIdx < curPos_.trackVisIdx) {
