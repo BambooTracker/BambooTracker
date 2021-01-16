@@ -296,7 +296,7 @@ void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWr
 
 /********** Internal process **********/
 void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
-											 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
+											 const EchoBuffer& echoBuf, Note& baseNote,
 											 bool& needToneSet)
 {
 	if (arpIt->hasEnded()) return;
@@ -304,28 +304,19 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 	switch (arpIt->type()) {
 	case SequenceType::AbsoluteSequence:
 	{
-		std::pair<int, Note> pair = note_utils::noteNumberToOctaveAndNote(
-										note_utils::octaveAndNoteToNoteNumber(baseTone.front().octave,
-																			  baseTone.front().note)
-										+ arpIt->data().data - 48);
-		keyTone.octave = pair.first;
-		keyTone.note = pair.second;
+		Note ln = echoBuf.latest();
+		ln.addNoteNumber(arpIt->data().data - Note::DEFAULT_NOTE_NUM);
+		baseNote = std::move(ln);
 		break;
 	}
 	case SequenceType::FixedSequence:
 	{
-		std::pair<int, Note> pair = note_utils::noteNumberToOctaveAndNote(arpIt->data().data);
-		keyTone.octave = pair.first;
-		keyTone.note = pair.second;
+		baseNote = Note(arpIt->data().data);
 		break;
 	}
 	case SequenceType::RelativeSequence:
 	{
-		std::pair<int, Note> pair = note_utils::noteNumberToOctaveAndNote(
-										note_utils::octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
-										+ arpIt->data().data - 48);
-		keyTone.octave = pair.first;
-		keyTone.note = pair.second;
+		baseNote.addNoteNumber(arpIt->data().data - Note::DEFAULT_NOTE_NUM);
 		break;
 	}
 	default:
@@ -337,36 +328,24 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 
 void OPNAController::checkPortamento(const ArpeggioIterInterface& arpIt,
 									 int prtm, bool hasKeyOnBefore, bool isTonePrtm,
-									 const std::deque<ToneDetail>& baseTone,
-									 ToneDetail& keyTone, bool& needToneSet)
+									 EchoBuffer& echoBuf,
+									 Note& baseNote, bool& needToneSet)
 {
 	if ((!arpIt || arpIt->hasEnded()) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
-			int dif = ( note_utils::octaveAndNoteToPitch(baseTone.front().octave, baseTone.front().note)
-						+ baseTone.front().pitch )
-					  - ( note_utils::octaveAndNoteToPitch(keyTone.octave, keyTone.note)
-						  + keyTone.pitch );
+			Note bufNote = echoBuf.latest();
+			int dif = bufNote.getAbsolutePicth() - baseNote.getAbsolutePicth();
 			if (dif > 0) {
-				if (dif - prtm < 0) {
-					keyTone = baseTone.front();
-				}
-				else {
-					keyTone.pitch += prtm;
-				}
+				baseNote += std::min(dif, prtm);
 				needToneSet = true;
 			}
 			else if (dif < 0) {
-				if (dif + prtm > 0) {
-					keyTone = baseTone.front();
-				}
-				else {
-					keyTone.pitch -= prtm;
-				}
+				baseNote += std::max(dif, -prtm);
 				needToneSet = true;
 			}
 		}
 		else {
-			keyTone.pitch += prtm;
+			baseNote += prtm;
 			needToneSet = true;
 		}
 	}
@@ -393,18 +372,19 @@ void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequen
 
 //---------- FM ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJam)
+void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 {
 	if (isMuteFM_[ch]) return;
 
-	updateEchoBufferFM(ch, octave, note, pitch);
+	updateEchoBufferFM(ch, note);
 
 	bool isTonePrtm = isTonePrtmFM_[ch] && hasKeyOnBeforeFM_[ch];
 	if (isTonePrtm) {
-		keyToneFM_[ch].pitch += (sumNoteSldFM_[ch] + transposeFM_[ch]);
+		baseNoteFM_[ch] += (sumNoteSldFM_[ch] + transposeFM_[ch]);
 	}
 	else {
-		keyToneFM_[ch] = baseToneFM_[ch].front();
+		baseNoteFM_[ch] = echoBufFM_[ch].latest();
+		neverSetBaseNoteFM_[ch] = false;
 		sumPitchFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
 	}
@@ -467,9 +447,8 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 
 void OPNAController::keyOnFM(int ch, int echoBuf)
 {
-	ToneDetail& td = baseToneFM_[ch].at(static_cast<size_t>(echoBuf));
-	if (td.octave == -1) return;
-	keyOnFM(ch, td.note, td.octave, td.pitch);
+	if (static_cast<size_t>(echoBuf) < echoBufFM_[ch].size())
+		keyOnFM(ch, echoBufFM_[ch][echoBuf]);
 }
 
 void OPNAController::keyOffFM(int ch, bool isJam)
@@ -537,10 +516,9 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 	}
 }
 
-void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
+void OPNAController::updateEchoBufferFM(int ch, const Note& note)
 {
-	baseToneFM_[ch].pop_back();
-	baseToneFM_[ch].push_front({ octave, note, pitch });
+	echoBufFM_[ch].push(note);
 }
 
 /********** Set instrument **********/
@@ -866,7 +844,7 @@ void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectFM(int ch, int seminote)
 {
-	transposeFM_[ch] += (seminote * note_utils::SEMINOTE_PITCH);
+	transposeFM_[ch] += (seminote * Note::SEMINOTE_PITCH);
 	needToneSetFM_[ch] = true;
 }
 
@@ -966,9 +944,9 @@ bool OPNAController::enableFMEnvelopeReset(int ch) const
 	return envFM_[toInternalFMChannel(ch)] ? enableEnvResetFM_[ch] : true;
 }
 
-ToneDetail OPNAController::getFMTone(int ch) const
+Note OPNAController::getFMTone(int ch) const
 {
-	return baseToneFM_[ch].front();
+	return echoBufFM_[ch].latest();
 }
 
 /***********************************/
@@ -1017,15 +995,9 @@ void OPNAController::initFM()
 		isKeyOnFM_[ch] = false;
 		hasKeyOnBeforeFM_[ch] = false;
 
-		// Init echo buffer
-		baseToneFM_[ch] = std::deque<ToneDetail>(4);
-		for (auto& td : baseToneFM_[ch]) {
-			td.octave = -1;
-		}
+		echoBufFM_[ch].clear();
 
-		keyToneFM_[ch].note = Note::C;	// Dummy
-		keyToneFM_[ch].octave = -1;
-		keyToneFM_[ch].pitch = 0;	// Dummy
+		neverSetBaseNoteFM_[ch] = true;
 		sumPitchFM_[ch] = 0;
 		baseVolFM_[ch] = 0;	// Init volume
 		tmpVolFM_[ch] = -1;
@@ -1932,18 +1904,14 @@ void OPNAController::checkVolumeEffectFM(int ch)
 
 void OPNAController::writePitchFM(int ch)
 {
-	if (keyToneFM_[ch].octave == -1) return;	// Not set note yet
+	if (neverSetBaseNoteFM_[ch]) return;
 
-	uint16_t p = note_utils::calculateFNumber(
-					 keyToneFM_[ch].note,
-					 keyToneFM_[ch].octave,
-					 keyToneFM_[ch].pitch
-					 + sumPitchFM_[ch]
-					 + (vibItFM_[ch] ? vibItFM_[ch]->data().data : 0)
-					 + detuneFM_[ch]
-					 + sumNoteSldFM_[ch]
-					 + transposeFM_[ch],
-					 fdetuneFM_[ch]);
+	Note&& note = baseNoteFM_[ch] + (sumPitchFM_[ch]
+									 + (vibItFM_[ch] ? vibItFM_[ch]->data().data : 0)
+									 + detuneFM_[ch]
+									 + sumNoteSldFM_[ch]
+									 + transposeFM_[ch]);
+	uint16_t p = note_utils::calculateFNumber(note.getAbsolutePicth(), fdetuneFM_[ch]);
 	uint32_t offset = getFMChannelOffset(ch, true);
 	opna_->setRegister(0xa4 + offset, p >> 8);
 	opna_->setRegister(0xa0 + offset, p & 0x00ff);
@@ -2042,17 +2010,18 @@ constexpr int UNUSED_NOISE_PERIOD = -1;
 }
 
 /********** Key on-off **********/
-void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam)
+void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 {
 	if (isMuteSSG_[ch]) return;
 
-	updateEchoBufferSSG(ch, octave, note, pitch);
+	updateEchoBufferSSG(ch, note);
 
 	if (isTonePrtmSSG_[ch] && hasKeyOnBeforeSSG_[ch]) {
-		keyToneSSG_[ch].pitch += (sumNoteSldSSG_[ch] +transposeSSG_[ch]);
+		baseNoteSSG_[ch] += (sumNoteSldSSG_[ch] + transposeSSG_[ch]);
 	}
 	else {
-		keyToneSSG_[ch] = baseToneSSG_[ch].front();
+		baseNoteSSG_[ch] = echoBufSSG_[ch].latest();
+		neverSetBaseNoteSSG_[ch] = false;
 		sumPitchSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
 		tmpVolSSG_[ch] = -1;
@@ -2076,9 +2045,8 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 
 void OPNAController::keyOnSSG(int ch, int echoBuf)
 {
-	ToneDetail& td = baseToneSSG_[ch].at(static_cast<size_t>(echoBuf));
-	if (td.octave == -1) return;
-	keyOnSSG(ch, td.note, td.octave, td.pitch);
+	if (static_cast<size_t>(echoBuf) < echoBufSSG_[ch].size())
+		keyOnSSG(ch, echoBufSSG_[ch][echoBuf]);
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
@@ -2092,10 +2060,9 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 	isKeyOnSSG_[ch] = false;
 }
 
-void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
+void OPNAController::updateEchoBufferSSG(int ch, const Note& note)
 {
-	baseToneSSG_[ch].pop_back();
-	baseToneSSG_[ch].push_front({ octave, note, pitch });
+	echoBufSSG_[ch].push(note);
 }
 
 /********** Set instrument **********/
@@ -2247,7 +2214,7 @@ void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 {
-	transposeSSG_[ch] += (seminote * note_utils::SEMINOTE_PITCH);
+	transposeSSG_[ch] += (seminote * Note::SEMINOTE_PITCH);
 	needToneSetSSG_[ch] = true;
 }
 
@@ -2344,9 +2311,9 @@ bool OPNAController::isTonePortamentoSSG(int ch) const
 	return isTonePrtmSSG_[ch];
 }
 
-ToneDetail OPNAController::getSSGTone(int ch) const
+Note OPNAController::getSSGTone(int ch) const
 {
-	return baseToneSSG_[ch].front();
+	return echoBufSSG_[ch].latest();
 }
 
 /***********************************/
@@ -2364,15 +2331,9 @@ void OPNAController::initSSG()
 
 		refInstSSG_[ch].reset();	// Init envelope
 
-		// Init echo buffer
-		baseToneSSG_[ch] = std::deque<ToneDetail>(4);
-		for (auto& td : baseToneSSG_[ch]) {
-			td.octave = -1;
-		}
+		echoBufSSG_[ch].clear();
 
-		keyToneSSG_[ch].note = Note::C;	// Dummy
-		keyToneSSG_[ch].octave = -1;
-		keyToneSSG_[ch].pitch = 0;	// Dummy
+		neverSetBaseNoteSSG_[ch] = true;
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, UNUSED_NOISE_PERIOD };
 		baseVolSSG_[ch] = opna_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
@@ -3153,20 +3114,18 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch)
 
 void OPNAController::writePitchSSG(int ch)
 {
-	if (keyToneSSG_[ch].octave == -1) return;	// Not set note yet
+	if (neverSetBaseNoteSSG_[ch]) return;
 
-	int p = keyToneSSG_[ch].pitch
-			+ sumPitchSSG_[ch]
-			+ (vibItSSG_[ch] ? vibItSSG_[ch]->data().data : 0)
-			+ detuneSSG_[ch]
-			+ sumNoteSldSSG_[ch]
-			+ transposeSSG_[ch];
+	int p = (baseNoteSSG_[ch] + (sumPitchSSG_[ch]
+								 + (vibItSSG_[ch] ? vibItSSG_[ch]->data().data : 0)
+								 + detuneSSG_[ch]
+								 + sumNoteSldSSG_[ch]
+								 + transposeSSG_[ch])).getAbsolutePicth();
 
 	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::SQUARE:
 	{
-		uint16_t pitch = note_utils::calculateSSGSquareTP(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+		uint16_t pitch = note_utils::calculateSSGSquareTP(p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
@@ -3180,8 +3139,7 @@ void OPNAController::writePitchSSG(int ch)
 	}
 	case SSGWaveformType::TRIANGLE:
 		if (needToneSetSSG_[ch]) {
-			uint16_t pitch = note_utils::calculateSSGTriangleEP(
-								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+			uint16_t pitch = note_utils::calculateSSGTriangleEP(p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
@@ -3189,16 +3147,14 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
 		if (needToneSetSSG_[ch]){
-			uint16_t pitch = note_utils::calculateSSGSawEP(
-								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+			uint16_t pitch = note_utils::calculateSSGSawEP(p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
 		break;
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		uint16_t pitch = note_utils::calculateSSGTriangleEP(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+		uint16_t pitch = note_utils::calculateSSGTriangleEP(p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
@@ -3216,8 +3172,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		uint16_t pitch = note_utils::calculateSSGSawEP(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+		uint16_t pitch = note_utils::calculateSSGSawEP(p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
@@ -3380,18 +3335,19 @@ void OPNAController::updateKeyOnOffStatusRhythm()
 
 //---------- ADPCM ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
+void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
-	updateEchoBufferADPCM(octave, note, pitch);
+	updateEchoBufferADPCM(note);
 
 	bool isTonePrtm = isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_;
 	if (isTonePrtm) {
-		keyToneADPCM_.pitch += (sumNoteSldADPCM_ + transposeADPCM_);
+		baseNoteADPCM_ += (sumNoteSldADPCM_ + transposeADPCM_);
 	}
 	else {
-		keyToneADPCM_ = baseToneADPCM_.front();
+		baseNoteADPCM_ = echoBufADPCM_.latest();
+		neverSetBaseNoteADPCM_ = false;
 		sumPitchADPCM_ = 0;
 		sumVolSldADPCM_ = 0;
 		tmpVolADPCM_ = -1;
@@ -3417,7 +3373,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 								   refInstADPCM_->isSampleRepeatable());
 		}
 		else if (hasStartRequestedKit_) {	// valid key in refInstKit_
-			int key = note_utils::octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			int key = baseNoteADPCM_.getNoteNumber();
 			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
 								   refInstKit_->getSampleStopAddress(key),
 								   refInstKit_->isSampleRepeatable(key));
@@ -3432,9 +3388,8 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 
 void OPNAController::keyOnADPCM(int echoBuf)
 {
-	ToneDetail& td = baseToneADPCM_.at(static_cast<size_t>(echoBuf));
-	if (td.octave == -1) return;
-	keyOnADPCM( td.note, td.octave, td.pitch);
+	if (static_cast<size_t>(echoBuf) < echoBufADPCM_.size())
+		keyOnADPCM(echoBufADPCM_[echoBuf]);
 }
 
 void OPNAController::keyOffADPCM(bool isJam)
@@ -3448,10 +3403,9 @@ void OPNAController::keyOffADPCM(bool isJam)
 	isKeyOnADPCM_ = false;
 }
 
-void OPNAController::updateEchoBufferADPCM(int octave, Note note, int pitch)
+void OPNAController::updateEchoBufferADPCM(const Note& note)
 {
-	baseToneADPCM_.pop_back();
-	baseToneADPCM_.push_front({ octave, note, pitch });
+	echoBufADPCM_.push(note);
 }
 
 /********** Set instrument **********/
@@ -3663,7 +3617,7 @@ void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 
 void OPNAController::setTransposeEffectADPCM(int seminote)
 {
-	transposeADPCM_ += (seminote * note_utils::SEMINOTE_PITCH);
+	transposeADPCM_ += (seminote * Note::SEMINOTE_PITCH);
 	needToneSetADPCM_ = true;
 }
 
@@ -3689,9 +3643,9 @@ bool OPNAController::isTonePortamentoADPCM() const
 	return isTonePrtmADPCM_;
 }
 
-ToneDetail OPNAController::getADPCMTone() const
+Note OPNAController::getADPCMTone() const
 {
-	return baseToneADPCM_.front();
+	return echoBufADPCM_.latest();
 }
 
 size_t OPNAController::getADPCMStoredSize() const
@@ -3708,15 +3662,9 @@ void OPNAController::initADPCM()
 	refInstADPCM_.reset();	// Init envelope
 	refInstKit_.reset();
 
-	// Init echo buffer
-	baseToneADPCM_ = std::deque<ToneDetail>(4);
-	for (auto& td : baseToneADPCM_) {
-		td.octave = -1;
-	}
+	echoBufADPCM_.clear();
 
-	keyToneADPCM_.note = Note::C;	// Dummy
-	keyToneADPCM_.octave = -1;
-	keyToneADPCM_.pitch = 0;	// Dummy
+	neverSetBaseNoteADPCM_ = true;
 	sumPitchADPCM_ = 0;
 	baseVolADPCM_ = opna_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
 	tmpVolADPCM_ = -1;
@@ -3915,7 +3863,7 @@ void OPNAController::tickEventADPCM()
 			opna_->setRegister(0x101, 0x02);
 			opna_->setRegister(0x100, 0xa1);
 
-			int key = note_utils::octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			int key = baseNoteADPCM_.getNoteNumber();
 			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
 								   refInstKit_->getSampleStopAddress(key),
 								   refInstKit_->isSampleRepeatable(key));
@@ -3934,25 +3882,22 @@ void OPNAController::writeEnvelopeADPCMToRegister()
 
 void OPNAController::writePitchADPCM()
 {
-	if (keyToneADPCM_.octave == -1) return;	// Not set note yet
+	if (neverSetBaseNoteADPCM_) return;
 
 	if (refInstADPCM_) {
-		int p = keyToneADPCM_.pitch
-				+ sumPitchADPCM_
-				+ (vibItADPCM_ ? vibItADPCM_->data().data : 0)
-				+ detuneADPCM_
-				+ sumNoteSldADPCM_
-				+ transposeADPCM_;
-		p = note_utils::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
-
-		int diff = p - note_utils::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
+		int p = (baseNoteADPCM_ + (sumPitchADPCM_
+								   + (vibItADPCM_ ? vibItADPCM_->data().data : 0)
+								   + detuneADPCM_
+								   + sumNoteSldADPCM_
+								   + transposeADPCM_)).getAbsolutePicth();
+		int diff = p - Note::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
-		int key = utils::clamp(note_utils::octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
-							   + transposeADPCM_ / note_utils::SEMINOTE_PITCH, 0, 95);
+		int key = utils::clamp(baseNoteADPCM_.getNoteNumber()
+							   + transposeADPCM_ / Note::SEMINOTE_PITCH, 0, Note::NOTE_NUMBER_RANGE - 1);
 		if (refInstKit_->getSampleEnabled(key)) {
-			int diff = note_utils::SEMINOTE_PITCH * refInstKit_->getPitch(key);
+			int diff = Note::SEMINOTE_PITCH * refInstKit_->getPitch(key);
 			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));
 			hasStartRequestedKit_ = true;
 		}

@@ -25,6 +25,7 @@
 
 #include "transpose_note_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
+#include "note.hpp"
 #include "misc.hpp"
 
 TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(
@@ -59,7 +60,7 @@ void TransposeNoteInPatternCommand::redo()
 			Step& st = command_utils::getStep(sng, track, order_, step);
 			int n = st.getNoteNumber();
 			if (st.hasGeneralNote()) {
-				st.setNoteNumber(utils::clamp(n + seminote_, 0, 95));
+				st.setNoteNumber(utils::clamp(n + seminote_, 0, Note::NOTE_NUMBER_RANGE - 1));
 			}
 		}
 	}

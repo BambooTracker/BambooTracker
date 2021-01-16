@@ -262,6 +262,7 @@ HEADERS += \
     command/pattern/paste_insert_copied_data_to_pattern_command.hpp \
     command/pattern/pattern_command_utils.hpp \
     command/pattern/transpose_note_in_pattern_command.hpp \
+    echo_buffer.hpp \
     enum_hash.hpp \
     gui/bookmark_manager_form.hpp \
     gui/color_palette_handler.hpp \

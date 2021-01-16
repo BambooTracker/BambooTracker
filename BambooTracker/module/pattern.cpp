@@ -26,6 +26,7 @@
 #include "pattern.hpp"
 #include <algorithm>
 #include "effect.hpp"
+#include "note.hpp"
 #include "misc.hpp"
 
 namespace
@@ -126,7 +127,7 @@ void Pattern::transpose(int seminotes, const std::vector<int>& excludeInsts)
 		int note = step.getNoteNumber();
 		if (step.hasGeneralNote() && std::none_of(excludeInsts.begin(), excludeInsts.end(),
 									  [a = step.getInstrumentNumber()](int b) { return a == b; })) {
-			step.setNoteNumber(utils::clamp(note + seminotes, 0, 95));
+			step.setNoteNumber(utils::clamp(note + seminotes, 0, Note::NOTE_NUMBER_RANGE - 1));
 		}
 	}
 }

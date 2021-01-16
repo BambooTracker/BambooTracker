@@ -25,34 +25,10 @@
 
 #include "note.hpp"
 #include <algorithm>
-#include "misc.hpp"
+#include <cmath>
 
 namespace note_utils
 {
-namespace
-{
-constexpr Note NOTE_NUM_CONV[12] = {
-	Note::C, Note::CS, Note::D, Note::DS, Note::E, Note::F,
-	Note::FS, Note::G, Note::GS, Note::A, Note::AS, Note::B
-};
-}
-
-std::pair<int, Note> noteNumberToOctaveAndNote(int num)
-{
-	if (num < 0) return std::make_pair(0, Note::C);
-
-	int oct = num / 12;
-	if (oct > 7) return std::make_pair(7, Note::B);
-
-	return std::make_pair(oct, NOTE_NUM_CONV[num % 12]);
-}
-
-int octaveAndNoteToNoteNumber(int octave, Note note)
-{
-	auto&& it = std::find(std::begin(NOTE_NUM_CONV), std::end(NOTE_NUM_CONV), note);
-	return 12 * octave + std::distance(std::begin(NOTE_NUM_CONV), it);
-}
-
 namespace
 {
 const uint16_t centTableFM[3072] = {
@@ -313,6 +289,8 @@ const uint16_t centTableFM[3072] = {
 	0x3ca0, 0x3ca2, 0x3ca4, 0x3ca6, 0x3ca9, 0x3cab, 0x3cad, 0x3caf, 0x3cb1, 0x3cb3, 0x3cb6, 0x3cb8,
 	0x3cba, 0x3cbc, 0x3cbe, 0x3cc1, 0x3cc3, 0x3cc5, 0x3cc7, 0x3cc9, 0x3ccc, 0x3cce, 0x3cd0, 0x3cd2
 };
+static_assert(sizeof(centTableFM) == sizeof(uint16_t) * Note::ABS_PITCH_RANGE,
+"Invalid FM cent table size.");
 
 const uint16_t centTableSSGSquare[3072] = {
 	0xee8, 0xee1, 0xeda, 0xed4, 0xecd, 0xec6, 0xebf, 0xeb8, 0xeb1, 0xeab, 0xea4, 0xe9d,
@@ -572,6 +550,8 @@ const uint16_t centTableSSGSquare[3072] = {
 	0x010, 0x010, 0x010, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f,
 	0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f
 };
+static_assert(sizeof(centTableSSGSquare) == sizeof(uint16_t) * Note::ABS_PITCH_RANGE,
+"Invalid SSG square cent table size.");
 
 const uint16_t centTableSSGTriangle[3072] = {
 	0x077, 0x077, 0x077, 0x077, 0x076, 0x076, 0x076, 0x076, 0x076, 0x075, 0x075, 0x075,
@@ -831,6 +811,8 @@ const uint16_t centTableSSGTriangle[3072] = {
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001
 };
+static_assert(sizeof(centTableSSGTriangle) == sizeof(uint16_t) * Note::ABS_PITCH_RANGE,
+"Invalid SSG triangle cent table size.");
 
 const uint16_t centTableSSGSaw[3072] = {
 	0x0ef, 0x0ee, 0x0ee, 0x0ed, 0x0ed, 0x0ec, 0x0ec, 0x0ec, 0x0eb, 0x0eb, 0x0ea, 0x0ea,
@@ -1090,44 +1072,76 @@ const uint16_t centTableSSGSaw[3072] = {
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001
 };
+static_assert(sizeof(centTableSSGSaw) == sizeof(uint16_t) * Note::ABS_PITCH_RANGE,
+"Invalid SSG saw cent table size.");
 }
 
-uint16_t calculateFNumber(Note note, int octave, int pitch, int finePitch)
+uint16_t calculateFNumber(int absPitch, int finePitch)
 {
-	uint16_t p = centTableFM[calculatePitchIndex(octave, note, pitch)];
+	uint16_t p = centTableFM[absPitch];
 	return (finePitch ? (finePitch > 0 ? p + finePitch : p - static_cast<uint16_t>(-finePitch))
 					  : p);
 }
 
-uint16_t calculateSSGSquareTP(Note note, int octave, int pitch, int finePitch)
+uint16_t calculateSSGSquareTP(int absPitch, int finePitch)
 {
-	uint16_t p = centTableSSGSquare[calculatePitchIndex(octave, note, pitch)];
+	uint16_t p = centTableSSGSquare[absPitch];
 	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
 					   : p);
 }
 
-uint16_t calculateSSGSquareTP(int n)
+uint16_t calculateSSGTriangleEP(int absPitch, int finePitch)
 {
-	return centTableSSGSquare[n];
-}
-
-uint16_t calculateSSGTriangleEP(Note note, int octave, int pitch, int finePitch)
-{
-	uint16_t p = centTableSSGTriangle[calculatePitchIndex(octave, note, pitch)];
+	uint16_t p = centTableSSGTriangle[absPitch];
 	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
 					   : p);
 }
 
-uint16_t calculateSSGSawEP(Note note, int octave, int pitch, int finePitch)
+uint16_t calculateSSGSawEP(int absPitch, int finePitch)
 {
-	uint16_t p = centTableSSGSaw[calculatePitchIndex(octave, note, pitch)];
+	uint16_t p = centTableSSGSaw[absPitch];
 	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
 					   : p);
 }
-
-int calculatePitchIndex(int octave, Note note, int pitch)
-{
-	int idx = 384 * octave + static_cast<int>(note) + pitch;
-	return utils::clamp(idx, 0, 3071);
 }
+
+Note::Note(int noteNum)
+	: request_eval_(false)
+{
+	if (noteNum < 0) {
+		octave_ = 0;
+		name_ = NoteName::C;
+		pitch_ = 0;
+		return;
+	}
+
+	octave_ = noteNum / 12;
+	if (octave_ > OCTAVE_RANGE - 1) {
+		octave_ = OCTAVE_RANGE - 1;
+		name_ = NoteName::B;
+		pitch_ = SEMINOTE_PITCH - 1;
+		return;
+	}
+
+	name_ = static_cast<NoteName>(noteNum % 12);
+	pitch_ = 0;
+}
+
+void Note::evaluateState(int octave, int note, int pitch)
+{
+	pitch_ = pitch % SEMINOTE_PITCH;
+	note += pitch / SEMINOTE_PITCH;
+	name_ = ((note % 12) + 12) % 12;;
+	octave_ = octave + std::floor(note / 12.);
+	if (octave_ < 0 || (!octave_ && !name_ && pitch_ < 0)) {
+		octave_ = 0;
+		name_ = NoteName::C;
+		pitch_ = 0;
+	}
+	else if (OCTAVE_RANGE <= octave_) {
+		octave_ = OCTAVE_RANGE - 1;
+		name_ = NoteName::B;
+		pitch_ = SEMINOTE_PITCH - 1;
+	}
+	request_eval_ = false;
 }

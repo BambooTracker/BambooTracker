@@ -30,6 +30,7 @@
 #include <functional>
 #include <type_traits>
 #include "instrument.hpp"
+#include "note.hpp"
 #include "misc.hpp"
 
 namespace
@@ -75,7 +76,7 @@ inline auto makeOperatorSequenceFMSharedPtr(int n)
 inline auto makeArpeggioSharedPtr(int n)
 {
 	return std::make_shared<InstrumentSequenceProperty<
-			ArpeggioUnit>>(n, SequenceType::AbsoluteSequence, ArpeggioUnit(48), ArpeggioUnit());
+			ArpeggioUnit>>(n, SequenceType::AbsoluteSequence, ArpeggioUnit(Note::DEFAULT_NOTE_NUM), ArpeggioUnit());
 }
 
 inline auto makePitchSharedPtr(int n)

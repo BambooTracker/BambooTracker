@@ -29,7 +29,7 @@
 
 namespace
 {
-const InstrumentSequenceBaseUnit ARP_CENTER(48);
+const InstrumentSequenceBaseUnit ARP_CENTER(Note::DEFAULT_NOTE_NUM);
 }
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
@@ -128,7 +128,7 @@ NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
 	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0),
 	  started_(false)
 {
-	int d = seminote * note_utils::SEMINOTE_PITCH;
+	int d = seminote * Note::SEMINOTE_PITCH;
 	if (speed) {
 		int prev = 0;
 		for (int i = 0; i <= speed; ++i) {

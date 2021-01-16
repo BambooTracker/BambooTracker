@@ -53,7 +53,6 @@
 
 class AbstractBank;
 enum class EffectDisplayControl;
-enum class Note;
 
 class BambooTracker
 {
@@ -442,7 +441,7 @@ public:
 	bool canAddNewOrder(int songNum) const;
 	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool instMask, bool volMask);
+	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, const Note& note, bool instMask, bool volMask);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
 	void setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);

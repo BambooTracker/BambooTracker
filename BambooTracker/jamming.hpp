@@ -31,7 +31,7 @@
 #include "enum_hash.hpp"
 #include "opna_defs.hpp"
 
-enum class Note;
+class Note;
 
 enum class JamKey
 {
@@ -51,9 +51,8 @@ struct JamKeyInfo
 
 namespace jam_utils
 {
-Note jamKeyToNote(JamKey& key);
-JamKey noteToJamKey(Note& note);
-int calculateJamKeyOctave(int baseOctave, JamKey& key);
+Note makeNote(const JamKeyInfo& info, int baseOctave);
+Note makeNote(int baseOctave, JamKey key);
 }
 
 class JamManager

@@ -1102,7 +1102,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 							subdata = ctr.readUint16(csr);
 							csr += 2;
 							if (subdata != -1)
-								subdata = note_utils::calculateSSGSquareTP(subdata);
+								subdata = note_utils::calculateSSGSquareTP(subdata, 0);
 						}
 						SSGWaveformUnit unit;
 						switch (data) {

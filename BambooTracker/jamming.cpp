@@ -33,96 +33,73 @@
 
 namespace jam_utils
 {
-Note jamKeyToNote(JamKey &key)
+Note makeNote(const JamKeyInfo& info, int baseOctave)
+{
+	return (info.key == JamKey::MidiKey) ? Note(info.keyNum) : makeNote(baseOctave, info.key);
+}
+
+Note makeNote(int baseOctave, JamKey key)
 {
 	switch (key) {
 	case JamKey::LowC:
-	case JamKey::LowC2:
-	case JamKey::HighC:
-	case JamKey::HighC2:	return Note::C;
+		return Note(baseOctave, Note::C);
 	case JamKey::LowCS:
-	case JamKey::LowCS2:
-	case JamKey::HighCS:
-	case JamKey::HighCS2:	return Note::CS;
+		return Note(baseOctave, Note::CS);
 	case JamKey::LowD:
-	case JamKey::LowD2:
-	case JamKey::HighD:
-	case JamKey::HighD2:	return Note::D;
+		return Note(baseOctave, Note::D);
 	case JamKey::LowDS:
-	case JamKey::HighDS:	return Note::DS;
+		return Note(baseOctave, Note::DS);
 	case JamKey::LowE:
-	case JamKey::HighE:		return Note::E;
+		return Note(baseOctave, Note::E);
 	case JamKey::LowF:
-	case JamKey::HighF:		return Note::F;
+		return Note(baseOctave, Note::F);
 	case JamKey::LowFS:
-	case JamKey::HighFS:	return Note::FS;
+		return Note(baseOctave, Note::FS);
 	case JamKey::LowG:
-	case JamKey::HighG:		return Note::G;
+		return Note(baseOctave, Note::G);
 	case JamKey::LowGS:
-	case JamKey::HighGS:	return Note::GS;
+		return Note(baseOctave, Note::GS);
 	case JamKey::LowA:
-	case JamKey::HighA:		return Note::A;
+		return Note(baseOctave, Note::A);
 	case JamKey::LowAS:
-	case JamKey::HighAS:	return Note::AS;
+		return Note(baseOctave, Note::AS);
 	case JamKey::LowB:
-	case JamKey::HighB:		return Note::B;
-	default:	throw std::invalid_argument("Unexpected JamKey.");
-	}
-}
-
-JamKey noteToJamKey(Note& note)
-{
-	switch (note) {
-	case Note::C:	return JamKey::LowC;
-	case Note::CS:	return JamKey::LowCS;
-	case Note::D:	return JamKey::LowD;
-	case Note::DS:	return JamKey::LowDS;
-	case Note::E:	return JamKey::LowE;
-	case Note::F:	return JamKey::LowF;
-	case Note::FS:	return JamKey::LowFS;
-	case Note::G:	return JamKey::LowG;
-	case Note::GS:	return JamKey::LowGS;
-	case Note::A:	return JamKey::LowA;
-	case Note::AS:	return JamKey::LowAS;
-	case Note::B:	return JamKey::LowB;
-	default:	throw std::invalid_argument("Unexpected Note.");
-	}
-}
-
-int calculateJamKeyOctave(int baseOctave, JamKey &key)
-{
-	switch (key) {
-	case JamKey::LowC:
-	case JamKey::LowCS:
-	case JamKey::LowD:
-	case JamKey::LowDS:
-	case JamKey::LowE:
-	case JamKey::LowF:
-	case JamKey::LowFS:
-	case JamKey::LowG:
-	case JamKey::LowGS:
-	case JamKey::LowA:
-	case JamKey::LowAS:
-	case JamKey::LowB:		return baseOctave;
+		return Note(baseOctave, Note::B);
 	case JamKey::LowC2:
-	case JamKey::LowCS2:
-	case JamKey::LowD2:
 	case JamKey::HighC:
+		return Note(baseOctave + 1, Note::C);
+	case JamKey::LowCS2:
 	case JamKey::HighCS:
+		return Note(baseOctave + 1, Note::CS);
+	case JamKey::LowD2:
 	case JamKey::HighD:
+		return Note(baseOctave + 1, Note::D);
 	case JamKey::HighDS:
+		return Note(baseOctave + 1, Note::DS);
 	case JamKey::HighE:
+		return Note(baseOctave + 1, Note::E);
 	case JamKey::HighF:
+		return Note(baseOctave + 1, Note::F);
 	case JamKey::HighFS:
+		return Note(baseOctave + 1, Note::FS);
 	case JamKey::HighG:
+		return Note(baseOctave + 1, Note::G);
 	case JamKey::HighGS:
+		return Note(baseOctave + 1, Note::GS);
 	case JamKey::HighA:
+		return Note(baseOctave + 1, Note::A);
 	case JamKey::HighAS:
-	case JamKey::HighB:		return (baseOctave + 1);
+		return Note(baseOctave + 1, Note::AS);
+	case JamKey::HighB:
+		return Note(baseOctave + 1, Note::B);
 	case JamKey::HighC2:
+		return Note(baseOctave + 2, Note::C);
 	case JamKey::HighCS2:
-	case JamKey::HighD2:	return (baseOctave + 2);
-	default:	throw std::invalid_argument("Unexpected JamKey.");
+		return Note(baseOctave + 2, Note::CS);
+	case JamKey::HighD2:
+		return Note(baseOctave + 2, Note::D);
+	default:
+		throw std::invalid_argument("invalid jam key");
 	}
 }
 }

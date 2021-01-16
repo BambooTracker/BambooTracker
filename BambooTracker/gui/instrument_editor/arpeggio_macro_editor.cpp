@@ -25,6 +25,7 @@
 
 #include "arpeggio_macro_editor.hpp"
 #include <QRegularExpression>
+#include "note.hpp"
 
 namespace
 {
@@ -38,26 +39,28 @@ const QString TONE_LABS_[96] = {
 	"C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6", "A-6", "A#6", "B-6",
 	"C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7", "A#7", "B-7"
 };
+static_assert (sizeof(TONE_LABS_) == sizeof(QString) * Note::NOTE_NUMBER_RANGE, "Invalid note name table size");
 }
 
 ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
 	: VisualizedInstrumentMacroEditor(parent)
 {
-	setMaximumDisplayedRowCount(15);
-	setDefaultRow(48);
+	constexpr int MAX_DISP_CNT = 15;
+	setMaximumDisplayedRowCount(MAX_DISP_CNT);
+	setDefaultRow(Note::DEFAULT_NOTE_NUM);
 	setLabelDiaplayMode(true);
-	for (int i = 0; i < 96; ++i) {
-		AddRow(QString::asprintf("%+d", i - 48), false);
+	for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i) {
+		AddRow(QString::asprintf("%+d", i - Note::DEFAULT_NOTE_NUM), false);
 	}
 	autoFitLabelWidth();
-	setUpperRow(55);
-	setMMLDisplay0As(-48);
+	setUpperRow(Note::DEFAULT_NOTE_NUM + MAX_DISP_CNT / 2);
+	setMMLDisplay0As(-Note::DEFAULT_NOTE_NUM);
 	setSequenceType(SequenceType::AbsoluteSequence);
 }
 
 QString ArpeggioMacroEditor::convertSequenceDataUnitToMML(Column col)
 {
-	if (type_ == SequenceType::FixedSequence)	return TONE_LABS_[col.row];
+	if (type_ == SequenceType::FixedSequence) return TONE_LABS_[col.row];
 	else return VisualizedInstrumentMacroEditor::convertSequenceDataUnitToMML(col);
 }
 
@@ -107,11 +110,11 @@ bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vecto
 void ArpeggioMacroEditor::updateLabels()
 {
 	if (type_ == SequenceType::FixedSequence) {
-		for (int i = 0; i < 96; ++i)
+		for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i)
 			setLabel(i, TONE_LABS_[i]);
 	}
 	else {
-		for (int i = 0; i < 96; ++i)
-			setLabel(i, QString::asprintf("%+d", i - 48));
+		for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i)
+			setLabel(i, QString::asprintf("%+d", i - Note::DEFAULT_NOTE_NUM));
 	}
 }

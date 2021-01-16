@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,26 +23,38 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef ARPEGGIO_MACRO_EDITOR_HPP
-#define ARPEGGIO_MACRO_EDITOR_HPP
+#pragma once
 
-#include "visualized_instrument_macro_editor.hpp"
-#include <QString>
-#include "instrument.hpp"
+#include <deque>
+#include "note.hpp"
 
-class ArpeggioMacroEditor final : public VisualizedInstrumentMacroEditor
+class EchoBuffer
 {
-	Q_OBJECT
-
+	using DequeType = std::deque<Note>;
 public:
-	ArpeggioMacroEditor(QWidget *parent = nullptr);
+	using reference = DequeType::reference;
+	using const_reference = DequeType::const_reference;
+	using size_type = DequeType::size_type;
 
-protected:
-	QString convertSequenceDataUnitToMML(Column col) override;
-	bool interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column) override;
+	reference at(size_type n) { return deque_.at(n); }
+	const_reference at(size_type n) const { return deque_.at(n); }
+
+	reference operator[](size_type n) { return deque_[n]; }
+	const_reference operator[](size_type n) const { return deque_[n]; }
+
+	reference latest() { return deque_.front(); }
+	const_reference latest() const { return deque_.front(); }
+
+	size_type size() const noexcept { return deque_.size(); }
+
+	void clear() noexcept { deque_.clear(); }
+
+	void push(const Note& y) {
+		deque_.push_front(y);
+		if (MAX_ <= deque_.size()) deque_.pop_back();
+	}
 
 private:
-	void updateLabels() override;
+	std::deque<Note> deque_;
+	static constexpr size_type MAX_ = 4;
 };
-
-#endif // ARPEGGIO_MACRO_EDITOR_HPP

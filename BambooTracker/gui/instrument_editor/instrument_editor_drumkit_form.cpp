@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,6 +27,7 @@
 #include "ui_instrument_editor_drumkit_form.h"
 #include <QString>
 #include "instrument.hpp"
+#include "note.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_utils.hpp"
@@ -42,7 +43,7 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 
 	ui->keyTreeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	QString tone[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-" };
-	for (int i = 0; i < 96; ++i) {
+	for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i) {
 		ui->keyTreeWidget->addTopLevelItem(
 					new QTreeWidgetItem({ tone[i % 12] + QString::number(i / 12), "-", "-" }));
 	}
@@ -122,8 +123,8 @@ void InstrumentEditorDrumkitForm::updateInstrumentParameters()
 void InstrumentEditorDrumkitForm::showEvent(QShowEvent*)
 {
 	if (!hasShown_) {
-		ui->keyTreeWidget->setCurrentItem(ui->keyTreeWidget->topLevelItem(48));
-		ui->keyTreeWidget->scrollTo(ui->keyTreeWidget->model()->index(48, 0),
+		ui->keyTreeWidget->setCurrentItem(ui->keyTreeWidget->topLevelItem(Note::DEFAULT_NOTE_NUM));
+		ui->keyTreeWidget->scrollTo(ui->keyTreeWidget->model()->index(Note::DEFAULT_NOTE_NUM, 0),
 									QAbstractItemView::PositionAtTop);
 	}
 	hasShown_ = true;

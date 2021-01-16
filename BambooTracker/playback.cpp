@@ -487,11 +487,8 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 		opnaCtrl_->keyOnFM(ch, 3);
 		break;
 	default:	// Key on
-	{
-		std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(noteNum);
-		opnaCtrl_->keyOnFM(ch, octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnFM(ch, Note(noteNum));
 		break;
-	}
 	}
 }
 
@@ -540,11 +537,8 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 		opnaCtrl_->keyOnSSG(ch, 3);
 		break;
 	default:	// Key on
-	{
-		std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(noteNum);
-		opnaCtrl_->keyOnSSG(ch, octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnSSG(ch, Note(noteNum));
 		break;
-	}
 	}
 }
 
@@ -625,11 +619,8 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 		opnaCtrl_->keyOnADPCM(3);
 		break;
 	default:	// Key on
-	{
-		std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(noteNum);
-		opnaCtrl_->keyOnADPCM(octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnADPCM(Note(noteNum));
 		break;
-	}
 	}
 }
 
@@ -2160,8 +2151,7 @@ void PlaybackManager::retrieveChannelStates()
 	for (size_t ch = 0; ch < fmch; ++ch) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (toneFM.at(ch).at(i) >= 0) {
-				std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(toneFM[ch][i]);
-				opnaCtrl_->updateEchoBufferFM(static_cast<int>(ch), octNote.first, octNote.second, 0);
+				opnaCtrl_->updateEchoBufferFM(static_cast<int>(ch), Note(toneFM[ch][i]));
 			}
 		}
 		opnaCtrl_->haltSequencesFM(static_cast<int>(ch));
@@ -2169,16 +2159,14 @@ void PlaybackManager::retrieveChannelStates()
 	for (size_t ch = 0; ch < 3; ++ch) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (toneSSG.at(ch).at(i) >= 0) {
-				std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(toneSSG[ch][i]);
-				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(ch), octNote.first, octNote.second, 0);
+				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(ch), Note(toneSSG[ch][i]));
 			}
 		}
 		opnaCtrl_->haltSequencesSSG(static_cast<int>(ch));
 	}
 	for (size_t i = 0; i < 3; ++i) {
 		if (toneADPCM.at(i) >= 0) {
-			std::pair<int, Note> octNote = note_utils::noteNumberToOctaveAndNote(toneADPCM[i]);
-			opnaCtrl_->updateEchoBufferADPCM(octNote.first, octNote.second, 0);
+			opnaCtrl_->updateEchoBufferADPCM(Note(toneADPCM[i]));
 		}
 	}
 	opnaCtrl_->haltSequencesADPCM();

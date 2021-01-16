@@ -1529,48 +1529,19 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
 			JamKey possibleJamKey = getJamKeyFromLayoutMapping(qtKey, config_);
-			int octaveOffset = 0;
-			switch (possibleJamKey) {
-			case JamKey::HighD2:
-			case JamKey::HighCS2:
-			case JamKey::HighC2:
-				octaveOffset = 2;
-				break;
-			case JamKey::HighB:
-			case JamKey::HighAS:
-			case JamKey::HighA:
-			case JamKey::HighGS:
-			case JamKey::HighG:
-			case JamKey::HighFS:
-			case JamKey::HighF:
-			case JamKey::HighE:
-			case JamKey::HighDS:
-			case JamKey::HighD:
-			case JamKey::HighCS:
-			case JamKey::HighC:
-			case JamKey::LowD2:
-			case JamKey::LowCS2:
-			case JamKey::LowC2:
-				octaveOffset = 1;
-				break;
-			default:
-				break;
-			}
-			setStepKeyOn(jam_utils::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
+			setStepKeyOn(jam_utils::makeNote(baseOct, possibleJamKey));
 		} catch (std::invalid_argument &) {}
 	}
 
 	return false;
 }
 
-void PatternEditorPanel::setStepKeyOn(Note note, int octave)
+void PatternEditorPanel::setStepKeyOn(const Note& note)
 {
-	if (octave < 8) {
-		bt_->setStepNote(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, octave, note,
-						 config_->getInstrumentMask(), config_->getVolumeMask());
-		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
-		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
-	}
+	bt_->setStepNote(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, note,
+					 config_->getInstrumentMask(), config_->getVolumeMask());
+	comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
+	if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterInstrumentData(int key)
@@ -3229,8 +3200,7 @@ void PatternEditorPanel::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	if (!bt_->isJamMode()) {
 		bool release = ((status & 0xf0) == 0x80) || velocity == 0;
 		if (!release) {
-			std::pair<int, Note> octaveAndNote = note_utils::noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
-			setStepKeyOn(octaveAndNote.second, octaveAndNote.first);
+			setStepKeyOn(Note(static_cast<int>(key) - 12));
 		}
 	}
 }

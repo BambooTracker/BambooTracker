@@ -28,24 +28,16 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
-#include <deque>
 #include "song.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
+#include "note.hpp"
+#include "echo_buffer.hpp"
 #include "chip/opna.hpp"
 #include "chip/scci/scci.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
 #include "opna_defs.hpp"
-
-enum class Note;
-
-struct ToneDetail
-{
-	int octave;
-	Note note;
-	int pitch;
-};
 
 struct SSGToneNoise
 {
@@ -121,9 +113,9 @@ private:
 
 	using ArpeggioIterInterface = std::unique_ptr<SequenceIteratorInterface<ArpeggioUnit>>;
 	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
-								 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
+								 const EchoBuffer& echoBuf, Note& baseNote, bool& needToneSet);
 	void checkPortamento(const ArpeggioIterInterface& arpIt, int prtm, bool hasKeyOnBefore,
-						 bool isTonePrtm, const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
+						 bool isTonePrtm, EchoBuffer& echoBuf, Note& baseNote,
 						 bool& needToneSet);
 	void checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
 							  int& sumPitch, bool& needToneSet);
@@ -131,10 +123,10 @@ private:
 	/*----- FM -----*/
 public:
 	// Key on-off
-	void keyOnFM(int ch, Note note, int octave, int pitch, bool isJam = false);
+	void keyOnFM(int ch, const Note& note, bool isJam = false);
 	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
-	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
+	void updateEchoBufferFM(int ch, const Note& note);
 
 	// Set instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
@@ -176,15 +168,16 @@ public:
 	bool isKeyOnFM(int ch) const;
 	bool isTonePortamentoFM(int ch) const;
 	bool enableFMEnvelopeReset(int ch) const;
-	ToneDetail getFMTone(int ch) const;
+	Note getFMTone(int ch) const;	// TODO: fix
 
 private:
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
 	std::unique_ptr<EnvelopeFM> envFM_[6];
 	bool isKeyOnFM_[9], hasKeyOnBeforeFM_[9];
 	uint8_t fmOpEnables_[6];
-	std::deque<ToneDetail> baseToneFM_[9];
-	ToneDetail keyToneFM_[9];
+	EchoBuffer echoBufFM_[9];
+	bool neverSetBaseNoteFM_[9];
+	Note baseNoteFM_[9];
 	int sumPitchFM_[9];
 	int baseVolFM_[9], tmpVolFM_[9];
 	/// bit0: right on/off
@@ -241,13 +234,13 @@ private:
 
 	inline void checkRealToneFMByArpeggio(int ch)
 	{
-		checkRealToneByArpeggio(arpItFM_[ch], baseToneFM_[ch], keyToneFM_[ch], needToneSetFM_[ch]);
+		checkRealToneByArpeggio(arpItFM_[ch], echoBufFM_[ch], baseNoteFM_[ch], needToneSetFM_[ch]);
 	}
 
 	inline void checkPortamentoFM(int ch)
 	{
-		checkPortamento(arpItFM_[ch], prtmFM_[ch], hasKeyOnBeforeFM_[ch], isTonePrtmFM_[ch], baseToneFM_[ch],
-						keyToneFM_[ch], needToneSetFM_[ch]);
+		checkPortamento(arpItFM_[ch], prtmFM_[ch], hasKeyOnBeforeFM_[ch], isTonePrtmFM_[ch], echoBufFM_[ch],
+						baseNoteFM_[ch], needToneSetFM_[ch]);
 	}
 
 	inline void checkRealToneFMByPitch(int ch)
@@ -314,10 +307,10 @@ private:
 	/*----- SSG -----*/
 public:
 	// Key on-off
-	void keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam = false);
+	void keyOnSSG(int ch, const Note& note, bool isJam = false);
 	void keyOnSSG(int ch, int echoBuf);
 	void keyOffSSG(int ch, bool isJam = false);
-	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
+	void updateEchoBufferSSG(int ch, const Note& note);
 
 	// Set instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
@@ -348,14 +341,15 @@ public:
 	// Chip details
 	bool isKeyOnSSG(int ch) const;
 	bool isTonePortamentoSSG(int ch) const;
-	ToneDetail getSSGTone(int ch) const;
+	Note getSSGTone(int ch) const;	// TODO: fix
 
 private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
 	bool isKeyOnSSG_[3], hasKeyOnBeforeSSG_[3];
 	uint8_t mixerSSG_;
-	std::deque<ToneDetail> baseToneSSG_[3];
-	ToneDetail keyToneSSG_[3];
+	EchoBuffer echoBufSSG_[3];
+	bool neverSetBaseNoteSSG_[3];
+	Note baseNoteSSG_[3];
 	int sumPitchSSG_[3];
 	SSGToneNoise tnSSG_[3];
 	int baseVolSSG_[3], tmpVolSSG_[3];
@@ -413,13 +407,13 @@ private:
 
 	inline void checkRealToneSSGByArpeggio(int ch)
 	{
-		checkRealToneByArpeggio(arpItSSG_[ch], baseToneSSG_[ch], keyToneSSG_[ch], needToneSetSSG_[ch]);
+		checkRealToneByArpeggio(arpItSSG_[ch], echoBufSSG_[ch], baseNoteSSG_[ch], needToneSetSSG_[ch]);
 	}
 
 	inline void checkPortamentoSSG(int ch)
 	{
-		checkPortamento(arpItSSG_[ch], prtmSSG_[ch], hasKeyOnBeforeSSG_[ch], isTonePrtmSSG_[ch], baseToneSSG_[ch],
-						keyToneSSG_[ch], needToneSetSSG_[ch]);
+		checkPortamento(arpItSSG_[ch], prtmSSG_[ch], hasKeyOnBeforeSSG_[ch], isTonePrtmSSG_[ch], echoBufSSG_[ch],
+						baseNoteSSG_[ch], needToneSetSSG_[ch]);
 	}
 
 	inline void checkRealToneSSGByPitch(int ch)
@@ -470,10 +464,10 @@ private:
 	/*----- ADPCM/Drumkit -----*/
 public:
 	// Key on-off
-	void keyOnADPCM(Note note, int octave, int pitch, bool isJam = false);
+	void keyOnADPCM(const Note& note, bool isJam = false);
 	void keyOnADPCM(int echoBuf);
 	void keyOffADPCM(bool isJam = false);
-	void updateEchoBufferADPCM(int octave, Note note, int pitch);
+	void updateEchoBufferADPCM(const Note& note);
 
 	// Set instrument
 	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);
@@ -506,15 +500,16 @@ public:
 	// Chip details
 	bool isKeyOnADPCM() const;
 	bool isTonePortamentoADPCM() const;
-	ToneDetail getADPCMTone() const;
+	Note getADPCMTone() const;	// TODO: fix
 	size_t getADPCMStoredSize() const;
 
 private:
 	std::shared_ptr<InstrumentADPCM> refInstADPCM_;
 	std::shared_ptr<InstrumentDrumkit> refInstKit_;
 	bool isKeyOnADPCM_, hasKeyOnBeforeADPCM_;
-	std::deque<ToneDetail> baseToneADPCM_;
-	ToneDetail keyToneADPCM_;
+	EchoBuffer echoBufADPCM_;
+	bool neverSetBaseNoteADPCM_;
+	Note baseNoteADPCM_;
 	int sumPitchADPCM_;
 	int baseVolADPCM_, tmpVolADPCM_;
 	uint8_t panADPCM_;
@@ -553,13 +548,13 @@ private:
 
 	inline void checkRealToneADPCMByArpeggio()
 	{
-		checkRealToneByArpeggio(arpItADPCM_, baseToneADPCM_, keyToneADPCM_, needToneSetADPCM_);
+		checkRealToneByArpeggio(arpItADPCM_, echoBufADPCM_, baseNoteADPCM_, needToneSetADPCM_);
 	}
 
 	inline void checkPortamentoADPCM()
 	{
-		checkPortamento(arpItADPCM_, prtmADPCM_, hasKeyOnBeforeADPCM_, isTonePrtmADPCM_, baseToneADPCM_,
-						keyToneADPCM_, needToneSetADPCM_);
+		checkPortamento(arpItADPCM_, prtmADPCM_, hasKeyOnBeforeADPCM_, isTonePrtmADPCM_, echoBufADPCM_,
+						baseNoteADPCM_, needToneSetADPCM_);
 	}
 
 	inline void checkRealToneADPCMByPitch()

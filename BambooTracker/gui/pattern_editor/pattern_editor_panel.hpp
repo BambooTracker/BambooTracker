@@ -275,7 +275,7 @@ private:
 	}
 
 	bool enterToneData(QKeyEvent* event);
-	void setStepKeyOn(Note note, int octave);
+	void setStepKeyOn(const Note& note);
 	bool enterInstrumentData(int key);
 	void setStepInstrument(int num);
 	bool enterVolumeData(int key);
