@@ -30,7 +30,7 @@
 #include <vector>
 #include <QString>
 #include <QKeySequence>
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 enum class SongType;
 

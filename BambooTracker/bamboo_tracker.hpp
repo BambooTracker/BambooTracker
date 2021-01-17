@@ -32,32 +32,32 @@
 #include <functional>
 #include <unordered_map>
 #include <set>
-#include "configuration.hpp"
-#include "opna_controller.hpp"
+#include <array>
 #include "jamming.hpp"
-#include "instruments_manager.hpp"
 #include "instrument.hpp"
-#include "tick_counter.hpp"
 #include "module.hpp"
-#include "song.hpp"
 #include "command/command_manager.hpp"
-#include "chip/scci/scci.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
-#include "effect.hpp"
-#include "playback.hpp"
+#include "chip/scci/scci.hpp"
 #include "io/binary_container.hpp"
-#include "io/wav_container.hpp"
 #include "io/export_io.hpp"
+#include "io/wav_container.hpp"
+#include "bamboo_tracker_defs.hpp"
 #include "enum_hash.hpp"
-#include "opna_defs.hpp"
 
-class AbstractBank;
+class Configuration;
 enum class EffectDisplayControl;
+enum class RealChipInterface;
+class AbstractBank;
+class OPNAController;
+class PlaybackManager;
+class TickCounter;
 
 class BambooTracker
 {
 public:
 	explicit BambooTracker(std::weak_ptr<Configuration> config);
+	~BambooTracker();
 
 	// Change confuguration
 	void changeConfiguration(std::weak_ptr<Configuration> config);
@@ -79,24 +79,23 @@ public:
 	int getCurrentInstrumentNumber() const;
 
 	// Instrument edit
-	void addInstrument(int num, InstrumentType type, std::string name);
+	void addInstrument(int num, InstrumentType type, const std::string& name);
 	void removeInstrument(int num);
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
 	void swapInstruments(int a, int b, bool patternChange);
-	void loadInstrument(io::BinaryContainer& container, std::string path, int instNum);
+	void loadInstrument(io::BinaryContainer& container, const std::string& path, int instNum);
 	void saveInstrument(io::BinaryContainer& container, int instNum);
 	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
-	void exportInstruments(io::BinaryContainer& container, std::vector<int> instNums);
+	void exportInstruments(io::BinaryContainer& container, const std::vector<int>& instNums);
 	int findFirstFreeInstrumentNumber() const;
-	void setInstrumentName(int num, std::string name);
+	void setInstrumentName(int num, const std::string& name);
 	void clearAllInstrument();
 	std::vector<int> getInstrumentIndices() const;
 	std::vector<int> getUnusedInstrumentIndices() const;
 	void clearUnusedInstrumentProperties();
 	std::vector<std::string> getInstrumentNames() const;
-	std::vector<std::vector<int>> checkDuplicateInstruments() const;
 
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
@@ -303,7 +302,8 @@ public:
 	void jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void jamKeyOffForced(JamKey key, SoundSource src);
 	void jamKeyOffForced(int keyNum, SoundSource src);
-	std::vector<std::vector<size_t>> assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst);
+	bool assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst,
+										 std::unordered_map<int, std::array<size_t, 2>>& sampAddrs);
 
 	// Play song
 	void startPlaySong();
@@ -325,11 +325,12 @@ public:
 	int getMarkerStep() const;
 
 	// Export
-	bool exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar);
+	using ExportCancellCallback = std::function<bool()>;
+	bool exportToWav(io::WavContainer& container, int loopCnt, ExportCancellCallback checkFunc);
 	bool exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-					 const io::GD3Tag& tag, std::function<bool()> bar);
+					 const io::GD3Tag& tag, ExportCancellCallback checkFunc);
 	bool exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
-					 const io::S98Tag& tag, int rate, std::function<bool()> bar);
+					 const io::S98Tag& tag, int rate, ExportCancellCallback checkFunc);
 
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);
@@ -361,15 +362,15 @@ public:
 	void makeNewModule();
 	void loadModule(io::BinaryContainer& container);
 	void saveModule(io::BinaryContainer& container);
-	void setModulePath(std::string path);
+	void setModulePath(const std::string& path);
 	std::string getModulePath() const;
-	void setModuleTitle(std::string title);
+	void setModuleTitle(const std::string& title);
 	std::string getModuleTitle() const;
-	void setModuleAuthor(std::string author);
+	void setModuleAuthor(const std::string& author);
 	std::string getModuleAuthor() const;
-	void setModuleCopyright(std::string copyright);
+	void setModuleCopyright(const std::string& copyright);
 	std::string getModuleCopyright() const;
-	void setModuleComment(std::string comment);
+	void setModuleComment(const std::string& comment);
 	std::string getModuleComment() const;
 	void setModuleTickFrequency(unsigned int freq);
 	unsigned int getModuleTickFrequency() const;
@@ -388,10 +389,10 @@ public:
 	void setGrooves(const std::vector<std::vector<int>>& seqs);
 	std::vector<int> getGroove(int num) const;
 	void clearUnusedPatterns();
-	void replaceDuplicateInstrumentsInPatterns(const std::vector<std::vector<int>>& list);
+	std::unordered_map<int, int> replaceDuplicateInstrumentsInPatterns();
 	void clearUnusedADPCMSamples();
 	/*----- Song -----*/
-	void setSongTitle(int songNum, std::string title);
+	void setSongTitle(int songNum, const std::string& title);
 	std::string getSongTitle(int songNum) const;
 	void setSongTempo(int songNum, int tempo);
 	int getSongTempo(int songNum) const;
@@ -404,15 +405,15 @@ public:
 	void setSongSpeed(int songNum, int speed);
 	int getSongSpeed(int songNum) const;
 	size_t getSongCount() const;
-	void addSong(SongType songType, std::string title);
-	void sortSongs(std::vector<int> numbers);
-	size_t getAllStepCount(int songNum, size_t loopCnt) const;
-	void transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts);
+	void addSong(SongType songType, const std::string& title);
+	void sortSongs(const std::vector<int>& numbers);
+	void transposeSong(int songNum, int seminotes, const std::vector<int>& excludeInsts);
 	void swapTracks(int songNum, int track1, int track2);
-	double calculateSongLength(int songNum) const;
+	double getApproximateSongLength(int songNum) const;
+	size_t getTotalStepCount(int songNum, size_t loopCnt) const;
 	/*----- Bookmark -----*/
-	void addBookmark(int songNum, std::string name, int order, int step);
-	void changeBookmark(int songNum, int i, std::string name, int order, int step);
+	void addBookmark(int songNum, const std::string& name, int order, int step);
+	void changeBookmark(int songNum, int i, const std::string& name, int order, int step);
 	void removeBookmark(int songNum, int i);
 	void clearBookmark(int songNum);
 	void swapBookmarks(int songNum, int a, int b);
@@ -432,7 +433,7 @@ public:
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
 	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
-						 std::vector<std::vector<std::string>> cells);
+						 const std::vector<std::vector<std::string>>& cells);
 	void duplicateOrder(int songNum, int orderNum);
 	void MoveOrder(int songNum, int orderNum, bool isUp);
 	void clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack);
@@ -452,7 +453,7 @@ public:
 	int setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool secondEntry);
 	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
 	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
-	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry);
+	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, const std::string& id, bool fillValue00, bool secondEntry);
 	int getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
 	void setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, EffectDisplayControl ctrl, bool secondEntry);
 	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n);
@@ -466,15 +467,13 @@ public:
 	///		3: effect id
 	///		4: effect value
 	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-						   std::vector<std::vector<std::string>> cells);
+						   const std::vector<std::vector<std::string>>& cells);
 	void pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-							  std::vector<std::vector<std::string>> cells);
+							  const std::vector<std::vector<std::string>>& cells);
 	void pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-									int beginStep, std::vector<std::vector<std::string>> cells);
+									int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-								 int beginStep, std::vector<std::vector<std::string>> cells);
-	std::vector<std::vector<std::string>> arrangePatternDataCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-																  std::vector<std::vector<std::string>> cells);
+								 int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
@@ -522,8 +521,6 @@ private:
 	bool isFollowPlay_;
 	bool storeOnlyUsedSamples_;
 
-	static const uint32_t CHIP_CLOCK;
-
 	// Jam mode
 	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib, bool volumeSet,
 					  std::shared_ptr<AbstractInstrument> inst = nullptr);
@@ -531,7 +528,4 @@ private:
 
 	// Play song
 	void startPlay();
-
-	void checkNextPositionOfLastStepAndStepSize(
-			int songNum, int& endOrder, int& endStep, size_t& nIntroStep, size_t& nLoopStep) const;
 };

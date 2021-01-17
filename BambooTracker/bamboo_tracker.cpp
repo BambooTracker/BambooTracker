@@ -26,9 +26,13 @@
 #include "bamboo_tracker.hpp"
 #include <algorithm>
 #include <utility>
-#include <unordered_set>
 #include <exception>
 #include <unordered_map>
+#include <unordered_set>
+#include "configuration.hpp"
+#include "opna_controller.hpp"
+#include "playback.hpp"
+#include "tick_counter.hpp"
 #include "command/commands.hpp"
 #include "chip/register_write_logger.hpp"
 #include "io/module_io.hpp"
@@ -37,16 +41,19 @@
 #include "bank.hpp"
 #include "note.hpp"
 #include "song_length_calculator.hpp"
-#include "opna_defs.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
-const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
+namespace
+{
+const uint32_t CHIP_CLOCK = 3993600 * 2;
+}
 
 BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	: instMan_(std::make_shared<InstrumentsManager>(config.lock()->getOverwriteUnusedUneditedPropety())),
+	  jamMan_(std::make_unique<JamManager>()),
 	  tickCounter_(std::make_shared<TickCounter>()),
 	  mod_(std::make_shared<Module>()),
-	  curOctave_(4),
+	  curOctave_(Note::DEFAULT_OCTAVE),
 	  curSongNum_(0),
 	  curTrackNum_(0),
 	  curOrderNum_(0),
@@ -67,7 +74,6 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
 
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
-	jamMan_ = std::make_unique<JamManager>();
 
 	playback_ = std::make_unique<PlaybackManager>(
 					opnaCtrl_, instMan_, tickCounter_, mod_, config.lock()->getRetrieveChannelState());
@@ -75,6 +81,8 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	storeOnlyUsedSamples_ = config.lock()->getWriteOnlyUsedSamples();
 	volFMReversed_ = config.lock()->getReverseFMVolumeOrder();
 }
+
+BambooTracker::~BambooTracker() = default;
 
 /********** Change configuration **********/
 void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
@@ -122,8 +130,7 @@ void BambooTracker::setCurrentTrack(int num)
 
 TrackAttribute BambooTracker::getCurrentTrackAttribute() const
 {
-	TrackAttribute ret = songStyle_.trackAttribs.at(static_cast<size_t>(curTrackNum_));
-	return ret;
+	return songStyle_.trackAttribs.at(static_cast<size_t>(curTrackNum_));
 }
 
 /********** Current instrument **********/
@@ -138,7 +145,7 @@ int BambooTracker::getCurrentInstrumentNumber() const
 }
 
 /********** Instrument edit **********/
-void BambooTracker::addInstrument(int num, InstrumentType type, std::string name)
+void BambooTracker::addInstrument(int num, InstrumentType type, const std::string& name)
 {
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(instMan_, num, type, name));
 }
@@ -170,11 +177,10 @@ void BambooTracker::swapInstruments(int a, int b, bool patternChange)
 	comMan_.invoke(std::make_unique<SwapInstrumentsCommand>(instMan_, mod_, a, b, curSongNum_, patternChange));
 }
 
-void BambooTracker::loadInstrument(io::BinaryContainer& container, std::string path, int instNum)
+void BambooTracker::loadInstrument(io::BinaryContainer& container, const std::string& path, int instNum)
 {
-	auto inst = io::InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
-	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
-					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
+	AbstractInstrument* inst = io::InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
 void BambooTracker::saveInstrument(io::BinaryContainer& container, int instNum)
@@ -184,12 +190,12 @@ void BambooTracker::saveInstrument(io::BinaryContainer& container, int instNum)
 
 void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
 {
-	auto inst = bank.loadInstrument(index, instMan_, instNum);
+	AbstractInstrument* inst = bank.loadInstrument(index, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::exportInstruments(io::BinaryContainer& container, std::vector<int> instNums)
+void BambooTracker::exportInstruments(io::BinaryContainer& container, const std::vector<int>& instNums)
 {
 	io::BankIO::getInstance().saveBank(container, instMan_, instNums);
 }
@@ -199,7 +205,7 @@ int BambooTracker::findFirstFreeInstrumentNumber() const
 	return instMan_->findFirstFreeInstrument();
 }
 
-void BambooTracker::setInstrumentName(int num, std::string name)
+void BambooTracker::setInstrumentName(int num, const std::string& name)
 {
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
 }
@@ -216,11 +222,11 @@ std::vector<int> BambooTracker::getInstrumentIndices() const
 
 std::vector<int> BambooTracker::getUnusedInstrumentIndices() const
 {
+	std::vector<int> instIdcs = instMan_->getInstrumentIndices();
+	std::set<int> regdInsts = mod_->getRegisterdInstruments();
+
 	std::vector<int> unused;
-	std::unordered_set<int> regdInsts = mod_->getRegisterdInstruments();
-	for (auto& inst : instMan_->getInstrumentIndices()) {
-		if (!regdInsts.count(inst)) unused.push_back(inst);
-	}
+	std::set_difference(instIdcs.begin(), instIdcs.end(), regdInsts.begin(), regdInsts.end(), std::back_inserter(unused));
 	return unused;
 }
 
@@ -232,11 +238,6 @@ void BambooTracker::clearUnusedInstrumentProperties()
 std::vector<std::string> BambooTracker::getInstrumentNames() const
 {
 	return instMan_->getInstrumentNameList();
-}
-
-std::vector<std::vector<int>> BambooTracker::checkDuplicateInstruments() const
-{
-	return instMan_->checkDuplicateInstruments();
 }
 
 //--- FM
@@ -840,10 +841,11 @@ void BambooTracker::assignSampleADPCMRawSamples()
 	std::vector<int> idcs = storeOnlyUsedSamples_ ? instMan_->getSampleADPCMValidIndices()
 												  : instMan_->getSampleADPCMEntriedIndices();
 	for (auto sampNum : idcs) {
-		std::vector<size_t> addresses
-				= opnaCtrl_->storeSampleADPCM(instMan_->getSampleADPCMRawSample(sampNum));
-		instMan_->setSampleADPCMStartAddress(sampNum, addresses[0]);
-		instMan_->setSampleADPCMStopAddress(sampNum, addresses[1]);
+		size_t startAddr, stopAddr;
+		if (opnaCtrl_->storeSampleADPCM(instMan_->getSampleADPCMRawSample(sampNum), startAddr, stopAddr)) {
+			instMan_->setSampleADPCMStartAddress(sampNum, startAddr);
+			instMan_->setSampleADPCMStopAddress(sampNum, stopAddr);
+		}
 	}
 }
 
@@ -1108,7 +1110,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	};
 	for (auto& pair : pairs) {
 		muteState_[pair.first] = std::vector<bool>(pair.second, false);
-		for (int i = 0; i < pair.second; ++i) opnaCtrl_->setMuteState(pair.first, i, false);
+		for (int ch = 0; ch < pair.second; ++ch) opnaCtrl_->setMuteState(pair.first, ch, false);
 	}
 }
 
@@ -1211,7 +1213,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 	if (attrib.source == SoundSource::RHYTHM) {
 		if (volumeSet)
-			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, opna_defs::NSTEP_RHYTHM_VOLUME - 1));
+			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, bt_defs::NSTEP_RHYTHM_VOLUME - 1));
 		opnaCtrl_->setKeyOnFlagRhythm(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
@@ -1256,7 +1258,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			if (volumeSet) {
 				int vol;
 				if (volFMReversed_) vol = effect_utils::reverseFmVolume(curVolume_, true);
-				else vol = std::min(curVolume_, opna_defs::NSTEP_FM_VOLUME - 1);
+				else vol = std::min(curVolume_, bt_defs::NSTEP_FM_VOLUME - 1);
 				opnaCtrl_->setVolumeFM(onInfo.channelInSource, vol);
 			}
 			if (songStyle_.type == SongType::FM3chExpanded && onInfo.channelInSource == 2) {
@@ -1363,30 +1365,42 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 	}
 }
 
-std::vector<std::vector<size_t>> BambooTracker::assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst)
+bool BambooTracker::assignADPCMBeforeForcedJamKeyOn(
+		std::shared_ptr<AbstractInstrument> inst, std::unordered_map<int, std::array<size_t, 2>>& sampAddrs)
 {
+	size_t start, stop;
+	bool isAssignedAll = false;
 	switch (inst->getType()) {
 	case InstrumentType::ADPCM:
 	{
 		opnaCtrl_->clearSamplesADPCM();
-		return { opnaCtrl_->storeSampleADPCM(
-						std::dynamic_pointer_cast<InstrumentADPCM>(inst)->getRawSample()) };
+		if (opnaCtrl_->storeSampleADPCM(
+					std::dynamic_pointer_cast<InstrumentADPCM>(inst)->getRawSample(), start, stop)) {
+			sampAddrs[0] = { start, stop };
+			isAssignedAll = true;
+		}
+		break;
 	}
 	case InstrumentType::Drumkit:
 	{
 		opnaCtrl_->clearSamplesADPCM();
 		std::vector<std::vector<size_t>> addrs;
+
 		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
 		for (const int& key : kit->getAssignedKeys()) {
-			int samp = kit->getSampleNumber(key);
-			if (addrs.size() <= static_cast<size_t>(samp)) addrs.resize(samp + 1);
-			if (addrs[samp].empty()) addrs[samp] = opnaCtrl_->storeSampleADPCM(kit->getRawSample(key));
+			int n = kit->getSampleNumber(key);
+			if (!sampAddrs.count(n)) {
+				bool assigned = opnaCtrl_->storeSampleADPCM(kit->getRawSample(key), start, stop);
+				if (assigned) sampAddrs[n] = { start, stop };
+				isAssignedAll &= assigned;
+			}
 		}
-		return addrs;
+		break;
 	}
 	default:
-		return {};
+		break;
 	}
+	return isAssignedAll;
 }
 
 /********** Play song **********/
@@ -1536,7 +1550,61 @@ int BambooTracker::getMarkerStep() const
 }
 
 /********** Export **********/
-bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar)
+namespace
+{
+void checkNextPositionOfLastStepAndStepSize(Song& song, int& endOrder, int& endStep)
+{
+	endOrder = 0;
+	endStep = 0;
+
+	std::vector<TrackAttribute> attribs = song.getTrackAttributes();
+	std::unordered_set<int> orderStepMap;
+	int lastOrder = static_cast<int>(song.getOrderSize()) - 1;
+
+	for (int curOrder = 0; !orderStepMap.count(curOrder); curOrder = endOrder) {
+		orderStepMap.insert(curOrder);	// Arrived flag
+		// Default next order
+		endOrder = (endOrder + 1) % (lastOrder + 1);
+		endStep = 0;
+
+		// Check jump effect
+		for (auto attrib : attribs) {
+			Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(curOrder)
+						 .getStep(static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder)) - 1);
+			for (int i = 0; i < Step::N_EFFECT; ++i) {
+				Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
+				switch (eff.type) {
+				case EffectType::PositionJump:
+					if (eff.value <= lastOrder) {
+						endOrder = eff.value;
+						endStep = 0;
+					}
+					break;
+				case EffectType::SongEnd:
+					endOrder = -1;
+					endStep = -1;
+					return;
+				case EffectType::PatternBreak:
+					if (curOrder == lastOrder
+							&& eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(0))) {
+						endOrder = 0;
+						endStep = eff.value;
+					}
+					else if (eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder + 1))) {
+						endOrder = curOrder + 1;
+						endStep = eff.value;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+}
+}
+
+bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, ExportCancellCallback checkFunc)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(static_cast<int>(container.getSampleRate()));
@@ -1545,10 +1613,8 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 	size_t intrCntRest = 0;
 	std::vector<int16_t> buf(sampCnt << 1);
 
-	int endOrder = 0;
-	int endStep = 0;
-	size_t dummy = 0;
-	checkNextPositionOfLastStepAndStepSize(curSongNum_, endOrder, endStep, dummy, dummy);
+	int endOrder, endStep;
+	checkNextPositionOfLastStepAndStepSize(mod_->getSong(curSongNum_), endOrder, endStep);
 	bool endFlag = false;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
 	startPlayFromStart();
@@ -1560,7 +1626,7 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 				intrCntRest = intrCnt;    // Set counts to next interruption
 
 				if (!streamCountUp()) {
-					if (bar()) {	// Update lambda function
+					if (checkFunc()) {	// Update lambda function
 						stopPlaySong();
 						isFollowPlay_ = tmpFollow;
 						return false;
@@ -1595,7 +1661,7 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 }
 
 bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-								const io::GD3Tag& tag, std::function<bool()> bar)
+								const io::GD3Tag& tag, ExportCancellCallback checkFunc)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1604,10 +1670,8 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
 
-	int loopOrder = 0;
-	int loopStep = 0;
-	size_t dummy = 0;
-	checkNextPositionOfLastStepAndStepSize(curSongNum_, loopOrder, loopStep, dummy, dummy);
+	int loopOrder, loopStep;
+	checkNextPositionOfLastStepAndStepSize(mod_->getSong(curSongNum_), loopOrder, loopStep);
 	bool loopFlag = (loopOrder != -1);
 	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
@@ -1620,13 +1684,14 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 	opnaCtrl_->clearSamplesADPCM();
 	std::vector<uint8_t> rom;
 	for (auto sampNum : instMan_->getSampleADPCMValidIndices()) {
-		std::vector<uint8_t> sample = instMan_->getSampleADPCMRawSample(sampNum);
-		std::vector<size_t> addresses = opnaCtrl_->storeSampleADPCM(sample);
-		instMan_->setSampleADPCMStartAddress(sampNum, addresses[0]);
-		instMan_->setSampleADPCMStopAddress(sampNum, addresses[1]);
-
-		rom.resize((addresses[1] + 1) << 5);
-		std::copy(sample.begin(), sample.end(), rom.begin() + static_cast<int>(addresses[0] << 5));
+		std::vector<uint8_t>&& sample = instMan_->getSampleADPCMRawSample(sampNum);
+		size_t startAddr, stopAddr;
+		if (opnaCtrl_->storeSampleADPCM(sample, startAddr, stopAddr)) {
+			instMan_->setSampleADPCMStartAddress(sampNum, startAddr);
+			instMan_->setSampleADPCMStopAddress(sampNum, stopAddr);
+			rom.resize((stopAddr + 1) << 5);
+			std::copy(sample.begin(), sample.end(), rom.begin() + static_cast<int>(startAddr << 5));
+		}
 	}
 	exCntr->setDataBlock(std::move(rom));
 
@@ -1636,7 +1701,7 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 
 	while (true) {
 		if (!streamCountUp()) {
-			if (bar()) {	// Update lambda function
+			if (checkFunc()) {	// Update lambda function
 				stopPlaySong();
 				isFollowPlay_ = tmpFollow;
 				return false;
@@ -1675,7 +1740,7 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 }
 
 bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
-								const io::S98Tag& tag, int rate, std::function<bool()> bar)
+								const io::S98Tag& tag, int rate, ExportCancellCallback checkFunc)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(rate);
@@ -1684,10 +1749,8 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
 
-	int loopOrder = 0;
-	int loopStep = 0;
-	size_t dummy = 0;
-	checkNextPositionOfLastStepAndStepSize(curSongNum_, loopOrder, loopStep, dummy, dummy);
+	int loopOrder, loopStep;
+	checkNextPositionOfLastStepAndStepSize(mod_->getSong(curSongNum_), loopOrder, loopStep);
 	bool loopFlag = (loopOrder != -1);
 	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
@@ -1701,7 +1764,7 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 	while (true) {
 		exCntr->getData();	// Set wait counts
 		if (!streamCountUp()) {
-			if (bar()) {	// Update lambda function
+			if (checkFunc()) {	// Update lambda function
 				stopPlaySong();
 				isFollowPlay_ = tmpFollow;
 				return false;
@@ -1733,68 +1796,6 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 		return true;
 	} catch (...) {
 		throw;
-	}
-}
-
-void BambooTracker::checkNextPositionOfLastStepAndStepSize(int songNum, int& endOrder, int& endStep, size_t& nIntroStep, size_t& nLoopStep) const
-{
-	Song& song = mod_->getSong(songNum);
-	endOrder = 0;
-	endStep = 0;
-
-	int lastOrder = static_cast<int>(song.getOrderSize()) - 1;
-	std::unordered_map<int, int> orderStepMap;
-	int orderN = 0;
-	size_t stepCnt = 0;
-	do {
-		endOrder = (endOrder + 1) % (lastOrder + 1);
-		endStep = 0;
-
-		int stepN = static_cast<int>(getPatternSizeFromOrderNumber(songNum, orderN)) - 1;
-		for (auto attrib : songStyle_.trackAttribs) {
-			Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(orderN).getStep(stepN);
-			for (int i = 0; i < Step::N_EFFECT; ++i) {
-				Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
-				switch (eff.type) {
-				case EffectType::PositionJump:
-					if (eff.value <= lastOrder) {
-						endOrder = eff.value;
-						endStep = 0;
-					}
-					break;
-				case EffectType::SongEnd:
-					endOrder = -1;
-					endStep = -1;
-					break;
-				case EffectType::PatternBreak:
-					if (orderN == lastOrder
-							&& eff.value < static_cast<int>(getPatternSizeFromOrderNumber(songNum, 0))) {
-						endOrder = 0;
-						endStep = eff.value;
-					}
-					else if (eff.value < static_cast<int>(getPatternSizeFromOrderNumber(songNum, orderN + 1))) {
-						endOrder = orderN + 1;
-						endStep = eff.value;
-					}
-					break;
-				default:
-					break;
-				}
-			}
-		}
-
-		orderStepMap[orderN] = stepCnt;
-		stepCnt += song.getPatternSizeFromOrderNumber(orderN);
-		orderN = endOrder;
-	} while (orderN != -1 && !orderStepMap.count(orderN));	// stopped song or jumped to played order
-
-	if (orderN == -1) {
-		nIntroStep = stepCnt;
-		nLoopStep = 0;
-	}
-	else {
-		nIntroStep = orderStepMap[orderN];
-		nLoopStep = stepCnt - orderStepMap[orderN];
 	}
 }
 
@@ -1936,7 +1937,7 @@ void BambooTracker::saveModule(io::BinaryContainer& container)
 	io::ModuleIO::getInstance().saveModule(container, mod_, instMan_);
 }
 
-void BambooTracker::setModulePath(std::string path)
+void BambooTracker::setModulePath(const std::string& path)
 {
 	mod_->setFilePath(path);
 }
@@ -1946,7 +1947,7 @@ std::string BambooTracker::getModulePath() const
 	return mod_->getFilePath();
 }
 
-void BambooTracker::setModuleTitle(std::string title)
+void BambooTracker::setModuleTitle(const std::string& title)
 {
 	mod_->setTitle(title);
 }
@@ -1956,7 +1957,7 @@ std::string BambooTracker::getModuleTitle() const
 	return mod_->getTitle();
 }
 
-void BambooTracker::setModuleAuthor(std::string author)
+void BambooTracker::setModuleAuthor(const std::string& author)
 {
 	mod_->setAuthor(author);
 }
@@ -1966,7 +1967,7 @@ std::string BambooTracker::getModuleAuthor() const
 	return mod_->getAuthor();
 }
 
-void BambooTracker::setModuleCopyright(std::string copyright)
+void BambooTracker::setModuleCopyright(const std::string& copyright)
 {
 	mod_->setCopyright(copyright);
 }
@@ -1976,7 +1977,7 @@ std::string BambooTracker::getModuleCopyright() const
 	return mod_->getCopyright();
 }
 
-void BambooTracker::setModuleComment(std::string comment)
+void BambooTracker::setModuleComment(const std::string& comment)
 {
 	mod_->setComment(comment);
 }
@@ -2072,16 +2073,11 @@ void BambooTracker::clearUnusedPatterns()
 	mod_->clearUnusedPatterns();
 }
 
-void BambooTracker::replaceDuplicateInstrumentsInPatterns(const std::vector<std::vector<int> >& list)
+std::unordered_map<int, int> BambooTracker::replaceDuplicateInstrumentsInPatterns()
 {
-	std::unordered_map<int, int> map;
-	for (const auto& group : list) {
-		for (size_t i = 1; i < group.size(); ++i) {
-			map.emplace(group[i], group.front());
-		}
-	}
-
+	std::unordered_map<int, int> map = instMan_->getDuplicateInstrumentMap();
 	mod_->replaceDuplicateInstrumentsInPatterns(map);
+	return map;
 }
 
 void BambooTracker::clearUnusedADPCMSamples()
@@ -2090,7 +2086,7 @@ void BambooTracker::clearUnusedADPCMSamples()
 }
 
 /*----- Song -----*/
-void BambooTracker::setSongTitle(int songNum, std::string title)
+void BambooTracker::setSongTitle(int songNum, const std::string& title)
 {
 	mod_->getSong(songNum).setTitle(title);
 }
@@ -2160,27 +2156,17 @@ size_t BambooTracker::getSongCount() const
 	return mod_->getSongCount();
 }
 
-void BambooTracker::addSong(SongType songType, std::string title)
+void BambooTracker::addSong(SongType songType, const std::string& title)
 {
 	mod_->addSong(songType, title);
 }
 
-void BambooTracker::sortSongs(std::vector<int> numbers)
+void BambooTracker::sortSongs(const std::vector<int>& numbers)
 {
 	mod_->sortSongs(std::move(numbers));
 }
 
-size_t BambooTracker::getAllStepCount(int songNum, size_t loopCnt) const
-{
-	size_t introSize = 0;
-	size_t loopSize = 0;
-	int dummy1 = 0;
-	int dummy2 = 0;
-	checkNextPositionOfLastStepAndStepSize(songNum, dummy1, dummy2, introSize, loopSize);
-	return introSize + loopSize * loopCnt;
-}
-
-void BambooTracker::transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts)
+void BambooTracker::transposeSong(int songNum, int seminotes, const std::vector<int>& excludeInsts)
 {
 	mod_->getSong(songNum).transpose(seminotes, excludeInsts);
 }
@@ -2190,19 +2176,27 @@ void BambooTracker::swapTracks(int songNum, int track1, int track2)
 	mod_->getSong(songNum).swapTracks(track1, track2);
 }
 
-double BambooTracker::calculateSongLength(int songNum) const
+double BambooTracker::getApproximateSongLength(int songNum) const
 {
-	SongLengthCalculator calculator(*mod_.get(), songNum);
-	return calculator.calculateBySecond();
+	SongLengthCalculator calc(*mod_.get(), songNum);
+	return calc.approximateLengthBySecond();
+}
+
+size_t BambooTracker::getTotalStepCount(int songNum, size_t loopCnt) const
+{
+	size_t introSize, loopSize;
+	SongLengthCalculator calc(*mod_.get(), songNum);
+	calc.totalStepCount(introSize, loopSize);
+	return introSize + loopSize * loopCnt;
 }
 
 /*----- Bookmark -----*/
-void BambooTracker::addBookmark(int songNum, std::string name, int order, int step)
+void BambooTracker::addBookmark(int songNum, const std::string& name, int order, int step)
 {
 	mod_->getSong(songNum).addBookmark(name, order, step);
 }
 
-void BambooTracker::changeBookmark(int songNum, int i, std::string name, int order, int step)
+void BambooTracker::changeBookmark(int songNum, int i, const std::string& name, int order, int step)
 {
 	mod_->getSong(songNum).changeBookmark(i, name, order, step);
 }
@@ -2289,22 +2283,14 @@ void BambooTracker::deleteOrder(int songNum, int orderNum)
 }
 
 void BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder,
-									std::vector<std::vector<std::string>> cells)
+									const std::vector<std::vector<std::string>>& cells)
 {
 	// Arrange data
-	std::vector<std::vector<std::string>> d;
-	size_t w = songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack);
-	size_t h = getOrderSize(songNum) - static_cast<size_t>(beginOrder);
+	size_t w = std::min(cells[0].size(), songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack));
+	size_t h = std::min(cells.size(), getOrderSize(songNum) - static_cast<size_t>(beginOrder));
 
-	size_t width = std::min(cells.at(0).size(), w);
-	size_t height = std::min(cells.size(), h);
-
-	for (size_t i = 0; i < height; ++i) {
-		d.emplace_back();
-		for (size_t j = 0; j < width; ++j) {
-			d.at(i).push_back(cells.at(i).at(j));
-		}
-	}
+	std::vector<std::vector<std::string>> d(h);
+	for (size_t i = 0; i < h; ++i) d[i].assign(cells[i].begin(), cells[i].begin() + w);
 
 	comMan_.invoke(std::make_unique<PasteCopiedDataToOrderCommand>(mod_, songNum, beginTrack, beginOrder, std::move(d)));
 }
@@ -2419,7 +2405,7 @@ std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderN
 			.getStep(stepNum).getEffectId(n);
 }
 
-void BambooTracker::setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry)
+void BambooTracker::setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, const std::string& id, bool fillValue00, bool secondEntry)
 {
 	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, id, fillValue00, secondEntry));
 }
@@ -2455,65 +2441,61 @@ void BambooTracker::deletePreviousStep(int songNum, int trackNum, int orderNum, 
 	comMan_.invoke(std::make_unique<DeletePreviousStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
-void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-									  std::vector<std::vector<std::string>> cells)
+namespace
 {
-	std::vector<std::vector<std::string>> d
-			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
+std::vector<std::vector<std::string>> arrangePatternDataCells(
+		size_t trackCnt, size_t ptnSize, int beginTrack, int beginColmn, int beginStep,
+		const std::vector<std::vector<std::string>>& cells)
+{
+	size_t w = (trackCnt - static_cast<size_t>(beginTrack) - 1) * 11
+			   + (11 - static_cast<size_t>(beginColmn));
+	size_t h = ptnSize - static_cast<size_t>(beginStep);
 
+	size_t width = std::min(cells.at(0).size(), w);
+	size_t height = std::min(cells.size(), h);
+
+	std::vector<std::vector<std::string>> d(height);
+	for (size_t i = 0; i < height; ++i) {
+		d[i].assign(cells[i].begin(), cells[i].begin() + width);
+	}
+	return d;
+}
+}
+
+void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+									  const std::vector<std::vector<std::string>>& cells)
+{
+	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+									 beginTrack, beginColmn, beginStep, cells);
 	comMan_.invoke(std::make_unique<PasteCopiedDataToPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
 }
 
 void BambooTracker::pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-										 std::vector<std::vector<std::string>> cells)
+										 const std::vector<std::vector<std::string> >& cells)
 {
-	std::vector<std::vector<std::string>> d
-			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
-
+	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+									 beginTrack, beginColmn, beginStep, cells);
 	comMan_.invoke(std::make_unique<PasteMixCopiedDataToPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
 }
 
 void BambooTracker::pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-											   int beginStep, std::vector<std::vector<std::string>> cells)
+											   int beginStep, const std::vector<std::vector<std::string> >& cells)
 {
-	std::vector<std::vector<std::string>> d
-			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
-
+	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+									 beginTrack, beginColmn, beginStep, cells);
 	comMan_.invoke(std::make_unique<PasteOverwriteCopiedDataToPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
 }
 
 void BambooTracker::pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-											int beginStep, std::vector<std::vector<std::string>> cells)
+											int beginStep, const std::vector<std::vector<std::string> >& cells)
 {
-	std::vector<std::vector<std::string>> d
-			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
-
+	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+									 beginTrack, beginColmn, beginStep, cells);
 	comMan_.invoke(std::make_unique<PasteInsertCopiedDataToPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
-}
-
-std::vector<std::vector<std::string>> BambooTracker::arrangePatternDataCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-																			 std::vector<std::vector<std::string>> cells)
-{
-	std::vector<std::vector<std::string>> d;
-	size_t w = (songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack) - 1) * 11
-			   + (11 - static_cast<size_t>(beginColmn));
-	size_t h = getPatternSizeFromOrderNumber(songNum, beginOrder) - static_cast<size_t>(beginStep);
-
-	size_t width = std::min(cells.at(0).size(), w);
-	size_t height = std::min(cells.size(), h);
-
-	for (size_t i = 0; i < height; ++i) {
-		d.emplace_back();
-		for (size_t j = 0; j < width; ++j) {
-			d.at(i).push_back(cells.at(i).at(j));
-		}
-	}
-
-	return d;
 }
 
 void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

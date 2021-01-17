@@ -26,7 +26,7 @@
 #include "transpose_note_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 #include "note.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(
 		std::weak_ptr<Module> mod, int songNum, int beginTrack,

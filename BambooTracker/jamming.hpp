@@ -29,7 +29,7 @@
 #include <deque>
 #include <unordered_map>
 #include "enum_hash.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 class Note;
 

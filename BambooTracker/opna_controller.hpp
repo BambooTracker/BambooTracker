@@ -37,7 +37,7 @@
 #include "chip/scci/scci.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 struct SSGToneNoise
 {
@@ -74,8 +74,6 @@ public:
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
 	void getOutputHistory(int16_t* history);
-
-	static constexpr int OUTPUT_HISTORY_SIZE = 1024;
 
 	// Chip mode
 	void setMode(SongType mode);
@@ -475,8 +473,8 @@ public:
 	void setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> inst);
 	void updateInstrumentDrumkit(int instNum, int key);
 	void clearSamplesADPCM();
-	/// return: [0]: start address, [1]: stop address
-	std::vector<size_t> storeSampleADPCM(std::vector<uint8_t> sample);
+	/// [Return] true if sample assignment is success
+	bool storeSampleADPCM(const std::vector<uint8_t>& sample, size_t& startAddr, size_t& stopAddr);
 
 	// Set volume
 	void setVolumeADPCM(int volume);

@@ -27,7 +27,7 @@
 
 #include <string>
 #include "step.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 enum class EffectType
 {
@@ -56,7 +56,7 @@ inline Effect validateEffect(SoundSource src, const Step::PlainEffect& plain)
 
 inline int reverseFmVolume(int volume, bool over0 = false) noexcept
 {
-	return (volume < opna_defs::NSTEP_FM_VOLUME) ? (opna_defs::NSTEP_FM_VOLUME - 1 - volume)
+	return (volume < bt_defs::NSTEP_FM_VOLUME) ? (bt_defs::NSTEP_FM_VOLUME - 1 - volume)
 												 : over0 ? 0 : volume;
 }
 

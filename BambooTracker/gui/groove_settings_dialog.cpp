@@ -31,7 +31,7 @@
 #include <QRegularExpressionMatch>
 #include <QApplication>
 #include <QClipboard>
-#include "misc.hpp"
+#include "utils.hpp"
 
 GrooveSettingsDialog::GrooveSettingsDialog(QWidget *parent) :
 	QDialog(parent),

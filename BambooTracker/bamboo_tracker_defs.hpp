@@ -33,8 +33,10 @@ enum class SoundSource : int
 	ADPCM = 8
 };
 
-namespace opna_defs
+namespace bt_defs
 {
+constexpr int OUTPUT_HISTORY_SIZE = 1024;
+
 constexpr int NSTEP_FM_VOLUME = 0x80;
 constexpr int NSTEP_SSG_VOLUME = 0x10;
 constexpr int NSTEP_RHYTHM_VOLUME = 0x20;

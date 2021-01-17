@@ -26,7 +26,7 @@
 #include "module.hpp"
 #include <algorithm>
 #include <iterator>
-#include "misc.hpp"
+#include "utils.hpp"
 
 Module::Module(const std::string& filePath, const std::string& title,
 			   const std::string& author, const std::string& copyright,
@@ -118,9 +118,9 @@ Groove Module::getGroove(int num) const
 	return grooves_.at(static_cast<size_t>(num));
 }
 
-std::unordered_set<int> Module::getRegisterdInstruments() const
+std::set<int> Module::getRegisterdInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (const Song& song : songs_) {
 		auto&& subset = song.getRegisteredInstruments();
 		std::copy(subset.begin(), subset.end(), std::inserter(set, set.end()));

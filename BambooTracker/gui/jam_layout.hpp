@@ -31,7 +31,7 @@
 #include <QKeySequence>
 #include "configuration.hpp"
 #include "jamming.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 // Layout decipherer
 inline JamKey getJamKeyFromLayoutMapping(Qt::Key key, std::weak_ptr<Configuration> config)

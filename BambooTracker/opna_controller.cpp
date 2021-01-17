@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <limits>
 #include "note.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
@@ -95,8 +95,8 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 
 	initChip();
 
-	outputHistory_.reset(new int16_t[2 * OUTPUT_HISTORY_SIZE]{});
-	outputHistoryReady_.reset(new int16_t[2 * OUTPUT_HISTORY_SIZE]{});
+	outputHistory_.reset(new int16_t[2 * bt_defs::OUTPUT_HISTORY_SIZE]{});
+	outputHistoryReady_.reset(new int16_t[2 * bt_defs::OUTPUT_HISTORY_SIZE]{});
 	outputHistoryIndex_ = 0;
 }
 
@@ -105,8 +105,8 @@ void OPNAController::reset()
 {
 	opna_->reset();
 	initChip();
-	std::fill(&outputHistory_[0], &outputHistory_[2 * OUTPUT_HISTORY_SIZE], 0);
-	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * OUTPUT_HISTORY_SIZE], 0);
+	std::fill(&outputHistory_[0], &outputHistory_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
+	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
 }
 
 void OPNAController::initChip()
@@ -184,7 +184,7 @@ void OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
 {
 	opna_->mix(container, nSamples);
 
-	size_t nHistory = std::min<size_t>(nSamples, OUTPUT_HISTORY_SIZE);
+	size_t nHistory = std::min<size_t>(nSamples, bt_defs::OUTPUT_HISTORY_SIZE);
 	fillOutputHistory(&container[2 * (nSamples - nHistory)], nHistory);
 }
 
@@ -192,7 +192,7 @@ void OPNAController::getOutputHistory(int16_t* container)
 {
 	std::lock_guard<std::mutex> lock(outputHistoryReadyMutex_);
 	int16_t *history = outputHistoryReady_.get();
-	std::copy(history, &history[2 * OUTPUT_HISTORY_SIZE], container);
+	std::copy(history, &history[2 * bt_defs::OUTPUT_HISTORY_SIZE], container);
 }
 
 void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
@@ -201,7 +201,7 @@ void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
 	size_t historyIndex = outputHistoryIndex_;
 
 	// copy as many as possible to the back
-	size_t backCapacity = OUTPUT_HISTORY_SIZE - historyIndex;
+	size_t backCapacity = bt_defs::OUTPUT_HISTORY_SIZE - historyIndex;
 	size_t nBack = std::min(nSamples, backCapacity);
 	std::copy(outputs, &outputs[2 * nBack], &history[2 * historyIndex]);
 
@@ -209,7 +209,7 @@ void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
 	std::copy(&outputs[2 * nBack], &outputs[2 * nSamples], history);
 
 	// update the write position
-	historyIndex = (historyIndex + nSamples) % OUTPUT_HISTORY_SIZE;
+	historyIndex = (historyIndex + nSamples) % bt_defs::OUTPUT_HISTORY_SIZE;
 	outputHistoryIndex_ = historyIndex;
 
 	// if no one holds the ready buffer, update the contents
@@ -225,8 +225,8 @@ void OPNAController::transferReadyHistory()
 	size_t index = outputHistoryIndex_;
 
 	// copy the back, and then the front
-	std::copy(&src[2 * index], &src[2 * OUTPUT_HISTORY_SIZE], dst);
-	std::copy(&src[0], &src[2 * index], &dst[2 * (OUTPUT_HISTORY_SIZE - index)]);
+	std::copy(&src[2 * index], &src[2 * bt_defs::OUTPUT_HISTORY_SIZE], dst);
+	std::copy(&src[0], &src[2 * index], &dst[2 * (bt_defs::OUTPUT_HISTORY_SIZE - index)]);
 }
 
 /********** Chip mode **********/
@@ -2112,7 +2112,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 /********** Set volume **********/
 void OPNAController::setVolumeSSG(int ch, int volume)
 {
-	if (volume < opna_defs::NSTEP_SSG_VOLUME) {
+	if (volume < bt_defs::NSTEP_SSG_VOLUME) {
 		baseVolSSG_[ch] = volume;
 		tmpVolSSG_[ch] = -1;
 
@@ -2122,7 +2122,7 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 
 void OPNAController::setTemporaryVolumeSSG(int ch, int volume)
 {
-	if (volume < opna_defs::NSTEP_SSG_VOLUME) {
+	if (volume < bt_defs::NSTEP_SSG_VOLUME) {
 		tmpVolSSG_[ch] = volume;
 
 		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
@@ -2336,7 +2336,7 @@ void OPNAController::initSSG()
 		neverSetBaseNoteSSG_[ch] = true;
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, UNUSED_NOISE_PERIOD };
-		baseVolSSG_[ch] = opna_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
+		baseVolSSG_[ch] = bt_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
 		isBuzzEffSSG_[ch] = false;
@@ -3260,7 +3260,7 @@ void OPNAController::setKeyOffFlagRhythm(int ch)
 /********** Set volume **********/
 void OPNAController::setVolumeRhythm(int ch, int volume)
 {
-	if (volume < opna_defs::NSTEP_RHYTHM_VOLUME) {
+	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		volRhythm_[ch] = volume;
 		tmpVolRhythm_[ch] = -1;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
@@ -3275,7 +3275,7 @@ void OPNAController::setMasterVolumeRhythm(int volume)
 
 void OPNAController::setTemporaryVolumeRhythm(int ch, int volume)
 {
-	if (volume < opna_defs::NSTEP_RHYTHM_VOLUME) {
+	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		tmpVolRhythm_[ch] = volume;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
 	}
@@ -3297,7 +3297,7 @@ void OPNAController::initRhythm()
 	opna_->setRegister(0x11, 0x3f);	// Rhythm total volume
 
 	for (int ch = 0; ch < 6; ++ch) {
-		volRhythm_[ch] = opna_defs::NSTEP_RHYTHM_VOLUME - 1;	// Init volume
+		volRhythm_[ch] = bt_defs::NSTEP_RHYTHM_VOLUME - 1;	// Init volume
 		tmpVolRhythm_[ch] = -1;
 
 		// Init pan
@@ -3465,10 +3465,8 @@ void OPNAController::clearSamplesADPCM()
 	stopAddrADPCM_ = startAddrADPCM_;
 }
 
-std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample)
+bool OPNAController::storeSampleADPCM(const std::vector<uint8_t>& sample, size_t& startAddr, size_t& stopAddr)
 {
-	std::vector<size_t> addrs(2);
-
 	opna_->setRegister(0x110, 0x80);
 	opna_->setRegister(0x100, 0x61);
 	opna_->setRegister(0x100, 0x60);
@@ -3478,35 +3476,35 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
+	bool stored = false;
 	if (storePointADPCM_ < dramLim) {
-		size_t startAddress = storePointADPCM_;
-		opna_->setRegister(0x102, startAddress & 0xff);
-		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+		startAddr = storePointADPCM_;
+		opna_->setRegister(0x102, startAddr & 0xff);
+		opna_->setRegister(0x103, (startAddr >> 8) & 0xff);
 
-		size_t stopAddress = startAddress + ((sample.size() - 1) >> 5);	// By 32 bytes
-		stopAddress = std::min(stopAddress, dramLim);
-		opna_->setRegister(0x104, stopAddress & 0xff);
-		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
-		storePointADPCM_ = stopAddress + 1;
+		stopAddr = startAddr + ((sample.size() - 1) >> 5);	// By 32 bytes
+		stopAddr = std::min(stopAddr, dramLim);
+		opna_->setRegister(0x104, stopAddr & 0xff);
+		opna_->setRegister(0x105, (stopAddr >> 8) & 0xff);
+		storePointADPCM_ = stopAddr + 1;
 
 		size_t size = sample.size();
 		for (size_t i = 0; i < size; ++i) {
 			opna_->setRegister(0x108, sample[i]);
 		}
-
-		addrs = { startAddress, stopAddress };
+		stored = true;
 	}
 
 	opna_->setRegister(0x100, 0x00);
 	opna_->setRegister(0x110, 0x80);
 
-	return addrs;
+	return stored;
 }
 
 /********** Set volume **********/
 void OPNAController::setVolumeADPCM(int volume)
 {
-	if (volume < opna_defs::NSTEP_ADPCM_VOLUME) {
+	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
 		baseVolADPCM_ = volume;
 		tmpVolADPCM_ = -1;
 
@@ -3516,7 +3514,7 @@ void OPNAController::setVolumeADPCM(int volume)
 
 void OPNAController::setTemporaryVolumeADPCM(int volume)
 {
-	if (volume < opna_defs::NSTEP_ADPCM_VOLUME) {
+	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
 		tmpVolADPCM_ = volume;
 
 		if (isKeyOnADPCM_) setRealVolumeADPCM();
@@ -3528,12 +3526,12 @@ void OPNAController::setRealVolumeADPCM()
 	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
 	if (envItADPCM_) {
 		int type = envItADPCM_->data().data;
-		if (type >= 0) volume -= (opna_defs::NSTEP_ADPCM_VOLUME - 1 - type);
+		if (type >= 0) volume -= (bt_defs::NSTEP_ADPCM_VOLUME - 1 - type);
 	}
 	if (treItADPCM_) volume += treItADPCM_->data().data;
 	volume += sumVolSldADPCM_;
 
-	volume = utils::clamp(volume, 0, opna_defs::NSTEP_ADPCM_VOLUME - 1);
+	volume = utils::clamp(volume, 0, bt_defs::NSTEP_ADPCM_VOLUME - 1);
 
 	opna_->setRegister(0x10b, static_cast<uint8_t>(volume));
 	needEnvSetADPCM_ = false;
@@ -3666,7 +3664,7 @@ void OPNAController::initADPCM()
 
 	neverSetBaseNoteADPCM_ = true;
 	sumPitchADPCM_ = 0;
-	baseVolADPCM_ = opna_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
+	baseVolADPCM_ = bt_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
 	tmpVolADPCM_ = -1;
 	panADPCM_ = 0xc0;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();

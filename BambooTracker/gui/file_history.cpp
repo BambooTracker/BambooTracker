@@ -25,7 +25,7 @@
 
 #include "file_history.hpp"
 #include <algorithm>
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace
 {

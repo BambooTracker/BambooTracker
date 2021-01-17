@@ -26,7 +26,7 @@
 #include "track.hpp"
 #include <utility>
 #include <algorithm>
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace
 {
@@ -108,9 +108,9 @@ std::vector<int> Track::getEditedPatternIndices() const
 	return utils::findIndicesIf(patterns_, [](const Pattern& pattern) { return pattern.hasEvent(); });
 }
 
-std::unordered_set<int> Track::getRegisteredInstruments() const
+std::set<int> Track::getRegisteredInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (const Pattern& pattern : patterns_) {
 		auto&& insts = pattern.getRegisteredInstruments();
 		std::copy(insts.cbegin(), insts.cend(), std::inserter(set, set.end()));

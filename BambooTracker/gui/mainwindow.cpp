@@ -27,6 +27,7 @@
 #include "ui_mainwindow.h"
 #include <algorithm>
 #include <unordered_map>
+#include <array>
 #include <numeric>
 #include <QString>
 #include <QClipboard>
@@ -87,7 +88,7 @@
 #include "gui/track_visibility_memory_handler.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/gui_utils.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace
 {
@@ -1796,7 +1797,6 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	stopPlaySong();
 
 	std::unique_ptr<AbstractBank> bank;
-	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
 		io::BinaryContainer container;
 		{
@@ -1843,6 +1843,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	size_t jamId = 128;	// Dummy
 	std::shared_ptr<AbstractInstrument> jamInst;
 	importBankDiag_ = std::make_unique<InstrumentSelectionDialog>(*bank, tr("Select instruments to load:"), config_, this);
+	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	auto updateInst = [&] (size_t id) {
 		if (id != jamId) {
 			bankJamMidiCtrl_.store(true);
@@ -1850,10 +1851,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			bankMan->clearAll();
 			jamInst.reset(bank->loadInstrument(id, bankMan, 0));
 			jamInst->setNumber(128);	// Special number
-			std::vector<std::vector<size_t>> addrs = bt_->assignADPCMBeforeForcedJamKeyOn(jamInst);
-			for (size_t i = 0; i < addrs.size(); ++i) {
-				bankMan->setSampleADPCMStartAddress(i, addrs[i][0]);
-				bankMan->setSampleADPCMStopAddress(i, addrs[i][1]);
+			std::unordered_map<int, std::array<size_t, 2>> sampNums;
+			bt_->assignADPCMBeforeForcedJamKeyOn(jamInst, sampNums);
+			for (const auto& pairs : sampNums) {
+				bankMan->setSampleADPCMStartAddress(pairs.first, pairs.second[0]);
+				bankMan->setSampleADPCMStopAddress(pairs.first, pairs.second[1]);
 			}
 			bankJamMidiCtrl_.store(false);
 		}
@@ -3314,7 +3316,7 @@ void MainWindow::on_actionWAV_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
 
-	int max = static_cast<int>(bt_->getAllStepCount(
+	int max = static_cast<int>(bt_->getTotalStepCount(
 								   bt_->getCurrentSongNumber(), static_cast<size_t>(diag.getLoopCount()))) + 3;
 	QProgressDialog progress(tr("Export to WAV"), tr("Cancel"), 0, max);
 	progress.setValue(0);
@@ -3382,7 +3384,7 @@ void MainWindow::on_actionVGM_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
-	int max = static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
+	int max = static_cast<int>(bt_->getTotalStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
 	QProgressDialog progress(tr("Export to VGM"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -3445,7 +3447,7 @@ void MainWindow::on_actionS98_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
-	int max = static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
+	int max = static_cast<int>(bt_->getTotalStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
 	QProgressDialog progress(tr("Export to S98"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -3566,10 +3568,10 @@ void MainWindow::on_keyRepeatCheckBox_stateChanged(int arg1)
 
 void MainWindow::updateVisuals()
 {
-	int16_t wave[2 * OPNAController::OUTPUT_HISTORY_SIZE];
+	int16_t wave[2 * bt_defs::OUTPUT_HISTORY_SIZE];
 	bt_->getOutputHistory(wave);
 
-	ui->waveVisual->setStereoSamples(wave, OPNAController::OUTPUT_HISTORY_SIZE);
+	ui->waveVisual->setStereoSamples(wave, bt_defs::OUTPUT_HISTORY_SIZE);
 }
 
 void MainWindow::on_action_Effect_List_triggered()
@@ -3607,17 +3609,14 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 		bt_->stopPlaySong();
 		lockWidgets(false);
 
-		std::vector<std::vector<int>> duplicates = bt_->checkDuplicateInstruments();
+		std::unordered_map<int, int> rplMap = bt_->replaceDuplicateInstrumentsInPatterns();
 		auto list = ui->instrumentList;
-		for (auto& group : duplicates) {
-			for (size_t i = 1; i < group.size(); ++i) {
-				for (int j = 0; j < list->count(); ++j) {
-					if (list->item(j)->data(Qt::UserRole).toInt() == group[i])
-						removeInstrument(j);
-				}
+		for (auto& pairs : rplMap) {
+			for (int j = 0; j < list->count(); ++j) {
+				if (list->item(j)->data(Qt::UserRole).toInt() == pairs.first)
+					removeInstrument(j);
 			}
 		}
-		bt_->replaceDuplicateInstrumentsInPatterns(duplicates);
 		bt_->clearUnusedInstrumentProperties();
 		bt_->clearCommandHistory();
 		comStack_->clear();
@@ -3804,7 +3803,7 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 
 void MainWindow::on_action_Estimate_Song_Length_triggered()
 {
-	double time = bt_->calculateSongLength(bt_->getCurrentSongNumber());
+	double time = bt_->getApproximateSongLength(bt_->getCurrentSongNumber());
 	int seconds = static_cast<int>(std::round(time));
 	QMessageBox box;
 	box.setIcon(QMessageBox::Information);

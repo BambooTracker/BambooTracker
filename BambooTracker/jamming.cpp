@@ -29,7 +29,7 @@
 #include <functional>
 #include <stdexcept>
 #include "note.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace jam_utils
 {

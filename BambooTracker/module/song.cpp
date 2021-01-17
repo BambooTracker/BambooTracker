@@ -27,8 +27,8 @@
 #include <algorithm>
 #include <utility>
 #include <stdexcept>
-#include "opna_defs.hpp"
-#include "misc.hpp"
+#include "bamboo_tracker_defs.hpp"
+#include "utils.hpp"
 
 Bookmark::Bookmark(const std::string& argname, int argorder, int argstep)
 	: name(argname), order(argorder), step(argstep)
@@ -189,9 +189,9 @@ void Song::swapOrder(int a, int b)
 	}
 }
 
-std::unordered_set<int> Song::getRegisteredInstruments() const
+std::set<int> Song::getRegisteredInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (const Track& track : tracks_) {
 		auto&& subset = track.getRegisteredInstruments();
 		std::copy(subset.begin(), subset.end(), std::inserter(set, set.end()));

@@ -31,7 +31,7 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_drumkit_form.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 void InstrumentFormManager::updateByConfiguration()
 {

@@ -31,7 +31,7 @@
 #include <memory>
 #include <unordered_map>
 #include "instrument/envelope_fm.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 enum class InstrumentType;
 

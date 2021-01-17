@@ -250,6 +250,7 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
+    bamboo_tracker_defs.hpp \
     chip/codec/ymb_codec.hpp \
     chip/c86ctl/c86ctl.h \
     chip/c86ctl/c86ctl_wrapper.hpp \
@@ -329,12 +330,10 @@ HEADERS += \
     jamming.hpp \
     module/effect.hpp \
     note.hpp \
-    opna_defs.hpp \
     playback.hpp \
     song_length_calculator.hpp \
     audio/audio_stream.hpp \
     chip/chip_def.h \
-    misc.hpp \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
@@ -411,6 +410,7 @@ HEADERS += \
     command/pattern/set_echo_buffer_access_command.hpp \
     gui/comment_edit_dialog.hpp \
     io/binary_container.hpp \
+    utils.hpp \
     version.hpp \
     command/pattern/interpolate_pattern_command.hpp \
     command/pattern/reverse_pattern_command.hpp \

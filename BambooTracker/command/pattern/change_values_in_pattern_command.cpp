@@ -25,8 +25,8 @@
 
 #include "change_values_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
-#include "opna_defs.hpp"
-#include "misc.hpp"
+#include "bamboo_tracker_defs.hpp"
+#include "utils.hpp"
 
 ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(
 		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn, int beginOrder,

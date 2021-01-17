@@ -36,18 +36,16 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QAction>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
 #include <QPoint>
 #include <QString>
 #include <QIcon>
 #include "playback.hpp"
 #include "track.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands_qt.hpp"
 #include "gui/gui_utils.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -1014,28 +1012,18 @@ void OrderListPanel::copySelectedCells()
 void OrderListPanel::pasteCopiedCells(const OrderPosition& startPos)
 {
 	// Analyze text
-	QString str = QApplication::clipboard()->text().remove(QRegularExpression("ORDER_COPY:"));
-	QString hdRe = "^([0-9]+),([0-9]+),";
-	QRegularExpression re(hdRe);
-	QRegularExpressionMatch match = re.match(str);
-	int w = match.captured(1).toInt();
-	size_t h = match.captured(2).toUInt();
-	str.remove(re);
+	QString str = QApplication::clipboard()->text().remove("ORDER_COPY:");
+	QStringList data = str.split(",");
+	if (data.size() < 2) return;
+	size_t w = data[0].toUInt();
+	size_t h = data[1].toUInt();
+	data.erase(data.begin(), data.begin() + 2);
+	if (static_cast<int>(w * h) != data.size()) return;
 
-	std::vector<std::vector<std::string>> cells;
-	re = QRegularExpression("^([^,]+),");
+	std::vector<std::vector<std::string>> cells(h, std::vector<std::string>(w));
 	for (size_t i = 0; i < h; ++i) {
-		cells.emplace_back();
-		for (int j = 0; j < w; ++j) {
-			match = re.match(str);
-			if (match.hasMatch()) {
-				cells.at(i).push_back(match.captured(1).toStdString());
-				str.remove(re);
-			}
-			else {
-				cells.at(i).push_back(str.toStdString());
-				break;
-			}
+		for (size_t j = 0; j < w; ++j) {
+			cells[i][j] = data[i * w + j].toStdString();
 		}
 	}
 

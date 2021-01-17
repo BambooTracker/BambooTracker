@@ -24,7 +24,7 @@
  */
 
 #include "sequence_property.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 InstrumentSequenceBaseUnit::InstrumentSequenceBaseUnit() noexcept
 	: data(ERR_DATA)

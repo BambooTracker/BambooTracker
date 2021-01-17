@@ -26,7 +26,7 @@
 #pragma once
 
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <cstddef>
 #include "step.hpp"
 
@@ -52,7 +52,7 @@ public:
 
 	bool hasEvent() const;
 	std::vector<int> getEditedStepIndices() const;
-	std::unordered_set<int> getRegisteredInstruments() const;
+	std::set<int> getRegisteredInstruments() const;
 
 	Pattern clone(int asNumber);
 

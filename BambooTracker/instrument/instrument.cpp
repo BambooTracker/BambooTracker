@@ -25,7 +25,7 @@
 
 #include "instrument.hpp"
 #include "instruments_manager.hpp"
-#include <algorithm>
+#include "utils.hpp"
 
 AbstractInstrument::AbstractInstrument(int number, SoundSource src, InstrumentType type, const std::string& name, InstrumentsManager* owner)
 	: owner_(owner),
@@ -591,9 +591,7 @@ AbstractInstrument* InstrumentDrumkit::clone()
 
 std::vector<int> InstrumentDrumkit::getAssignedKeys() const
 {
-	std::vector<int> keys(kit_.size());
-	std::transform(kit_.begin(), kit_.end(), keys.begin(), [](const auto& pair) { return pair.first; });
-	return keys;
+	return utils::getMapKeys(kit_);
 }
 
 void InstrumentDrumkit::setSampleEnabled(int key, bool enabled)

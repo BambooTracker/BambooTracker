@@ -445,7 +445,7 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < opna_defs::NSTEP_FM_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_FM_VOLUME) {
 		opnaCtrl_->setVolumeFM(ch, vol);
 	}
 
@@ -498,7 +498,7 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < opna_defs::NSTEP_SSG_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_SSG_VOLUME) {
 		opnaCtrl_->setVolumeSSG(ch, vol);
 	}
 
@@ -548,7 +548,7 @@ void PlaybackManager::executeRhythmStepEvents(const Step& step, int ch, bool cal
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < opna_defs::NSTEP_RHYTHM_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		opnaCtrl_->setVolumeRhythm(ch, vol);
 	}
 
@@ -578,7 +578,7 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < opna_defs::NSTEP_ADPCM_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_ADPCM_VOLUME) {
 		opnaCtrl_->setVolumeADPCM(vol);
 	}
 
@@ -1609,7 +1609,7 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolFM[uch] && step.hasVolume() && vol < opna_defs::NSTEP_FM_VOLUME) {
+				if (!isSetVolFM[uch] && step.hasVolume() && vol < bt_defs::NSTEP_FM_VOLUME) {
 					isSetVolFM[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeFM(ch, vol);
@@ -1809,7 +1809,7 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolSSG[uch] && step.hasVolume() && vol < opna_defs::NSTEP_SSG_VOLUME) {
+				if (!isSetVolSSG[uch] && step.hasVolume() && vol < bt_defs::NSTEP_SSG_VOLUME) {
 					isSetVolSSG[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeSSG(ch, vol);
@@ -1962,7 +1962,7 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolRhythm[uch] && step.hasVolume() && vol < opna_defs::NSTEP_RHYTHM_VOLUME) {
+				if (!isSetVolRhythm[uch] && step.hasVolume() && vol < bt_defs::NSTEP_RHYTHM_VOLUME) {
 					isSetVolRhythm[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeRhythm(ch, vol);
@@ -2013,7 +2013,7 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolADPCM && step.hasVolume() && vol < opna_defs::NSTEP_ADPCM_VOLUME) {
+				if (!isSetVolADPCM && step.hasVolume() && vol < bt_defs::NSTEP_ADPCM_VOLUME) {
 					isSetVolADPCM = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeADPCM(vol);

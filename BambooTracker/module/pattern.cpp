@@ -27,7 +27,7 @@
 #include <algorithm>
 #include "effect.hpp"
 #include "note.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace
 {
@@ -105,9 +105,9 @@ std::vector<int> Pattern::getEditedStepIndices() const
 								[](const Step& step) { return step.hasEvent(); });
 }
 
-std::unordered_set<int> Pattern::getRegisteredInstruments() const
+std::set<int> Pattern::getRegisteredInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (size_t i = 0; i < size_; ++i) {
 		const Step& step = steps_.at(i);
 		if (step.hasInstrument()) set.insert(step.getInstrumentNumber());

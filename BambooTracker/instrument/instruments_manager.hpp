@@ -70,7 +70,7 @@ public:
 
 	int findFirstFreeInstrument() const;
 
-	std::vector<std::vector<int>> checkDuplicateInstruments() const;
+	std::unordered_map<int, int> getDuplicateInstrumentMap() const;
 
 	inline void setPropertyFindMode(bool unedited) noexcept { regardingUnedited_ = unedited; }
 

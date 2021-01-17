@@ -34,7 +34,7 @@
 #include "sequence_property.hpp"
 #include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 class InstrumentsManager;
 

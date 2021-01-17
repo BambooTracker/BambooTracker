@@ -31,7 +31,7 @@
 #include <type_traits>
 #include "instrument.hpp"
 #include "note.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace
 {
@@ -741,9 +741,9 @@ int InstrumentsManager::findFirstFreeInstrument() const
 	return (it == insts_.cend() ? -1 : std::distance(insts_.cbegin(), it));
 }
 
-std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() const
+std::unordered_map<int, int> InstrumentsManager::getDuplicateInstrumentMap() const
 {
-	std::vector<std::vector<int>> dupList;
+	std::unordered_map<int, int> dupMap;
 	std::vector<int> idcs = getInstrumentIndices();
 	static const std::unordered_map<InstrumentType,
 			bool (InstrumentsManager::*)(std::shared_ptr<AbstractInstrument>,
@@ -756,24 +756,21 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 
 	for (size_t i = 0; i < idcs.size(); ++i) {
 		int baseIdx = idcs[i];
-		std::vector<int> group { baseIdx };
 		std::shared_ptr<AbstractInstrument> base = insts_[baseIdx];
 
 		for (size_t j = i + 1; j < idcs.size();) {
 			int tgtIdx = idcs[j];
 			std::shared_ptr<AbstractInstrument> tgt = insts_[tgtIdx];
 			if (base->getType() == tgt->getType() && (this->*eqCheck.at(base->getType()))(base, tgt)) {
-				group.push_back(tgtIdx);
+				dupMap[tgtIdx] = baseIdx;
 				idcs.erase(idcs.begin() + j);
 				continue;
 			}
 			++j;
 		}
-
-		if (group.size() > 1) dupList.push_back(group);
 	}
 
-	return dupList;
+	return dupMap;
 }
 
 //----- FM methods -----

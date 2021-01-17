@@ -45,12 +45,13 @@
 #include <QWheelEvent>
 #include <QHoverEvent>
 #include "chip/codec/ymb_codec.hpp"
+#include "instrument/sample_adpcm.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),

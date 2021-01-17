@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,13 +34,11 @@ class CommandManager
 public:
 	using CommandIPtr = std::unique_ptr<AbstractCommand>;
 
-	CommandManager();
 	void invoke(CommandIPtr command);
 	void undo();
 	void redo();
 	void clear();
 
 private:
-	std::stack<CommandIPtr> undoStack_;
-	std::stack<CommandIPtr> redoStack_;
+	std::stack<CommandIPtr> undoStack_, redoStack_;
 };

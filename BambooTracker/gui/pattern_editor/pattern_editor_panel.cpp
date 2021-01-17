@@ -40,20 +40,19 @@
 #include <QMenu>
 #include <QAction>
 #include <QRegularExpression>
-#include <QRegularExpressionMatch>
 #include <QMetaMethod>
 #include <QIcon>
 #include "midi/midi.hpp"
 #include "command/pattern/set_effect_value_to_step_command.hpp"
 #include "jamming.hpp"
 #include "note.hpp"
-#include "opna_defs.hpp"
+#include "bamboo_tracker_defs.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_utils.hpp"
-#include "misc.hpp"
+#include "utils.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -990,10 +989,10 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		else {
 			int volLim = 0;	// Dummy set
 			switch (src) {
-			case SoundSource::FM:		volLim = opna_defs::NSTEP_FM_VOLUME	;	break;
-			case SoundSource::SSG:		volLim = opna_defs::NSTEP_SSG_VOLUME;		break;
-			case SoundSource::RHYTHM:	volLim = opna_defs::NSTEP_RHYTHM_VOLUME;	break;
-			case SoundSource::ADPCM:	volLim = opna_defs::NSTEP_ADPCM_VOLUME;	break;
+			case SoundSource::FM:		volLim = bt_defs::NSTEP_FM_VOLUME	;	break;
+			case SoundSource::SSG:		volLim = bt_defs::NSTEP_SSG_VOLUME;		break;
+			case SoundSource::RHYTHM:	volLim = bt_defs::NSTEP_RHYTHM_VOLUME;	break;
+			case SoundSource::ADPCM:	volLim = bt_defs::NSTEP_ADPCM_VOLUME;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
@@ -1889,28 +1888,18 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 PatternEditorPanel::PatternCells PatternEditorPanel::decodeCells(QString str, int& startCol)
 {
 	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
-	QString hdRe = "^([0-9]+),([0-9]+),([0-9]+),";
-	QRegularExpression re(hdRe);
-	QRegularExpressionMatch match = re.match(str);
-	startCol = match.captured(1).toInt();
-	int w = match.captured(2).toInt();
-	size_t h = match.captured(3).toUInt();
-	str.remove(re);
+	QStringList data = str.split(",");
+	if (data.size() < 3) {};	// Error
+	startCol = data[0].toInt();
+	size_t w = data[1].toUInt();
+	size_t h = data[2].toUInt();
+	data.erase(data.begin(), data.begin() + 3);
+	if (static_cast<int>(w * h) != data.size()) return {};	// Error
 
-	std::vector<std::vector<std::string>> cells;
-	re = QRegularExpression("^([^,]+),");
+	PatternCells cells(h, PatternCells::value_type(w));
 	for (size_t i = 0; i < h; ++i) {
-		cells.emplace_back();
-		for (int j = 0; j < w; ++j) {
-			match = re.match(str);
-			if (match.hasMatch()) {
-				cells.at(i).push_back(match.captured(1).toStdString());
-				str.remove(re);
-			}
-			else {
-				cells.at(i).push_back(str.toStdString());
-				break;
-			}
+		for (size_t j = 0; j < w; ++j) {
+			cells[i][j] = data[i * w + j].toStdString();
 		}
 	}
 

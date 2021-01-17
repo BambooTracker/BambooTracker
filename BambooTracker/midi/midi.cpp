@@ -26,7 +26,7 @@
 #include "midi.hpp"
 #include <stdio.h>
 #include "RtMidi.h"
-#include "misc.hpp"
+#include "utils.hpp"
 
 namespace
 {
