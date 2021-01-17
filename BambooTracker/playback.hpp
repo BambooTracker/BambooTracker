@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -80,8 +80,20 @@ private:
 
 	int curSongNum_;
 	SongStyle songStyle_;
-	int playOrderNum_, playStepNum_;
-	int nextReadOrder_, nextReadStep_;
+
+	struct Position
+	{
+		int order, step;
+		static constexpr int INVALID = -1;
+		Position(int o, int s) : order(o), step(s) {}
+		void set(int o, int s)	// Faster than making and copying a new instance
+		{
+			order = o;
+			step = s;
+		}
+		void invalidate() noexcept { set(INVALID, INVALID); }
+		bool isValid() const noexcept { return (order > INVALID && step > INVALID); }
+	} playingPos_, nextReadPos_;
 
 	uint8_t playStateFlags_;
 
@@ -111,7 +123,6 @@ private:
 		int address, value;
 		bool hasCompleted;
 	};
-
 	using DirectRegisterSetQueue = std::vector<RegisterUnit>;
 	using DirectRegisterSetSource = std::vector<DirectRegisterSetQueue>;
 	std::unordered_map<SoundSource, DirectRegisterSetSource> directRegisterSets_;
@@ -143,7 +154,6 @@ private:
 	void checkSSGDelayEventsInTick(const Step& step, int ch);
 	void checkRhythmDelayEventsInTick(const Step& step, int ch);
 	void checkADPCMDelayEventsInTick(const Step& step);
-
 
 	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
