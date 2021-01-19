@@ -50,20 +50,18 @@ inline auto findIf(InputContainer& input, Predicate&& pred)
 	return std::find_if(input.begin(), input.end(), std::forward<Predicate>(pred));
 }
 
-template <template <typename ...> class OutputContainer = std::vector,
-		  class InputIterator, class Predicate>
+template <class OutputContainer = std::vector<int>, class InputIterator, class Predicate>
 inline auto findIndicesIf(InputIterator first, InputIterator last, Predicate pred)
 {
-	using T = typename std::iterator_traits<InputIterator>::difference_type;
-	OutputContainer<T> idcs;
+	using T = typename OutputContainer::value_type;
+	OutputContainer idcs;
 	for (auto it = first; (it = std::find_if(it, last, pred)) != last; ++it) {
-		idcs.push_back(std::distance(first, it));
+		idcs.push_back(static_cast<T>(std::distance(first, it)));
 	}
 	return idcs;
 }
 
-template <template <typename ...> class OutputContainer = std::vector,
-		  class InputContainer, class Predicate>
+template <class OutputContainer = std::vector<int>, class InputContainer, class Predicate>
 inline auto findIndicesIf(const InputContainer& input, Predicate&& pred)
 {
 	return findIndicesIf<OutputContainer>(input.begin(), input.end(), std::forward<Predicate>(pred));
