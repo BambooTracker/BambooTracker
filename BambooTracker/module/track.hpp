@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,10 +26,10 @@
 #pragma once
 
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <unordered_map>
 #include "pattern.hpp"
-#include "misc.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 struct TrackAttribute
 {
@@ -60,7 +60,7 @@ public:
 	int searchFirstUneditedUnusedPattern() const;
 	int clonePattern(int num);
 	std::vector<int> getEditedPatternIndices() const;
-	std::unordered_set<int> getRegisteredInstruments() const;
+	std::set<int> getRegisteredInstruments() const;
 
 	void registerPatternToOrder(int order, int pattern);
 	void insertOrderBelow(int order);

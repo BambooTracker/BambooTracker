@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,11 +29,12 @@
 #include <QDialog>
 #include <QComboBox>
 #include <vector>
-#include "misc.hpp"
 
 namespace Ui {
 	class FMEnvelopeSetEditDialog;
 }
+
+enum class FMEnvelopeTextType;
 
 class FMEnvelopeSetEditDialog : public QDialog
 {

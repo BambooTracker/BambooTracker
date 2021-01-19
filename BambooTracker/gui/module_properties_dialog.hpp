@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,7 +32,6 @@
 #include <QString>
 #include <QTreeWidgetItem>
 #include "bamboo_tracker.hpp"
-#include "misc.hpp"
 #include "enum_hash.hpp"
 
 namespace Ui {

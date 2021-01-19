@@ -28,7 +28,11 @@
 #include <memory>
 #include "../abstract_command.hpp"
 #include "module.hpp"
-#include "misc.hpp"
+
+enum class EffectDisplayControl
+{
+	Unset, ReverseFMVolumeDelay, ReverseFMBrightness
+};
 
 class SetEffectValueToStepCommand final : public AbstractCommand
 {

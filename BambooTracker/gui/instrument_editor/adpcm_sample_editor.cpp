@@ -45,11 +45,13 @@
 #include <QWheelEvent>
 #include <QHoverEvent>
 #include "chip/codec/ymb_codec.hpp"
+#include "instrument/sample_adpcm.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
+#include "utils.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
@@ -365,12 +367,10 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	std::vector<uint8_t> adpcm((raw.size() + 1) / 2);
 	codec::ymb_encode(raw.data(), adpcm.data(), static_cast<long>(raw.size()));
 
-	const int ROOT_KEY = 60;	//C5
-
-	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), adpcm);
-	ui->rootKeyComboBox->setCurrentIndex(ROOT_KEY % 12);
-	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
-	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+	ui->rootKeyComboBox->setCurrentIndex(SampleADPCM::DEF_ROOT_KEY % 12);
+	ui->rootKeySpinBox->setValue(SampleADPCM::DEF_ROOT_KEY / 12);
+	ui->rootRateSpinBox->setValue(SampleADPCM::calcADPCMDeltaN(wav->getSampleRate()));
 
 	emit modified();
 	emit sampleAssignRequested();
@@ -479,13 +479,13 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	}
 	else {
 		cursorSamp_.setX(
-					ui->horizontalScrollBar->value() + (viewedSampLen_ - 1) * clamp(cx, 0, w - 1) / (w - 1));
+					ui->horizontalScrollBar->value() + (viewedSampLen_ - 1) * utils::clamp(cx, 0, w - 1) / (w - 1));
 	}
 
 	// Detect y
 	const double centerY = rect.height() >> 1;
 	int y = std::numeric_limits<int16_t>::max() * (centerY - cy) / centerY;
-	cursorSamp_.setY(clamp(y, static_cast<int>(std::numeric_limits<int16_t>::min()),
+	cursorSamp_.setY(utils::clamp(y, static_cast<int>(std::numeric_limits<int16_t>::min()),
 						   static_cast<int>(std::numeric_limits<int16_t>::max())));
 
 	// Update position view

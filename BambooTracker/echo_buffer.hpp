@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,18 +25,36 @@
 
 #pragma once
 
-#include <cstdint>
-#include "misc.hpp"
+#include <deque>
+#include "note.hpp"
 
-namespace calc_pitch
+class EchoBuffer
 {
-enum : int { SEMINOTE_PITCH = 32 };
+	using DequeType = std::deque<Note>;
+public:
+	using reference = DequeType::reference;
+	using const_reference = DequeType::const_reference;
+	using size_type = DequeType::size_type;
 
-uint16_t calculateFNumber(Note note, int octave, int calc_pitch, int finePitch);
-uint16_t calculateSSGSquareTP(Note note, int octave, int calc_pitch, int finePitch);
-uint16_t calculateSSGSquareTP(int n);
-uint16_t calculateSSGTriangleEP(Note note, int octave, int calc_pitch, int finePitch);
-uint16_t calculateSSGSawEP(Note note, int octave, int calc_pitch, int finePitch);
+	reference at(size_type n) { return deque_.at(n); }
+	const_reference at(size_type n) const { return deque_.at(n); }
 
-int calculatePitchIndex(int octave, Note note, int calc_pitch);
-}	// namespace calc_pitch
+	reference operator[](size_type n) { return deque_[n]; }
+	const_reference operator[](size_type n) const { return deque_[n]; }
+
+	reference latest() { return deque_.front(); }
+	const_reference latest() const { return deque_.front(); }
+
+	size_type size() const noexcept { return deque_.size(); }
+
+	void clear() noexcept { deque_.clear(); }
+
+	void push(const Note& y) {
+		deque_.push_front(y);
+		if (MAX_ <= deque_.size()) deque_.pop_back();
+	}
+
+private:
+	std::deque<Note> deque_;
+	static constexpr size_type MAX_ = 4;
+};

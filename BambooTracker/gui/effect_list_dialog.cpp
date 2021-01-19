@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "effect_list_dialog.hpp"
 #include "ui_effect_list_dialog.h"
 #include <QTableWidgetItem>
+#include <QString>
 #include "gui/effect_description.hpp"
 
 EffectListDialog::EffectListDialog(QWidget *parent) :

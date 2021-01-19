@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,16 +38,19 @@
 #include "gui/q_application_wrapper.hpp"
 #include "gui/configuration_handler.hpp"
 
+namespace
+{
 // Localization
 static void setupTranslations();
 static QString findQtTranslationsDir();
 static QString findAppTranslationsDir();
+}
 
 int main(int argc, char* argv[])
 {
 	try {
 		std::shared_ptr<Configuration> config = std::make_shared<Configuration>();
-		ConfigurationHandler::loadConfiguration(config);
+		io::loadConfiguration(config);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 		QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -63,7 +66,7 @@ int main(int argc, char* argv[])
 		w->show();
 		int ret = a->exec();
 
-		ConfigurationHandler::saveConfiguration(config);
+		io::saveConfiguration(config);
 		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occurred."));
 
 		return ret;
@@ -75,8 +78,10 @@ int main(int argc, char* argv[])
 	}
 }
 
+namespace
+{
 // Sets up the translation according to the current language
-static void setupTranslations()
+void setupTranslations()
 {
 	QApplication *a = qApp;
 	const QString lang = QLocale::system().name();
@@ -104,7 +109,7 @@ static void setupTranslations()
 }
 
 // Finds the location of Qt translation catalogs
-static QString findQtTranslationsDir()
+QString findQtTranslationsDir()
 {
 #if defined(Q_OS_DARWIN)
 	// if this is macOS, attempt to load from inside an app bundle
@@ -123,7 +128,7 @@ static QString findQtTranslationsDir()
 }
 
 // Finds the location of our translation catalogs
-static QString findAppTranslationsDir()
+QString findAppTranslationsDir()
 {
 #ifndef QT_NO_DEBUG
 	// if this is a debug build, attempt to load from the source directory
@@ -145,4 +150,5 @@ static QString findAppTranslationsDir()
 #else
 	return QApplication::applicationDirPath() + "/../share/BambooTracker/lang";
 #endif
+}
 }

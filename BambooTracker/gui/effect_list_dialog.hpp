@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,11 +27,9 @@
 #define EFFECT_LIST_DIALOG_HPP
 
 #include <QDialog>
-#include <QString>
 #include <unordered_set>
 #include "effect.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
 namespace Ui {
 	class EffectListDialog;

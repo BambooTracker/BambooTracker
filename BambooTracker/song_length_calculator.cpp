@@ -44,7 +44,7 @@ SongLengthCalculator::SongLengthCalculator(Module& mod, int songNum)
 {
 }
 
-double SongLengthCalculator::calculateBySecond() const
+double SongLengthCalculator::approximateLengthBySecond() const
 {
 	Song& song = mod_.getSong(songNum_);
 	std::unordered_set<int> visitedOrder;
@@ -155,4 +155,59 @@ double SongLengthCalculator::calculateBySecond() const
 
 	// Calculate time by seconds
 	return tickCnt / rate;
+}
+
+void SongLengthCalculator::totalStepCount(size_t &introSize, size_t &loopSize) const
+{
+	Song& song = mod_.getSong(songNum_);
+	std::vector<TrackAttribute> attribs = song.getTrackAttributes();
+	size_t totalStepCnt = 0;
+	std::unordered_map<int, size_t> stepCntLogMap;
+	int lastOrder = static_cast<int>(song.getOrderSize()) - 1;
+	int curOrder = 0;
+
+	for (int curStep = 0; !stepCntLogMap.count(curOrder); ) {
+		// Count up
+		size_t ptnFullSize = song.getPatternSizeFromOrderNumber(curOrder);
+		stepCntLogMap[curOrder] = totalStepCnt;
+		totalStepCnt += (ptnFullSize - curStep);
+
+		// Check next order position
+		for (const auto& attrib : attribs) {
+			const Step& step = song.getTrack(attrib.number)
+							   .getPatternFromOrderNumber(curOrder).getStep(ptnFullSize - 1);
+			for (int i = 0; i < Step::N_EFFECT; ++i) {
+				Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
+				switch (eff.type) {
+				case EffectType::PositionJump:
+					if (eff.value <= lastOrder) {
+						curOrder = eff.value;
+						curStep = 0;
+					}
+					break;
+				case EffectType::SongEnd:	// No loop
+					introSize = totalStepCnt;
+					loopSize = 0;
+					return;
+				case EffectType::PatternBreak:
+					if (curOrder == lastOrder
+							&& eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(0))) {
+						curOrder = 0;
+						curStep = eff.value;
+					}
+					else if (eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder + 1))) {
+						++curOrder;
+						curStep = eff.value;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	// Calculate counts
+	introSize = stepCntLogMap[curOrder];
+	loopSize = totalStepCnt - introSize;
 }

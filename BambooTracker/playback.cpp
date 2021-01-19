@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@
 #include "opna_controller.hpp"
 #include "instruments_manager.hpp"
 #include "tick_counter.hpp"
-#include "misc.hpp"
+#include "note.hpp"
 
 namespace
 {
@@ -36,6 +36,7 @@ namespace PlayStateFlag
 {
 enum : uint8_t
 {
+	Clear			= 0,
 	// Read state
 	Playing			= 1 << 0,
 	ReadFirstStep	= 1 << 1,
@@ -55,8 +56,8 @@ PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 	  tickCounter_(tickCounter),
 	  mod_(mod),
 	  curSongNum_(0),
-	  playOrderNum_(-1),
-	  playStepNum_(-1),
+	  playingPos_(Position::INVALID, Position::INVALID),
+	  nextReadPos_(Position::INVALID, Position::INVALID),
 	  isFindNextStep_(false),
 	  isRetrieveChannel_(isRetrieveChannel)
 {
@@ -75,7 +76,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 
 	/* opna mode is changed in BambooTracker class */
 
-	size_t fmch = getFMChannelCount(songStyle_.type);
+	size_t fmch = Song::getFMChannelCount(songStyle_.type);
 	isNoteDelay_[SoundSource::FM] = std::vector<bool>(fmch);
 	keyOnBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
 	stepBeginBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
@@ -124,8 +125,7 @@ void PlaybackManager::startPlaySong(int order)
 
 	startPlay();
 	playStateFlags_ = PlayStateFlag::Playing;
-	playStepNum_ = 0;
-	playOrderNum_ = order;
+	playingPos_.set(order, 0);
 	findNextStep();
 	if (isRetrieveChannel_) retrieveChannelStates();
 }
@@ -136,8 +136,7 @@ void PlaybackManager::startPlayFromStart()
 
 	startPlay();
 	playStateFlags_ = PlayStateFlag::Playing;
-	playOrderNum_ = 0;
-	playStepNum_ = 0;
+	playingPos_.set(0, 0);
 	findNextStep();
 }
 
@@ -147,8 +146,7 @@ void PlaybackManager::startPlayPattern(int order)
 
 	startPlay();
 	playStateFlags_ = PlayStateFlag::Playing | PlayStateFlag::LoopPattern;
-	playStepNum_ = 0;
-	playOrderNum_ = order;
+	playingPos_.set(order, 0);
 	findNextStep();
 	if (isRetrieveChannel_) retrieveChannelStates();
 }
@@ -159,8 +157,7 @@ void PlaybackManager::startPlayFromPosition(int order, int step)
 
 	startPlay();
 	playStateFlags_ = PlayStateFlag::Playing;
-	playOrderNum_ = order;
-	playStepNum_ = step;
+	playingPos_.set(order, step);
 	findNextStep();
 	if (isRetrieveChannel_) retrieveChannelStates();
 }
@@ -188,8 +185,7 @@ void PlaybackManager::playStep(int order, int step)
 	clearDelayBeyondStepCounts();
 
 	playStateFlags_ = PlayStateFlag::PlayStep;
-	playOrderNum_ = order;
-	playStepNum_ = step;
+	playingPos_.set(order, step);
 
 	if (!isPlaying && isRetrieveChannel_) retrieveChannelStates();
 }
@@ -224,9 +220,8 @@ void PlaybackManager::stopPlay()
 	opnaCtrl_->reset();
 
 	tickCounter_.lock()->setPlayState(false);
-	playStateFlags_ = 0;
-	playOrderNum_ = -1;
-	playStepNum_ = -1;
+	playStateFlags_ = PlayStateFlag::Clear;
+	playingPos_.invalidate();
 }
 
 bool PlaybackManager::isPlaySong() const noexcept
@@ -241,12 +236,12 @@ bool PlaybackManager::isPlayingStep() const noexcept
 
 int PlaybackManager::getPlayingOrderNumber() const noexcept
 {
-	return playOrderNum_;
+	return playingPos_.order;
 }
 
 int PlaybackManager::getPlayingStepNumber() const noexcept
 {
-	return playStepNum_;
+	return playingPos_.step;
 }
 
 /********** Stream events **********/
@@ -286,13 +281,12 @@ bool PlaybackManager::stepDown()
 			return false;
 		}
 		else {
-			if (nextReadOrder_ == -1) {
+			if (!nextReadPos_.isValid()) {
 				isFindNextStep_ = false;
 				return false;
 			}
 			else {
-				playOrderNum_ = nextReadOrder_;
-				playStepNum_ = nextReadStep_;
+				playingPos_ = nextReadPos_;
 			}
 		}
 	}
@@ -306,24 +300,23 @@ bool PlaybackManager::stepDown()
 void PlaybackManager::findNextStep()
 {
 	// Init
-	nextReadOrder_ = playOrderNum_;
-	nextReadStep_ = playStepNum_;
+	nextReadPos_ = playingPos_;
 
 	// Search
-	int ptnSize = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_));
-	if (!ptnSize || nextReadStep_ >= ptnSize - 1) {
+	int ptnSize = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadPos_.order));
+	if (!ptnSize || nextReadPos_.step >= ptnSize - 1) {
 		if (!(playStateFlags_ & PlayStateFlag::LoopPattern)) {	// Loop pattern
-			if (nextReadOrder_ >= static_cast<int>(getOrderSize(curSongNum_)) - 1) {
-				nextReadOrder_ = 0;
+			if (nextReadPos_.order >= static_cast<int>(getOrderSize(curSongNum_)) - 1) {
+				nextReadPos_.order = 0;
 			}
 			else {
-				++nextReadOrder_;
+				++nextReadPos_.order;
 			}
 		}
-		nextReadStep_ = 0;
+		nextReadPos_.step = 0;
 	}
 	else {
-		++nextReadStep_;
+		++nextReadPos_.step;
 	}
 
 	isFindNextStep_ = true;
@@ -333,24 +326,19 @@ void PlaybackManager::checkValidPosition()
 {
 	auto& song = mod_.lock()->getSong(curSongNum_);
 	int orderSize = static_cast<int>(song.getOrderSize());
-	if (playOrderNum_ >= orderSize) {
-		playOrderNum_ = 0;
-		playStepNum_ = 0;
-		nextReadOrder_ = 0;
-		nextReadStep_ = 0;
+	if (playingPos_.order >= orderSize) {
+		playingPos_.set(0, 0);
+		nextReadPos_ = playingPos_;
 	}
-	else if (playStepNum_ >= static_cast<int>(song.getPatternSizeFromOrderNumber(playOrderNum_))) {
-		if (playOrderNum_ == orderSize - 1) {
-			playOrderNum_ = 0;
-			playStepNum_ = 0;
-			nextReadOrder_ = 0;
-			nextReadStep_ = 0;
+	else if (playingPos_.step >= static_cast<int>(song.getPatternSizeFromOrderNumber(playingPos_.order))) {
+		if (playingPos_.order == orderSize - 1) {
+			playingPos_.set(0, 0);
+			nextReadPos_ = playingPos_;
 		}
 		else {
-			++playOrderNum_;
-			playStepNum_ = 0;
-			nextReadOrder_ = playOrderNum_;
-			nextReadStep_ = 0;
+			++playingPos_.order;
+			playingPos_.step = 0;
+			nextReadPos_ = playingPos_;
 		}
 	}
 }
@@ -366,21 +354,21 @@ void PlaybackManager::stepProcess()
 	// Store effects from the step to map
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
-					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
+					 .getPatternFromOrderNumber(playingPos_.order).getStep(playingPos_.step);
 		size_t uch = static_cast<size_t>(attrib.channelInSource);
 		keyOnBasedEffs_[attrib.source].at(uch).clear();
 		directRegisterSets_[attrib.source].at(uch).clear();
-		bool (PlaybackManager::*storeEffectToMap)(int, const Effect&) = nullptr;
-		switch (attrib.source) {
-		case SoundSource::FM:		storeEffectToMap = &PlaybackManager::storeEffectToMapFM;		break;
-		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;		break;
-		case SoundSource::RHYTHM:	storeEffectToMap = &PlaybackManager::storeEffectToMapRhythm;	break;
-		case SoundSource::ADPCM:	storeEffectToMap = &PlaybackManager::storeEffectToMapADPCM;		break;
-		}
+		using storeFunc = bool (PlaybackManager::*)(int, const Effect&);
+		static const std::unordered_map<SoundSource, storeFunc> storeEffectToMap = {
+			{ SoundSource::FM, &PlaybackManager::storeEffectToMapFM },
+			{ SoundSource::SSG, &PlaybackManager::storeEffectToMapSSG },
+			{ SoundSource::RHYTHM, &PlaybackManager::storeEffectToMapRhythm },
+			{ SoundSource::ADPCM, &PlaybackManager::storeEffectToMapADPCM }
+		};
 		bool isDelay = false;
 		for (int i = 0; i < Step::N_EFFECT; ++i) {
 			Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
-			isDelay |= (this->*storeEffectToMap)(attrib.channelInSource, std::move(eff));
+			isDelay |= (this->*storeEffectToMap.at(attrib.source))(attrib.channelInSource, eff);
 		}
 		isNoteDelay_[attrib.source].at(uch) = isDelay;
 	}
@@ -389,7 +377,7 @@ void PlaybackManager::stepProcess()
 	bool isNextSet = executeStoredEffectsGlobal();
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
-					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
+					 .getPatternFromOrderNumber(playingPos_.order).getStep(playingPos_.step);
 		switch (attrib.source) {
 		case SoundSource::FM:
 			if (isNoteDelay_[SoundSource::FM].at(attrib.channelInSource)) {
@@ -445,7 +433,7 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < NSTEP_FM_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_FM_VOLUME) {
 		opnaCtrl_->setVolumeFM(ch, vol);
 	}
 
@@ -487,11 +475,8 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 		opnaCtrl_->keyOnFM(ch, 3);
 		break;
 	default:	// Key on
-	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
-		opnaCtrl_->keyOnFM(ch, octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnFM(ch, Note(noteNum));
 		break;
-	}
 	}
 }
 
@@ -501,7 +486,7 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < NSTEP_SSG_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_SSG_VOLUME) {
 		opnaCtrl_->setVolumeSSG(ch, vol);
 	}
 
@@ -540,11 +525,8 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 		opnaCtrl_->keyOnSSG(ch, 3);
 		break;
 	default:	// Key on
-	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
-		opnaCtrl_->keyOnSSG(ch, octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnSSG(ch, Note(noteNum));
 		break;
-	}
 	}
 }
 
@@ -554,7 +536,7 @@ void PlaybackManager::executeRhythmStepEvents(const Step& step, int ch, bool cal
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < NSTEP_RHYTHM_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		opnaCtrl_->setVolumeRhythm(ch, vol);
 	}
 
@@ -584,7 +566,7 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 
 	// Set volume
 	int vol = step.getVolume();
-	if (step.hasVolume() && vol < NSTEP_ADPCM_VOLUME) {
+	if (step.hasVolume() && vol < bt_defs::NSTEP_ADPCM_VOLUME) {
 		opnaCtrl_->setVolumeADPCM(vol);
 	}
 
@@ -625,11 +607,8 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 		opnaCtrl_->keyOnADPCM(3);
 		break;
 	default:	// Key on
-	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
-		opnaCtrl_->keyOnADPCM(octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnADPCM(Note(noteNum));
 		break;
-	}
 	}
 }
 
@@ -1266,8 +1245,7 @@ void PlaybackManager::executeDirectRegisterSetEffect(DirectRegisterSetQueue& que
 bool PlaybackManager::effPositionJump(int nextOrder)
 {
 	if (nextOrder < static_cast<int>(getOrderSize(curSongNum_))) {
-		nextReadOrder_ = nextOrder;
-		nextReadStep_ = 0;
+		nextReadPos_.set(nextOrder, 0);
 		return true;
 	}
 	return false;
@@ -1275,21 +1253,18 @@ bool PlaybackManager::effPositionJump(int nextOrder)
 
 void PlaybackManager::effSongEnd()
 {
-	nextReadOrder_ = -1;
-	nextReadStep_ = -1;
+	nextReadPos_.invalidate();
 }
 
 bool PlaybackManager::effPatternBreak(int nextStep)
 {
-	if (playOrderNum_ == static_cast<int>(getOrderSize(curSongNum_)) - 1
+	if (playingPos_.order == static_cast<int>(getOrderSize(curSongNum_)) - 1
 			&& nextStep < static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, 0))) {
-		nextReadOrder_ = 0;
-		nextReadStep_ = nextStep;
+		nextReadPos_.set(0, nextStep);
 		return true;
 	}
-	else if (nextStep < static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, playOrderNum_ + 1))) {
-		nextReadOrder_ = playOrderNum_ + 1;
-		nextReadStep_ = nextStep;
+	else if (nextStep < static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, playingPos_.order + 1))) {
+		nextReadPos_.set(playingPos_.order + 1, nextStep);
 		return true;
 	}
 	return false;
@@ -1322,7 +1297,7 @@ void PlaybackManager::tickProcess(int rest)
 	auto& song = mod_.lock()->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& curStep = song.getTrack(attrib.number)
-						.getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
+						.getPatternFromOrderNumber(playingPos_.order).getStep(playingPos_.step);
 		int ch = attrib.channelInSource;
 		switch (attrib.source) {
 		case SoundSource::FM:		checkFMDelayEventsInTick(curStep, ch);		break;
@@ -1331,10 +1306,10 @@ void PlaybackManager::tickProcess(int rest)
 		case SoundSource::ADPCM:	checkADPCMDelayEventsInTick(curStep);		break;
 		}
 
-		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM && !isPlayingStep()) {
+		if (rest == 1 && nextReadPos_.isValid() && attrib.source == SoundSource::FM && !isPlayingStep()) {
 			// Channel envelope reset before next key on
 			auto& step = song.getTrack(attrib.number)
-						 .getPatternFromOrderNumber(nextReadOrder_).getStep(nextReadStep_);
+						 .getPatternFromOrderNumber(nextReadPos_.order).getStep(nextReadPos_.step);
 			for (int i = 0; i < Step::N_EFFECT; ++i) {
 				auto&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
 				if (eff.type == EffectType::NoteDelay && eff.value > 0) {	// Note delay check
@@ -1554,8 +1529,8 @@ void PlaybackManager::updateDelayEventCounts()
 
 void PlaybackManager::checkPlayPosition(int maxStepSize)
 {
-	if (isPlaySong() && playStepNum_ >= maxStepSize) {
-		playStepNum_ = maxStepSize - 1;
+	if (isPlaySong() && playingPos_.step >= maxStepSize) {
+		playingPos_.step = maxStepSize - 1;
 		findNextStep();
 	}
 }
@@ -1567,18 +1542,9 @@ void PlaybackManager::setChannelRetrieving(bool enabled)
 
 void PlaybackManager::retrieveChannelStates()
 {
-	size_t fmch = getFMChannelCount(songStyle_.type);
+	size_t fmch = Song::getFMChannelCount(songStyle_.type);
 
-	std::vector<int> tonesCntFM(fmch), tonesCntSSG(3);
-	int tonesCntADPCM = 0;
-	std::vector<std::vector<int>> toneFM(fmch), toneSSG(3);
-	std::vector<int> toneADPCM = std::vector<int>(3, Step::NOTE_NONE);
-	for (size_t i = 0; i < fmch; ++i) {
-		toneFM.at(i) = std::vector<int>(3, Step::NOTE_NONE);
-	}
-	for (size_t i = 0; i < 3; ++i) {
-		toneSSG.at(i) = std::vector<int>(3, Step::NOTE_NONE);
-	}
+	// Skip echo buffer due to takes time to search
 	std::vector<bool> isSetInstFM(fmch, false), isSetVolFM(fmch, false), isSetArpFM(fmch, false);
 	std::vector<bool> isSetPrtFM(fmch, false), isSetVibFM(fmch, false), isSetTreFM(fmch, false);
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
@@ -1602,14 +1568,13 @@ void PlaybackManager::retrieveChannelStates()
 	/// bit2: groove
 	uint8_t speedStates = 0;
 
-	int o = playOrderNum_;
-	int s = playStepNum_;
+	Position pos = playingPos_;
 	bool isPrevPos = false;
 	Song& song = mod_.lock()->getSong(curSongNum_);
 
 	while (true) {
 		for (auto it = songStyle_.trackAttribs.rbegin(), e = songStyle_.trackAttribs.rend(); it != e; ++it) {
-			Step& step = song.getTrack(it->number).getPatternFromOrderNumber(o).getStep(s);
+			Step& step = song.getTrack(it->number).getPatternFromOrderNumber(pos.order).getStep(pos.step);
 			int ch = it->channelInSource;
 			size_t uch = static_cast<size_t>(ch);
 
@@ -1618,7 +1583,7 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolFM[uch] && step.hasVolume() && vol < NSTEP_FM_VOLUME) {
+				if (!isSetVolFM[uch] && step.hasVolume() && vol < bt_defs::NSTEP_FM_VOLUME) {
 					isSetVolFM[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeFM(ch, vol);
@@ -1796,29 +1761,13 @@ void PlaybackManager::retrieveChannelStates()
 						break;
 					}
 				}
-				// Tone
-				if (isPrevPos && !step.isEmptyNote() && !step.hasKeyOff()) {
-					--tonesCntFM[uch];
-					for (auto it2 = toneFM[uch].rbegin();
-						 it2 != toneFM[uch].rend(); ++it2) {
-						if (Step::testEmptyNote(*it2) || *it2 == tonesCntFM[uch]) {
-							if (step.hasGeneralNote()) {
-								*it2 = step.getNoteNumber();
-							}
-							else {
-								*it2 = tonesCntFM[uch] - step.getNoteNumber() + 2;
-							}
-							break;
-						}
-					}
-				}
 				break;
 			}
 			case SoundSource::SSG:
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolSSG[uch] && step.hasVolume() && vol < NSTEP_SSG_VOLUME) {
+				if (!isSetVolSSG[uch] && step.hasVolume() && vol < bt_defs::NSTEP_SSG_VOLUME) {
 					isSetVolSSG[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeSSG(ch, vol);
@@ -1949,29 +1898,13 @@ void PlaybackManager::retrieveChannelStates()
 						break;
 					}
 				}
-				// Tone
-				if (isPrevPos && !step.isEmptyNote() && !step.hasKeyOff()) {
-					--tonesCntSSG[uch];
-					for (auto it2 = toneSSG[uch].rbegin();
-						 it2 != toneSSG[uch].rend(); ++it2) {
-						if (Step::testEmptyNote(*it2) || *it2 == tonesCntSSG[uch]) {
-							if (step.hasGeneralNote()) {
-								*it2 = step.getNoteNumber();
-							}
-							else {
-								*it2 = tonesCntSSG[uch] - step.getNoteNumber() + 2;
-							}
-							break;
-						}
-					}
-				}
 				break;
 			}
 			case SoundSource::RHYTHM:
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolRhythm[uch] && step.hasVolume() && vol < NSTEP_RHYTHM_VOLUME) {
+				if (!isSetVolRhythm[uch] && step.hasVolume() && vol < bt_defs::NSTEP_RHYTHM_VOLUME) {
 					isSetVolRhythm[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeRhythm(ch, vol);
@@ -2022,7 +1955,7 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolADPCM && step.hasVolume() && vol < NSTEP_ADPCM_VOLUME) {
+				if (!isSetVolADPCM && step.hasVolume() && vol < bt_defs::NSTEP_ADPCM_VOLUME) {
 					isSetVolADPCM = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeADPCM(vol);
@@ -2127,22 +2060,6 @@ void PlaybackManager::retrieveChannelStates()
 						break;
 					}
 				}
-				// Tone
-				if (isPrevPos && !step.isEmptyNote() && !step.hasKeyOff()) {
-					--tonesCntADPCM;
-					for (auto it2 = toneADPCM.rbegin();
-						 it2 != toneADPCM.rend(); ++it2) {
-						if (Step::testEmptyNote(*it2) || *it2 == tonesCntADPCM) {
-							if (step.hasGeneralNote()) {
-								*it2 = step.getNoteNumber();
-							}
-							else {
-								*it2 = tonesCntADPCM - step.getNoteNumber() + 2;
-							}
-							break;
-						}
-					}
-				}
 				break;
 			}
 			}
@@ -2150,36 +2067,18 @@ void PlaybackManager::retrieveChannelStates()
 
 		// Move position
 		isPrevPos = true;
-		if (--s < 0) {
-			if (--o < 0) break;
-			s = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, o)) - 1;
+		if (--pos.step < 0) {
+			if (--pos.order < 0) break;
+			pos.step = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, pos.order)) - 1;
 		}
 	}
 
-	// Echo & sequence reset
+	// Sequence reset
 	for (size_t ch = 0; ch < fmch; ++ch) {
-		for (size_t i = 0; i < 3; ++i) {
-			if (toneFM.at(ch).at(i) >= 0) {
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[ch][i]);
-				opnaCtrl_->updateEchoBufferFM(static_cast<int>(ch), octNote.first, octNote.second, 0);
-			}
-		}
 		opnaCtrl_->haltSequencesFM(static_cast<int>(ch));
 	}
 	for (size_t ch = 0; ch < 3; ++ch) {
-		for (size_t i = 0; i < 3; ++i) {
-			if (toneSSG.at(ch).at(i) >= 0) {
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[ch][i]);
-				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(ch), octNote.first, octNote.second, 0);
-			}
-		}
 		opnaCtrl_->haltSequencesSSG(static_cast<int>(ch));
-	}
-	for (size_t i = 0; i < 3; ++i) {
-		if (toneADPCM.at(i) >= 0) {
-			std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneADPCM[i]);
-			opnaCtrl_->updateEchoBufferADPCM(octNote.first, octNote.second, 0);
-		}
 	}
 	opnaCtrl_->haltSequencesADPCM();
 }

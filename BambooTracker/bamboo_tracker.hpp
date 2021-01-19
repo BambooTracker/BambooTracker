@@ -32,31 +32,32 @@
 #include <functional>
 #include <unordered_map>
 #include <set>
-#include "configuration.hpp"
-#include "opna_controller.hpp"
+#include <array>
 #include "jamming.hpp"
-#include "instruments_manager.hpp"
 #include "instrument.hpp"
-#include "tick_counter.hpp"
 #include "module.hpp"
-#include "song.hpp"
 #include "command/command_manager.hpp"
-#include "chip/scci/scci.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
-#include "effect.hpp"
-#include "playback.hpp"
+#include "chip/scci/scci.hpp"
 #include "io/binary_container.hpp"
-#include "io/wav_container.hpp"
 #include "io/export_io.hpp"
+#include "io/wav_container.hpp"
+#include "bamboo_tracker_defs.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
+class Configuration;
+enum class EffectDisplayControl;
+enum class RealChipInterface;
 class AbstractBank;
+class OPNAController;
+class PlaybackManager;
+class TickCounter;
 
 class BambooTracker
 {
 public:
 	explicit BambooTracker(std::weak_ptr<Configuration> config);
+	~BambooTracker();
 
 	// Change confuguration
 	void changeConfiguration(std::weak_ptr<Configuration> config);
@@ -78,24 +79,23 @@ public:
 	int getCurrentInstrumentNumber() const;
 
 	// Instrument edit
-	void addInstrument(int num, InstrumentType type, std::string name);
+	void addInstrument(int num, InstrumentType type, const std::string& name);
 	void removeInstrument(int num);
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
 	void swapInstruments(int a, int b, bool patternChange);
-	void loadInstrument(io::BinaryContainer& container, std::string path, int instNum);
+	void loadInstrument(io::BinaryContainer& container, const std::string& path, int instNum);
 	void saveInstrument(io::BinaryContainer& container, int instNum);
 	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
-	void exportInstruments(io::BinaryContainer& container, std::vector<int> instNums);
+	void exportInstruments(io::BinaryContainer& container, const std::vector<int>& instNums);
 	int findFirstFreeInstrumentNumber() const;
-	void setInstrumentName(int num, std::string name);
+	void setInstrumentName(int num, const std::string& name);
 	void clearAllInstrument();
 	std::vector<int> getInstrumentIndices() const;
 	std::vector<int> getUnusedInstrumentIndices() const;
 	void clearUnusedInstrumentProperties();
 	std::vector<std::string> getInstrumentNames() const;
-	std::vector<std::vector<int>> checkDuplicateInstruments() const;
 
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
@@ -108,31 +108,40 @@ public:
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	std::multiset<int> getLFOFMUsers(int lfoNum) const;
 
-	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
-	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
-	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data);
-	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
+	void addOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int data);
+	void removeOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int cnt, int data);
+	void addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop);
+	void removeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int begin, int end);
+	void changeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceRelease& release);
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	void setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
 	std::multiset<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 
 	void setArpeggioFMType(int arpNum, SequenceType type);
-	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioFMSequenceCommand(int arpNum);
-	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
-	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
+	void addArpeggioFMSequenceData(int arpNum, int data);
+	void removeArpeggioFMSequenceData(int arpNum);
+	void setArpeggioFMSequenceData(int arpNum, int cnt, int data);
+	void addArpeggioFMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioFMLoop(int arpNum, int begin, int end);
+	void changeArpeggioFMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioFMLoops(int arpNum);
+	void setArpeggioFMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum);
 	void setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::multiset<int> getArpeggioFMUsers(int arpNum) const;
 
 	void setPitchFMType(int ptNum, SequenceType type);
-	void addPitchFMSequenceCommand(int ptNum, int type, int data);
-	void removePitchFMSequenceCommand(int ptNum);
-	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
-	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
+	void addPitchFMSequenceData(int ptNum, int data);
+	void removePitchFMSequenceData(int ptNum);
+	void setPitchFMSequenceData(int ptNum, int cnt, int data);
+	void addPitchFMLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchFMLoop(int ptNum, int begin, int end);
+	void changePitchFMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchFMLoops(int ptNum);
+	void setPitchFMRelease(int ptNum, const InstrumentSequenceRelease& release);
 	void setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum);
 	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::multiset<int> getPitchFMUsers(int ptNum) const;
@@ -140,49 +149,64 @@ public:
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 	//--- SSG
-	void addWaveformSSGSequenceCommand(int wfNum, int type, int data);
-	void removeWaveformSSGSequenceCommand(int wfNum);
-	void setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	void setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
+	void addWaveformSSGSequenceData(int wfNum, const SSGWaveformUnit& data);
+	void removeWaveformSSGSequenceData(int wfNum);
+	void setWaveformSSGSequenceData(int wfNum, int cnt, const SSGWaveformUnit& data);
+	void addWaveformSSGLoop(int wfNum, const InstrumentSequenceLoop& loop);
+	void removeWaveformSSGLoop(int wfNum, int begin, int end);
+	void changeWaveformSSGLoop(int wfNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearWaveformSSGLoops(int wfNum);
+	void setWaveformSSGRelease(int wfNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGWaveform(int instNum, int wfNum);
 	void setInstrumentSSGWaveformEnabled(int instNum, bool enabled);
 	std::multiset<int> getWaveformSSGUsers(int wfNum) const;
 
-	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
-	void removeToneNoiseSSGSequenceCommand(int tnNum);
-	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
-	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
+	void addToneNoiseSSGSequenceData(int tnNum, int data);
+	void removeToneNoiseSSGSequenceData(int tnNum);
+	void setToneNoiseSSGSequenceData(int tnNum, int cnt, int data);
+	void addToneNoiseSSGLoop(int tnNum, const InstrumentSequenceLoop& loop);
+	void removeToneNoiseSSGLoop(int tnNum, int begin, int end);
+	void changeToneNoiseSSGLoop(int tnNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearToneNoiseSSGLoops(int tnNum);
+	void setToneNoiseSSGRelease(int tnNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
 	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;
 
-	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeSSGSequenceCommand(int envNum);
-	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
-	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
+	void addEnvelopeSSGSequenceData(int envNum, const SSGEnvelopeUnit& data);
+	void removeEnvelopeSSGSequenceData(int envNum);
+	void setEnvelopeSSGSequenceData(int envNum, int cnt, const SSGEnvelopeUnit& data);
+	void addEnvelopeSSGLoop(int envNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeSSGLoop(int envNum, int begin, int end);
+	void changeEnvelopeSSGLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeSSGLoops(int envNum);
+	void setEnvelopeSSGRelease(int envNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
 	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;
 
 	void setArpeggioSSGType(int arpNum, SequenceType type);
-	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioSSGSequenceCommand(int arpNum);
-	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
-	void setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
+	void addArpeggioSSGSequenceData(int arpNum, int data);
+	void removeArpeggioSSGSequenceData(int arpNum);
+	void setArpeggioSSGSequenceData(int arpNum, int cnt, int data);
+	void addArpeggioSSGLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioSSGLoop(int arpNum, int begin, int end);
+	void changeArpeggioSSGLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioSSGLoops(int arpNum);
+	void setArpeggioSSGRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
 	std::multiset<int> getArpeggioSSGUsers(int arpNum) const;
 
 	void setPitchSSGType(int ptNum, SequenceType type);
-	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
-	void removePitchSSGSequenceCommand(int ptNum);
-	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);
-	void setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
+	void addPitchSSGSequenceData(int ptNum, int data);
+	void removePitchSSGSequenceData(int ptNum);
+	void setPitchSSGSequenceData(int ptNum, int cnt, int data);
+	void addPitchSSGLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchSSGLoop(int ptNum, int begin, int end);
+	void changePitchSSGLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchSSGLoops(int ptNum);
+	void setPitchSSGRelease(int ptNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
 	std::multiset<int> getPitchSSGUsers(int ptNum) const;
@@ -197,7 +221,8 @@ public:
 	int getSampleADPCMRootDeltaN(int sampNum) const;
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool getSampleADPCMRepeatEnabled(int sampNum) const;
-	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample);
+	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
+	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
 	void clearSampleADPCMRawSample(int sampNum);
 	void assignSampleADPCMRawSamples();
@@ -206,31 +231,40 @@ public:
 	void setInstrumentADPCMSample(int instNum, int sampNum);
 	std::multiset<int> getSampleADPCMUsers(int sampNum) const;
 
-	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeADPCMSequenceCommand(int envNum);
-	void setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data);
-	void setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
+	void addEnvelopeADPCMSequenceData(int envNum, int data);
+	void removeEnvelopeADPCMSequenceData(int envNum);
+	void setEnvelopeADPCMSequenceData(int envNum, int cnt, int data);
+	void addEnvelopeADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeADPCMLoop(int envNum, int begin, int end);
+	void changeEnvelopeADPCMLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeADPCMLoops(int envNum);
+	void setEnvelopeADPCMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMEnvelope(int instNum, int envNum);
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
 	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;
 
 	void setArpeggioADPCMType(int arpNum, SequenceType type);
-	void addArpeggioADPCMSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioADPCMSequenceCommand(int arpNum);
-	void setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data);
-	void setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
+	void addArpeggioADPCMSequenceData(int arpNum, int data);
+	void removeArpeggioADPCMSequenceData(int arpNum);
+	void setArpeggioADPCMSequenceData(int arpNum, int cnt, int data);
+	void addArpeggioADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioADPCMLoop(int arpNum, int begin, int end);
+	void changeArpeggioADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioADPCMLoops(int arpNum);
+	void setArpeggioADPCMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMArpeggio(int instNum, int arpNum);
 	void setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled);
 	std::multiset<int> getArpeggioADPCMUsers(int arpNum) const;
 
 	void setPitchADPCMType(int ptNum, SequenceType type);
-	void addPitchADPCMSequenceCommand(int ptNum, int type, int data);
-	void removePitchADPCMSequenceCommand(int ptNum);
-	void setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data);
-	void setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
+	void addPitchADPCMSequenceData(int ptNum, int data);
+	void removePitchADPCMSequenceData(int ptNum);
+	void setPitchADPCMSequenceData(int ptNum, int cnt, int data);
+	void addPitchADPCMLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchADPCMLoop(int ptNum, int begin, int end);
+	void changePitchADPCMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchADPCMLoops(int ptNum);
+	void setPitchADPCMRelease(int ptNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMPitch(int instNum, int ptNum);
 	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
 	std::multiset<int> getPitchADPCMUsers(int ptNum) const;
@@ -268,7 +302,8 @@ public:
 	void jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void jamKeyOffForced(JamKey key, SoundSource src);
 	void jamKeyOffForced(int keyNum, SoundSource src);
-	std::vector<std::vector<size_t>> assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst);
+	bool assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst,
+										 std::unordered_map<int, std::array<size_t, 2>>& sampAddrs);
 
 	// Play song
 	void startPlaySong();
@@ -290,11 +325,12 @@ public:
 	int getMarkerStep() const;
 
 	// Export
-	bool exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar);
+	using ExportCancellCallback = std::function<bool()>;
+	bool exportToWav(io::WavContainer& container, int loopCnt, ExportCancellCallback checkFunc);
 	bool exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-					 const io::GD3Tag& tag, std::function<bool()> bar);
+					 const io::GD3Tag& tag, ExportCancellCallback checkFunc);
 	bool exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
-					 const io::S98Tag& tag, int rate, std::function<bool()> bar);
+					 const io::S98Tag& tag, int rate, ExportCancellCallback checkFunc);
 
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);
@@ -326,15 +362,15 @@ public:
 	void makeNewModule();
 	void loadModule(io::BinaryContainer& container);
 	void saveModule(io::BinaryContainer& container);
-	void setModulePath(std::string path);
+	void setModulePath(const std::string& path);
 	std::string getModulePath() const;
-	void setModuleTitle(std::string title);
+	void setModuleTitle(const std::string& title);
 	std::string getModuleTitle() const;
-	void setModuleAuthor(std::string author);
+	void setModuleAuthor(const std::string& author);
 	std::string getModuleAuthor() const;
-	void setModuleCopyright(std::string copyright);
+	void setModuleCopyright(const std::string& copyright);
 	std::string getModuleCopyright() const;
-	void setModuleComment(std::string comment);
+	void setModuleComment(const std::string& comment);
 	std::string getModuleComment() const;
 	void setModuleTickFrequency(unsigned int freq);
 	unsigned int getModuleTickFrequency() const;
@@ -353,10 +389,10 @@ public:
 	void setGrooves(const std::vector<std::vector<int>>& seqs);
 	std::vector<int> getGroove(int num) const;
 	void clearUnusedPatterns();
-	void replaceDuplicateInstrumentsInPatterns(const std::vector<std::vector<int>>& list);
+	std::unordered_map<int, int> replaceDuplicateInstrumentsInPatterns();
 	void clearUnusedADPCMSamples();
 	/*----- Song -----*/
-	void setSongTitle(int songNum, std::string title);
+	void setSongTitle(int songNum, const std::string& title);
 	std::string getSongTitle(int songNum) const;
 	void setSongTempo(int songNum, int tempo);
 	int getSongTempo(int songNum) const;
@@ -369,15 +405,15 @@ public:
 	void setSongSpeed(int songNum, int speed);
 	int getSongSpeed(int songNum) const;
 	size_t getSongCount() const;
-	void addSong(SongType songType, std::string title);
-	void sortSongs(std::vector<int> numbers);
-	size_t getAllStepCount(int songNum, size_t loopCnt) const;
-	void transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts);
+	void addSong(SongType songType, const std::string& title);
+	void sortSongs(const std::vector<int>& numbers);
+	void transposeSong(int songNum, int seminotes, const std::vector<int>& excludeInsts);
 	void swapTracks(int songNum, int track1, int track2);
-	double calculateSongLength(int songNum) const;
+	double getApproximateSongLength(int songNum) const;
+	size_t getTotalStepCount(int songNum, size_t loopCnt) const;
 	/*----- Bookmark -----*/
-	void addBookmark(int songNum, std::string name, int order, int step);
-	void changeBookmark(int songNum, int i, std::string name, int order, int step);
+	void addBookmark(int songNum, const std::string& name, int order, int step);
+	void changeBookmark(int songNum, int i, const std::string& name, int order, int step);
 	void removeBookmark(int songNum, int i);
 	void clearBookmark(int songNum);
 	void swapBookmarks(int songNum, int a, int b);
@@ -397,7 +433,7 @@ public:
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
 	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
-						 std::vector<std::vector<std::string>> cells);
+						 const std::vector<std::vector<std::string>>& cells);
 	void duplicateOrder(int songNum, int orderNum);
 	void MoveOrder(int songNum, int orderNum, bool isUp);
 	void clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack);
@@ -406,7 +442,7 @@ public:
 	bool canAddNewOrder(int songNum) const;
 	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool instMask, bool volMask);
+	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, const Note& note, bool instMask, bool volMask);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
 	void setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);
@@ -417,7 +453,7 @@ public:
 	int setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool secondEntry);
 	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
 	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
-	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry);
+	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, const std::string& id, bool fillValue00, bool secondEntry);
 	int getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
 	void setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, EffectDisplayControl ctrl, bool secondEntry);
 	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n);
@@ -431,15 +467,13 @@ public:
 	///		3: effect id
 	///		4: effect value
 	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-						   std::vector<std::vector<std::string>> cells);
+						   const std::vector<std::vector<std::string>>& cells);
 	void pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-							  std::vector<std::vector<std::string>> cells);
+							  const std::vector<std::vector<std::string>>& cells);
 	void pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-									int beginStep, std::vector<std::vector<std::string>> cells);
+									int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-								 int beginStep, std::vector<std::vector<std::string>> cells);
-	std::vector<std::vector<std::string>> arrangePatternDataCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-																  std::vector<std::vector<std::string>> cells);
+								 int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
@@ -487,8 +521,6 @@ private:
 	bool isFollowPlay_;
 	bool storeOnlyUsedSamples_;
 
-	static const uint32_t CHIP_CLOCK;
-
 	// Jam mode
 	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib, bool volumeSet,
 					  std::shared_ptr<AbstractInstrument> inst = nullptr);
@@ -496,7 +528,4 @@ private:
 
 	// Play song
 	void startPlay();
-
-	void checkNextPositionOfLastStepAndStepSize(
-			int songNum, int& endOrder, int& endStep, size_t& nIntroStep, size_t& nLoopStep) const;
 };

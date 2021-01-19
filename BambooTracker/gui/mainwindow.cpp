@@ -27,6 +27,7 @@
 #include "ui_mainwindow.h"
 #include <algorithm>
 #include <unordered_map>
+#include <array>
 #include <numeric>
 #include <QString>
 #include <QClipboard>
@@ -87,6 +88,17 @@
 #include "gui/track_visibility_memory_handler.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/gui_utils.hpp"
+#include "utils.hpp"
+
+namespace
+{
+const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS_ = {
+	{ Configuration::ToolbarPosition::TopPosition, Qt::TopToolBarArea },
+	{ Configuration::ToolbarPosition::BottomPosition, Qt::BottomToolBarArea },
+	{ Configuration::ToolbarPosition::LeftPosition, Qt::LeftToolBarArea },
+	{ Configuration::ToolbarPosition::RightPosition, Qt::RightToolBarArea }
+};
+}
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -222,20 +234,20 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	pasteModeGroup_ = std::make_unique<QActionGroup>(this);
 	pasteModeGroup_->addAction(ui->action_Cursor);
 	QObject::connect(ui->action_Cursor, &QAction::triggered, this, [&](bool checked) {
-		if (checked) config_.lock()->setPasteMode(Configuration::CURSOR);
+		if (checked) config_.lock()->setPasteMode(Configuration::PasteMode::Cursor);
 	});
 	pasteModeGroup_->addAction(ui->action_Selection);
 	QObject::connect(ui->action_Selection, &QAction::triggered, this, [&](bool checked) {
-		if (checked) config_.lock()->setPasteMode(Configuration::SELECTION);
+		if (checked) config_.lock()->setPasteMode(Configuration::PasteMode::Selection);
 	});
 	pasteModeGroup_->addAction(ui->action_Fill);
 	QObject::connect(ui->action_Fill, &QAction::triggered, this, [&](bool checked) {
-		if (checked) config_.lock()->setPasteMode(Configuration::FILL);
+		if (checked) config_.lock()->setPasteMode(Configuration::PasteMode::Fill);
 	});
 	switch (config.lock()->getPasteMode()) {
-	case Configuration::CURSOR:		ui->action_Cursor->setChecked(true);	break;
-	case Configuration::SELECTION:	ui->action_Selection->setChecked(true);	break;
-	case Configuration::FILL:		ui->action_Fill->setChecked(true);		break;
+	case Configuration::PasteMode::Cursor:		ui->action_Cursor->setChecked(true);	break;
+	case Configuration::PasteMode::Selection:	ui->action_Selection->setChecked(true);	break;
+	case Configuration::PasteMode::Fill:		ui->action_Fill->setChecked(true);		break;
 	}
 
 	/* Tool bars */
@@ -303,7 +315,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->subToolBar->addWidget(highlight2_);
 	ui->subToolBar->addSeparator();
 	auto& mainTbConfig = config.lock()->getMainToolbarConfiguration();
-	if (mainTbConfig.getPosition() == Configuration::ToolbarConfiguration::FLOAT_POS) {
+	if (mainTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
 		ui->mainToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
 		ui->mainToolBar->move(mainTbConfig.getX(), mainTbConfig.getY());
 	}
@@ -311,7 +323,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		addToolBar(TB_POS_.at(mainTbConfig.getPosition()), ui->mainToolBar);
 	}
 	auto& subTbConfig = config.lock()->getSubToolbarConfiguration();
-	if (subTbConfig.getPosition() == Configuration::ToolbarConfiguration::FLOAT_POS) {
+	if (subTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
 		ui->subToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
 		ui->subToolBar->move(subTbConfig.getX(), subTbConfig.getY());
 	}
@@ -762,7 +774,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	SongType memSongType;
 	std::vector<int> visTracks;
 	if (config.lock()->getRestoreTrackVisibility()
-			&& TrackVisibilityMemoryHandler::loadTrackVisibilityMemory(memSongType, visTracks)) {
+			&& io::loadTrackVisibilityMemory(memSongType, visTracks)) {
 		SongType songType = bt_->getSongStyle(bt_->getCurrentSongNumber()).type;
 		visTracks = gui_utils::adaptVisibleTrackList(visTracks, songType, songType);
 	}
@@ -1001,26 +1013,22 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	auto mainTbArea = toolBarArea(ui->mainToolBar);
 	auto subTbArea = toolBarArea(ui->subToolBar);
 	if (ui->mainToolBar->isFloating()) {
-		mainTbConfig.setPosition(ToolbarPos::FLOAT_POS);
+		mainTbConfig.setPosition(Configuration::ToolbarPosition::FloatPorition);
 		mainTbConfig.setX(ui->mainToolBar->x());
 		mainTbConfig.setY(ui->mainToolBar->y());
 	}
 	else {
-		mainTbConfig.setPosition(std::find_if(TB_POS_.begin(), TB_POS_.end(), [mainTbArea](auto pair) {
-			return (pair.second == mainTbArea);
-		})->first);
+		mainTbConfig.setPosition(utils::findMapValue(TB_POS_, mainTbArea)->first);
 		mainTbConfig.setNumber(0);
 		mainTbConfig.setBreakBefore(false);
 	}
 	if (ui->subToolBar->isFloating()) {
-		subTbConfig.setPosition(ToolbarPos::FLOAT_POS);
+		subTbConfig.setPosition(Configuration::ToolbarPosition::FloatPorition);
 		subTbConfig.setX(ui->subToolBar->x());
 		subTbConfig.setY(ui->subToolBar->y());
 	}
 	else {
-		subTbConfig.setPosition(std::find_if(TB_POS_.begin(), TB_POS_.end(), [subTbArea](auto pair) {
-			return (pair.second == subTbArea);
-		})->first);
+		subTbConfig.setPosition(utils::findMapValue(TB_POS_, mainTbArea)->first);
 		subTbConfig.setNumber(0);
 		subTbConfig.setBreakBefore(false);
 	}
@@ -1111,7 +1119,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	instForms_->closeAll();
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
-	TrackVisibilityMemoryHandler::saveTrackVisibilityMemory(
+	io::saveTrackVisibilityMemory(
 				bt_->getSongStyle(bt_->getCurrentSongNumber()).type,
 				ui->patternEditor->getVisibleTracks());
 
@@ -1138,68 +1146,68 @@ void MainWindow::unfreezeViews()
 void MainWindow::setShortcuts()
 {
 	auto shortcuts = config_.lock()->getShortcuts();
-	octUpSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
-	octDownSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
-	focusPtnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::FocusOnPattern)));
-	focusOdrSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::FocusOnOrder)));
-	focusInstSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::FocusOnInstrument)));
-	playAndStopSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
-	ui->actionPlay->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Play)));
-	ui->actionPlay_From_Start->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayFromStart)));
-	ui->actionPlay_Pattern->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayPattern)));
-	ui->actionPlay_From_Cursor->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayFromCursor)));
-	ui->actionPlay_From_Marker->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayFromMarker)));
-	playStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayStep)));
-	ui->actionStop->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Stop)));
-	ui->actionEdit_Mode->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleEditJam)));
-	ui->actionSet_Ro_w_Marker->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SetMarker)));
-	ui->actionMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteMix)));
-	ui->actionOverwrite->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
-	ui->action_Insert->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
-	ui->actionAll->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectAll)));
-	ui->actionNone->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Deselect)));
-	ui->actionRow->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectRow)));
-	ui->actionColumn->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectColumn)));
-	ui->actionPattern->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectColumn)));
-	ui->actionOrder->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectOrder)));
-	ui->action_Go_To->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::GoToStep)));
-	ui->actionToggle_Track->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-	ui->actionSolo_Track->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
-	ui->actionInterpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	goPrevOdrSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
-	goNextOdrSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
-	ui->action_Toggle_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleBookmark)));
-	ui->action_Previous_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevBookmark)));
-	ui->action_Next_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextBookmark)));
-	ui->actionDecrease_Note->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
-	ui->actionIncrease_Note->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
-	ui->actionDecrease_Octave->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
-	ui->actionIncrease_Octave->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	prevInstSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
-	nextInstSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
-	ui->action_Instrument_Mask->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::MaskInstrument)));
-	ui->action_Volume_Mask->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::MaskVolume)));
-	ui->actionEdit->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::EditInstrument)));
-	ui->actionFollow_Mode->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FollowMode)));
-	ui->actionDuplicate_Order->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
-	ui->actionClone_Patterns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
-	ui->actionClone_Order->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
-	ui->actionReplace_Instrument->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
-	ui->actionExpand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
-	ui->actionShrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
-	ui->actionFine_Decrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
-	ui->actionFine_Increase_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
-	ui->actionCoarse_D_ecrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
-	ui->actionCoarse_I_ncrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
-	incPtnSizeSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
-	decPtnSizeSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
-	incEditStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
-	decEditStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
-	ui->action_Effect_List->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
-	prevSongSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
-	nextSongSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextSong)));
-	jamVolUpSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::JamVolumeUp)));
-	jamVolDownSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::JamVolumeDown)));
+	octUpSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::OctaveUp)));
+	octDownSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::OctaveDown)));
+	focusPtnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FocusOnPattern)));
+	focusOdrSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FocusOnOrder)));
+	focusInstSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FocusOnInstrument)));
+	playAndStopSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PlayAndStop)));
+	ui->actionPlay->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Play)));
+	ui->actionPlay_From_Start->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PlayFromStart)));
+	ui->actionPlay_Pattern->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PlayPattern)));
+	ui->actionPlay_From_Cursor->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PlayFromCursor)));
+	ui->actionPlay_From_Marker->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PlayFromMarker)));
+	playStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PlayStep)));
+	ui->actionStop->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Stop)));
+	ui->actionEdit_Mode->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleEditJam)));
+	ui->actionSet_Ro_w_Marker->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SetMarker)));
+	ui->actionMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteMix)));
+	ui->actionOverwrite->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteOverwrite)));
+	ui->action_Insert->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteInsert)));
+	ui->actionAll->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectAll)));
+	ui->actionNone->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Deselect)));
+	ui->actionRow->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectRow)));
+	ui->actionColumn->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectColumn)));
+	ui->actionPattern->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectColumn)));
+	ui->actionOrder->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectOrder)));
+	ui->action_Go_To->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::GoToStep)));
+	ui->actionToggle_Track->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleTrack)));
+	ui->actionSolo_Track->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SoloTrack)));
+	ui->actionInterpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Interpolate)));
+	goPrevOdrSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::GoToPrevOrder)));
+	goNextOdrSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::GoToNextOrder)));
+	ui->action_Toggle_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleBookmark)));
+	ui->action_Previous_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PrevBookmark)));
+	ui->action_Next_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::NextBookmark)));
+	ui->actionDecrease_Note->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseNote)));
+	ui->actionIncrease_Note->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseNote)));
+	ui->actionDecrease_Octave->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseOctave)));
+	ui->actionIncrease_Octave->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseOctave)));
+	prevInstSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PrevInstrument)));
+	nextInstSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::NextInstrument)));
+	ui->action_Instrument_Mask->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::MaskInstrument)));
+	ui->action_Volume_Mask->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::MaskVolume)));
+	ui->actionEdit->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::EditInstrument)));
+	ui->actionFollow_Mode->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FollowMode)));
+	ui->actionDuplicate_Order->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DuplicateOrder)));
+	ui->actionClone_Patterns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ClonePatterns)));
+	ui->actionClone_Order->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CloneOrder)));
+	ui->actionReplace_Instrument->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ReplaceInstrument)));
+	ui->actionExpand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandPattern)));
+	ui->actionShrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkPattern)));
+	ui->actionFine_Decrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FineDecreaseValues)));
+	ui->actionFine_Increase_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FineIncreaseValues)));
+	ui->actionCoarse_D_ecrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CoarseDecreaseValues)));
+	ui->actionCoarse_I_ncrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CoarseIncreaseValuse)));
+	incPtnSizeSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreasePatternSize)));
+	decPtnSizeSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreasePatternSize)));
+	incEditStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseEditStep)));
+	decEditStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseEditStep)));
+	ui->action_Effect_List->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DisplayEffectList)));
+	prevSongSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PreviousSong)));
+	nextSongSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::NextSong)));
+	jamVolUpSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::JamVolumeUp)));
+	jamVolDownSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::JamVolumeDown)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
@@ -1789,7 +1797,6 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	stopPlaySong();
 
 	std::unique_ptr<AbstractBank> bank;
-	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
 		io::BinaryContainer container;
 		{
@@ -1836,6 +1843,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	size_t jamId = 128;	// Dummy
 	std::shared_ptr<AbstractInstrument> jamInst;
 	importBankDiag_ = std::make_unique<InstrumentSelectionDialog>(*bank, tr("Select instruments to load:"), config_, this);
+	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	auto updateInst = [&] (size_t id) {
 		if (id != jamId) {
 			bankJamMidiCtrl_.store(true);
@@ -1843,10 +1851,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			bankMan->clearAll();
 			jamInst.reset(bank->loadInstrument(id, bankMan, 0));
 			jamInst->setNumber(128);	// Special number
-			std::vector<std::vector<size_t>> addrs = bt_->assignADPCMBeforeForcedJamKeyOn(jamInst);
-			for (size_t i = 0; i < addrs.size(); ++i) {
-				bankMan->setSampleADPCMStartAddress(i, addrs[i][0]);
-				bankMan->setSampleADPCMStopAddress(i, addrs[i][1]);
+			std::unordered_map<int, std::array<size_t, 2>> sampNums;
+			bt_->assignADPCMBeforeForcedJamKeyOn(jamInst, sampNums);
+			for (const auto& pairs : sampNums) {
+				bankMan->setSampleADPCMStartAddress(pairs.first, pairs.second[0]);
+				bankMan->setSampleADPCMStopAddress(pairs.first, pairs.second[1]);
 			}
 			bankJamMidiCtrl_.store(false);
 		}
@@ -2989,7 +2998,7 @@ void MainWindow::on_actionConfiguration_triggered()
 
 	if (diag.exec() == QDialog::Accepted) {
 		changeConfiguration();
-		ConfigurationHandler::saveConfiguration(config_.lock());
+		io::saveConfiguration(config_.lock());
 		ColorPaletteHandler::savePalette(palette_.get());
 	}
 }
@@ -3307,7 +3316,7 @@ void MainWindow::on_actionWAV_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
 
-	int max = static_cast<int>(bt_->getAllStepCount(
+	int max = static_cast<int>(bt_->getTotalStepCount(
 								   bt_->getCurrentSongNumber(), static_cast<size_t>(diag.getLoopCount()))) + 3;
 	QProgressDialog progress(tr("Export to WAV"), tr("Cancel"), 0, max);
 	progress.setValue(0);
@@ -3375,7 +3384,7 @@ void MainWindow::on_actionVGM_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
-	int max = static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
+	int max = static_cast<int>(bt_->getTotalStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
 	QProgressDialog progress(tr("Export to VGM"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -3438,7 +3447,7 @@ void MainWindow::on_actionS98_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
-	int max = static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
+	int max = static_cast<int>(bt_->getTotalStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
 	QProgressDialog progress(tr("Export to S98"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -3559,10 +3568,10 @@ void MainWindow::on_keyRepeatCheckBox_stateChanged(int arg1)
 
 void MainWindow::updateVisuals()
 {
-	int16_t wave[2 * OPNAController::OUTPUT_HISTORY_SIZE];
+	int16_t wave[2 * bt_defs::OUTPUT_HISTORY_SIZE];
 	bt_->getOutputHistory(wave);
 
-	ui->waveVisual->setStereoSamples(wave, OPNAController::OUTPUT_HISTORY_SIZE);
+	ui->waveVisual->setStereoSamples(wave, bt_defs::OUTPUT_HISTORY_SIZE);
 }
 
 void MainWindow::on_action_Effect_List_triggered()
@@ -3600,17 +3609,14 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 		bt_->stopPlaySong();
 		lockWidgets(false);
 
-		std::vector<std::vector<int>> duplicates = bt_->checkDuplicateInstruments();
+		std::unordered_map<int, int> rplMap = bt_->replaceDuplicateInstrumentsInPatterns();
 		auto list = ui->instrumentList;
-		for (auto& group : duplicates) {
-			for (size_t i = 1; i < group.size(); ++i) {
-				for (int j = 0; j < list->count(); ++j) {
-					if (list->item(j)->data(Qt::UserRole).toInt() == group[i])
-						removeInstrument(j);
-				}
+		for (auto& pairs : rplMap) {
+			for (int j = 0; j < list->count(); ++j) {
+				if (list->item(j)->data(Qt::UserRole).toInt() == pairs.first)
+					removeInstrument(j);
 			}
 		}
-		bt_->replaceDuplicateInstrumentsInPatterns(duplicates);
 		bt_->clearUnusedInstrumentProperties();
 		bt_->clearCommandHistory();
 		comStack_->clear();
@@ -3797,7 +3803,7 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 
 void MainWindow::on_action_Estimate_Song_Length_triggered()
 {
-	double time = bt_->calculateSongLength(bt_->getCurrentSongNumber());
+	double time = bt_->getApproximateSongLength(bt_->getCurrentSongNumber());
 	int seconds = static_cast<int>(std::round(time));
 	QMessageBox box;
 	box.setIcon(QMessageBox::Information);

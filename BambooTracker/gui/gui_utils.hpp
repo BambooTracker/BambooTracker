@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,7 +30,9 @@
 #include <vector>
 #include <QString>
 #include <QKeySequence>
-#include "misc.hpp"
+#include "bamboo_tracker_defs.hpp"
+
+enum class SongType;
 
 namespace gui_utils
 {

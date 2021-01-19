@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,6 +31,7 @@
 #include <QKeySequence>
 #include "configuration.hpp"
 #include "jamming.hpp"
+#include "utils.hpp"
 
 // Layout decipherer
 inline JamKey getJamKeyFromLayoutMapping(Qt::Key key, std::weak_ptr<Configuration> config)
@@ -39,7 +40,7 @@ inline JamKey getJamKeyFromLayoutMapping(Qt::Key key, std::weak_ptr<Configuratio
 	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
 	if (configLocked->mappingLayouts.find(selectedLayout) != configLocked->mappingLayouts.end()) {
 		std::unordered_map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at(selectedLayout);
-		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
+		auto it = utils::findIf(selectedLayoutMapping,
 							   [key](const std::pair<std::string, JamKey>& t) -> bool {
 			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
 		});

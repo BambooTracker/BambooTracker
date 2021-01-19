@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,16 +40,19 @@
 #include <QMenu>
 #include <QAction>
 #include <QRegularExpression>
-#include <QRegularExpressionMatch>
 #include <QMetaMethod>
 #include <QIcon>
+#include "midi/midi.hpp"
+#include "command/pattern/set_effect_value_to_step_command.hpp"
+#include "jamming.hpp"
+#include "note.hpp"
+#include "bamboo_tracker_defs.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
-#include "midi/midi.hpp"
-#include "jamming.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_utils.hpp"
+#include "utils.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -986,10 +989,10 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		else {
 			int volLim = 0;	// Dummy set
 			switch (src) {
-			case SoundSource::FM:		volLim = NSTEP_FM_VOLUME	;	break;
-			case SoundSource::SSG:		volLim = NSTEP_SSG_VOLUME;		break;
-			case SoundSource::RHYTHM:	volLim = NSTEP_RHYTHM_VOLUME;	break;
-			case SoundSource::ADPCM:	volLim = NSTEP_ADPCM_VOLUME;	break;
+			case SoundSource::FM:		volLim = bt_defs::NSTEP_FM_VOLUME	;	break;
+			case SoundSource::SSG:		volLim = bt_defs::NSTEP_SSG_VOLUME;		break;
+			case SoundSource::RHYTHM:	volLim = bt_defs::NSTEP_RHYTHM_VOLUME;	break;
+			case SoundSource::ADPCM:	volLim = bt_defs::NSTEP_ADPCM_VOLUME;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
@@ -1458,7 +1461,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 	}
 
 	if (trackChanged) {
-		int trackVisIdx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), bt_->getCurrentTrackAttribute().number));
+		int trackVisIdx = std::distance(visTracks_.begin(), utils::find(visTracks_, bt_->getCurrentTrackAttribute().number));
 		int oldTrackVisIdx = std::exchange(curPos_.trackVisIdx, trackVisIdx);
 		curPos_.colInTrack = 0;
 		if (oldTrackVisIdx < curPos_.trackVisIdx) {
@@ -1525,48 +1528,19 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
 			JamKey possibleJamKey = getJamKeyFromLayoutMapping(qtKey, config_);
-			int octaveOffset = 0;
-			switch (possibleJamKey) {
-			case JamKey::HighD2:
-			case JamKey::HighCS2:
-			case JamKey::HighC2:
-				octaveOffset = 2;
-				break;
-			case JamKey::HighB:
-			case JamKey::HighAS:
-			case JamKey::HighA:
-			case JamKey::HighGS:
-			case JamKey::HighG:
-			case JamKey::HighFS:
-			case JamKey::HighF:
-			case JamKey::HighE:
-			case JamKey::HighDS:
-			case JamKey::HighD:
-			case JamKey::HighCS:
-			case JamKey::HighC:
-			case JamKey::LowD2:
-			case JamKey::LowCS2:
-			case JamKey::LowC2:
-				octaveOffset = 1;
-				break;
-			default:
-				break;
-			}
-			setStepKeyOn(jam_utils::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
+			setStepKeyOn(jam_utils::makeNote(baseOct, possibleJamKey));
 		} catch (std::invalid_argument &) {}
 	}
 
 	return false;
 }
 
-void PatternEditorPanel::setStepKeyOn(Note note, int octave)
+void PatternEditorPanel::setStepKeyOn(const Note& note)
 {
-	if (octave < 8) {
-		bt_->setStepNote(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, octave, note,
-						 config_->getInstrumentMask(), config_->getVolumeMask());
-		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
-		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
-	}
+	bt_->setStepNote(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, note,
+					 config_->getInstrumentMask(), config_->getVolumeMask());
+	comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
+	if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterInstrumentData(int key)
@@ -1860,7 +1834,7 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1874,7 +1848,7 @@ void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1888,7 +1862,7 @@ void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursor
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1902,7 +1876,7 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 	int sCol = 0;
 	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
 	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
 
@@ -1914,28 +1888,18 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 PatternEditorPanel::PatternCells PatternEditorPanel::decodeCells(QString str, int& startCol)
 {
 	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
-	QString hdRe = "^([0-9]+),([0-9]+),([0-9]+),";
-	QRegularExpression re(hdRe);
-	QRegularExpressionMatch match = re.match(str);
-	startCol = match.captured(1).toInt();
-	int w = match.captured(2).toInt();
-	size_t h = match.captured(3).toUInt();
-	str.remove(re);
+	QStringList data = str.split(",");
+	if (data.size() < 3) {};	// Error
+	startCol = data[0].toInt();
+	size_t w = data[1].toUInt();
+	size_t h = data[2].toUInt();
+	data.erase(data.begin(), data.begin() + 3);
+	if (static_cast<int>(w * h) != data.size()) return {};	// Error
 
-	std::vector<std::vector<std::string>> cells;
-	re = QRegularExpression("^([^,]+),");
+	PatternCells cells(h, PatternCells::value_type(w));
 	for (size_t i = 0; i < h; ++i) {
-		cells.emplace_back();
-		for (int j = 0; j < w; ++j) {
-			match = re.match(str);
-			if (match.hasMatch()) {
-				cells.at(i).push_back(match.captured(1).toStdString());
-				str.remove(re);
-			}
-			else {
-				cells.at(i).push_back(str.toStdString());
-				break;
-			}
+		for (size_t j = 0; j < w; ++j) {
+			cells[i][j] = data[i * w + j].toStdString();
 		}
 	}
 
@@ -1947,7 +1911,7 @@ PatternPosition PatternEditorPanel::getPasteLeftAbovePosition(
 {
 	PatternPosition pos;
 	Configuration::PasteMode mode = config_->getPasteMode();
-	if ((mode == Configuration::SELECTION || mode == Configuration::FILL)
+	if ((mode == Configuration::PasteMode::Selection || mode == Configuration::PasteMode::Fill)
 			&& selLeftAbovePos_.colInTrack != -1) {
 		pos = selLeftAbovePos_;
 		pos.colInTrack = pasteCol;
@@ -2223,28 +2187,28 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
-	pasteMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteMix)));
-	pasteOver->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
-	pasteIns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
+	pasteMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteMix)));
+	pasteOver->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteOverwrite)));
+	pasteIns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteInsert)));
 	erase->setShortcut(QKeySequence(Qt::Key_Delete));
-	select->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectAll)));
-	interpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	reverse->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Reverse)));
-	replace->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
-	expand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
-	shrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
-	deNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
-	inNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
-	deOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
-	inOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	fdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
-	finVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
-	cdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
-	cinVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
-	toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-	solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
-	exeff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	sheff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	select->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SelectAll)));
+	interpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Interpolate)));
+	reverse->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::Reverse)));
+	replace->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ReplaceInstrument)));
+	expand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandPattern)));
+	shrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkPattern)));
+	deNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseNote)));
+	inNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseNote)));
+	deOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DecreaseOctave)));
+	inOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::IncreaseOctave)));
+	fdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FineDecreaseValues)));
+	finVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::FineIncreaseValues)));
+	cdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CoarseDecreaseValues)));
+	cinVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CoarseIncreaseValuse)));
+	toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleTrack)));
+	solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SoloTrack)));
+	exeff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandEffect)));
+	sheff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkEffect)));
 
 	if (bt_->isJamMode() || pos.order < 0 || pos.trackVisIdx < 0) {
 		copy->setEnabled(false);
@@ -2381,14 +2345,14 @@ void PatternEditorPanel::onShortcutUpdated()
 {
 	auto shortcuts = config_->getShortcuts();
 
-	hlUpSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevHighlighted)));
-	hlUpWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::PrevHighlighted)));
-	hlDnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextHighlighted)));
-	hlDnWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::NextHighlighted)));
-	keyOffSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::KeyOff)));
-	echoBufSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
-	expandColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	shrinkColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	hlUpSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PrevHighlighted)));
+	hlUpWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::ShortcutAction::PrevHighlighted)));
+	hlDnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::NextHighlighted)));
+	hlDnWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::ShortcutAction::NextHighlighted)));
+	keyOffSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::KeyOff)));
+	echoBufSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::EchoBuffer)));
+	expandColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandEffect)));
+	shrinkColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkEffect)));
 }
 
 void PatternEditorPanel::setPatternHighlight1Count(int count)
@@ -2989,8 +2953,8 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			solo->setShortcutVisibleInContextMenu(true);
 #endif
 			auto shortcuts = config_->getShortcuts();
-			toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-			solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
+			toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ToggleTrack)));
+			solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::SoloTrack)));
 			if (mousePressPos_.trackVisIdx < 0) {
 				toggle->setEnabled(false);
 				solo->setEnabled(false);
@@ -3225,8 +3189,7 @@ void PatternEditorPanel::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	if (!bt_->isJamMode()) {
 		bool release = ((status & 0xf0) == 0x80) || velocity == 0;
 		if (!release) {
-			std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
-			setStepKeyOn(octaveAndNote.second, octaveAndNote.first);
+			setStepKeyOn(Note(static_cast<int>(key) - 12));
 		}
 	}
 }

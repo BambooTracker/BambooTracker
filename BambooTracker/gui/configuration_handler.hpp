@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CONF_HPP
-#define CONF_HPP
+#ifndef CONFIGURATION_HANDLER_HPP
+#define CONFIGURATION_HANDLER_HPP
 
 #include <memory>
-#include <unordered_map>
-#include <QString>
-#include <QSettings>
-#include "configuration.hpp"
-#include "gui/gui_utils.hpp"
 
-enum class JamKey : int;
+class Configuration;
 
-class ConfigurationHandler
-{	
-public:
-	static bool saveConfiguration(std::weak_ptr<Configuration> config);
-	static bool loadConfiguration(std::weak_ptr<Configuration> config);
+namespace io
+{
+bool saveConfiguration(std::weak_ptr<Configuration> config);
+bool loadConfiguration(std::weak_ptr<Configuration> config);
+}
 
-private:
-	ConfigurationHandler();
-	const static QString ORGANIZATION_;
-	const static QString APPLICATION_;
-
-	const static std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP_;
-	const static std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP_;
-
-	static inline std::string loadShortcut(const QSettings& settings, const QString key, const std::string shortcut)
-	{
-		return settings.value(key, gui_utils::utf8ToQString(shortcut)).toString().toUtf8().toStdString();
-	}
-};
-
-#endif // CONF_HPP
+#endif // CONFIGURATION_HANDLER_HPP

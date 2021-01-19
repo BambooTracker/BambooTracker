@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,7 +25,8 @@
 
 #include "change_values_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
-#include "misc.hpp"
+#include "bamboo_tracker_defs.hpp"
+#include "utils.hpp"
 
 ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(
 		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn, int beginOrder,
@@ -90,13 +91,13 @@ void ChangeValuesInPatternCommand::redo()
 			switch (col) {
 			case 1:
 				if (st.hasInstrument())
-					st.setInstrumentNumber(clamp(diff_ + *valit++, 0, 127));
+					st.setInstrumentNumber(utils::clamp(diff_ + *valit++, 0, 127));
 				break;
 			case 2:
 				if (st.hasVolume()) {
 					int d = (tr.getAttribute().source == SoundSource::FM && fmReverse_) ? -diff_
 																						: diff_;
-					st.setVolume(clamp(d + *valit++, 0, 255));
+					st.setVolume(utils::clamp(d + *valit++, 0, 255));
 				}
 				break;
 			default:
@@ -105,7 +106,7 @@ void ChangeValuesInPatternCommand::redo()
 					int ec = col - 3;
 					int ei = ec / 2;
 					if (ec % 2 && st.hasEffectValue(ei))
-						st.setEffectValue(ei, clamp(diff_ + *valit++, 0, 255));
+						st.setEffectValue(ei, utils::clamp(diff_ + *valit++, 0, 255));
 				}
 				break;
 			}

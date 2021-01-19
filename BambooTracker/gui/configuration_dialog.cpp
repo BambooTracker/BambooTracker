@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,6 +48,19 @@
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "color_palette_handler.hpp"
 #include "gui_utils.hpp"
+
+namespace
+{
+inline Qt::CheckState toCheckState(bool enabled)
+{
+	return enabled ? Qt::Checked : Qt::Unchecked;
+}
+
+inline bool fromCheckState(Qt::CheckState state)
+{
+	return (state == Qt::Checked) ? true : false;
+}
+}
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
 										 std::weak_ptr<const AudioStream> stream, QWidget *parent)
@@ -125,75 +138,75 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(1, QHeaderView::Fixed);
 	std::map<Configuration::ShortcutAction, QString> shortcutsActions = {
-		{ Configuration::KeyOff, tr("Key off") },
-		{ Configuration::OctaveUp, tr("Octave up") },
-		{ Configuration::OctaveDown, tr("Octave down") },
-		{ Configuration::EchoBuffer, tr("Echo buffer") },
-		{ Configuration::PlayAndStop, tr("Play and stop") },
-		{ Configuration::Play, tr("Play") },
-		{ Configuration::PlayFromStart, tr("Play from start") },
-		{ Configuration::PlayPattern, tr("Play pattern") },
-		{ Configuration::PlayFromCursor, tr("Play from cursor") },
-		{ Configuration::PlayFromMarker, tr("Play from marker") },
-		{ Configuration::PlayStep, tr("Play step") },
-		{ Configuration::Stop, tr("Stop") },
-		{ Configuration::FocusOnPattern, tr("Focus on pattern editor") },
-		{ Configuration::FocusOnOrder, tr("Focus on order list") },
-		{ Configuration::FocusOnInstrument, tr("Focus on instrument list") },
-		{ Configuration::ToggleEditJam, tr("Toggle edit/jam mode") },
-		{ Configuration::SetMarker, tr("Set marker") },
-		{ Configuration::PasteMix, tr("Paste and mix") },
-		{ Configuration::PasteOverwrite, tr("Paste and overwrite") },
-		{ Configuration::PasteInsert, tr("Paste and insert") },
-		{ Configuration::SelectAll, tr("Select all") },
-		{ Configuration::Deselect, tr("Deselect") },
-		{ Configuration::SelectRow, tr("Select row") },
-		{ Configuration::SelectColumn, tr("Select column") },
-		{ Configuration::SelectPattern, tr("Select pattern") },
-		{ Configuration::SelectOrder, tr("Select order") },
-		{ Configuration::GoToStep, tr("Go to step") },
-		{ Configuration::ToggleTrack, tr("Toggle track") },
-		{ Configuration::SoloTrack, tr("Solo track") },
-		{ Configuration::Interpolate, tr("Interpolate") },
-		{ Configuration::Reverse, tr("Reverse") },
-		{ Configuration::GoToPrevOrder, tr("Go to previous order") },
-		{ Configuration::GoToNextOrder, tr("Go to next order") },
-		{ Configuration::ToggleBookmark, tr("Toggle bookmark") },
-		{ Configuration::PrevBookmark, tr("Previous bookmark") },
-		{ Configuration::NextBookmark, tr("Next bookmark") },
-		{ Configuration::DecreaseNote, tr("Transpose, decrease note") },
-		{ Configuration::IncreaseNote, tr("Transpose, increase note") },
-		{ Configuration::DecreaseOctave, tr("Transpose, decrease octave") },
-		{ Configuration::IncreaseOctave, tr("Transpose, increase octave") },
-		{ Configuration::PrevInstrument, tr("Previous instrument") },
-		{ Configuration::NextInstrument, tr("Next instrument") },
-		{ Configuration::MaskInstrument, tr("Mask instrument") },
-		{ Configuration::MaskVolume, tr("Mask volume") },
-		{ Configuration::EditInstrument, tr("Edit instrument") },
-		{ Configuration::FollowMode, tr("Follow mode") },
-		{ Configuration::DuplicateOrder, tr("Duplicate order") },
-		{ Configuration::ClonePatterns, tr("Clone patterns") },
-		{ Configuration::CloneOrder, tr("Clone order") },
-		{ Configuration::ReplaceInstrument, tr("Replace instrument") },
-		{ Configuration::ExpandPattern, tr("Expand pattern") },
-		{ Configuration::ShrinkPattern, tr("Shrink pattern") },
-		{ Configuration::FineDecreaseValues, tr("Fine decrease values") },
-		{ Configuration::FineIncreaseValues, tr("Fine increase values") },
-		{ Configuration::CoarseDecreaseValues, tr("Coarse decrease values") },
-		{ Configuration::CoarseIncreaseValuse, tr("Coarse increase valuse") },
-		{ Configuration::ExpandEffect, tr("Expand effect column") },
-		{ Configuration::ShrinkEffect, tr("Shrink effect column") },
-		{ Configuration::PrevHighlighted, tr("Previous highlighted step") },
-		{ Configuration::NextHighlighted, tr("Next highlighted step") },
-		{ Configuration::IncreasePatternSize, tr("Increase pattern size") },
-		{ Configuration::DecreasePatternSize, tr("Decrease pattern size") },
-		{ Configuration::IncreaseEditStep, tr("Increase edit step") },
-		{ Configuration::DecreaseEditStep, tr("Decrease edit step") },
-		{ Configuration::DisplayEffectList, tr("Display effect list") },
-		{ Configuration::PreviousSong, tr("Previous song") },
-		{ Configuration::NextSong, tr("Next song") },
-		{ Configuration::JamVolumeUp, tr("Jam volume up") },
-		{ Configuration::JamVolumeDown, tr("Jam volume down") }
+		{ Configuration::ShortcutAction::KeyOff, tr("Key off") },
+		{ Configuration::ShortcutAction::OctaveUp, tr("Octave up") },
+		{ Configuration::ShortcutAction::OctaveDown, tr("Octave down") },
+		{ Configuration::ShortcutAction::EchoBuffer, tr("Echo buffer") },
+		{ Configuration::ShortcutAction::PlayAndStop, tr("Play and stop") },
+		{ Configuration::ShortcutAction::Play, tr("Play") },
+		{ Configuration::ShortcutAction::PlayFromStart, tr("Play from start") },
+		{ Configuration::ShortcutAction::PlayPattern, tr("Play pattern") },
+		{ Configuration::ShortcutAction::PlayFromCursor, tr("Play from cursor") },
+		{ Configuration::ShortcutAction::PlayFromMarker, tr("Play from marker") },
+		{ Configuration::ShortcutAction::PlayStep, tr("Play step") },
+		{ Configuration::ShortcutAction::Stop, tr("Stop") },
+		{ Configuration::ShortcutAction::FocusOnPattern, tr("Focus on pattern editor") },
+		{ Configuration::ShortcutAction::FocusOnOrder, tr("Focus on order list") },
+		{ Configuration::ShortcutAction::FocusOnInstrument, tr("Focus on instrument list") },
+		{ Configuration::ShortcutAction::ToggleEditJam, tr("Toggle edit/jam mode") },
+		{ Configuration::ShortcutAction::SetMarker, tr("Set marker") },
+		{ Configuration::ShortcutAction::PasteMix, tr("Paste and mix") },
+		{ Configuration::ShortcutAction::PasteOverwrite, tr("Paste and overwrite") },
+		{ Configuration::ShortcutAction::PasteInsert, tr("Paste and insert") },
+		{ Configuration::ShortcutAction::SelectAll, tr("Select all") },
+		{ Configuration::ShortcutAction::Deselect, tr("Deselect") },
+		{ Configuration::ShortcutAction::SelectRow, tr("Select row") },
+		{ Configuration::ShortcutAction::SelectColumn, tr("Select column") },
+		{ Configuration::ShortcutAction::SelectPattern, tr("Select pattern") },
+		{ Configuration::ShortcutAction::SelectOrder, tr("Select order") },
+		{ Configuration::ShortcutAction::GoToStep, tr("Go to step") },
+		{ Configuration::ShortcutAction::ToggleTrack, tr("Toggle track") },
+		{ Configuration::ShortcutAction::SoloTrack, tr("Solo track") },
+		{ Configuration::ShortcutAction::Interpolate, tr("Interpolate") },
+		{ Configuration::ShortcutAction::Reverse, tr("Reverse") },
+		{ Configuration::ShortcutAction::GoToPrevOrder, tr("Go to previous order") },
+		{ Configuration::ShortcutAction::GoToNextOrder, tr("Go to next order") },
+		{ Configuration::ShortcutAction::ToggleBookmark, tr("Toggle bookmark") },
+		{ Configuration::ShortcutAction::PrevBookmark, tr("Previous bookmark") },
+		{ Configuration::ShortcutAction::NextBookmark, tr("Next bookmark") },
+		{ Configuration::ShortcutAction::DecreaseNote, tr("Transpose, decrease note") },
+		{ Configuration::ShortcutAction::IncreaseNote, tr("Transpose, increase note") },
+		{ Configuration::ShortcutAction::DecreaseOctave, tr("Transpose, decrease octave") },
+		{ Configuration::ShortcutAction::IncreaseOctave, tr("Transpose, increase octave") },
+		{ Configuration::ShortcutAction::PrevInstrument, tr("Previous instrument") },
+		{ Configuration::ShortcutAction::NextInstrument, tr("Next instrument") },
+		{ Configuration::ShortcutAction::MaskInstrument, tr("Mask instrument") },
+		{ Configuration::ShortcutAction::MaskVolume, tr("Mask volume") },
+		{ Configuration::ShortcutAction::EditInstrument, tr("Edit instrument") },
+		{ Configuration::ShortcutAction::FollowMode, tr("Follow mode") },
+		{ Configuration::ShortcutAction::DuplicateOrder, tr("Duplicate order") },
+		{ Configuration::ShortcutAction::ClonePatterns, tr("Clone patterns") },
+		{ Configuration::ShortcutAction::CloneOrder, tr("Clone order") },
+		{ Configuration::ShortcutAction::ReplaceInstrument, tr("Replace instrument") },
+		{ Configuration::ShortcutAction::ExpandPattern, tr("Expand pattern") },
+		{ Configuration::ShortcutAction::ShrinkPattern, tr("Shrink pattern") },
+		{ Configuration::ShortcutAction::FineDecreaseValues, tr("Fine decrease values") },
+		{ Configuration::ShortcutAction::FineIncreaseValues, tr("Fine increase values") },
+		{ Configuration::ShortcutAction::CoarseDecreaseValues, tr("Coarse decrease values") },
+		{ Configuration::ShortcutAction::CoarseIncreaseValuse, tr("Coarse increase valuse") },
+		{ Configuration::ShortcutAction::ExpandEffect, tr("Expand effect column") },
+		{ Configuration::ShortcutAction::ShrinkEffect, tr("Shrink effect column") },
+		{ Configuration::ShortcutAction::PrevHighlighted, tr("Previous highlighted step") },
+		{ Configuration::ShortcutAction::NextHighlighted, tr("Next highlighted step") },
+		{ Configuration::ShortcutAction::IncreasePatternSize, tr("Increase pattern size") },
+		{ Configuration::ShortcutAction::DecreasePatternSize, tr("Decrease pattern size") },
+		{ Configuration::ShortcutAction::IncreaseEditStep, tr("Increase edit step") },
+		{ Configuration::ShortcutAction::DecreaseEditStep, tr("Decrease edit step") },
+		{ Configuration::ShortcutAction::DisplayEffectList, tr("Display effect list") },
+		{ Configuration::ShortcutAction::PreviousSong, tr("Previous song") },
+		{ Configuration::ShortcutAction::NextSong, tr("Next song") },
+		{ Configuration::ShortcutAction::JamVolumeUp, tr("Jam volume up") },
+		{ Configuration::ShortcutAction::JamVolumeDown, tr("Jam volume down") }
 	};
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts = configLocked->getShortcuts();
 	for (const auto& pair : shortcutsActions) {

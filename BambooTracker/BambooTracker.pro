@@ -86,7 +86,6 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
-    calc_pitch.cpp \
     chip/c86ctl/c86ctl_wrapper.cpp \
     chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
@@ -119,7 +118,8 @@ SOURCES += \
     gui/swap_tracks_dialog.cpp \
     gui/track_visibility_memory_handler.cpp \
     gui/transpose_song_dialog.cpp \
-    instrument/waveform_adpcm.cpp \
+    instrument/sample_adpcm.cpp \
+    instrument/sequence_property.cpp \
     io/btb_io.cpp \
     io/bti_io.cpp \
     io/btm_io.cpp \
@@ -151,6 +151,7 @@ SOURCES += \
     chip/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
+    note.cpp \
     playback.cpp \
     song_length_calculator.cpp \
     audio/audio_stream.cpp \
@@ -209,7 +210,6 @@ SOURCES += \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
-    instrument/command_sequence.cpp \
     instrument/effect_iterator.cpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.cpp \
     gui/module_properties_dialog.cpp \
@@ -250,7 +250,7 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
-    calc_pitch.hpp \
+    bamboo_tracker_defs.hpp \
     chip/codec/ymb_codec.hpp \
     chip/c86ctl/c86ctl.h \
     chip/c86ctl/c86ctl_wrapper.hpp \
@@ -263,6 +263,7 @@ HEADERS += \
     command/pattern/paste_insert_copied_data_to_pattern_command.hpp \
     command/pattern/pattern_command_utils.hpp \
     command/pattern/transpose_note_in_pattern_command.hpp \
+    echo_buffer.hpp \
     enum_hash.hpp \
     gui/bookmark_manager_form.hpp \
     gui/color_palette_handler.hpp \
@@ -305,7 +306,9 @@ HEADERS += \
     gui/swap_tracks_dialog.hpp \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
-    instrument/waveform_adpcm.hpp \
+    instrument/instrument_property_defs.hpp \
+    instrument/sample_adpcm.hpp \
+    instrument/sequence_property.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \
     io/btm_io.hpp \
@@ -326,11 +329,11 @@ HEADERS += \
     io/y12_io.hpp \
     jamming.hpp \
     module/effect.hpp \
+    note.hpp \
     playback.hpp \
     song_length_calculator.hpp \
     audio/audio_stream.hpp \
     chip/chip_def.h \
-    misc.hpp \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
@@ -390,7 +393,6 @@ HEADERS += \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
-    instrument/command_sequence.hpp \
     instrument/sequence_iterator_interface.hpp \
     instrument/effect_iterator.hpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.hpp \
@@ -408,6 +410,7 @@ HEADERS += \
     command/pattern/set_echo_buffer_access_command.hpp \
     gui/comment_edit_dialog.hpp \
     io/binary_container.hpp \
+    utils.hpp \
     version.hpp \
     command/pattern/interpolate_pattern_command.hpp \
     command/pattern/reverse_pattern_command.hpp \

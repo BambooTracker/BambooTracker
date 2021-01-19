@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,20 +25,33 @@
 
 #pragma once
 
+enum class SequenceType
+{
+	PlainSequence,
+	AbsoluteSequence,
+	FixedSequence,
+	RelativeSequence
+};
+
+template<class T>
 class SequenceIteratorInterface
 {
 public:
 	virtual ~SequenceIteratorInterface() = default;
-	/// -1: sequence end
-	/// else: position in the sequence
-	virtual int getPosition() const = 0;
-	/// 0: absolute
-	/// 1: fixed
-	/// 2: relative
-	virtual int getSequenceType() const = 0;
-	virtual int getCommandType() const = 0;
-	virtual int getCommandData() const = 0;
-	virtual int next(bool isReleaseBegin = false) = 0;
+
+	static constexpr int END_SEQ_POS = -1;
+	inline int pos() const noexcept { return pos_; }
+	inline bool hasEnded() const noexcept { return pos_ == END_SEQ_POS; }
+
+	virtual SequenceType type() const = 0;
+	virtual T data() const = 0;
+
+	virtual int next() = 0;
 	virtual int front() = 0;
+	virtual int release() = 0;
 	virtual int end() = 0;
+
+protected:
+	explicit SequenceIteratorInterface(int initPos = 0) : pos_(initPos) {}
+	int pos_;
 };

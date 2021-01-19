@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,17 +25,21 @@
 
 #include "file_history.hpp"
 #include <algorithm>
+#include "utils.hpp"
 
-const int FileHistory::HISTORY_SIZE_ = 8;
+namespace
+{
+const int HISTORY_SIZE = 8;
+}
 
 FileHistory::FileHistory() {}
 
 void FileHistory::addFile(QString path)
 {
-	auto it = std::find_if(list_.begin(), list_.end(), [&path](QString& p) { return (path == p); });
+	auto it = utils::find(list_, path);
 	if (it != list_.end()) list_.erase(it);
 	list_.push_front(path);
-	if (list_.size() > HISTORY_SIZE_) list_.pop_back();
+	if (list_.size() > HISTORY_SIZE) list_.pop_back();
 }
 
 void FileHistory::clearHistory()

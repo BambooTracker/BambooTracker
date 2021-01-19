@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,48 +26,53 @@
 #include "opna_controller.hpp"
 #include <stdexcept>
 #include <limits>
-#include "calc_pitch.hpp"
+#include "note.hpp"
+#include "utils.hpp"
+
+namespace
+{
+const std::unordered_map<FMOperatorType, std::vector<FMEnvelopeParameter>> FM_ENV_PARAMS_OP = {
+	{ FMOperatorType::All, {
+		  FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
+		  FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
+		  FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
+		  FMEnvelopeParameter::DT1,
+		  FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
+		  FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
+		  FMEnvelopeParameter::DT2,
+		  FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
+		  FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
+		  FMEnvelopeParameter::DT3,
+		  FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
+		  FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
+		  FMEnvelopeParameter::DT4
+	  }},
+	{ FMOperatorType::Op1, {
+		  FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
+		  FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
+		  FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
+		  FMEnvelopeParameter::DT1
+	  }},
+	{ FMOperatorType::Op2, {
+		  FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
+		  FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
+		  FMEnvelopeParameter::DT2
+	  }},
+	{ FMOperatorType::Op3, {
+		  FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
+		  FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
+		  FMEnvelopeParameter::DT3
+	  }},
+	{ FMOperatorType::Op4, {
+		  FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
+		  FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
+		  FMEnvelopeParameter::DT4
+	  }}
+};
+}
 
 OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
-	  FM_ENV_PARAMS_OP_({
-{ FMOperatorType::All, {
-						FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
-						FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
-						FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
-						FMEnvelopeParameter::DT1,
-						FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
-						FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
-						FMEnvelopeParameter::DT2,
-						FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
-						FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
-						FMEnvelopeParameter::DT3,
-						FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
-						FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
-						FMEnvelopeParameter::DT4
-						}},
-{ FMOperatorType::Op1, {
-						FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
-						FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
-						FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
-						FMEnvelopeParameter::DT1
-						}},
-{ FMOperatorType::Op2, {
-						FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
-						FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
-						FMEnvelopeParameter::DT2
-						}},
-{ FMOperatorType::Op3, {
-						FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
-						FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
-						FMEnvelopeParameter::DT3
-						}},
-{ FMOperatorType::Op4, {
-						FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
-						FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
-						FMEnvelopeParameter::DT4
-						}}
-						}),
 	  storePointADPCM_(0)
 {
 	constexpr size_t DRAM_SIZE = 262144;	// 256KiB
@@ -78,7 +83,7 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 	for (int ch = 0; ch < 6; ++ch) {
 		fmOpEnables_[ch] = 0xf;
 		isMuteFM_[ch] = false;
-		for (auto ep : FM_ENV_PARAMS_OP_.at(FMOperatorType::All))
+		for (auto ep : FM_ENV_PARAMS_OP.at(FMOperatorType::All))
 			opSeqItFM_[ch].emplace(ep, nullptr);
 	}
 
@@ -94,8 +99,8 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 
 	initChip();
 
-	outputHistory_.reset(new int16_t[2 * OUTPUT_HISTORY_SIZE]{});
-	outputHistoryReady_.reset(new int16_t[2 * OUTPUT_HISTORY_SIZE]{});
+	outputHistory_.reset(new int16_t[2 * bt_defs::OUTPUT_HISTORY_SIZE]{});
+	outputHistoryReady_.reset(new int16_t[2 * bt_defs::OUTPUT_HISTORY_SIZE]{});
 	outputHistoryIndex_ = 0;
 }
 
@@ -104,8 +109,8 @@ void OPNAController::reset()
 {
 	opna_->reset();
 	initChip();
-	std::fill(&outputHistory_[0], &outputHistory_[2 * OUTPUT_HISTORY_SIZE], 0);
-	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * OUTPUT_HISTORY_SIZE], 0);
+	std::fill(&outputHistory_[0], &outputHistory_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
+	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
 }
 
 void OPNAController::initChip()
@@ -183,7 +188,7 @@ void OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
 {
 	opna_->mix(container, nSamples);
 
-	size_t nHistory = std::min<size_t>(nSamples, OUTPUT_HISTORY_SIZE);
+	size_t nHistory = std::min<size_t>(nSamples, bt_defs::OUTPUT_HISTORY_SIZE);
 	fillOutputHistory(&container[2 * (nSamples - nHistory)], nHistory);
 }
 
@@ -191,7 +196,7 @@ void OPNAController::getOutputHistory(int16_t* container)
 {
 	std::lock_guard<std::mutex> lock(outputHistoryReadyMutex_);
 	int16_t *history = outputHistoryReady_.get();
-	std::copy(history, &history[2 * OUTPUT_HISTORY_SIZE], container);
+	std::copy(history, &history[2 * bt_defs::OUTPUT_HISTORY_SIZE], container);
 }
 
 void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
@@ -200,7 +205,7 @@ void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
 	size_t historyIndex = outputHistoryIndex_;
 
 	// copy as many as possible to the back
-	size_t backCapacity = OUTPUT_HISTORY_SIZE - historyIndex;
+	size_t backCapacity = bt_defs::OUTPUT_HISTORY_SIZE - historyIndex;
 	size_t nBack = std::min(nSamples, backCapacity);
 	std::copy(outputs, &outputs[2 * nBack], &history[2 * historyIndex]);
 
@@ -208,24 +213,18 @@ void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
 	std::copy(&outputs[2 * nBack], &outputs[2 * nSamples], history);
 
 	// update the write position
-	historyIndex = (historyIndex + nSamples) % OUTPUT_HISTORY_SIZE;
+	historyIndex = (historyIndex + nSamples) % bt_defs::OUTPUT_HISTORY_SIZE;
 	outputHistoryIndex_ = historyIndex;
 
 	// if no one holds the ready buffer, update the contents
 	std::unique_lock<std::mutex> lock(outputHistoryReadyMutex_, std::try_to_lock);
-	if (lock.owns_lock())
-		transferReadyHistory();
-}
+	if (lock.owns_lock()) {
+		int16_t* dst = outputHistoryReady_.get();
 
-void OPNAController::transferReadyHistory()
-{
-	const int16_t* src = outputHistory_.get();
-	int16_t* dst = outputHistoryReady_.get();
-	size_t index = outputHistoryIndex_;
-
-	// copy the back, and then the front
-	std::copy(&src[2 * index], &src[2 * OUTPUT_HISTORY_SIZE], dst);
-	std::copy(&src[0], &src[2 * index], &dst[2 * (OUTPUT_HISTORY_SIZE - index)]);
+		// copy the back, and then the front
+		std::copy(&history[2 * historyIndex], &history[2 * bt_defs::OUTPUT_HISTORY_SIZE], dst);
+		std::copy(&history[0], &history[2 * historyIndex], &dst[2 * (bt_defs::OUTPUT_HISTORY_SIZE - historyIndex)]);
+	}
 }
 
 /********** Chip mode **********/
@@ -235,19 +234,14 @@ void OPNAController::setMode(SongType mode)
 	reset();
 }
 
-SongType OPNAController::getMode() const
-{
-	return mode_;
-}
-
 /********** Mute **********/
 void OPNAController::setMuteState(SoundSource src, int chInSrc, bool isMute)
 {
 	switch (src) {
-	case SoundSource::FM:		setMuteFMState(chInSrc, isMute);	break;
-	case SoundSource::SSG:		setMuteSSGState(chInSrc, isMute);	break;
+	case SoundSource::FM:		setMuteFMState(chInSrc, isMute);		break;
+	case SoundSource::SSG:		setMuteSSGState(chInSrc, isMute);		break;
 	case SoundSource::RHYTHM:	setMuteRhythmState(chInSrc, isMute);	break;
-	case SoundSource::ADPCM:	setMuteADPCMState(isMute);			break;
+	case SoundSource::ADPCM:	setMuteADPCMState(isMute);				break;
 	}
 }
 
@@ -293,39 +287,29 @@ void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWr
 	opna_->setRegisterWriteLogger(cntr);
 }
 
-/********** Internal process **********/
-void OPNAController::checkRealToneByArpeggio(int seqPos,
-											 const std::unique_ptr<SequenceIteratorInterface>& arpIt,
-											 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
+/********** Internal common process **********/
+void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
+											 const EchoBuffer& echoBuf, Note& baseNote,
 											 bool& needToneSet)
 {
-	if (seqPos == -1) return;
+	if (arpIt->hasEnded()) return;
 
-	switch (arpIt->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
+	switch (arpIt->type()) {
+	case SequenceType::AbsoluteSequence:
 	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(baseTone.front().octave,
-																  baseTone.front().note)
-										+ arpIt->getCommandType() - 48);
-		keyTone.octave = pair.first;
-		keyTone.note = pair.second;
+		Note ln = echoBuf.latest();
+		ln.addNoteNumber(arpIt->data().data - Note::DEFAULT_NOTE_NUM);
+		baseNote = std::move(ln);
 		break;
 	}
-	case SequenceType::FIXED_SEQUENCE:
+	case SequenceType::FixedSequence:
 	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpIt->getCommandType());
-		keyTone.octave = pair.first;
-		keyTone.note = pair.second;
+		baseNote = Note(arpIt->data().data);
 		break;
 	}
-	case SequenceType::RELATIVE_SEQUENCE:	// Relative
+	case SequenceType::RelativeSequence:
 	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
-										+ arpIt->getCommandType() - 48);
-		keyTone.octave = pair.first;
-		keyTone.note = pair.second;
+		baseNote.addNoteNumber(arpIt->data().data - Note::DEFAULT_NOTE_NUM);
 		break;
 	}
 	default:
@@ -335,54 +319,42 @@ void OPNAController::checkRealToneByArpeggio(int seqPos,
 	needToneSet = true;
 }
 
-void OPNAController::checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt,
+void OPNAController::checkPortamento(const ArpeggioIterInterface& arpIt,
 									 int prtm, bool hasKeyOnBefore, bool isTonePrtm,
-									 const std::deque<ToneDetail>& baseTone,
-									 ToneDetail& keyTone, bool& needToneSet)
+									 EchoBuffer& echoBuf,
+									 Note& baseNote, bool& needToneSet)
 {
-	if ((!arpIt || arpIt->getPosition() == -1) && prtm && hasKeyOnBefore) {
+	if ((!arpIt || arpIt->hasEnded()) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
-			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note)
-						* calc_pitch::SEMINOTE_PITCH + baseTone.front().pitch )
-					  - ( octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
-						  * calc_pitch::SEMINOTE_PITCH + keyTone.pitch );
+			Note bufNote = echoBuf.latest();
+			int dif = bufNote.getAbsolutePicth() - baseNote.getAbsolutePicth();
 			if (dif > 0) {
-				if (dif - prtm < 0) {
-					keyTone = baseTone.front();
-				}
-				else {
-					keyTone.pitch += prtm;
-				}
+				baseNote += std::min(dif, prtm);
 				needToneSet = true;
 			}
 			else if (dif < 0) {
-				if (dif + prtm > 0) {
-					keyTone = baseTone.front();
-				}
-				else {
-					keyTone.pitch -= prtm;
-				}
+				baseNote += std::max(dif, -prtm);
 				needToneSet = true;
 			}
 		}
 		else {
-			keyTone.pitch += prtm;
+			baseNote += prtm;
 			needToneSet = true;
 		}
 	}
 }
 
-void OPNAController::checkRealToneByPitch(int seqPos, const std::unique_ptr<CommandSequence::Iterator>& ptIt,
+void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
 										  int& sumPitch, bool& needToneSet)
 {
-	if (seqPos == -1) return;
+	if (ptIt->hasEnded()) return;
 
-	switch (ptIt->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-		sumPitch = ptIt->getCommandType() - 127;
+	switch (ptIt->type()) {
+	case SequenceType::AbsoluteSequence:
+		sumPitch = ptIt->data().data - SEQ_PITCH_CENTER;
 		break;
-	case SequenceType::RELATIVE_SEQUENCE:
-		sumPitch += (ptIt->getCommandType() - 127);
+	case SequenceType::RelativeSequence:
+		sumPitch += (ptIt->data().data - SEQ_PITCH_CENTER);
 		break;
 	default:
 		return;
@@ -392,19 +364,129 @@ void OPNAController::checkRealToneByPitch(int seqPos, const std::unique_ptr<Comm
 }
 
 //---------- FM ----------//
+namespace
+{
+/// IS_CARRIER[operator][algorithm]
+constexpr bool IS_CARRIER[4][8] = {
+	{ false, false, false, false, false, false, false, true },
+	{ false, false, false, false, true, true, true, true },
+	{ false, false, false, false, false, true, true, true },
+	{ true, true, true, true, true, true, true, true },
+};
+
+const FMEnvelopeParameter PARAM_TL[4] = {
+	FMEnvelopeParameter::TL1, FMEnvelopeParameter::TL2, FMEnvelopeParameter::TL3, FMEnvelopeParameter::TL4
+};
+const FMEnvelopeParameter PARAM_ML[4] = {
+	FMEnvelopeParameter::ML1, FMEnvelopeParameter::ML2, FMEnvelopeParameter::ML3, FMEnvelopeParameter::ML4
+};
+const FMEnvelopeParameter PARAM_AR[4] = {
+	FMEnvelopeParameter::AR1, FMEnvelopeParameter::AR2, FMEnvelopeParameter::AR3, FMEnvelopeParameter::AR4
+};
+const FMEnvelopeParameter PARAM_DR[4] = {
+	FMEnvelopeParameter::DR1, FMEnvelopeParameter::DR2, FMEnvelopeParameter::DR3, FMEnvelopeParameter::DR4
+};
+const FMEnvelopeParameter PARAM_RR[4] = {
+	FMEnvelopeParameter::RR1, FMEnvelopeParameter::RR2, FMEnvelopeParameter::RR3, FMEnvelopeParameter::RR4
+};
+
+std::vector<int> getOperatorsInLevel(int level, int al)
+{
+	switch (level) {
+	case 0:
+		switch (al) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			return { 3 };
+		case 4:
+			return { 1, 3 };
+		case 5:
+		case 6:
+			return { 1, 2, 3 };
+		case 7:
+			return { 0, 1, 2, 3 };
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	case 1:
+		switch (al) {
+		case 0:
+		case 1:
+			return { 2 };
+		case 2:
+			return { 0, 2 };
+		case 3:
+			return { 1, 2 };
+		case 4:
+			return { 0, 2 };
+		case 5:
+		case 6:
+			return { 0 };
+		case 7:
+			return {};
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	case 2:
+		switch (al) {
+		case 0:
+			return { 1 };
+		case 1:
+			return { 0, 1 };
+		case 2:
+			return { 1 };
+		case 3:
+			return { 0 };
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			return {};
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	case 3:
+		switch (al) {
+		case 0:
+			return { 0 };
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			return {};
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	default:
+		throw std::invalid_argument("Invalid operator level.");
+	}
+}
+
+inline uint8_t judgeSSGEGRegisterValue(int v)
+{
+	return (v == -1) ? 0 : (0x08 + static_cast<uint8_t>(v));
+}
+}
+
 /********** Key on-off **********/
-void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJam)
+void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 {
 	if (isMuteFM_[ch]) return;
 
-	updateEchoBufferFM(ch, octave, note, pitch);
+	updateEchoBufferFM(ch, note);
 
 	bool isTonePrtm = isTonePrtmFM_[ch] && hasKeyOnBeforeFM_[ch];
 	if (isTonePrtm) {
-		keyToneFM_[ch].pitch += (sumNoteSldFM_[ch] + transposeFM_[ch]);
+		baseNoteFM_[ch] += (sumNoteSldFM_[ch] + transposeFM_[ch]);
 	}
 	else {
-		keyToneFM_[ch] = baseToneFM_[ch].front();
+		baseNoteFM_[ch] = echoBufFM_[ch].latest();
+		neverSetBaseNoteFM_[ch] = false;
 		sumPitchFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
 	}
@@ -445,7 +527,10 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 				isKeyOnFM_[ch] = true;
 				slot = getFM3SlotValidStatus();
 				if (prev) {	// Key off
-					uint8_t flags = static_cast<uint8_t>(((slot & FM3_KEY_OFF_MASK_.at(ch)) << 4)) | chdata;
+					static const std::unordered_map<int, uint8_t> FM3_KEY_OFF_MASK = {
+						{ 2, 0xe }, { 6, 0xd }, { 7, 0xb }, { 8, 0x7 }
+					};
+					uint8_t flags = static_cast<uint8_t>(((slot & FM3_KEY_OFF_MASK.at(ch)) << 4)) | chdata;
 					opna_->setRegister(0x28, flags);
 				}
 				break;
@@ -467,9 +552,8 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 
 void OPNAController::keyOnFM(int ch, int echoBuf)
 {
-	ToneDetail& td = baseToneFM_[ch].at(static_cast<size_t>(echoBuf));
-	if (td.octave == -1) return;
-	keyOnFM(ch, td.note, td.octave, td.pitch);
+	if (static_cast<size_t>(echoBuf) < echoBufFM_[ch].size())
+		keyOnFM(ch, echoBufFM_[ch][echoBuf]);
 }
 
 void OPNAController::keyOffFM(int ch, bool isJam)
@@ -537,10 +621,9 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 	}
 }
 
-void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
+void OPNAController::updateEchoBufferFM(int ch, const Note& note)
 {
-	baseToneFM_[ch].pop_back();
-	baseToneFM_[ch].push_front({ octave, note, pitch });
+	echoBufFM_[ch].push(note);
 }
 
 /********** Set instrument **********/
@@ -569,27 +652,27 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 			if (isTLCtrlFM_[inch][op] || isBrightFM_[inch][op]) {
 				isTLCtrlFM_[inch][op] = false;
 				isBrightFM_[inch][op] = false;
-				FMEnvelopeParameter tl = PARAM_TL_[op];
+				FMEnvelopeParameter tl = PARAM_TL[op];
 				writeFMEnveropeParameterToRegister(inch, tl, inst->getEnvelopeParameter(tl));
 			}
 			if (isMLCtrlFM_[inch][op]) {
 				isMLCtrlFM_[inch][op] = false;
-				FMEnvelopeParameter ml = PARAM_ML_[op];
+				FMEnvelopeParameter ml = PARAM_ML[op];
 				writeFMEnveropeParameterToRegister(inch, ml, inst->getEnvelopeParameter(ml));
 			}
 			if (isARCtrlFM_[inch][op]) {
 				isARCtrlFM_[inch][op] = false;
-				FMEnvelopeParameter ar = PARAM_AR_[op];
+				FMEnvelopeParameter ar = PARAM_AR[op];
 				writeFMEnveropeParameterToRegister(inch, ar, inst->getEnvelopeParameter(ar));
 			}
 			if (isDRCtrlFM_[inch][op]) {
 				isDRCtrlFM_[inch][op] = false;
-				FMEnvelopeParameter dr = PARAM_DR_[op];
+				FMEnvelopeParameter dr = PARAM_DR[op];
 				writeFMEnveropeParameterToRegister(inch, dr, inst->getEnvelopeParameter(dr));
 			}
 			if (isRRCtrlFM_[inch][op]) {
 				isRRCtrlFM_[inch][op] = false;
-				FMEnvelopeParameter rr = PARAM_RR_[op];
+				FMEnvelopeParameter rr = PARAM_RR[op];
 				writeFMEnveropeParameterToRegister(inch, rr, inst->getEnvelopeParameter(rr));
 			}
 		}
@@ -597,7 +680,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	}
 
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
-	for (auto& p : FM_ENV_PARAMS_OP_.at(opType)) {
+	for (auto& p : FM_ENV_PARAMS_OP.at(opType)) {
 		if (refInstFM_[inch]->getOperatorSequenceEnabled(p)) {
 			opSeqItFM_[inch].at(p) = refInstFM_[inch]->getOperatorSequenceSequenceIterator(p);
 			switch (p) {
@@ -658,7 +741,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 
 void OPNAController::updateInstrumentFM(int instNum)
 {
-	int cnt = static_cast<int>(getFMChannelCount(mode_));
+	int cnt = static_cast<int>(Song::getFMChannelCount(mode_));
 	for (int ch = 0; ch < cnt; ++ch) {
 		int inch = toInternalFMChannel(ch);
 
@@ -667,7 +750,7 @@ void OPNAController::updateInstrumentFM(int instNum)
 			writeFMEnvelopeToRegistersFromInstrument(inch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
 			FMOperatorType opType = toChannelOperatorType(ch);
-			for (auto& p : FM_ENV_PARAMS_OP_.at(opType)) {
+			for (auto& p : FM_ENV_PARAMS_OP.at(opType)) {
 				if (!refInstFM_[inch]->getOperatorSequenceEnabled(p))
 					opSeqItFM_[inch].at(p).reset();
 			}
@@ -691,7 +774,7 @@ void OPNAController::updateInstrumentFMEnvelopeParameter(int envNum, FMEnvelopeP
 
 void OPNAController::setInstrumentFMOperatorEnabled(int envNum, int opNum)
 {
-	int chsize = static_cast<int>(getFMChannelCount(mode_));
+	int chsize = static_cast<int>(Song::getFMChannelCount(mode_));
 	for (int ch = 0; ch < chsize; ++ch) {
 		int inch = toInternalFMChannel(ch);
 		if (refInstFM_[inch] && refInstFM_[inch]->getEnvelopeNumber() == envNum) {
@@ -866,7 +949,7 @@ void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectFM(int ch, int seminote)
 {
-	transposeFM_[ch] += (seminote * calc_pitch::SEMINOTE_PITCH);
+	transposeFM_[ch] += (seminote * Note::SEMINOTE_PITCH);
 	needToneSetFM_[ch] = true;
 }
 
@@ -881,7 +964,7 @@ void OPNAController::setFBControlFM(int ch, int value)
 void OPNAController::setTLControlFM(int ch, int op, int value)
 {
 	int inch = toInternalFMChannel(ch);
-	FMEnvelopeParameter param = PARAM_TL_[op];
+	FMEnvelopeParameter param = PARAM_TL[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isTLCtrlFM_[inch][op] = true;
 	opSeqItFM_[inch].at(param).reset();
@@ -890,7 +973,7 @@ void OPNAController::setTLControlFM(int ch, int op, int value)
 void OPNAController::setMLControlFM(int ch, int op, int value)
 {
 	int inch = toInternalFMChannel(ch);
-	FMEnvelopeParameter param = PARAM_ML_[op];
+	FMEnvelopeParameter param = PARAM_ML[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isMLCtrlFM_[inch][op] = true;
 	opSeqItFM_[inch].at(param).reset();
@@ -899,7 +982,7 @@ void OPNAController::setMLControlFM(int ch, int op, int value)
 void OPNAController::setARControlFM(int ch, int op, int value)
 {
 	int inch = toInternalFMChannel(ch);
-	FMEnvelopeParameter param = PARAM_AR_[op];
+	FMEnvelopeParameter param = PARAM_AR[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isARCtrlFM_[inch][op] = true;
 	opSeqItFM_[inch].at(param).reset();
@@ -908,7 +991,7 @@ void OPNAController::setARControlFM(int ch, int op, int value)
 void OPNAController::setDRControlFM(int ch, int op, int value)
 {
 	int inch = toInternalFMChannel(ch);
-	FMEnvelopeParameter param = PARAM_DR_[op];
+	FMEnvelopeParameter param = PARAM_DR[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isDRCtrlFM_[inch][op] = true;
 	opSeqItFM_[inch].at(param).reset();
@@ -917,7 +1000,7 @@ void OPNAController::setDRControlFM(int ch, int op, int value)
 void OPNAController::setRRControlFM(int ch, int op, int value)
 {
 	int inch = toInternalFMChannel(ch);
-	FMEnvelopeParameter param = PARAM_RR_[op];
+	FMEnvelopeParameter param = PARAM_RR[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isRRCtrlFM_[inch][op] = true;
 	opSeqItFM_[inch].at(param).reset();
@@ -928,8 +1011,8 @@ void OPNAController::setBrightnessFM(int ch, int value)
 	int inch = toInternalFMChannel(ch);
 	std::vector<int> ops = getOperatorsInLevel(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL));
 	for (auto& op : ops) {
-		FMEnvelopeParameter param = PARAM_TL_[op];
-		int v = clamp(envFM_[inch]->getParameterValue(param) + value, 0, 127);
+		FMEnvelopeParameter param = PARAM_TL[op];
+		int v = utils::clamp(envFM_[inch]->getParameterValue(param) + value, 0, 127);
 		writeFMEnveropeParameterToRegister(inch, param, v);
 		isBrightFM_[inch][op] = true;
 		opSeqItFM_[inch].at(param).reset();
@@ -940,14 +1023,14 @@ void OPNAController::setBrightnessFM(int ch, int value)
 void OPNAController::haltSequencesFM(int ch)
 {
 	int inch = toInternalFMChannel(ch);
-	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
+	for (auto& p : FM_ENV_PARAMS_OP.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) it->end();
 	}
-	if (treItFM_[ch]) treItFM_[ch]->end();
-	if (arpItFM_[ch]) arpItFM_[ch]->end();
-	if (ptItFM_[ch]) ptItFM_[ch]->end();
-	if (vibItFM_[ch]) vibItFM_[ch]->end();
-	if (nsItFM_[ch]) nsItFM_[ch]->end();
+	if (auto& treIt = treItFM_[ch]) treIt->end();
+	if (auto& arpIt = arpItFM_[ch]) arpIt->end();
+	if (auto& ptIt = ptItFM_[ch]) ptIt->end();
+	if (auto& vibIt = vibItFM_[ch]) vibIt->end();
+	if (auto& nsIt = nsItFM_[ch]) nsIt->end();
 }
 
 /********** Chip details **********/
@@ -966,9 +1049,9 @@ bool OPNAController::enableFMEnvelopeReset(int ch) const
 	return envFM_[toInternalFMChannel(ch)] ? enableEnvResetFM_[ch] : true;
 }
 
-ToneDetail OPNAController::getFMTone(int ch) const
+Note OPNAController::getFMLatestNote(int ch) const
 {
-	return baseToneFM_[ch].front();
+	return echoBufFM_[ch].latest();
 }
 
 /***********************************/
@@ -1011,21 +1094,15 @@ void OPNAController::initFM()
 		}
 	}
 
-	size_t fmch = getFMChannelCount(mode_);
+	size_t fmch = Song::getFMChannelCount(mode_);
 	for (size_t ch = 0; ch < fmch; ++ch) {
 		// Init operators key off
 		isKeyOnFM_[ch] = false;
 		hasKeyOnBeforeFM_[ch] = false;
 
-		// Init echo buffer
-		baseToneFM_[ch] = std::deque<ToneDetail>(4);
-		for (auto& td : baseToneFM_[ch]) {
-			td.octave = -1;
-		}
+		echoBufFM_[ch].clear();
 
-		keyToneFM_[ch].note = Note::C;	// Dummy
-		keyToneFM_[ch].octave = -1;
-		keyToneFM_[ch].pitch = 0;	// Dummy
+		neverSetBaseNoteFM_[ch] = true;
 		sumPitchFM_[ch] = 0;
 		baseVolFM_[ch] = 0;	// Init volume
 		tmpVolFM_[ch] = -1;
@@ -1184,7 +1261,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
 	// Adjust volume
 	if (mode_ == SongType::FM3chExpanded && inch == 2) data1 = calculateTL(2, data1);
-	else if (isCarrier(0, al)) data1 = calculateTL(inch, data1);
+	else if (IS_CARRIER[0][al]) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1217,7 +1294,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 
 	int tmp = refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::SSGEG1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::SSGEG1, tmp);
-	data1 = judgeSSEGRegisterValue(tmp);
+	data1 = judgeSSGEGRegisterValue(tmp);
 	opna_->setRegister(0x90 + offset, data1);
 
 	offset = bch + 8;	// Operator 2
@@ -1233,7 +1310,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL2));
 	// Adjust volume
 	if (mode_ == SongType::FM3chExpanded && inch == 2) data1 = calculateTL(6, data1);
-	else if (isCarrier(1, al)) data1 = calculateTL(inch, data1);
+	else if (IS_CARRIER[1][al]) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1266,7 +1343,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 
 	tmp = refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::SSGEG2);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::SSGEG2, tmp);
-	data1 = judgeSSEGRegisterValue(tmp);
+	data1 = judgeSSGEGRegisterValue(tmp);
 	opna_->setRegister(0x90 + offset, data1);
 
 	offset = bch + 4;	// Operator 3
@@ -1282,7 +1359,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL3));
 	// Adjust volume
 	if (mode_ == SongType::FM3chExpanded && inch == 2) data1 = calculateTL(7, data1);
-	else if (isCarrier(2, al)) data1 = calculateTL(inch, data1);
+	else if (IS_CARRIER[2][al]) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1315,7 +1392,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 
 	tmp = refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::SSGEG3);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::SSGEG3, tmp);
-	data1 = judgeSSEGRegisterValue(tmp);
+	data1 = judgeSSGEGRegisterValue(tmp);
 	opna_->setRegister(0x90 + offset, data1);
 
 	offset = bch + 12;	// Operator 4
@@ -1364,7 +1441,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 
 	tmp = refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::SSGEG4);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::SSGEG4, tmp);
-	data1 = judgeSSEGRegisterValue(tmp);
+	data1 = judgeSSGEGRegisterValue(tmp);
 	opna_->setRegister(0x90 + offset, data1);
 }
 
@@ -1396,7 +1473,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 			data = calculateTL(2, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
 		}
-		else if (isCarrier(0, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+		else if (IS_CARRIER[0][envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL)]) {
 			data = calculateTL(inch, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
 		}
@@ -1446,7 +1523,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 			data = calculateTL(6, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
 		}
-		else if (isCarrier(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+		else if (IS_CARRIER[1][envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL)]) {
 			data = calculateTL(inch, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
 		}
@@ -1496,7 +1573,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 			data = calculateTL(7, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
 		}
-		else if (isCarrier(2, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+		else if (IS_CARRIER[2][envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL)]) {
 			data = calculateTL(inch, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
 		}
@@ -1580,7 +1657,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		break;
 	case FMEnvelopeParameter::SSGEG4:
 		tmp = envFM_[inch]->getParameterValue(FMEnvelopeParameter::SSGEG4);
-		data = judgeSSEGRegisterValue(tmp);
+		data = judgeSSGEGRegisterValue(tmp);
 		opna_->setRegister(0x90 + bch + 12, data);
 		break;
 	}
@@ -1731,21 +1808,30 @@ void OPNAController::setFrontFMSequences(int ch)
 
 	checkOperatorSequenceFM(ch, 1);
 
-	if (treItFM_[ch]) treItFM_[ch]->front();
+	if (auto& treIt = treItFM_[ch]) treIt->front();
 	sumVolSldFM_[ch] += volSldFM_[ch];
 	checkVolumeEffectFM(ch);
 
-	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->front());
+	if (auto& arpIt = arpItFM_[ch]) {
+		arpIt->front();
+		checkRealToneFMByArpeggio(ch);
+	}
 	checkPortamentoFM(ch);
 
-	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->front());
-	if (vibItFM_[ch]) {
-		vibItFM_[ch]->front();
+	if (auto& ptIt = ptItFM_[ch]) {
+		ptIt->front();
+		checkRealToneFMByPitch(ch);
+	}
+	if (auto& vibIt = vibItFM_[ch]) {
+		vibIt->front();
 		needToneSetFM_[ch] = true;
 	}
-	if (nsItFM_[ch] && nsItFM_[ch]->front() != -1) {
-		sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
-		needToneSetFM_[ch] = true;
+	if (auto& nsIt = nsItFM_[ch]) {
+		nsIt->front();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldFM_[ch] += nsIt->data().data;
+			needToneSetFM_[ch] = true;
+		}
 	}
 
 	writePitchFM(ch);
@@ -1763,21 +1849,30 @@ void OPNAController::releaseStartFMSequences(int ch)
 
 	checkOperatorSequenceFM(ch, 2);
 
-	if (treItFM_[ch]) treItFM_[ch]->next(true);
+	if (auto& treIt = treItFM_[ch]) treIt->release();
 	sumVolSldFM_[ch] += volSldFM_[ch];
 	checkVolumeEffectFM(ch);
 
-	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next(true));
+	if (auto& arpIt = arpItFM_[ch]) {
+		arpIt->release();
+		checkRealToneFMByArpeggio(ch);
+	}
 	checkPortamentoFM(ch);
 
-	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next(true));
-	if (vibItFM_[ch]) {
-		vibItFM_[ch]->next(true);
+	if (auto& ptIt = ptItFM_[ch]) {
+		ptIt->release();
+		checkRealToneFMByPitch(ch);
+	}
+	if (auto& vibIt = vibItFM_[ch]) {
+		vibIt->release();
 		needToneSetFM_[ch] = true;
 	}
-	if (nsItFM_[ch] && nsItFM_[ch]->next(true) != -1) {
-		sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
-		needToneSetFM_[ch] = true;
+	if (auto& nsIt = nsItFM_[ch]) {
+		nsIt->release();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldFM_[ch] += nsIt->data().data;
+			needToneSetFM_[ch] = true;
+		}
 	}
 
 	if (needToneSetFM_[ch]) writePitchFM(ch);
@@ -1799,21 +1894,30 @@ void OPNAController::tickEventFM(int ch)
 
 		checkOperatorSequenceFM(ch, 0);
 
-		if (treItFM_[ch]) treItFM_[ch]->next();
+		if (auto& treIt = treItFM_[ch]) treIt->next();
 		sumVolSldFM_[ch] += volSldFM_[ch];
 		checkVolumeEffectFM(ch);
 
-		if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next());
+		if (auto& arpIt = arpItFM_[ch]) {
+			arpIt->next();
+			checkRealToneFMByArpeggio(ch);
+		}
 		checkPortamentoFM(ch);
 
-		if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next());
-		if (vibItFM_[ch]) {
-			vibItFM_[ch]->next();
+		if (auto& ptIt = ptItFM_[ch]) {
+			ptIt->next();
+			checkRealToneFMByPitch(ch);
+		}
+		if (auto& vibIt = vibItFM_[ch]) {
+			vibIt->next();
 			needToneSetFM_[ch] = true;
 		}
-		if (nsItFM_[ch] && nsItFM_[ch]->next() != -1) {
-			sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
-			needToneSetFM_[ch] = true;
+		if (auto& nsIt = nsItFM_[ch]) {
+			nsIt->next();
+			if (!nsIt->hasEnded()) {
+				sumNoteSldFM_[ch] += nsIt->data().data;
+				needToneSetFM_[ch] = true;
+			}
 		}
 
 		if (needToneSetFM_[ch]) writePitchFM(ch);
@@ -1823,17 +1927,16 @@ void OPNAController::tickEventFM(int ch)
 void OPNAController::checkOperatorSequenceFM(int ch, int type)
 {
 	int inch = toInternalFMChannel(ch);
-	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
+	for (auto& p : FM_ENV_PARAMS_OP.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) {
-			int t;
 			switch (type) {
-			case 0:	t = it->next();		break;
-			case 1:	t = it->front();	break;
-			case 2:	t = it->next(true);	break;
+			case 0:	it->next();		break;
+			case 1:	it->front();	break;
+			case 2:	it->release();	break;
 			default:	throw std::out_of_range("The range of type is 0-2.");
 			}
-			if (t != -1) {
-				int d = it->getCommandType();
+			if (!it->hasEnded()) {
+				int d = it->data().data;
 				if (d != envFM_[inch]->getParameterValue(p)) {
 					writeFMEnveropeParameterToRegister(inch, p, d);
 				}
@@ -1845,8 +1948,8 @@ void OPNAController::checkOperatorSequenceFM(int ch, int type)
 void OPNAController::checkVolumeEffectFM(int ch)
 {
 	int v;
-	if (treItFM_[ch]) {
-		v = treItFM_[ch]->getCommandType() + sumVolSldFM_[ch];
+	if (auto& treIt = treItFM_[ch]) {
+		v = treIt->data().data + sumVolSldFM_[ch];
 	}
 	else {
 		if (volSldFM_[ch]) v = sumVolSldFM_[ch];
@@ -1859,46 +1962,46 @@ void OPNAController::checkVolumeEffectFM(int ch)
 	case FMOperatorType::All:
 	{
 		int al = envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL);
-		if (isCarrier(0, al)) {	// Operator 1
+		if (IS_CARRIER[0][al]) {	// Operator 1
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
-			opna_->setRegister(0x40 + bch, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
-		if (isCarrier(1, al)) {	// Operator 2
+		if (IS_CARRIER[1][al]) {	// Operator 2
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL2) + v;
-			opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
-		if (isCarrier(2, al)) {	// Operator 3
+		if (IS_CARRIER[2][al]) {	// Operator 3
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL3) + v;
-			opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
-		if (isCarrier(3, al)) {	// Operator 4
+		{							// Operator 4 (absolutely carrier)
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL4) + v;
-			opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(clamp(data, 0 ,127)));
+			opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		break;
 	}
 	case FMOperatorType::Op1:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
-		opna_->setRegister(0x40 + bch, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	case FMOperatorType::Op2:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL2) + v;
-		opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	case FMOperatorType::Op3:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL3) + v;
-		opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	case FMOperatorType::Op4:
 	{
 		int data = envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL4) + v;
-		opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(clamp(data, 0 ,127)));
+		opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		break;
 	}
 	}
@@ -1906,18 +2009,14 @@ void OPNAController::checkVolumeEffectFM(int ch)
 
 void OPNAController::writePitchFM(int ch)
 {
-	if (keyToneFM_[ch].octave == -1) return;	// Not set note yet
+	if (neverSetBaseNoteFM_[ch]) return;
 
-	uint16_t p = calc_pitch::calculateFNumber(
-					 keyToneFM_[ch].note,
-					 keyToneFM_[ch].octave,
-					 keyToneFM_[ch].pitch
-					 + sumPitchFM_[ch]
-					 + (vibItFM_[ch] ? vibItFM_[ch]->getCommandType() : 0)
-					 + detuneFM_[ch]
-					 + sumNoteSldFM_[ch]
-					 + transposeFM_[ch],
-					 fdetuneFM_[ch]);
+	Note&& note = baseNoteFM_[ch] + (sumPitchFM_[ch]
+									 + (vibItFM_[ch] ? vibItFM_[ch]->data().data : 0)
+									 + detuneFM_[ch]
+									 + sumNoteSldFM_[ch]
+									 + transposeFM_[ch]);
+	uint16_t p = note_utils::calculateFNumber(note.getAbsolutePicth(), fdetuneFM_[ch]);
 	uint32_t offset = getFMChannelOffset(ch, true);
 	opna_->setRegister(0xa4 + offset, p >> 8);
 	opna_->setRegister(0xa0 + offset, p & 0x00ff);
@@ -1932,96 +2031,29 @@ void OPNAController::setInstrumentFMProperties(int ch)
 	enableEnvResetFM_[ch] = refInstFM_[inch]->getEnvelopeResetEnabled(opType);
 }
 
-std::vector<int> OPNAController::getOperatorsInLevel(int level, int al)
+//---------- SSG ----------//
+namespace
 {
-	switch (level) {
-	case 0:
-		switch (al) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-			return { 3 };
-		case 4:
-			return { 1, 3 };
-		case 5:
-		case 6:
-			return { 1, 2, 3 };
-		case 7:
-			return { 0, 1, 2, 3 };
-		default:
-			throw std::invalid_argument("Invalid algorithm.");
-		}
-	case 1:
-		switch (al) {
-		case 0:
-		case 1:
-			return { 2 };
-		case 2:
-			return { 0, 2 };
-		case 3:
-			return { 1, 2 };
-		case 4:
-			return { 0, 2 };
-		case 5:
-		case 6:
-			return { 0 };
-		case 7:
-			return {};
-		default:
-			throw std::invalid_argument("Invalid algorithm.");
-		}
-	case 2:
-		switch (al) {
-		case 0:
-			return { 1 };
-		case 1:
-			return { 0, 1 };
-		case 2:
-			return { 1 };
-		case 3:
-			return { 0 };
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-			return {};
-		default:
-			throw std::invalid_argument("Invalid algorithm.");
-		}
-	case 3:
-		switch (al) {
-		case 0:
-			return { 0 };
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-			return {};
-		default:
-			throw std::invalid_argument("Invalid algorithm.");
-		}
-	default:
-		throw std::invalid_argument("Invalid operator level.");
-	}
+constexpr int UNUSED_NOISE_PERIOD = -1;
+constexpr int AUTO_ENV_SHAPE_TYPE[15] = { 17, 17, 17, 21, 21, 21, 21, 16, 17, 18, 19, 20, 21, 22, 23 };
+
+inline uint8_t SSGToneFlag(int ch) { return (1 << ch); }
+inline uint8_t SSGNoiseFlag(int ch) { return (8 << ch); }
 }
 
-//---------- SSG ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam)
+void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 {
 	if (isMuteSSG_[ch]) return;
 
-	updateEchoBufferSSG(ch, octave, note, pitch);
+	updateEchoBufferSSG(ch, note);
 
 	if (isTonePrtmSSG_[ch] && hasKeyOnBeforeSSG_[ch]) {
-		keyToneSSG_[ch].pitch += (sumNoteSldSSG_[ch] +transposeSSG_[ch]);
+		baseNoteSSG_[ch] += (sumNoteSldSSG_[ch] + transposeSSG_[ch]);
 	}
 	else {
-		keyToneSSG_[ch] = baseToneSSG_[ch].front();
+		baseNoteSSG_[ch] = echoBufSSG_[ch].latest();
+		neverSetBaseNoteSSG_[ch] = false;
 		sumPitchSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
 		tmpVolSSG_[ch] = -1;
@@ -2045,9 +2077,8 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 
 void OPNAController::keyOnSSG(int ch, int echoBuf)
 {
-	ToneDetail& td = baseToneSSG_[ch].at(static_cast<size_t>(echoBuf));
-	if (td.octave == -1) return;
-	keyOnSSG(ch, td.note, td.octave, td.pitch);
+	if (static_cast<size_t>(echoBuf) < echoBufSSG_[ch].size())
+		keyOnSSG(ch, echoBufSSG_[ch][echoBuf]);
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
@@ -2061,10 +2092,9 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 	isKeyOnSSG_[ch] = false;
 }
 
-void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
+void OPNAController::updateEchoBufferSSG(int ch, const Note& note)
 {
-	baseToneSSG_[ch].pop_back();
-	baseToneSSG_[ch].push_front({ octave, note, pitch });
+	echoBufSSG_[ch].push(note);
 }
 
 /********** Set instrument **********/
@@ -2114,7 +2144,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 /********** Set volume **********/
 void OPNAController::setVolumeSSG(int ch, int volume)
 {
-	if (volume < NSTEP_SSG_VOLUME) {
+	if (volume < bt_defs::NSTEP_SSG_VOLUME) {
 		baseVolSSG_[ch] = volume;
 		tmpVolSSG_[ch] = -1;
 
@@ -2124,7 +2154,7 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 
 void OPNAController::setTemporaryVolumeSSG(int ch, int volume)
 {
-	if (volume < NSTEP_SSG_VOLUME) {
+	if (volume < bt_defs::NSTEP_SSG_VOLUME) {
 		tmpVolSSG_[ch] = volume;
 
 		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
@@ -2136,16 +2166,16 @@ void OPNAController::setRealVolumeSSG(int ch)
 	if (isBuzzEffSSG_[ch] || isHardEnvSSG_[ch]) return;
 
 	int volume = (tmpVolSSG_[ch] == -1) ? baseVolSSG_[ch] : tmpVolSSG_[ch];
-	if (envItSSG_[ch]) {
-		int type = envItSSG_[ch]->getCommandType();
-		if (0 <= type && type < 16) {
-			volume -= (15 - type);
+	if (auto& envIt = envItSSG_[ch]) {
+		int d = envIt->data().data;
+		if (0 <= d && d < 16) {
+			volume -= (15 - d);
 		}
 	}
-	if (treItSSG_[ch]) volume += treItSSG_[ch]->getCommandType();
+	if (auto& treIt = treItSSG_[ch]) volume += treIt->data().data;
 	volume += sumVolSldSSG_[ch];
 
-	volume = clamp(volume, 0, 15);
+	volume = utils::clamp(volume, 0, 15);
 
 	opna_->setRegister(0x08 + static_cast<uint32_t>(ch), static_cast<uint8_t>(volume));
 	needEnvSetSSG_[ch] = false;
@@ -2216,7 +2246,7 @@ void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 {
-	transposeSSG_[ch] += (seminote * calc_pitch::SEMINOTE_PITCH);
+	transposeSSG_[ch] += (seminote * Note::SEMINOTE_PITCH);
 	needToneSetSSG_[ch] = true;
 }
 
@@ -2245,20 +2275,20 @@ void OPNAController::setNoisePitchSSG(int ch, int pitch)
 void OPNAController::setHardEnvelopePeriod(int ch, bool high, int period)
 {
 	bool sendable = isHardEnvSSG_[ch]
-					&& (CommandSequenceUnit::checkDataType(envSSG_[ch].data) == CommandSequenceUnit::RAW);
+					&& (envSSG_[ch].type == SSGEnvelopeUnit::RawSubdata);
 	if (high) {
 		hardEnvPeriodHighSSG_ = period;
 		if (sendable) {
-			envSSG_[ch].data = (period << 8) | (envSSG_[ch].data & 0x00ff);
-			envSSG_[ch].data |= ~(1 << 16);	// raw data flag
+			int sub = (period << 8) | (envSSG_[ch].subdata & 0x00ff);
+			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(envSSG_[ch].data, sub);
 			opna_->setRegister(0x0c, static_cast<uint8_t>(period));
 		}
 	}
 	else {
 		hardEnvPeriodLowSSG_ = period;
 		if (sendable) {
-			envSSG_[ch].data = (envSSG_[ch].data & 0xff00) | period;
-			envSSG_[ch].data |= ~(1 << 16);	// raw data flag
+			int sub = (envSSG_[ch].subdata & 0xff00) | period;
+			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(envSSG_[ch].data, sub);
 			opna_->setRegister(0x0b, static_cast<uint8_t>(period));
 		}
 	}
@@ -2268,21 +2298,21 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 {
 	if (shape) {
 		opna_->setRegister(0x0d, static_cast<uint8_t>(shape));
-		envSSG_[ch].type = AUTO_ENV_SHAPE_TYPE_[shape - 1];
+		int d = AUTO_ENV_SHAPE_TYPE[shape - 1];
 		opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		isHardEnvSSG_[ch] = true;
 		if (shift == -8) {	// Raw
-			envSSG_[ch].data = (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_;
+			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(d, (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_);
 			opna_->setRegister(0x0c, static_cast<uint8_t>(hardEnvPeriodHighSSG_));
 			opna_->setRegister(0x0b, static_cast<uint8_t>(hardEnvPeriodLowSSG_));
 		}
 		else {
-			envSSG_[ch].data = CommandSequenceUnit::shift2data(shift);
+			envSSG_[ch] = SSGEnvelopeUnit::makeShiftUnit(d, shift);
 		}
 	}
 	else {
 		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		envSSG_[ch] = SSGEnvelopeUnit();
 		// Clear hard envelope in setRealVolumeSSG
 	}
 	needEnvSetSSG_[ch] = true;
@@ -2292,14 +2322,14 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 /********** For state retrieve **********/
 void OPNAController::haltSequencesSSG(int ch)
 {
-	if (wfItSSG_[ch]) wfItSSG_[ch]->end();
-	if (treItSSG_[ch]) treItSSG_[ch]->end();
-	if (envItSSG_[ch]) envItSSG_[ch]->end();
-	if (tnItSSG_[ch]) tnItSSG_[ch]->end();
-	if (arpItSSG_[ch]) arpItSSG_[ch]->end();
-	if (ptItSSG_[ch]) ptItSSG_[ch]->end();
-	if (vibItSSG_[ch]) vibItSSG_[ch]->end();
-	if (nsItSSG_[ch]) nsItSSG_[ch]->end();
+	if (auto& wfIt = wfItSSG_[ch]) wfIt->end();
+	if (auto& treIt = treItSSG_[ch]) treIt->end();
+	if (auto& envIt = envItSSG_[ch]) envIt->end();
+	if (auto& tnIt = tnItSSG_[ch]) tnIt->end();
+	if (auto& arpIt = arpItSSG_[ch]) arpIt->end();
+	if (auto& ptIt = ptItSSG_[ch]) ptIt->end();
+	if (auto& vibIt = vibItSSG_[ch]) vibIt->end();
+	if (auto& nsIt = nsItSSG_[ch]) nsIt->end();
 }
 
 /********** Chip details **********/
@@ -2313,9 +2343,9 @@ bool OPNAController::isTonePortamentoSSG(int ch) const
 	return isTonePrtmSSG_[ch];
 }
 
-ToneDetail OPNAController::getSSGTone(int ch) const
+Note OPNAController::getSSGLatestNote(int ch) const
 {
-	return baseToneSSG_[ch].front();
+	return echoBufSSG_[ch].latest();
 }
 
 /***********************************/
@@ -2333,18 +2363,12 @@ void OPNAController::initSSG()
 
 		refInstSSG_[ch].reset();	// Init envelope
 
-		// Init echo buffer
-		baseToneSSG_[ch] = std::deque<ToneDetail>(4);
-		for (auto& td : baseToneSSG_[ch]) {
-			td.octave = -1;
-		}
+		echoBufSSG_[ch].clear();
 
-		keyToneSSG_[ch].note = Note::C;	// Dummy
-		keyToneSSG_[ch].octave = -1;
-		keyToneSSG_[ch].pitch = 0;	// Dummy
+		neverSetBaseNoteSSG_[ch] = true;
 		sumPitchSSG_[ch] = 0;
-		tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
-		baseVolSSG_[ch] = NSTEP_SSG_VOLUME - 1;	// Init volume
+		tnSSG_[ch] = { false, false, UNUSED_NOISE_PERIOD };
+		baseVolSSG_[ch] = bt_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
 		isBuzzEffSSG_[ch] = false;
@@ -2352,9 +2376,9 @@ void OPNAController::initSSG()
 		// Init sequence
 		hasPreSetTickEventSSG_[ch] = false;
 		wfItSSG_[ch].reset();
-		wfSSG_[ch] = { SSGWaveformType::UNSET, CommandSequenceUnit::NODATA };
+		wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::UNSET);
 		envItSSG_[ch].reset();
-		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		envSSG_[ch] = SSGEnvelopeUnit();
 		tnItSSG_[ch].reset();
 		arpItSSG_[ch].reset();
 		ptItSSG_[ch].reset();
@@ -2403,34 +2427,52 @@ void OPNAController::setFrontSSGSequences(int ch)
 
 	setHardEnvIfNecessary_[ch] = false;
 
-	if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->front());
+	if (auto& wfIt = wfItSSG_[ch]) {
+		wfIt->front();
+		writeWaveformSSGToRegister(ch);
+	}
 	else writeSquareWaveform(ch);
 
-	if (treItSSG_[ch]) {
-		treItSSG_[ch]->front();
+	if (auto& treIt = treItSSG_[ch]) {
+		treIt->front();
 		needEnvSetSSG_[ch] = true;
 	}
 	if (volSldSSG_[ch]) {
 		sumVolSldSSG_[ch] += volSldSSG_[ch];
 		needEnvSetSSG_[ch] = true;
 	}
-	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
+	if (auto& envIt = envItSSG_[ch]) {
+		envIt->front();
+		writeEnvelopeSSGToRegister(ch);
+	}
 	else setRealVolumeSSG(ch);
 
-	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
+	if (tnItSSG_[ch]) {
+		tnItSSG_[ch]->front();
+		writeToneNoiseSSGToRegister(ch);
+	}
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->front());
+	if (auto& arpIt = arpItSSG_[ch]) {
+		arpIt->front();
+		checkRealToneSSGByArpeggio(ch);
+	}
 	checkPortamentoSSG(ch);
 
-	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->front());
-	if (vibItSSG_[ch]) {
-		vibItSSG_[ch]->front();
+	if (auto& ptIt = ptItSSG_[ch]) {
+		ptIt->front();
+		checkRealToneSSGByPitch(ch);
+	}
+	if (auto& vibIt = vibItSSG_[ch]) {
+		vibIt->front();
 		needToneSetSSG_[ch] = true;
 	}
-	if (nsItSSG_[ch] && nsItSSG_[ch]->front() != -1) {
-		sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
-		needToneSetSSG_[ch] = true;
+	if (auto& nsIt = nsItSSG_[ch]) {
+		nsIt->front();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldSSG_[ch] += nsIt->data().data;
+			needToneSetSSG_[ch] = true;
+		}
 	}
 
 	writePitchSSG(ch);
@@ -2442,23 +2484,26 @@ void OPNAController::releaseStartSSGSequences(int ch)
 
 	setHardEnvIfNecessary_[ch] = false;
 
-	if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->next(true));
+	if (auto& wfIt = wfItSSG_[ch]) {
+		wfIt->release();
+		writeWaveformSSGToRegister(ch);
+	}
 
-	if (treItSSG_[ch]) {
-		treItSSG_[ch]->next(true);
+	if (auto& treIt = treItSSG_[ch]) {
+		treIt->release();
 		needEnvSetSSG_[ch] = true;
 	}
 	if (volSldSSG_[ch]) {
 		sumVolSldSSG_[ch] += volSldSSG_[ch];
 		needEnvSetSSG_[ch] = true;
 	}
-	if (envItSSG_[ch]) {
-		int pos = envItSSG_[ch]->next(true);
-		if (pos == -1) {
+	if (auto& envIt = envItSSG_[ch]) {
+		envIt->release();
+		if (envIt->hasEnded()) {
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0);
 			isHardEnvSSG_[ch] = false;
 		}
-		else writeEnvelopeSSGToRegister(ch, pos);
+		else writeEnvelopeSSGToRegister(ch);
 	}
 	else {
 		if (!hasPreSetTickEventSSG_[ch]) {
@@ -2467,20 +2512,32 @@ void OPNAController::releaseStartSSGSequences(int ch)
 		}
 	}
 
-	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
+	if (tnItSSG_[ch]) {
+		tnItSSG_[ch]->release();
+		writeToneNoiseSSGToRegister(ch);
+	}
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next(true));
+	if (auto& arpIt = arpItSSG_[ch]) {
+		arpIt->release();
+		checkRealToneSSGByArpeggio(ch);
+	}
 	checkPortamentoSSG(ch);
 
-	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next(true));
-	if (vibItSSG_[ch]) {
-		vibItSSG_[ch]->next(true);
+	if (auto& ptIt = ptItSSG_[ch]) {
+		ptIt->release();
+		checkRealToneSSGByPitch(ch);
+	}
+	if (auto& vibIt = vibItSSG_[ch]) {
+		vibIt->release();
 		needToneSetSSG_[ch] = true;
 	}
-	if (nsItSSG_[ch] && nsItSSG_[ch]->next(true) != -1) {
-		sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
-		needToneSetSSG_[ch] = true;
+	if (auto& nsIt = nsItSSG_[ch]) {
+		nsIt->release();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldSSG_[ch] += nsIt->data().data;
+			needToneSetSSG_[ch] = true;
+		}
 	}
 
 	if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
@@ -2497,37 +2554,53 @@ void OPNAController::tickEventSSG(int ch)
 
 		setHardEnvIfNecessary_[ch] = false;
 
-		if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->next());
+		if (auto& wfIt = wfItSSG_[ch]) {
+			wfIt->next();
+			writeWaveformSSGToRegister(ch);
+		}
 
-		if (treItSSG_[ch]) {
-			treItSSG_[ch]->next();
+		if (auto& treIt = treItSSG_[ch]) {
+			treIt->next();
 			needEnvSetSSG_[ch] = true;
 		}
 		if (volSldSSG_[ch]) {
 			sumVolSldSSG_[ch] += volSldSSG_[ch];
 			needEnvSetSSG_[ch] = true;
 		}
-		if (envItSSG_[ch]) {
-			writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->next());
+		if (auto& envIt = envItSSG_[ch]) {
+			envIt->next();
+			writeEnvelopeSSGToRegister(ch);
 		}
 		else if (needToneSetSSG_[ch] || needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
 		}
 
-		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
+		if (tnItSSG_[ch]) {
+			tnItSSG_[ch]->next();
+			writeToneNoiseSSGToRegister(ch);
+		}
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-		if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next());
+		if (auto& arpIt = arpItSSG_[ch]) {
+			arpIt->next();
+			checkRealToneSSGByArpeggio(ch);
+		}
 		checkPortamentoSSG(ch);
 
-		if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next());
-		if (vibItSSG_[ch]) {
-			vibItSSG_[ch]->next();
+		if (auto& ptIt = ptItSSG_[ch]) {
+			ptIt->next();
+			checkRealToneSSGByPitch(ch);
+		}
+		if (auto& vibIt = vibItSSG_[ch]) {
+			vibIt->next();
 			needToneSetSSG_[ch] = true;
 		}
-		if (nsItSSG_[ch] && nsItSSG_[ch]->next() != -1) {
-			sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
-			needToneSetSSG_[ch] = true;
+		if (auto& nsIt = nsItSSG_[ch]) {
+			nsIt->next();
+			if (!nsIt->hasEnded()) {
+				sumNoteSldSSG_[ch] += nsIt->data().data;
+				needToneSetSSG_[ch] = true;
+			}
 		}
 
 		if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
@@ -2535,11 +2608,13 @@ void OPNAController::tickEventSSG(int ch)
 	}
 }
 
-void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
+void OPNAController::writeWaveformSSGToRegister(int ch)
 {
-	if (seqPos == -1) return;
+	auto& wfIt = wfItSSG_[ch];
+	if (wfIt->hasEnded()) return;
 
-	switch (static_cast<SSGWaveformType>(wfItSSG_[ch]->getCommandType())) {
+	SSGWaveformUnit&& data = wfIt->data();
+	switch (data.data) {
 	case SSGWaveformType::SQUARE:
 	{
 		writeSquareWaveform(ch);
@@ -2547,9 +2622,9 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 	}
 	case SSGWaveformType::TRIANGLE:
 	{
-		if (wfSSG_[ch].type == SSGWaveformType::TRIANGLE && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::TRIANGLE && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
@@ -2561,7 +2636,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SAW:
@@ -2584,19 +2659,18 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveformType::TRIANGLE, CommandSequenceUnit::NODATA };
-		return;
+		break;
 	}
 	case SSGWaveformType::SAW:
 	{
-		if (wfSSG_[ch].type == SSGWaveformType::SAW && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SAW && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
@@ -2608,7 +2682,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2631,19 +2705,18 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveformType::SAW, CommandSequenceUnit::NODATA };
-		return;
+		break;
 	}
 	case SSGWaveformType::INVSAW:
 	{
-		if (wfSSG_[ch].type == SSGWaveformType::INVSAW && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::INVSAW && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
@@ -2655,7 +2728,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2678,20 +2751,18 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveformType::INVSAW, CommandSequenceUnit::NODATA };
-		return;
+		break;
 	}
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == SSGWaveformType::SQM_TRIANGLE && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SQM_TRIANGLE && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
@@ -2702,12 +2773,12 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		if (wfSSG_[ch].data != data) {
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (wfSSG_[ch].subdata != data.subdata) {
+			if (data.type == SSGWaveformUnit::RatioSubdata) {
 				needSqMaskFreqSetSSG_[ch] = true;
 			}
 			else {
-				uint16_t pitch = static_cast<uint16_t>(data);
+				uint16_t pitch = static_cast<uint16_t>(data.subdata);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2718,7 +2789,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SAW:
@@ -2741,19 +2812,17 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { SSGWaveformType::SQM_TRIANGLE, data };
-		return;
+		break;
 	}
 	case SSGWaveformType::SQM_SAW:
 	{
-		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == SSGWaveformType::SQM_SAW && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SQM_SAW && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
@@ -2764,12 +2833,12 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		if (wfSSG_[ch].data != data) {
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (wfSSG_[ch].subdata != data.subdata) {
+			if (data.type == SSGWaveformUnit::RatioSubdata) {
 				needSqMaskFreqSetSSG_[ch] = true;
 			}
 			else {
-				uint16_t pitch = static_cast<uint16_t>(data);
+				uint16_t pitch = static_cast<uint16_t>(data.subdata);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2780,7 +2849,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2803,19 +2872,17 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { SSGWaveformType::SQM_SAW, data };
-		return;
+		break;
 	}
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == SSGWaveformType::SQM_INVSAW && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SQM_INVSAW && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
@@ -2826,12 +2893,12 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		if (wfSSG_[ch].data != data) {
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (wfSSG_[ch].subdata != data.subdata) {
+			if (data.type == SSGWaveformUnit::RatioSubdata) {
 				needSqMaskFreqSetSSG_[ch] = true;
 			}
 			else {
-				uint16_t pitch = static_cast<uint16_t>(data);
+				uint16_t pitch = static_cast<uint16_t>(data.subdata);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2842,7 +2909,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2865,21 +2932,21 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { SSGWaveformType::SQM_INVSAW, data };
-		return;
-	}
-	default:
 		break;
 	}
+	default:
+		return;
+	}
+	wfSSG_[ch] = std::move(data);
 }
 
 void OPNAController::writeSquareWaveform(int ch)
 {
-	if (wfSSG_[ch].type == SSGWaveformType::SQUARE) {
+	if (wfSSG_[ch].data == SSGWaveformType::SQUARE) {
 		if (!isKeyOnSSG_[ch]) {
 			needEnvSetSSG_[ch] = true;
 			needToneSetSSG_[ch] = true;
@@ -2887,7 +2954,7 @@ void OPNAController::writeSquareWaveform(int ch)
 		return;
 	}
 
-	switch (wfSSG_[ch].type) {
+	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::SQM_TRIANGLE:
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
@@ -2907,22 +2974,22 @@ void OPNAController::writeSquareWaveform(int ch)
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	needSqMaskFreqSetSSG_[ch] = false;
-	wfSSG_[ch] = { SSGWaveformType::SQUARE, CommandSequenceUnit::NODATA };
+	wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE);
 }
 
-void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
+void OPNAController::writeToneNoiseSSGToRegister(int ch)
 {
-	if (seqPos == -1) {
+	auto& tnIt = tnItSSG_[ch];
+	if (tnIt->hasEnded()) {
 		if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 		return;
 	}
 
-	int type = tnItSSG_[ch]->getCommandType();
-	if (type == -1) return;
+	int type = tnIt->data().data;
 
 	uint8_t prevMixer = mixerSSG_;
 	if (!type) {	// tone
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
@@ -2942,7 +3009,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 		if (tnSSG_[ch].isNoise) {
 			mixerSSG_ |= SSGNoiseFlag(ch);
 			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
+			tnSSG_[ch].noisePeriod_ = UNUSED_NOISE_PERIOD;
 		}
 	}
 	else if (type == 65) {	// None
@@ -2954,11 +3021,11 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 		if (tnSSG_[ch].isNoise) {
 			mixerSSG_ |= SSGNoiseFlag(ch);
 			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
+			tnSSG_[ch].noisePeriod_ = UNUSED_NOISE_PERIOD;
 		}
 	}
 	else if (type > 32) {	// Tone&Noise
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
@@ -3010,7 +3077,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 
 void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 {
-	switch (wfSSG_[ch].type) {
+	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::TRIANGLE:
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
@@ -3027,10 +3094,11 @@ void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 	needMixSetSSG_[ch] = false;
 }
 
-void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
+void OPNAController::writeEnvelopeSSGToRegister(int ch)
 {
 	if (isBuzzEffSSG_[ch]) return;
-	if (seqPos == -1) {
+	auto& envIt = envItSSG_[ch];
+	if (envIt->hasEnded()) {
 		if (needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
 			needEnvSetSSG_[ch] = false;
@@ -3038,35 +3106,34 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 		return;
 	}
 
-	int type = envItSSG_[ch]->getCommandType();
-	if (type == -1) return;
-	else if (type < 16) {	// Software envelope
+	SSGEnvelopeUnit&& data = envIt->data();
+	if (data.data < 16) {	// Software envelope
 		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = { type, CommandSequenceUnit::NODATA };
+		envSSG_[ch] = std::move(data);
 		setRealVolumeSSG(ch);
 		needEnvSetSSG_[ch] = false;
 	}
 	else {	// Hardware envelope
-		int data = envItSSG_[ch]->getCommandData();
-		if (envSSG_[ch].data != data || setHardEnvIfNecessary_[ch]) {
-			envSSG_[ch].data = data;
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (envSSG_[ch].subdata != data.subdata || setHardEnvIfNecessary_[ch]) {
+			envSSG_[ch].type = data.type;
+			envSSG_[ch].subdata = data.subdata;
+			if (data.type == SSGEnvelopeUnit::RatioSubdata) {
 				/* Envelope period is set in writePitchSSG */
 				needEnvSetSSG_[ch] = true;
 			}
 			else {
-				opna_->setRegister(0x0b, 0x00ff & envSSG_[ch].data);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(envSSG_[ch].data >> 8));
+				opna_->setRegister(0x0b, 0x00ff & envSSG_[ch].subdata);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(envSSG_[ch].subdata >> 8));
 				needEnvSetSSG_[ch] = false;
 			}
 		}
 		else {
 			needEnvSetSSG_[ch] = false;
 		}
-		if (envSSG_[ch].type != type || !isKeyOnSSG_[ch] || setHardEnvIfNecessary_[ch]) {
-			opna_->setRegister(0x0d, static_cast<uint8_t>(type - 16 + 8));
-			envSSG_[ch].type = type;
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO)
+		if (envSSG_[ch].data != data.data || !isKeyOnSSG_[ch] || setHardEnvIfNecessary_[ch]) {
+			opna_->setRegister(0x0d, static_cast<uint8_t>(data.data - 16 + 8));
+			envSSG_[ch].data = data.data;
+			if (data.type == SSGEnvelopeUnit::RatioSubdata)
 				needEnvSetSSG_[ch] = true;
 		}
 		if (!isHardEnvSSG_[ch]) {
@@ -3079,20 +3146,18 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 
 void OPNAController::writePitchSSG(int ch)
 {
-	if (keyToneSSG_[ch].octave == -1) return;	// Not set note yet
+	if (neverSetBaseNoteSSG_[ch]) return;
 
-	int p = keyToneSSG_[ch].pitch
-			+ sumPitchSSG_[ch]
-			+ (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
-			+ detuneSSG_[ch]
-			+ sumNoteSldSSG_[ch]
-			+ transposeSSG_[ch];
+	int p = (baseNoteSSG_[ch] + (sumPitchSSG_[ch]
+								 + (vibItSSG_[ch] ? vibItSSG_[ch]->data().data : 0)
+								 + detuneSSG_[ch]
+								 + sumNoteSldSSG_[ch]
+								 + transposeSSG_[ch])).getAbsolutePicth();
 
-	switch (wfSSG_[ch].type) {
+	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::SQUARE:
 	{
-		uint16_t pitch = calc_pitch::calculateSSGSquareTP(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+		uint16_t pitch = note_utils::calculateSSGSquareTP(p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
@@ -3106,8 +3171,7 @@ void OPNAController::writePitchSSG(int ch)
 	}
 	case SSGWaveformType::TRIANGLE:
 		if (needToneSetSSG_[ch]) {
-			uint16_t pitch = calc_pitch::calculateSSGTriangleEP(
-								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+			uint16_t pitch = note_utils::calculateSSGTriangleEP(p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
@@ -3115,25 +3179,23 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
 		if (needToneSetSSG_[ch]){
-			uint16_t pitch = calc_pitch::calculateSSGSawEP(
-								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+			uint16_t pitch = note_utils::calculateSSGSawEP(p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
 		break;
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		uint16_t pitch = calc_pitch::calculateSSGTriangleEP(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+		uint16_t pitch = note_utils::calculateSSGTriangleEP(p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, true);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, true);
 			}
 		}
@@ -3142,17 +3204,16 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		uint16_t pitch = calc_pitch::calculateSSGSawEP(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
+		uint16_t pitch = note_utils::calculateSSGSawEP(p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, false);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, false);
 			}
 		}
@@ -3170,27 +3231,26 @@ void OPNAController::writePitchSSG(int ch)
 void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 {
 	// Multiple frequency if triangle
-	int div = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 32 : 16;
+	int div = (envSSG_[ch].data == 18 || envSSG_[ch].data == 22) ? 32 : 16;
 
-	CommandSequenceUnit::DataType type = CommandSequenceUnit::checkDataType(envSSG_[ch].data);
-	switch (type) {
-	case CommandSequenceUnit::RATIO:
+	switch (envSSG_[ch].type) {
+	case SSGEnvelopeUnit::RatioSubdata:
 	{
-		auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
-		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * ratio.first / (ratio.second * div)));
+		int r1, r2;
+		envSSG_[ch].getSubdataAsRatio(r1, r2);
+		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * r1 / (r2 * div)));
 		opna_->setRegister(0x0b, 0x00ff & period);
 		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 		break;
 	}
-	case CommandSequenceUnit::LSHIFT:
-	case CommandSequenceUnit::RSHIFT:
+	case SSGEnvelopeUnit::ShiftSubdata:
 	{
 		uint16_t period = static_cast<uint16_t>(std::round(tonePitch / div));
-		int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
-		shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
-		shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
-		if (shift < 0) period <<= -shift;
-		else period >>= shift;
+		int rshift;
+		envSSG_[ch].getSubdataAsShift(rshift);
+		rshift -= 4;	// Adjust rate to that of 0CC-FamiTracker
+		if (rshift < 0) period <<= -rshift;
+		else period >>= rshift;
 		opna_->setRegister(0x0b, 0x00ff & period);
 		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 		break;
@@ -3203,9 +3263,10 @@ void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 void OPNAController::writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle)
 {
 	int mul = isTriangle ? 32 : 16;	// Multiple frequency if triangle
-	auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+	int r1, r2;
+	wfSSG_[ch].getSubdataAsRatio(r1, r2);
 	// Calculate mask period
-	uint16_t period = static_cast<uint16_t>(std::round(ratio.first * mul * tonePitch / ratio.second));
+	uint16_t period = static_cast<uint16_t>(std::round(r1 * mul * tonePitch / r2));
 	uint8_t offset = static_cast<uint8_t>(ch << 1);
 	opna_->setRegister(0x00 + offset, period & 0x00ff);
 	opna_->setRegister(0x01 + offset, period >> 8);
@@ -3231,7 +3292,7 @@ void OPNAController::setKeyOffFlagRhythm(int ch)
 /********** Set volume **********/
 void OPNAController::setVolumeRhythm(int ch, int volume)
 {
-	if (volume < NSTEP_RHYTHM_VOLUME) {
+	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		volRhythm_[ch] = volume;
 		tmpVolRhythm_[ch] = -1;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
@@ -3246,7 +3307,7 @@ void OPNAController::setMasterVolumeRhythm(int volume)
 
 void OPNAController::setTemporaryVolumeRhythm(int ch, int volume)
 {
-	if (volume < NSTEP_RHYTHM_VOLUME) {
+	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		tmpVolRhythm_[ch] = volume;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
 	}
@@ -3268,7 +3329,7 @@ void OPNAController::initRhythm()
 	opna_->setRegister(0x11, 0x3f);	// Rhythm total volume
 
 	for (int ch = 0; ch < 6; ++ch) {
-		volRhythm_[ch] = NSTEP_RHYTHM_VOLUME - 1;	// Init volume
+		volRhythm_[ch] = bt_defs::NSTEP_RHYTHM_VOLUME - 1;	// Init volume
 		tmpVolRhythm_[ch] = -1;
 
 		// Init pan
@@ -3306,18 +3367,19 @@ void OPNAController::updateKeyOnOffStatusRhythm()
 
 //---------- ADPCM ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
+void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
-	updateEchoBufferADPCM(octave, note, pitch);
+	updateEchoBufferADPCM(note);
 
 	bool isTonePrtm = isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_;
 	if (isTonePrtm) {
-		keyToneADPCM_.pitch += (sumNoteSldADPCM_ + transposeADPCM_);
+		baseNoteADPCM_ += (sumNoteSldADPCM_ + transposeADPCM_);
 	}
 	else {
-		keyToneADPCM_ = baseToneADPCM_.front();
+		baseNoteADPCM_ = echoBufADPCM_.latest();
+		neverSetBaseNoteADPCM_ = false;
 		sumPitchADPCM_ = 0;
 		sumVolSldADPCM_ = 0;
 		tmpVolADPCM_ = -1;
@@ -3343,7 +3405,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 								   refInstADPCM_->isSampleRepeatable());
 		}
 		else if (hasStartRequestedKit_) {	// valid key in refInstKit_
-			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			int key = baseNoteADPCM_.getNoteNumber();
 			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
 								   refInstKit_->getSampleStopAddress(key),
 								   refInstKit_->isSampleRepeatable(key));
@@ -3358,9 +3420,8 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 
 void OPNAController::keyOnADPCM(int echoBuf)
 {
-	ToneDetail& td = baseToneADPCM_.at(static_cast<size_t>(echoBuf));
-	if (td.octave == -1) return;
-	keyOnADPCM( td.note, td.octave, td.pitch);
+	if (static_cast<size_t>(echoBuf) < echoBufADPCM_.size())
+		keyOnADPCM(echoBufADPCM_[echoBuf]);
 }
 
 void OPNAController::keyOffADPCM(bool isJam)
@@ -3374,10 +3435,9 @@ void OPNAController::keyOffADPCM(bool isJam)
 	isKeyOnADPCM_ = false;
 }
 
-void OPNAController::updateEchoBufferADPCM(int octave, Note note, int pitch)
+void OPNAController::updateEchoBufferADPCM(const Note& note)
 {
-	baseToneADPCM_.pop_back();
-	baseToneADPCM_.push_front({ octave, note, pitch });
+	echoBufADPCM_.push(note);
 }
 
 /********** Set instrument **********/
@@ -3437,10 +3497,8 @@ void OPNAController::clearSamplesADPCM()
 	stopAddrADPCM_ = startAddrADPCM_;
 }
 
-std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample)
+bool OPNAController::storeSampleADPCM(const std::vector<uint8_t>& sample, size_t& startAddr, size_t& stopAddr)
 {
-	std::vector<size_t> addrs(2);
-
 	opna_->setRegister(0x110, 0x80);
 	opna_->setRegister(0x100, 0x61);
 	opna_->setRegister(0x100, 0x60);
@@ -3450,35 +3508,35 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
+	bool stored = false;
 	if (storePointADPCM_ < dramLim) {
-		size_t startAddress = storePointADPCM_;
-		opna_->setRegister(0x102, startAddress & 0xff);
-		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+		startAddr = storePointADPCM_;
+		opna_->setRegister(0x102, startAddr & 0xff);
+		opna_->setRegister(0x103, (startAddr >> 8) & 0xff);
 
-		size_t stopAddress = startAddress + ((sample.size() - 1) >> 5);	// By 32 bytes
-		stopAddress = std::min(stopAddress, dramLim);
-		opna_->setRegister(0x104, stopAddress & 0xff);
-		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
-		storePointADPCM_ = stopAddress + 1;
+		stopAddr = startAddr + ((sample.size() - 1) >> 5);	// By 32 bytes
+		stopAddr = std::min(stopAddr, dramLim);
+		opna_->setRegister(0x104, stopAddr & 0xff);
+		opna_->setRegister(0x105, (stopAddr >> 8) & 0xff);
+		storePointADPCM_ = stopAddr + 1;
 
 		size_t size = sample.size();
 		for (size_t i = 0; i < size; ++i) {
 			opna_->setRegister(0x108, sample[i]);
 		}
-
-		addrs = { startAddress, stopAddress };
+		stored = true;
 	}
 
 	opna_->setRegister(0x100, 0x00);
 	opna_->setRegister(0x110, 0x80);
 
-	return addrs;
+	return stored;
 }
 
 /********** Set volume **********/
 void OPNAController::setVolumeADPCM(int volume)
 {
-	if (volume < NSTEP_ADPCM_VOLUME) {
+	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
 		baseVolADPCM_ = volume;
 		tmpVolADPCM_ = -1;
 
@@ -3488,7 +3546,7 @@ void OPNAController::setVolumeADPCM(int volume)
 
 void OPNAController::setTemporaryVolumeADPCM(int volume)
 {
-	if (volume < NSTEP_ADPCM_VOLUME) {
+	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
 		tmpVolADPCM_ = volume;
 
 		if (isKeyOnADPCM_) setRealVolumeADPCM();
@@ -3499,13 +3557,13 @@ void OPNAController::setRealVolumeADPCM()
 {
 	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
 	if (envItADPCM_) {
-		int type = envItADPCM_->getCommandType();
-		if (type >= 0) volume -= (NSTEP_ADPCM_VOLUME - 1 - type);
+		int type = envItADPCM_->data().data;
+		if (type >= 0) volume -= (bt_defs::NSTEP_ADPCM_VOLUME - 1 - type);
 	}
-	if (treItADPCM_) volume += treItADPCM_->getCommandType();
+	if (treItADPCM_) volume += treItADPCM_->data().data;
 	volume += sumVolSldADPCM_;
 
-	volume = clamp(volume, 0, NSTEP_ADPCM_VOLUME - 1);
+	volume = utils::clamp(volume, 0, bt_defs::NSTEP_ADPCM_VOLUME - 1);
 
 	opna_->setRegister(0x10b, static_cast<uint8_t>(volume));
 	needEnvSetADPCM_ = false;
@@ -3589,7 +3647,7 @@ void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 
 void OPNAController::setTransposeEffectADPCM(int seminote)
 {
-	transposeADPCM_ += (seminote * calc_pitch::SEMINOTE_PITCH);
+	transposeADPCM_ += (seminote * Note::SEMINOTE_PITCH);
 	needToneSetADPCM_ = true;
 }
 
@@ -3615,9 +3673,9 @@ bool OPNAController::isTonePortamentoADPCM() const
 	return isTonePrtmADPCM_;
 }
 
-ToneDetail OPNAController::getADPCMTone() const
+Note OPNAController::getADPCMLatestNote() const
 {
-	return baseToneADPCM_.front();
+	return echoBufADPCM_.latest();
 }
 
 size_t OPNAController::getADPCMStoredSize() const
@@ -3634,17 +3692,11 @@ void OPNAController::initADPCM()
 	refInstADPCM_.reset();	// Init envelope
 	refInstKit_.reset();
 
-	// Init echo buffer
-	baseToneADPCM_ = std::deque<ToneDetail>(4);
-	for (auto& td : baseToneADPCM_) {
-		td.octave = -1;
-	}
+	echoBufADPCM_.clear();
 
-	keyToneADPCM_.note = Note::C;	// Dummy
-	keyToneADPCM_.octave = -1;
-	keyToneADPCM_.pitch = 0;	// Dummy
+	neverSetBaseNoteADPCM_ = true;
 	sumPitchADPCM_ = 0;
-	baseVolADPCM_ = NSTEP_ADPCM_VOLUME - 1;	// Init volume
+	baseVolADPCM_ = bt_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
 	tmpVolADPCM_ = -1;
 	panADPCM_ = 0xc0;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
@@ -3708,20 +3760,32 @@ void OPNAController::setFrontADPCMSequences()
 		sumVolSldADPCM_ += volSldADPCM_;
 		needEnvSetADPCM_ = true;
 	}
-	if (envItADPCM_) writeEnvelopeADPCMToRegister(envItADPCM_->front());
+	if (envItADPCM_) {
+		envItADPCM_->front();
+		writeEnvelopeADPCMToRegister();
+	}
 	else setRealVolumeADPCM();
 
-	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->front());
+	if (arpItADPCM_) {
+		arpItADPCM_->front();
+		checkRealToneADPCMByArpeggio();
+	}
 	checkPortamentoADPCM();
 
-	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->front());
+	if (ptItADPCM_) {
+		ptItADPCM_->front();
+		checkRealToneADPCMByPitch();
+	}
 	if (vibItADPCM_) {
 		vibItADPCM_->front();
 		needToneSetADPCM_ = true;
 	}
-	if (nsItADPCM_ && nsItADPCM_->front() != -1) {
-		sumNoteSldADPCM_ += nsItADPCM_->getCommandType();
-		needToneSetADPCM_ = true;
+	if (nsItADPCM_) {
+		nsItADPCM_->front();
+		if (!nsItADPCM_->hasEnded()) {
+			sumNoteSldADPCM_ += nsItADPCM_->data().data;
+			needToneSetADPCM_ = true;
+		}
 	}
 
 	writePitchADPCM();
@@ -3732,7 +3796,7 @@ void OPNAController::releaseStartADPCMSequences()
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	if (treItADPCM_) {
-		treItADPCM_->next(true);
+		treItADPCM_->release();
 		needEnvSetADPCM_ = true;
 	}
 	if (volSldADPCM_) {
@@ -3740,11 +3804,9 @@ void OPNAController::releaseStartADPCMSequences()
 		needEnvSetADPCM_ = true;
 	}
 	if (envItADPCM_) {
-		int pos = envItADPCM_->next(true);
-		if (pos == -1) {
-			opna_->setRegister(0x10b, 0);
-		}
-		else writeEnvelopeADPCMToRegister(pos);
+		envItADPCM_->release();
+		if (!envItADPCM_->hasEnded()) opna_->setRegister(0x10b, 0);
+		else writeEnvelopeADPCMToRegister();
 	}
 	else {
 		if (!hasPreSetTickEventADPCM_) {
@@ -3752,17 +3814,26 @@ void OPNAController::releaseStartADPCMSequences()
 		}
 	}
 
-	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next(true));
+	if (arpItADPCM_) {
+		arpItADPCM_->release();
+		checkRealToneADPCMByArpeggio();
+	}
 	checkPortamentoADPCM();
 
-	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next(true));
+	if (ptItADPCM_) {
+		ptItADPCM_->release();
+		checkRealToneADPCMByPitch();
+	}
 	if (vibItADPCM_) {
-		vibItADPCM_->next(true);
+		vibItADPCM_->release();
 		needToneSetADPCM_ = true;
 	}
-	if (nsItADPCM_ && nsItADPCM_->next(true) != -1) {
-		sumNoteSldADPCM_ += nsItADPCM_->getCommandType();
-		needToneSetADPCM_ = true;
+	if (nsItADPCM_) {
+		nsItADPCM_->release();
+		if (!nsItADPCM_->hasEnded()) {
+			sumNoteSldADPCM_ += nsItADPCM_->data().data;
+			needToneSetADPCM_ = true;
+		}
 	}
 
 	if (needToneSetADPCM_) writePitchADPCM();
@@ -3787,23 +3858,33 @@ void OPNAController::tickEventADPCM()
 			needEnvSetADPCM_ = true;
 		}
 		if (envItADPCM_) {
-			writeEnvelopeADPCMToRegister(envItADPCM_->next());
+			envItADPCM_->next();
+			writeEnvelopeADPCMToRegister();
 		}
 		else if (needEnvSetADPCM_) {
 			setRealVolumeADPCM();
 		}
 
-		if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next());
+		if (arpItADPCM_) {
+			arpItADPCM_->next();
+			checkRealToneADPCMByArpeggio();
+		}
 		checkPortamentoADPCM();
 
-		if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next());
+		if (ptItADPCM_) {
+			ptItADPCM_->next();
+			checkRealToneADPCMByPitch();
+		}
 		if (vibItADPCM_) {
 			vibItADPCM_->next();
 			needToneSetADPCM_ = true;
 		}
-		if (nsItADPCM_ && nsItADPCM_->next() != -1) {
-			sumNoteSldADPCM_ += nsItADPCM_->getCommandType();
-			needToneSetADPCM_ = true;
+		if (nsItADPCM_) {
+			nsItADPCM_->next();
+			if (!nsItADPCM_->hasEnded()) {
+				sumNoteSldADPCM_ += nsItADPCM_->data().data;
+				needToneSetADPCM_ = true;
+			}
 		}
 
 		if (needToneSetADPCM_) writePitchADPCM();
@@ -3812,7 +3893,7 @@ void OPNAController::tickEventADPCM()
 			opna_->setRegister(0x101, 0x02);
 			opna_->setRegister(0x100, 0xa1);
 
-			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			int key = baseNoteADPCM_.getNoteNumber();
 			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
 								   refInstKit_->getSampleStopAddress(key),
 								   refInstKit_->isSampleRepeatable(key));
@@ -3821,9 +3902,9 @@ void OPNAController::tickEventADPCM()
 	}
 }
 
-void OPNAController::writeEnvelopeADPCMToRegister(int seqPos)
+void OPNAController::writeEnvelopeADPCMToRegister()
 {
-	if (seqPos != -1 || needEnvSetADPCM_) {
+	if (!envItADPCM_->hasEnded() || needEnvSetADPCM_) {
 		setRealVolumeADPCM();
 		needEnvSetADPCM_ = false;
 	}
@@ -3831,25 +3912,22 @@ void OPNAController::writeEnvelopeADPCMToRegister(int seqPos)
 
 void OPNAController::writePitchADPCM()
 {
-	if (keyToneADPCM_.octave == -1) return;	// Not set note yet
+	if (neverSetBaseNoteADPCM_) return;
 
 	if (refInstADPCM_) {
-		int p = keyToneADPCM_.pitch
-				+ sumPitchADPCM_
-				+ (vibItADPCM_ ? vibItADPCM_->getCommandType() : 0)
-				+ detuneADPCM_
-				+ sumNoteSldADPCM_
-				+ transposeADPCM_;
-		p = calc_pitch::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
-
-		int diff = p - calc_pitch::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
+		int p = (baseNoteADPCM_ + (sumPitchADPCM_
+								   + (vibItADPCM_ ? vibItADPCM_->data().data : 0)
+								   + detuneADPCM_
+								   + sumNoteSldADPCM_
+								   + transposeADPCM_)).getAbsolutePicth();
+		int diff = p - Note::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
-		int key = clamp(octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
-						+ transposeADPCM_ / calc_pitch::SEMINOTE_PITCH, 0, 95);
+		int key = utils::clamp(baseNoteADPCM_.getNoteNumber()
+							   + transposeADPCM_ / Note::SEMINOTE_PITCH, 0, Note::NOTE_NUMBER_RANGE - 1);
 		if (refInstKit_->getSampleEnabled(key)) {
-			int diff = calc_pitch::SEMINOTE_PITCH * refInstKit_->getPitch(key);
+			int diff = Note::SEMINOTE_PITCH * refInstKit_->getPitch(key);
 			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));
 			hasStartRequestedKit_ = true;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,54 +24,11 @@
  */
 
 #include "instrument_editor_utils.hpp"
-#include <unordered_map>
 #include <algorithm>
 #include <QStringList>
-#include "enum_hash.hpp"
 
 namespace inst_edit_utils
 {
-namespace
-{
-const std::unordered_map<VisualizedInstrumentMacroEditor::SequenceType, SequenceType> SEQ_TYPE_MAP = {
-	{ VisualizedInstrumentMacroEditor::SequenceType::NoType, SequenceType::NO_SEQUENCE_TYPE },
-	{ VisualizedInstrumentMacroEditor::SequenceType::FixedSequence, SequenceType::FIXED_SEQUENCE },
-	{ VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence, SequenceType::ABSOLUTE_SEQUENCE },
-	{ VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence, SequenceType::RELATIVE_SEQUENCE }
-};
-
-const std::unordered_map<VisualizedInstrumentMacroEditor::ReleaseType, ReleaseType> REL_TYPE_MAP = {
-	{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, ReleaseType::NoRelease },
-	{ VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE, ReleaseType::FixedRelease },
-	{ VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE, ReleaseType::AbsoluteRelease },
-	{ VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE, ReleaseType::RelativeRelease }
-};
-}
-
-SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type)
-{
-	return SEQ_TYPE_MAP.at(type);
-}
-
-VisualizedInstrumentMacroEditor::SequenceType convertSequenceTypeForUI(SequenceType type)
-{
-	return std::find_if(SEQ_TYPE_MAP.begin(), SEQ_TYPE_MAP.end(), [type](const auto& pair) {
-		return (pair.second == type);
-	})->first;
-}
-
-ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
-{
-	return REL_TYPE_MAP.at(type);
-}
-
-VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type)
-{
-	return std::find_if(REL_TYPE_MAP.begin(), REL_TYPE_MAP.end(), [type](const auto& pair) {
-		return (pair.second == type);
-	})->first;
-}
-
 QString generateUsersString(const std::multiset<int>& users)
 {
 	QStringList l;

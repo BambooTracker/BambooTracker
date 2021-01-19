@@ -26,6 +26,7 @@
 #include "opni_io.hpp"
 #include "format/wopn_file.h"
 #include "file_io_error.hpp"
+#include "note.hpp"
 
 namespace io
 {
@@ -100,8 +101,8 @@ AbstractInstrument* OpniIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 		if (arpIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
-		instManLocked->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
-		instManLocked->setArpeggioFMType(arpIdx, SequenceType::ABSOLUTE_SEQUENCE);
+		instManLocked->setArpeggioFMSequenceData(arpIdx, 0, srcInst.note_offset + Note::DEFAULT_NOTE_NUM);
+		instManLocked->setArpeggioFMType(arpIdx, SequenceType::AbsoluteSequence);
 	}
 
 	return inst;

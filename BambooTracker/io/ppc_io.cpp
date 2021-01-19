@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,6 @@
 #include "instrument.hpp"
 #include "file_io_error.hpp"
 #include "io_utils.hpp"
-#include "misc.hpp"
 
 namespace io
 {
@@ -68,7 +67,7 @@ AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t>& sample,
 
 	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
 	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x49cd);	// 16000Hz
 
 	return adpcm;
 }

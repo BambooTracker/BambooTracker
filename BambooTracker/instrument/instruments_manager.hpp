@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,14 +30,13 @@
 #include <array>
 #include <vector>
 #include <set>
-#include <unordered_map>
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
-#include "waveform_adpcm.hpp"
-#include "command_sequence.hpp"
+#include "sample_adpcm.hpp"
+#include "sequence_property.hpp"
+#include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
 enum class InstrumentType;
 class AbstractInstrument;
@@ -53,8 +52,8 @@ class InstrumentsManager
 public:
 	explicit InstrumentsManager(bool unedited);
 
-	void addInstrument(int instNum, InstrumentType type, std::string name);
-	void addInstrument(std::unique_ptr<AbstractInstrument> inst);
+	void addInstrument(int instNum, InstrumentType type, const std::string& name);
+	void addInstrument(AbstractInstrument* newInstPtr);
 	std::unique_ptr<AbstractInstrument> removeInstrument(int instNum);
 	void cloneInstrument(int cloneInstNum, int resInstNum);
 	void deepCloneInstrument(int cloneInstNum, int resInstNum);
@@ -63,19 +62,17 @@ public:
 	void clearAll();
 	std::vector<int> getInstrumentIndices() const;
 
-	void setInstrumentName(int instNum, std::string name);
+	void setInstrumentName(int instNum, const std::string& name);
 	std::string getInstrumentName(int instNum) const;
 	std::vector<std::string> getInstrumentNameList() const;
-
-	std::vector<int> getEntriedInstrumentIndices() const;
 
 	void clearUnusedInstrumentProperties();
 
 	int findFirstFreeInstrument() const;
 
-	std::vector<std::vector<int>> checkDuplicateInstruments() const;
+	std::unordered_map<int, int> getDuplicateInstrumentMap() const;
 
-	void setPropertyFindMode(bool unedited);
+	inline void setPropertyFindMode(bool unedited) noexcept { regardingUnedited_ = unedited; }
 
 private:
 	std::array<std::shared_ptr<AbstractInstrument>, 128> insts_;
@@ -107,15 +104,18 @@ public:
 	bool getInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param) const;
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	int getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param);
-	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
-	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
-	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
-	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum) const;
-	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
-	Release getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
+	void addOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int data);
+	void removeOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int cnt, int data);
+	std::vector<FMOperatorSequenceUnit> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
+	void addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop);
+	void removeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int begin, int end);
+	void changeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum);
+	InstrumentSequenceLoopRoot getOperatorSequenceFMLoopRoot(FMEnvelopeParameter param, int opSeqNum) const;
+	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
+	FMOperatorSequenceIter getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
 	std::multiset<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 	std::vector<int> getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const;
 	int findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const;
@@ -126,15 +126,18 @@ public:
 	int getInstrumentFMArpeggio(int instNum, FMOperatorType op);
 	void setArpeggioFMType(int arpNum, SequenceType type);
 	SequenceType getArpeggioFMType(int arpNum) const;
-	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioFMSequenceCommand(int arpNum);
-	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getArpeggioFMSequence(int arpNum);
-	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getArpeggioFMLoops(int arpNum) const;
-	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
-	Release getArpeggioFMRelease(int arpNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioFMIterator(int arpNum) const;
+	void addArpeggioFMSequenceData(int arpNum, int data);
+	void removeArpeggioFMSequenceData(int arpNum);
+	void setArpeggioFMSequenceData(int arpNum, int cnt, int data);
+	std::vector<ArpeggioUnit> getArpeggioFMSequence(int arpNum);
+	void addArpeggioFMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioFMLoop(int arpNum, int begin, int end);
+	void changeArpeggioFMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioFMLoops(int arpNum);
+	InstrumentSequenceLoopRoot getArpeggioFMLoopRoot(int arpNum) const;
+	void setArpeggioFMRelease(int arpNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getArpeggioFMRelease(int arpNum) const;
+	ArpeggioIter getArpeggioFMIterator(int arpNum) const;
 	std::multiset<int> getArpeggioFMUsers(int arpNum) const;
 	std::vector<int> getArpeggioFMEntriedIndices() const;
 	int findFirstAssignableArpeggioFM() const;
@@ -145,15 +148,18 @@ public:
 	int getInstrumentFMPitch(int instNum, FMOperatorType op);
 	void setPitchFMType(int ptNum, SequenceType type);
 	SequenceType getPitchFMType(int ptNum) const;
-	void addPitchFMSequenceCommand(int ptNum, int type, int data);
-	void removePitchFMSequenceCommand(int ptNum);
-	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getPitchFMSequence(int ptNum);
-	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getPitchFMLoops(int ptNum) const;
-	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
-	Release getPitchFMRelease(int ptNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchFMIterator(int ptNum) const;
+	void addPitchFMSequenceData(int ptNum, int data);
+	void removePitchFMSequenceData(int ptNum);
+	void setPitchFMSequenceData(int ptNum, int cnt, int data);
+	std::vector<PitchUnit> getPitchFMSequence(int ptNum);
+	void addPitchFMLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchFMLoop(int ptNum, int begin, int end);
+	void changePitchFMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchFMLoops(int ptNum);
+	InstrumentSequenceLoopRoot getPitchFMLoopRoot(int ptNum) const;
+	void setPitchFMRelease(int ptNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getPitchFMRelease(int ptNum) const;
+	PitchIter getPitchFMIterator(int ptNum) const;
 	std::multiset<int> getPitchFMUsers(int ptNum) const;
 	std::vector<int> getPitchFMEntriedIndices() const;
 	int findFirstAssignablePitchFM() const;
@@ -163,18 +169,9 @@ public:
 private:
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
 	std::array<std::shared_ptr<LFOFM>, 128> lfoFM_;
-	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<CommandSequence>, 128>> opSeqFM_;
-	std::array<std::shared_ptr<CommandSequence>, 128> arpFM_;
-	std::array<std::shared_ptr<CommandSequence>, 128> ptFM_;
-
-	static const FMEnvelopeParameter ENV_FM_PARAMS_[38];
-	static const FMOperatorType FM_OP_TYPES_[5];
-
-	int cloneFMEnvelope(int srcNum);
-	int cloneFMLFO(int srcNum);
-	int cloneFMOperatorSequence(FMEnvelopeParameter param, int srcNum);
-	int cloneFMArpeggio(int srcNum);
-	int cloneFMPitch(int srcNum);
+	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<InstrumentSequenceProperty<FMOperatorSequenceUnit>>, 128>> opSeqFM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpFM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptFM_;
 
 	bool equalPropertiesFM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 
@@ -184,15 +181,18 @@ public:
 	bool getInstrumentSSGWaveformEnabled(int instNum) const;
 	void setInstrumentSSGWaveform(int instNum, int wfNum);
 	int getInstrumentSSGWaveform(int instNum);
-	void addWaveformSSGSequenceCommand(int wfNum, int type, int data);
-	void removeWaveformSSGSequenceCommand(int wfNum);
-	void setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getWaveformSSGSequence(int wfNum);
-	void setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getWaveformSSGLoops(int wfNum) const;
-	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
-	Release getWaveformSSGRelease(int wfNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getWaveformSSGIterator(int wfNum) const;
+	void addWaveformSSGSequenceData(int wfNum, const SSGWaveformUnit& data);
+	void removeWaveformSSGSequenceData(int wfNum);
+	void setWaveformSSGSequenceData(int wfNum, int cnt, const SSGWaveformUnit& data);
+	std::vector<SSGWaveformUnit> getWaveformSSGSequence(int wfNum);
+	void addWaveformSSGLoop(int wfNum, const InstrumentSequenceLoop& loop);
+	void removeWaveformSSGLoop(int wfNum, int begin, int end);
+	void changeWaveformSSGLoop(int wfNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearWaveformSSGLoops(int wfNum);
+	InstrumentSequenceLoopRoot getWaveformSSGLoopRoot(int wfNum) const;
+	void setWaveformSSGRelease(int wfNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getWaveformSSGRelease(int wfNum) const;
+	SSGWaveformIter getWaveformSSGIterator(int wfNum) const;
 	std::multiset<int> getWaveformSSGUsers(int wfNum) const;
 	std::vector<int> getWaveformSSGEntriedIndices() const;
 	int findFirstAssignableWaveformSSG() const;
@@ -201,15 +201,18 @@ public:
 	bool getInstrumentSSGToneNoiseEnabled(int instNum) const;
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	int getInstrumentSSGToneNoise(int instNum);
-	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
-	void removeToneNoiseSSGSequenceCommand(int tnNum);
-	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getToneNoiseSSGSequence(int tnNum);
-	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getToneNoiseSSGLoops(int tnNum) const;
-	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
-	Release getToneNoiseSSGRelease(int tnNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSSGIterator(int tnNum) const;
+	void addToneNoiseSSGSequenceData(int tnNum, int data);
+	void removeToneNoiseSSGSequenceData(int tnNum);
+	void setToneNoiseSSGSequenceData(int tnNum, int cnt, int data);
+	std::vector<SSGToneNoiseUnit> getToneNoiseSSGSequence(int tnNum);
+	void addToneNoiseSSGLoop(int tnNum, const InstrumentSequenceLoop& loop);
+	void removeToneNoiseSSGLoop(int tnNum, int begin, int end);
+	void changeToneNoiseSSGLoop(int tnNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearToneNoiseSSGLoops(int tnNum);
+	InstrumentSequenceLoopRoot getToneNoiseSSGLoopRoot(int tnNum) const;
+	void setToneNoiseSSGRelease(int tnNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getToneNoiseSSGRelease(int tnNum) const;
+	SSGToneNoiseIter getToneNoiseSSGIterator(int tnNum) const;
 	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;
 	std::vector<int> getToneNoiseSSGEntriedIndices() const;
 	int findFirstAssignableToneNoiseSSG() const;
@@ -218,15 +221,18 @@ public:
 	bool getInstrumentSSGEnvelopeEnabled(int instNum) const;
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	int getInstrumentSSGEnvelope(int instNum);
-	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeSSGSequenceCommand(int envNum);
-	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getEnvelopeSSGSequence(int envNum);
-	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getEnvelopeSSGLoops(int envNum) const;
-	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
-	Release getEnvelopeSSGRelease(int envNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSSGIterator(int envNum) const;
+	void addEnvelopeSSGSequenceData(int envNum, const SSGEnvelopeUnit& data);
+	void removeEnvelopeSSGSequenceData(int envNum);
+	void setEnvelopeSSGSequenceData(int envNum, int cnt, const SSGEnvelopeUnit& data);
+	std::vector<SSGEnvelopeUnit> getEnvelopeSSGSequence(int envNum);
+	void addEnvelopeSSGLoop(int envNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeSSGLoop(int envNum, int begin, int end);
+	void changeEnvelopeSSGLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeSSGLoops(int envNum);
+	InstrumentSequenceLoopRoot getEnvelopeSSGLoopRoot(int envNum) const;
+	void setEnvelopeSSGRelease(int envNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getEnvelopeSSGRelease(int envNum) const;
+	SSGEnvelopeIter getEnvelopeSSGIterator(int envNum) const;
 	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;
 	std::vector<int> getEnvelopeSSGEntriedIndices() const;
 	int findFirstAssignableEnvelopeSSG() const;
@@ -237,15 +243,18 @@ public:
 	int getInstrumentSSGArpeggio(int instNum);
 	void setArpeggioSSGType(int arpNum, SequenceType type);
 	SequenceType getArpeggioSSGType(int arpNum) const;
-	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioSSGSequenceCommand(int arpNum);
-	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getArpeggioSSGSequence(int arpNum);
-	void setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getArpeggioSSGLoops(int arpNum) const;
-	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
-	Release getArpeggioSSGRelease(int arpNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioSSGIterator(int arpNum) const;
+	void addArpeggioSSGSequenceData(int arpNum, int data);
+	void removeArpeggioSSGSequenceData(int arpNum);
+	void setArpeggioSSGSequenceData(int arpNum, int cnt, int data);
+	std::vector<ArpeggioUnit> getArpeggioSSGSequence(int arpNum);
+	void addArpeggioSSGLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioSSGLoop(int arpNum, int begin, int end);
+	void changeArpeggioSSGLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioSSGLoops(int arpNum);
+	InstrumentSequenceLoopRoot getArpeggioSSGLoopRoot(int arpNum) const;
+	void setArpeggioSSGRelease(int arpNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getArpeggioSSGRelease(int arpNum) const;
+	ArpeggioIter getArpeggioSSGIterator(int arpNum) const;
 	std::multiset<int> getArpeggioSSGUsers(int arpNum) const;
 	std::vector<int> getArpeggioSSGEntriedIndices() const;
 	int findFirstAssignableArpeggioSSG() const;
@@ -256,31 +265,28 @@ public:
 	int getInstrumentSSGPitch(int instNum);
 	void setPitchSSGType(int ptNum, SequenceType type);
 	SequenceType getPitchSSGType(int ptNum) const;
-	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
-	void removePitchSSGSequenceCommand(int ptNum);
-	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getPitchSSGSequence(int ptNum);
-	void setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getPitchSSGLoops(int ptNum) const;
-	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
-	Release getPitchSSGRelease(int ptNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchSSGIterator(int ptNum) const;
+	void addPitchSSGSequenceData(int ptNum, int data);
+	void removePitchSSGSequenceData(int ptNum);
+	void setPitchSSGSequenceData(int ptNum, int cnt, int data);
+	std::vector<PitchUnit> getPitchSSGSequence(int ptNum);
+	void addPitchSSGLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchSSGLoop(int ptNum, int begin, int end);
+	void changePitchSSGLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchSSGLoops(int ptNum);
+	InstrumentSequenceLoopRoot getPitchSSGLoopRoot(int ptNum) const;
+	void setPitchSSGRelease(int ptNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getPitchSSGRelease(int ptNum) const;
+	PitchIter getPitchSSGIterator(int ptNum) const;
 	std::multiset<int> getPitchSSGUsers(int ptNum) const;
 	std::vector<int> getPitchSSGEntriedIndices() const;
 	int findFirstAssignablePitchSSG() const;
 
 private:
-	std::array<std::shared_ptr<CommandSequence>, 128> wfSSG_;
-	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
-	std::array<std::shared_ptr<CommandSequence>, 128> tnSSG_;
-	std::array<std::shared_ptr<CommandSequence>, 128> arpSSG_;
-	std::array<std::shared_ptr<CommandSequence>, 128> ptSSG_;
-
-	int cloneSSGWaveform(int srcNum);
-	int cloneSSGToneNoise(int srcNum);
-	int cloneSSGEnvelope(int srcNum);
-	int cloneSSGArpeggio(int srcNum);
-	int cloneSSGPitch(int srcNum);
+	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGWaveformUnit>>, 128> wfSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGEnvelopeUnit>>, 128> envSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGToneNoiseUnit>>, 128> tnSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptSSG_;
 
 	bool equalPropertiesSSG(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 
@@ -294,7 +300,8 @@ public:
 	int getSampleADPCMRootDeltaN(int sampNum) const;
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool isSampleADPCMRepeatable(int sampNum) const;
-	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample);
+	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
+	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	void clearSampleADPCMRawSample(int sampNum);
 	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
 	void setSampleADPCMStartAddress(int sampNum, size_t addr);
@@ -311,15 +318,18 @@ public:
 	bool getInstrumentADPCMEnvelopeEnabled(int instNum) const;
 	void setInstrumentADPCMEnvelope(int instNum, int envNum);
 	int getInstrumentADPCMEnvelope(int instNum);
-	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeADPCMSequenceCommand(int envNum);
-	void setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getEnvelopeADPCMSequence(int envNum);
-	void setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getEnvelopeADPCMLoops(int envNum) const;
-	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
-	Release getEnvelopeADPCMRelease(int envNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getEnvelopeADPCMIterator(int envNum) const;
+	void addEnvelopeADPCMSequenceData(int envNum, int data);
+	void removeEnvelopeADPCMSequenceData(int envNum);
+	void setEnvelopeADPCMSequenceData(int envNum, int cnt, int data);
+	std::vector<ADPCMEnvelopeUnit> getEnvelopeADPCMSequence(int envNum);
+	void addEnvelopeADPCMLoop(int envNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeADPCMLoop(int envNum, int begin, int end);
+	void changeEnvelopeADPCMLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeADPCMLoops(int envNum);
+	InstrumentSequenceLoopRoot getEnvelopeADPCMLoopRoot(int envNum) const;
+	void setEnvelopeADPCMRelease(int envNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getEnvelopeADPCMRelease(int envNum) const;
+	ADPCMEnvelopeIter getEnvelopeADPCMIterator(int envNum) const;
 	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;
 	std::vector<int> getEnvelopeADPCMEntriedIndices() const;
 	int findFirstAssignableEnvelopeADPCM() const;
@@ -330,15 +340,18 @@ public:
 	int getInstrumentADPCMArpeggio(int instNum);
 	void setArpeggioADPCMType(int arpNum, SequenceType type);
 	SequenceType getArpeggioADPCMType(int arpNum) const;
-	void addArpeggioADPCMSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioADPCMSequenceCommand(int arpNum);
-	void setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getArpeggioADPCMSequence(int arpNum);
-	void setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getArpeggioADPCMLoops(int arpNum) const;
-	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
-	Release getArpeggioADPCMRelease(int arpNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioADPCMIterator(int arpNum) const;
+	void addArpeggioADPCMSequenceData(int arpNum, int data);
+	void removeArpeggioADPCMSequenceData(int arpNum);
+	void setArpeggioADPCMSequenceData(int arpNum, int cnt, int data);
+	std::vector<ArpeggioUnit> getArpeggioADPCMSequence(int arpNum);
+	void addArpeggioADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioADPCMLoop(int arpNum, int begin, int end);
+	void changeArpeggioADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioADPCMLoops(int arpNum);
+	InstrumentSequenceLoopRoot getArpeggioADPCMLoopRoot(int arpNum) const;
+	void setArpeggioADPCMRelease(int arpNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getArpeggioADPCMRelease(int arpNum) const;
+	ArpeggioIter getArpeggioADPCMIterator(int arpNum) const;
 	std::multiset<int> getArpeggioADPCMUsers(int arpNum) const;
 	std::vector<int> getArpeggioADPCMEntriedIndices() const;
 	int findFirstAssignableArpeggioADPCM() const;
@@ -349,29 +362,27 @@ public:
 	int getInstrumentADPCMPitch(int instNum);
 	void setPitchADPCMType(int ptNum, SequenceType type);
 	SequenceType getPitchADPCMType(int ptNum) const;
-	void addPitchADPCMSequenceCommand(int ptNum, int type, int data);
-	void removePitchADPCMSequenceCommand(int ptNum);
-	void setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getPitchADPCMSequence(int ptNum);
-	void setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getPitchADPCMLoops(int ptNum) const;
-	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
-	Release getPitchADPCMRelease(int ptNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchADPCMIterator(int ptNum) const;
+	void addPitchADPCMSequenceData(int ptNum, int data);
+	void removePitchADPCMSequenceData(int ptNum);
+	void setPitchADPCMSequenceData(int ptNum, int cnt, int data);
+	std::vector<PitchUnit> getPitchADPCMSequence(int ptNum);
+	void addPitchADPCMLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchADPCMLoop(int ptNum, int begin, int end);
+	void changePitchADPCMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchADPCMLoops(int ptNum);
+	InstrumentSequenceLoopRoot getPitchADPCMLoopRoot(int ptNum) const;
+	void setPitchADPCMRelease(int ptNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getPitchADPCMRelease(int ptNum) const;
+	PitchIter getPitchADPCMIterator(int ptNum) const;
 	std::multiset<int> getPitchADPCMUsers(int ptNum) const;
 	std::vector<int> getPitchADPCMEntriedIndices() const;
 	int findFirstAssignablePitchADPCM() const;
 
 private:
 	std::array<std::shared_ptr<SampleADPCM>, 128> sampADPCM_;
-	std::array<std::shared_ptr<CommandSequence>, 128> envADPCM_;
-	std::array<std::shared_ptr<CommandSequence>, 128> arpADPCM_;
-	std::array<std::shared_ptr<CommandSequence>, 128> ptADPCM_;
-
-	int cloneADPCMSample(int srcNum);
-	int cloneADPCMEnvelope(int srcNum);
-	int cloneADPCMArpeggio(int srcNum);
-	int cloneADPCMPitch(int srcNum);
+	std::array<std::shared_ptr<InstrumentSequenceProperty<ADPCMEnvelopeUnit>>, 128> envADPCM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpADPCM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptADPCM_;
 
 	bool equalPropertiesADPCM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 

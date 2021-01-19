@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 #include "btm_io.hpp"
 #include "file_io_error.hpp"
 #include "version.hpp"
-#include "calc_pitch.hpp"
+#include "note.hpp"
 #include "effect.hpp"
 #include "io_utils.hpp"
 
@@ -158,7 +158,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 					iCsr += 1;
 				}
 			}
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instFM));
+			instManLocked->addInstrument(instFM);
 			break;
 		}
 		case 0x01:	// SSG
@@ -184,7 +184,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 			instSSG->setPitchEnabled((0x80 & tmp) ? false : true);
 			instSSG->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instSSG));
+			instManLocked->addInstrument(instSSG);
 			break;
 		}
 		case 0x02:	// ADPCM
@@ -203,7 +203,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 			instADPCM->setPitchEnabled((0x80 & tmp) ? false : true);
 			instADPCM->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instADPCM));
+			instManLocked->addInstrument(instADPCM);
 			break;
 		}
 		case 0x03:	// Drumkit
@@ -216,7 +216,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 				instKit->setSampleNumber(key, ctr.readUint8(iCsr++));
 				instKit->setPitch(key, ctr.readInt8(iCsr++));
 			}
-			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instKit));
+			instManLocked->addInstrument(instKit);
 			break;
 		}
 		default:
@@ -243,36 +243,33 @@ size_t loadOperatorSequence(FMEnvelopeParameter param, size_t instMemCsr,
 		csr += 2;
 		if (version < Version::toBCD(1, 2, 2)) csr += 2;
 		if (l == 0)
-			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
+			instManLocked->setOperatorSequenceFMSequenceData(param, idx, 0, data);
 		else
-			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
+			instManLocked->addOperatorSequenceFMSequenceData(param, idx, data);
 	}
 
 	uint16_t loopCnt = ctr.readUint16(csr);
 	csr += 2;
-	if (loopCnt > 0) {
-		std::vector<int> begins, ends, times;
-		for (uint16_t l = 0; l < loopCnt; ++l) {
-			begins.push_back(ctr.readUint16(csr));
-			csr += 2;
-			ends.push_back(ctr.readUint16(csr));
-			csr += 2;
-			times.push_back(ctr.readUint8(csr++));
-		}
-		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
+	for (uint16_t l = 0; l < loopCnt; ++l) {
+		int begin = ctr.readUint16(csr);
+		csr += 2;
+		int end = ctr.readUint16(csr);
+		csr += 2;
+		int times = ctr.readUint8(csr++);
+		instManLocked->addOperatorSequenceFMLoop(param, idx, InstrumentSequenceLoop(begin, end, times));
 	}
 
 	switch (ctr.readUint8(csr++)) {
 	case 0x00:	// No release
-		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		instManLocked->setOperatorSequenceFMRelease(param, idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 		break;
 	case 0x01:	// Fixed
 	{
 		uint16_t pos = ctr.readUint16(csr);
 		csr += 2;
 		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
-		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+		else instManLocked->setOperatorSequenceFMRelease(param, idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 		break;
 	}
 	default:
@@ -672,27 +669,24 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instManLocked->setArpeggioFMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setArpeggioFMSequenceData(idx, 0, data);
 					else
-						instManLocked->addArpeggioFMSequenceCommand(idx, data, 0);
+						instManLocked->addArpeggioFMSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setArpeggioFMLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addArpeggioFMLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -700,8 +694,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setArpeggioFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -710,19 +704,19 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioFMType(idx, SequenceType::AbsoluteSequence);
 						break;
 					case 0x01:	// Fixed
-						instManLocked->setArpeggioFMType(idx, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioFMType(idx, SequenceType::FixedSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioFMType(idx, SequenceType::RelativeSequence);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instManLocked->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioFMType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
 						else {
@@ -750,28 +744,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instManLocked->setPitchFMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setPitchFMSequenceData(idx, 0, data);
 					else
-						instManLocked->addPitchFMSequenceCommand(idx, data, 0);
+						instManLocked->addPitchFMSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setPitchFMLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addPitchFMLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -779,8 +770,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setPitchFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -789,16 +780,16 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchFMType(idx, SequenceType::AbsoluteSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchFMType(idx, SequenceType::RelativeSequence);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instManLocked->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchFMType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
 						else {
@@ -825,8 +816,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) {
-						if (data == 3) data = static_cast<int>(SSGWaveformType::SQM_TRIANGLE);
-						else if (data == 4) data = static_cast<int>(SSGWaveformType::SQM_SAW);
+						if (data == 3) data = SSGWaveformType::SQM_TRIANGLE;
+						else if (data == 4) data = SSGWaveformType::SQM_SAW;
 					}
 					int32_t subdata;
 					if (version >= Version::toBCD(1, 2, 0)) {
@@ -837,31 +828,39 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 						subdata = ctr.readUint16(csr);
 						csr += 2;
 						if (subdata != -1)
-							subdata = calc_pitch::calculateSSGSquareTP(subdata);
+							subdata = note_utils::calculateSSGSquareTP(subdata, 0);
+					}
+					SSGWaveformUnit unit;
+					switch (data) {
+					case SSGWaveformType::SQM_TRIANGLE:
+					case SSGWaveformType::SQM_SAW:
+					case SSGWaveformType::SQM_INVSAW:
+						unit = SSGWaveformUnit::makeUnitWithDecode(data, subdata);
+						break;
+					default:
+						unit = SSGWaveformUnit::makeOnlyDataUnit(data);
+						break;
 					}
 					if (l == 0)
-						instManLocked->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setWaveformSSGSequenceData(idx, 0, unit);
 					else
-						instManLocked->addWaveformSSGSequenceCommand(idx, data, subdata);
+						instManLocked->addWaveformSSGSequenceData(idx,  unit);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setWaveformSSGLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addWaveformSSGLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -869,8 +868,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -905,28 +904,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					}
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instManLocked->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
+						instManLocked->setToneNoiseSSGSequenceData(idx, 0, data);
 					else
-						instManLocked->addToneNoiseSSGSequenceCommand(idx, data, 0);
+						instManLocked->addToneNoiseSSGSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setToneNoiseSSGLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addToneNoiseSSGLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setToneNoiseSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -934,8 +930,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setToneNoiseSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -971,29 +967,28 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 						subdata = ctr.readUint16(csr);
 						csr += 2;
 					}
+					SSGEnvelopeUnit unit = (data < 16) ? SSGEnvelopeUnit::makeOnlyDataUnit(data)
+													   : SSGEnvelopeUnit::makeUnitWithDecode(data, subdata);
 					if (l == 0)
-						instManLocked->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setEnvelopeSSGSequenceData(idx, 0, unit);
 					else
-						instManLocked->addEnvelopeSSGSequenceCommand(idx, data, subdata);
+						instManLocked->addEnvelopeSSGSequenceData(idx, unit);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setEnvelopeSSGLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addEnvelopeSSGLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -1001,24 +996,24 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				case 0x02:	// Absolute
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::AbsoluteRelease, pos);
-					else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::AbsoluteRelease, pos));
+					else instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				case 0x03:	// Relative
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::RelativeRelease, pos);
-					else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::RelativeRelease, pos));
+					else instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1047,28 +1042,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instManLocked->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
+						instManLocked->setArpeggioSSGSequenceData(idx, 0, data);
 					else
-						instManLocked->addArpeggioSSGSequenceCommand(idx, data, 0);
+						instManLocked->addArpeggioSSGSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setArpeggioSSGLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addArpeggioSSGLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1076,8 +1068,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setArpeggioSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1086,19 +1078,19 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(idx, SequenceType::AbsoluteSequence);
 						break;
 					case 0x01:	// Fixed
-						instManLocked->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioSSGType(idx, SequenceType::FixedSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(idx, SequenceType::RelativeSequence);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instManLocked->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioSSGType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
 						else {
@@ -1126,28 +1118,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instManLocked->setPitchSSGSequenceCommand(idx, 0, data, 0);
+						instManLocked->setPitchSSGSequenceData(idx, 0, data);
 					else
-						instManLocked->addPitchSSGSequenceCommand(idx, data, 0);
+						instManLocked->addPitchSSGSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setPitchSSGLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addPitchSSGLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1155,8 +1144,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setPitchSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1165,16 +1154,16 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchSSGType(idx, SequenceType::AbsoluteSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchSSGType(idx, SequenceType::RelativeSequence);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instManLocked->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchSSGType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
 						else {
@@ -1221,33 +1210,27 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				csr += 2;
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
-					csr += 2;
-					int32_t subdata;
-					subdata = ctr.readInt32(csr);
-					csr += 4;
+					csr += 6;	// Skip subdata
 					if (l == 0)
-						instManLocked->setEnvelopeADPCMSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setEnvelopeADPCMSequenceData(idx, 0, data);
 					else
-						instManLocked->addEnvelopeADPCMSequenceCommand(idx, data, subdata);
+						instManLocked->addEnvelopeADPCMSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setEnvelopeADPCMLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addEnvelopeADPCMLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -1255,24 +1238,24 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				case 0x02:	// Absolute
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::AbsoluteRelease, pos);
-					else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::AbsoluteRelease, pos));
+					else instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				case 0x03:	// Relative
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::RelativeRelease, pos);
-					else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::RelativeRelease, pos));
+					else instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1298,28 +1281,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (l == 0)
-						instManLocked->setArpeggioADPCMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setArpeggioADPCMSequenceData(idx, 0, data);
 					else
-						instManLocked->addArpeggioADPCMSequenceCommand(idx, data, 0);
+						instManLocked->addArpeggioADPCMSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setArpeggioADPCMLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addArpeggioADPCMLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1327,8 +1307,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setArpeggioADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1336,13 +1316,13 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// Absolute
-					instManLocked->setArpeggioADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(idx, SequenceType::AbsoluteSequence);
 					break;
 				case 0x01:	// Fixed
-					instManLocked->setArpeggioADPCMType(idx, SequenceType::FIXED_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(idx, SequenceType::FixedSequence);
 					break;
 				case 0x02:	// Relative
-					instManLocked->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(idx, SequenceType::RelativeSequence);
 					break;
 				default:
 					throw FileCorruptionError(FileType::Mod, csr);
@@ -1366,28 +1346,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (l == 0)
-						instManLocked->setPitchADPCMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setPitchADPCMSequenceData(idx, 0, data);
 					else
-						instManLocked->addPitchADPCMSequenceCommand(idx, data, 0);
+						instManLocked->addPitchADPCMSequenceData(idx, data);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setPitchADPCMLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addPitchADPCMLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1395,8 +1372,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setPitchADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setPitchADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1404,10 +1381,10 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// Absolute
-					instManLocked->setPitchADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setPitchADPCMType(idx, SequenceType::AbsoluteSequence);
 					break;
 				case 0x02:	// Relative
-					instManLocked->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setPitchADPCMType(idx, SequenceType::RelativeSequence);
 					break;
 				default:
 					throw FileCorruptionError(FileType::Mod, csr);
@@ -1709,7 +1686,7 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 	ctr.appendString("INSTRMNT");
 	size_t instOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument section offset
-	std::vector<int> instIdcs = instManLocked->getEntriedInstrumentIndices();
+	std::vector<int> instIdcs = instManLocked->getInstrumentIndices();
 	ctr.appendUint8(static_cast<uint8_t>(instIdcs.size()));
 	for (auto& idx : instIdcs) {
 		if (std::shared_ptr<AbstractInstrument> inst = instManLocked->getInstrumentSharedPtr(idx)) {
@@ -1879,32 +1856,32 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 				ctr.appendUint16(0);	// Dummy offset
 				auto seq = instManLocked->getOperatorSequenceFMSequence(FM_OPSEQ_PARAMS[i], idx);
 				ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-				for (auto& com : seq) {
-					ctr.appendUint16(static_cast<uint16_t>(com.type));
+				for (auto& unit : seq) {
+					ctr.appendUint16(static_cast<uint16_t>(unit.data));
 				}
-				auto loop = instManLocked->getOperatorSequenceFMLoops(FM_OPSEQ_PARAMS[i], idx);
-				ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-				for (auto& l : loop) {
-					ctr.appendUint16(static_cast<uint16_t>(l.begin));
-					ctr.appendUint16(static_cast<uint16_t>(l.end));
-					ctr.appendUint8(static_cast<uint8_t>(l.times));
+				auto loops = instManLocked->getOperatorSequenceFMLoopRoot(FM_OPSEQ_PARAMS[i], idx).getAllLoops();
+				ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+				for (auto& loop : loops) {
+					ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+					ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+					ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 				}
 				auto release = instManLocked->getOperatorSequenceFMRelease(FM_OPSEQ_PARAMS[i], idx);
-				switch (release.type) {
-				case ReleaseType::NoRelease:
+				switch (release.getType()) {
+				case InstrumentSequenceRelease::NoRelease:
 					ctr.appendUint8(0x00);
 					break;
-				case ReleaseType::FixedRelease:
+				case InstrumentSequenceRelease::FixedRelease:
 					ctr.appendUint8(0x01);
-					ctr.appendUint16(static_cast<uint16_t>(release.begin));
+					ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 					break;
-				case ReleaseType::AbsoluteRelease:
+				case InstrumentSequenceRelease::AbsoluteRelease:
 					ctr.appendUint8(0x02);
-					ctr.appendUint16(static_cast<uint16_t>(release.begin));
+					ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 					break;
-				case ReleaseType::RelativeRelease:
+				case InstrumentSequenceRelease::RelativeRelease:
 					ctr.appendUint8(0x03);
-					ctr.appendUint16(static_cast<uint16_t>(release.begin));
+					ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 					break;
 				}
 				ctr.appendUint8(0);	// Skip sequence type
@@ -1924,39 +1901,39 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getArpeggioFMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getArpeggioFMLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getArpeggioFMLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getArpeggioFMRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			switch (instManLocked->getArpeggioFMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -1974,38 +1951,38 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getPitchFMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getPitchFMLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getPitchFMLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getPitchFMRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			switch (instManLocked->getPitchFMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -2023,34 +2000,34 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getWaveformSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(static_cast<int32_t>(unit.subdata));
 			}
-			auto loop = instManLocked->getWaveformSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getWaveformSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getWaveformSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -2069,33 +2046,33 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getToneNoiseSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getToneNoiseSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getToneNoiseSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getToneNoiseSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -2114,35 +2091,35 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getEnvelopeSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(static_cast<int32_t>(unit.subdata));
 			}
-			auto loop = instManLocked->getEnvelopeSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getEnvelopeSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getEnvelopeSSGRelease(idx);
 
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -2161,39 +2138,39 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getArpeggioSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getArpeggioSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getArpeggioSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getArpeggioSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			switch (instManLocked->getArpeggioSSGType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -2211,38 +2188,38 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getPitchSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getPitchSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getPitchSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getPitchSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			switch (instManLocked->getPitchSSGType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -2279,35 +2256,35 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getEnvelopeADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(0);	// Dummy set　for past format
 			}
-			auto loop = instManLocked->getEnvelopeADPCMLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getEnvelopeADPCMLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getEnvelopeADPCMRelease(idx);
 
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -2326,39 +2303,39 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getArpeggioADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getArpeggioADPCMLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getArpeggioADPCMLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getArpeggioADPCMRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			switch (instManLocked->getArpeggioADPCMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -2376,38 +2353,38 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getPitchADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instManLocked->getPitchADPCMLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getPitchADPCMLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getPitchADPCMRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			switch (instManLocked->getPitchADPCMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,46 +24,34 @@
  */
 
 #include "effect_iterator.hpp"
-#include "calc_pitch.hpp"
+#include "note.hpp"
 #include <cstddef>
 
+namespace
+{
+const InstrumentSequenceBaseUnit ARP_CENTER(Note::DEFAULT_NOTE_NUM);
+}
+
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
-	: pos_(2),
+	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(2),
 	  started_(false),
-	  second_(second + 48),
-	  third_(third + 48)
+	  second_(second + ARP_CENTER.data),
+	  third_(third + ARP_CENTER.data)
 {
 }
 
-int ArpeggioEffectIterator::getPosition() const
-{
-	return pos_;
-}
-
-int ArpeggioEffectIterator::getSequenceType() const
-{
-	return 0;
-}
-
-int ArpeggioEffectIterator::getCommandType() const
+InstrumentSequenceBaseUnit ArpeggioEffectIterator::data() const noexcept
 {
 	switch (pos_) {
-	case 0:	return 48;
+	case 0:	return ARP_CENTER;
 	case 1:	return second_;
 	case 2:	return third_;
-	default:	return -1;
+	default:	return InstrumentSequenceBaseUnit();
 	}
 }
 
-int ArpeggioEffectIterator::getCommandData() const
+int ArpeggioEffectIterator::next()
 {
-	return -1;
-}
-
-int ArpeggioEffectIterator::next(bool isReleaseBegin)
-{
-	(void)isReleaseBegin;
-
 	if (started_) {
 		pos_ = (pos_ + 1) % 3;
 	}
@@ -83,53 +71,35 @@ int ArpeggioEffectIterator::front()
 
 int ArpeggioEffectIterator::end()
 {
-	pos_ = -1;
+	pos_ = END_SEQ_POS;
 	started_ = false;
-	return -1;
+	return END_SEQ_POS;
 }
 
-/****************************************/
 WavingEffectIterator::WavingEffectIterator(int period, int depth)
 	: started_(false)
 {
 	for (int i = 0; i <= period; ++i) {
-		seq_.push_back(i * depth);
+		seq_.emplace_back(i * depth);
 	}
 	for (size_t i = static_cast<size_t>(period - 1); i > 0; --i) {
 		seq_.push_back(seq_.at(i));
 	}
 	size_t p2 = static_cast<size_t>(period) << 1;
 	for (size_t i = 0; i < p2; ++i) {
-		seq_.push_back(-seq_.at(i));
+		seq_.emplace_back(-seq_.at(i).data);
 	}
 
 	pos_ = static_cast<int>(seq_.size()) - 1;
 }
 
-int WavingEffectIterator::getPosition() const
+InstrumentSequenceBaseUnit WavingEffectIterator::data() const
 {
-	return pos_;
+	return (hasEnded() ? InstrumentSequenceBaseUnit() : seq_.at(static_cast<size_t>(pos_)));
 }
 
-int WavingEffectIterator::getSequenceType() const
+int WavingEffectIterator::next()
 {
-	return 0;
-}
-
-int WavingEffectIterator::getCommandType() const
-{
-	return seq_.at(static_cast<size_t>(pos_));
-}
-
-int WavingEffectIterator::getCommandData() const
-{
-	return -1;
-}
-
-int WavingEffectIterator::next(bool isReleaseBegin)
-{
-	(void)isReleaseBegin;
-
 	if (started_) {
 		pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
 	}
@@ -149,61 +119,43 @@ int WavingEffectIterator::front()
 
 int WavingEffectIterator::end()
 {
-	pos_ = -1;
+	pos_ = END_SEQ_POS;
 	started_ = false;
-	return -1;
+	return END_SEQ_POS;
 }
 
-/****************************************/
 NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
-	: started_(false)
+	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0),
+	  started_(false)
 {
-	int d = seminote * calc_pitch::SEMINOTE_PITCH;
+	int d = seminote * Note::SEMINOTE_PITCH;
 	if (speed) {
 		int prev = 0;
 		for (int i = 0; i <= speed; ++i) {
 			int dif = d * i / speed - prev;
-			seq_.push_back(dif);
+			seq_.emplace_back(dif);
 			prev += dif;
 		}
 	}
 	else {
-		seq_.push_back(d);
+		seq_.emplace_back(d);
 	}
-	pos_ = 0;
 }
 
-int NoteSlideEffectIterator::getPosition() const
+InstrumentSequenceBaseUnit NoteSlideEffectIterator::data() const
 {
-	return pos_;
+	return (hasEnded() ? InstrumentSequenceBaseUnit() : seq_.at(static_cast<size_t>(pos_)));
 }
 
-int NoteSlideEffectIterator::getSequenceType() const
+int NoteSlideEffectIterator::next()
 {
-	return 0;
-}
-
-int NoteSlideEffectIterator::getCommandType() const
-{
-	return seq_.at(static_cast<size_t>(pos_));
-}
-
-int NoteSlideEffectIterator::getCommandData() const
-{
-	return -1;
-}
-
-int NoteSlideEffectIterator::next(bool isReleaseBegin)
-{
-	(void)isReleaseBegin;
-
-	if (started_) {
-		return (++pos_ < static_cast<int>(seq_.size())) ? pos_ : -1;
+	if (started_ && !hasEnded()) {
+		if (++pos_ >= static_cast<int>(seq_.size())) pos_ = END_SEQ_POS;
 	}
 	else {
 		started_ = true;
-		return pos_;
 	}
+	return pos_;
 }
 
 int NoteSlideEffectIterator::front()
@@ -215,7 +167,7 @@ int NoteSlideEffectIterator::front()
 
 int NoteSlideEffectIterator::end()
 {
-	pos_ = -1;
+	pos_ = END_SEQ_POS;
 	started_ = false;
-	return -1;
+	return END_SEQ_POS;
 }

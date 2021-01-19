@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,6 @@
 #include "set_volume_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
 #include "effect.hpp"
-#include "misc.hpp"
 
 SetVolumeToStepCommand::SetVolumeToStepCommand(
 		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,

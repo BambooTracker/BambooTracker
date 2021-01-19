@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -71,11 +71,11 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 				// compensate SN76489's envelope step of 2dB to SSG's 3dB
 				if (data > 0) data = 15 - (15 - data) * 2 / 3;
 				csr += 4;
-				if (l == 0) instManLocked->setEnvelopeSSGSequenceCommand(idx, 0, data, 0);
-				else instManLocked->addEnvelopeSSGSequenceCommand(idx, data, 0);
+				if (l == 0) instManLocked->setEnvelopeSSGSequenceData(idx, 0, SSGEnvelopeUnit::makeOnlyDataUnit(data));
+				else instManLocked->addEnvelopeSSGSequenceData(idx, SSGEnvelopeUnit::makeOnlyDataUnit(data));
 			}
 			int8_t loop = ctr.readInt8(csr++);
-			if (loop >= 0) instManLocked->setEnvelopeSSGLoops(idx, {loop}, {envSize - 1}, {1});
+			if (loop >= 0) instManLocked->addEnvelopeSSGLoop(idx,  InstrumentSequenceLoop(loop, envSize - 1));
 		}
 		uint8_t arpSize = ctr.readUint8(csr++);
 		if (arpSize > 0) {
@@ -84,16 +84,16 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 			ssg->setArpeggioEnabled(true);
 			ssg->setArpeggioNumber(idx);
 			uint8_t arpType = ctr.readUint8(csr + arpSize * 4 + 1);
-			if (arpType == 1) instManLocked->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
+			if (arpType == 1) instManLocked->setArpeggioSSGType(idx, SequenceType::FixedSequence);
 			for (uint8_t l = 0; l < arpSize; ++l) {
 				int data = ctr.readInt32(csr) + 36;
 				csr += 4;
 				if (arpType == 1) data -= 24;
-				if (l == 0) instManLocked->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
-				else instManLocked->addArpeggioSSGSequenceCommand(idx, data, 0);
+				if (l == 0) instManLocked->setArpeggioSSGSequenceData(idx, 0, data);
+				else instManLocked->addArpeggioSSGSequenceData(idx, data);
 			}
 			int8_t loop = ctr.readInt8(csr++);
-			if (loop >= 0) instManLocked->setArpeggioSSGLoops(idx, {loop}, {arpSize - 1}, {1});
+			if (loop >= 0) instManLocked->addArpeggioSSGLoop(idx, InstrumentSequenceLoop(loop, arpSize - 1));
 		}
 		break;
 	}

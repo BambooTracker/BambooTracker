@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,18 +28,21 @@
 #include <numeric>
 #include <QSettings>
 #include <QStringList>
+#include "song.hpp"
 
+namespace io
+{
+namespace
+{
 // config path (*nix): ~/.config/<ORGANIZATION_>/<FILE_>.ini
-const QString TrackVisibilityMemoryHandler::ORGANIZATION_ = "BambooTracker";
-const QString TrackVisibilityMemoryHandler::FILE_ = "TrackVisibility";
+const QString ORG_NAME = "BambooTracker";
+const QString FILE_NAME = "TrackVisibility";
+}
 
-TrackVisibilityMemoryHandler::TrackVisibilityMemoryHandler() {}
-
-bool TrackVisibilityMemoryHandler::saveTrackVisibilityMemory(
-		const SongType type, const std::vector<int>& visTracks)
+bool saveTrackVisibilityMemory(const SongType type, const std::vector<int>& visTracks)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORGANIZATION_, FILE_);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, FILE_NAME);
 
 		int tid;
 		switch (type) {
@@ -55,16 +58,16 @@ bool TrackVisibilityMemoryHandler::saveTrackVisibilityMemory(
 		settings.setValue("visTracks", str);
 
 		return true;
-	} catch (...) {
+	}
+	catch (...) {
 		return false;
 	}
 }
 
-bool TrackVisibilityMemoryHandler::loadTrackVisibilityMemory(
-		SongType& type, std::vector<int>& visTracks)
+bool loadTrackVisibilityMemory(SongType& type, std::vector<int>& visTracks)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORGANIZATION_, FILE_);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, FILE_NAME);
 
 		if (!settings.contains("type")) return false;
 		switch (settings.value("type", -1).toInt()) {
@@ -89,7 +92,9 @@ bool TrackVisibilityMemoryHandler::loadTrackVisibilityMemory(
 		visTracks.swap(tl);
 
 		return true;
-	} catch (...) {
+	}
+	catch (...) {
 		return false;
 	}
+}
 }

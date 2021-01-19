@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <utility>
 #include <stdexcept>
+#include "bamboo_tracker_defs.hpp"
+#include "utils.hpp"
 
 Bookmark::Bookmark(const std::string& argname, int argorder, int argstep)
 	: name(argname), order(argorder), step(argstep)
@@ -187,9 +189,9 @@ void Song::swapOrder(int a, int b)
 	}
 }
 
-std::unordered_set<int> Song::getRegisteredInstruments() const
+std::set<int> Song::getRegisteredInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (const Track& track : tracks_) {
 		auto&& subset = track.getRegisteredInstruments();
 		std::copy(subset.begin(), subset.end(), std::inserter(set, set.end()));
@@ -214,11 +216,11 @@ void Song::transpose(int seminotes, const std::vector<int>& excludeInsts)
 
 void Song::swapTracks(int track1, int track2)
 {
-	auto it1 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+	auto it1 = utils::findIf(tracks_, [&](const Track& t) {
 		return t.getAttribute().number == track1;
 	});
 	if (it1 == tracks_.end()) throw std::invalid_argument("Invalid track number");
-	auto it2 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+	auto it2 = utils::findIf(tracks_, [&](const Track& t) {
 		return t.getAttribute().number == track2;
 	});
 	if (it2 == tracks_.end()) throw std::invalid_argument("Invalid track number");

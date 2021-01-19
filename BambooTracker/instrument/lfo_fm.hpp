@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,19 +25,23 @@
 
 #pragma once
 
+#include <unordered_map>
 #include <memory>
 #include "abstract_instrument_property.hpp"
+#include "enum_hash.hpp"
 
-enum class FMLFOParameter;
-
+enum class FMLFOParameter
+{
+	FREQ, AMS, PMS, Count,
+	AM1, AM2, AM3, AM4
+};
 
 class LFOFM : public AbstractInstrumentProperty
 {
 public:
 	explicit LFOFM(int n);
-	LFOFM(const LFOFM& other);
 
-	friend bool operator==(const LFOFM& a, const LFOFM& b);
+	friend bool operator==(const LFOFM& a, const LFOFM& b) { return a.params_ == b.params_; }
 	friend bool operator!=(const LFOFM& a, const LFOFM& b) { return !(a == b); }
 
 	std::unique_ptr<LFOFM> clone();
@@ -49,21 +53,5 @@ public:
 	void clearParameters() override;
 
 private:
-	int freq_;
-	int pms_;
-	int ams_;
-	int amOp_[4];
-	int cnt_;
-
-	static constexpr int DEF_FREQ_ = 0;
-	static constexpr int DEF_PMS_ = 0;
-	static constexpr int DEF_AMS_ = 0;
-	static constexpr int DEF_AM_OP_[4] = { 0, 0, 0, 0 };
-	static constexpr int DEF_CNT_ = 0;
-};
-
-enum class FMLFOParameter
-{
-	FREQ, AMS, PMS, Count,
-	AM1, AM2, AM3, AM4
+	std::unordered_map<FMLFOParameter, int> params_;
 };

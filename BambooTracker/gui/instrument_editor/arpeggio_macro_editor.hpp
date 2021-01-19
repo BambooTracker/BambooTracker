@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,8 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef ARPEGGIOMACROEDITOR_HPP
-#define ARPEGGIOMACROEDITOR_HPP
+#ifndef ARPEGGIO_MACRO_EDITOR_HPP
+#define ARPEGGIO_MACRO_EDITOR_HPP
 
 #include "visualized_instrument_macro_editor.hpp"
 #include <QString>
@@ -36,16 +36,13 @@ class ArpeggioMacroEditor final : public VisualizedInstrumentMacroEditor
 
 public:
 	ArpeggioMacroEditor(QWidget *parent = nullptr);
-	~ArpeggioMacroEditor() override;
 
 protected:
 	QString convertSequenceDataUnitToMML(Column col) override;
 	bool interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column) override;
 
 private:
-	static const QString TONE_LABS_[96];
-
 	void updateLabels() override;
 };
 
-#endif // ARPEGGIOMACROEDITOR_HPP
+#endif // ARPEGGIO_MACRO_EDITOR_HPP

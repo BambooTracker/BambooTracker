@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,86 +26,95 @@
 #include "configuration_handler.hpp"
 #include <vector>
 #include <unordered_map>
+#include <QString>
+#include <QSettings>
+#include "configuration.hpp"
 #include "jamming.hpp"
-#include"enum_hash.hpp"
+#include "enum_hash.hpp"
+#include "gui/gui_utils.hpp"
+#include "utils.hpp"
 
+namespace io
+{
+namespace
+{
 // config path (*nix): ~/.config/<organization>/<application>.ini
-const QString ConfigurationHandler::ORGANIZATION_ = "BambooTracker";
-const QString ConfigurationHandler::APPLICATION_ = "BambooTracker";
+const QString ORG_NAME = "BambooTracker";
+const QString APP_NAME = "BambooTracker";
 
-const std::unordered_map<Configuration::ShortcutAction, QString> ConfigurationHandler::SHORTCUTS_NAME_MAP_ = {
-	{ Configuration::KeyOff, "keyOff" },
-	{ Configuration::OctaveUp, "octaveUp" },
-	{ Configuration::OctaveDown, "octaveDown" },
-	{ Configuration::EchoBuffer, "echoBuffer" },
-	{ Configuration::PlayAndStop, "playAndStop" },
-	{ Configuration::Play, "play" },
-	{ Configuration::PlayFromStart, "playFromStart" },
-	{ Configuration::PlayPattern, "playPattern" },
-	{ Configuration::PlayFromCursor, "playFromCursor" },
-	{ Configuration::PlayFromMarker, "playFromMarker" },
-	{ Configuration::PlayStep, "playStep" },
-	{ Configuration::Stop, "stop" },
-	{ Configuration::FocusOnPattern, "ocusOnPattern" },
-	{ Configuration::FocusOnOrder, "focusOnOrder" },
-	{ Configuration::FocusOnInstrument, "focusOnInstrument" },
-	{ Configuration::ToggleEditJam, "toggleEditJam" },
-	{ Configuration::SetMarker, "setMarker" },
-	{ Configuration::PasteMix, "pasteMix" },
-	{ Configuration::PasteOverwrite, "pasteOverwrite" },
-	{ Configuration::PasteInsert, "pasteInsert" },
-	{ Configuration::SelectAll, "selectAll" },
-	{ Configuration::Deselect, "deselect" },
-	{ Configuration::SelectRow, "selectRow" },
-	{ Configuration::SelectColumn, "selectColumn" },
-	{ Configuration::SelectPattern, "selectPattern" },
-	{ Configuration::SelectOrder, "selectOrder" },
-	{ Configuration::GoToStep, "goToStep" },
-	{ Configuration::ToggleTrack, "toggleTrack" },
-	{ Configuration::SoloTrack, "soloTrack" },
-	{ Configuration::Interpolate, "interpolate" },
-	{ Configuration::Reverse, "reverse" },
-	{ Configuration::GoToPrevOrder, "goToPrevOrder" },
-	{ Configuration::GoToNextOrder, "goToNextOrder" },
-	{ Configuration::ToggleBookmark, "toggleBookmark" },
-	{ Configuration::PrevBookmark, "prevBookmark" },
-	{ Configuration::NextBookmark, "nextBookmark" },
-	{ Configuration::DecreaseNote, "decreaseNote" },
-	{ Configuration::IncreaseNote, "increaseNote" },
-	{ Configuration::DecreaseOctave, "decreaseOctave" },
-	{ Configuration::IncreaseOctave, "increaseOctave" },
-	{ Configuration::PrevInstrument, "prevInstrument" },
-	{ Configuration::NextInstrument, "nextInstrument" },
-	{ Configuration::MaskInstrument, "maskInstrument" },
-	{ Configuration::MaskVolume, "maskVolume" },
-	{ Configuration::EditInstrument, "editInstrument" },
-	{ Configuration::FollowMode, "followMode" },
-	{ Configuration::DuplicateOrder, "duplicateOrder" },
-	{ Configuration::ClonePatterns, "clonePatterns" },
-	{ Configuration::CloneOrder, "cloneOrder" },
-	{ Configuration::ReplaceInstrument, "replaceInstrument" },
-	{ Configuration::ExpandPattern, "expandPattern" },
-	{ Configuration::ShrinkPattern, "shrinkPattern" },
-	{ Configuration::FineDecreaseValues, "fineDecreaseValues" },
-	{ Configuration::FineIncreaseValues, "fineIncreaseValues" },
-	{ Configuration::CoarseDecreaseValues, "coarseDecreaseValues" },
-	{ Configuration::CoarseIncreaseValuse, "coarseIncreaseValuse" },
-	{ Configuration::ExpandEffect, "expandEffect" },
-	{ Configuration::ShrinkEffect, "shrinkEffect" },
-	{ Configuration::PrevHighlighted, "prevHighlightedStep" },
-	{ Configuration::NextHighlighted, "nextHighlightedStep" },
-	{ Configuration::IncreasePatternSize, "incPtnSize" },
-	{ Configuration::DecreasePatternSize, "decPtnSize" },
-	{ Configuration::IncreaseEditStep, "incEditStep" },
-	{ Configuration::DecreaseEditStep, "decEditStep" },
-	{ Configuration::DisplayEffectList, "dispEffectList" },
-	{ Configuration::PreviousSong, "prevSong" },
-	{ Configuration::NextSong, "nextSong" },
-	{ Configuration::JamVolumeUp, "jamVolumeUp" },
-	{ Configuration::JamVolumeDown, "jamVolumeDown" }
+const std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP = {
+	{ Configuration::ShortcutAction::KeyOff, "keyOff" },
+	{ Configuration::ShortcutAction::OctaveUp, "octaveUp" },
+	{ Configuration::ShortcutAction::OctaveDown, "octaveDown" },
+	{ Configuration::ShortcutAction::EchoBuffer, "echoBuffer" },
+	{ Configuration::ShortcutAction::PlayAndStop, "playAndStop" },
+	{ Configuration::ShortcutAction::Play, "play" },
+	{ Configuration::ShortcutAction::PlayFromStart, "playFromStart" },
+	{ Configuration::ShortcutAction::PlayPattern, "playPattern" },
+	{ Configuration::ShortcutAction::PlayFromCursor, "playFromCursor" },
+	{ Configuration::ShortcutAction::PlayFromMarker, "playFromMarker" },
+	{ Configuration::ShortcutAction::PlayStep, "playStep" },
+	{ Configuration::ShortcutAction::Stop, "stop" },
+	{ Configuration::ShortcutAction::FocusOnPattern, "ocusOnPattern" },
+	{ Configuration::ShortcutAction::FocusOnOrder, "focusOnOrder" },
+	{ Configuration::ShortcutAction::FocusOnInstrument, "focusOnInstrument" },
+	{ Configuration::ShortcutAction::ToggleEditJam, "toggleEditJam" },
+	{ Configuration::ShortcutAction::SetMarker, "setMarker" },
+	{ Configuration::ShortcutAction::PasteMix, "pasteMix" },
+	{ Configuration::ShortcutAction::PasteOverwrite, "pasteOverwrite" },
+	{ Configuration::ShortcutAction::PasteInsert, "pasteInsert" },
+	{ Configuration::ShortcutAction::SelectAll, "selectAll" },
+	{ Configuration::ShortcutAction::Deselect, "deselect" },
+	{ Configuration::ShortcutAction::SelectRow, "selectRow" },
+	{ Configuration::ShortcutAction::SelectColumn, "selectColumn" },
+	{ Configuration::ShortcutAction::SelectPattern, "selectPattern" },
+	{ Configuration::ShortcutAction::SelectOrder, "selectOrder" },
+	{ Configuration::ShortcutAction::GoToStep, "goToStep" },
+	{ Configuration::ShortcutAction::ToggleTrack, "toggleTrack" },
+	{ Configuration::ShortcutAction::SoloTrack, "soloTrack" },
+	{ Configuration::ShortcutAction::Interpolate, "interpolate" },
+	{ Configuration::ShortcutAction::Reverse, "reverse" },
+	{ Configuration::ShortcutAction::GoToPrevOrder, "goToPrevOrder" },
+	{ Configuration::ShortcutAction::GoToNextOrder, "goToNextOrder" },
+	{ Configuration::ShortcutAction::ToggleBookmark, "toggleBookmark" },
+	{ Configuration::ShortcutAction::PrevBookmark, "prevBookmark" },
+	{ Configuration::ShortcutAction::NextBookmark, "nextBookmark" },
+	{ Configuration::ShortcutAction::DecreaseNote, "decreaseNote" },
+	{ Configuration::ShortcutAction::IncreaseNote, "increaseNote" },
+	{ Configuration::ShortcutAction::DecreaseOctave, "decreaseOctave" },
+	{ Configuration::ShortcutAction::IncreaseOctave, "increaseOctave" },
+	{ Configuration::ShortcutAction::PrevInstrument, "prevInstrument" },
+	{ Configuration::ShortcutAction::NextInstrument, "nextInstrument" },
+	{ Configuration::ShortcutAction::MaskInstrument, "maskInstrument" },
+	{ Configuration::ShortcutAction::MaskVolume, "maskVolume" },
+	{ Configuration::ShortcutAction::EditInstrument, "editInstrument" },
+	{ Configuration::ShortcutAction::FollowMode, "followMode" },
+	{ Configuration::ShortcutAction::DuplicateOrder, "duplicateOrder" },
+	{ Configuration::ShortcutAction::ClonePatterns, "clonePatterns" },
+	{ Configuration::ShortcutAction::CloneOrder, "cloneOrder" },
+	{ Configuration::ShortcutAction::ReplaceInstrument, "replaceInstrument" },
+	{ Configuration::ShortcutAction::ExpandPattern, "expandPattern" },
+	{ Configuration::ShortcutAction::ShrinkPattern, "shrinkPattern" },
+	{ Configuration::ShortcutAction::FineDecreaseValues, "fineDecreaseValues" },
+	{ Configuration::ShortcutAction::FineIncreaseValues, "fineIncreaseValues" },
+	{ Configuration::ShortcutAction::CoarseDecreaseValues, "coarseDecreaseValues" },
+	{ Configuration::ShortcutAction::CoarseIncreaseValuse, "coarseIncreaseValuse" },
+	{ Configuration::ShortcutAction::ExpandEffect, "expandEffect" },
+	{ Configuration::ShortcutAction::ShrinkEffect, "shrinkEffect" },
+	{ Configuration::ShortcutAction::PrevHighlighted, "prevHighlightedStep" },
+	{ Configuration::ShortcutAction::NextHighlighted, "nextHighlightedStep" },
+	{ Configuration::ShortcutAction::IncreasePatternSize, "incPtnSize" },
+	{ Configuration::ShortcutAction::DecreasePatternSize, "decPtnSize" },
+	{ Configuration::ShortcutAction::IncreaseEditStep, "incEditStep" },
+	{ Configuration::ShortcutAction::DecreaseEditStep, "decEditStep" },
+	{ Configuration::ShortcutAction::DisplayEffectList, "dispEffectList" },
+	{ Configuration::ShortcutAction::PreviousSong, "prevSong" },
+	{ Configuration::ShortcutAction::NextSong, "nextSong" },
+	{ Configuration::ShortcutAction::JamVolumeUp, "jamVolumeUp" },
+	{ Configuration::ShortcutAction::JamVolumeDown, "jamVolumeDown" }
 };
 
-const std::unordered_map<JamKey, QString> ConfigurationHandler::JAM_KEY_NAME_MAP_ = {
+const std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP = {
 	{JamKey::LowC,     "lowC"},
 	{JamKey::LowCS,    "lowCS"},
 	{JamKey::LowD,     "lowD"},
@@ -138,13 +147,12 @@ const std::unordered_map<JamKey, QString> ConfigurationHandler::JAM_KEY_NAME_MAP
 	{JamKey::HighCS2, "highHighCS"},
 	{JamKey::HighD2,  "highHighD"}
 };
+}
 
-ConfigurationHandler::ConfigurationHandler() {}
-
-bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config)
+bool saveConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ConfigurationHandler::ORGANIZATION_, ConfigurationHandler::APPLICATION_);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, APP_NAME);
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //
@@ -172,15 +180,15 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("visibleToolbar",				configLocked->getVisibleToolbar());
 		settings.setValue("visibleStatusBar",			configLocked->getVisibleStatusBar());
 		settings.setValue("visibleWaveView",			configLocked->getVisibleWaveView());
-		settings.setValue("pasteMode",					configLocked->getPasteMode());
+		settings.setValue("pasteMode",					static_cast<int>(configLocked->getPasteMode()));
 		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
-		settings.setValue("mainToolbarPosition",		mainTbConfig.getPosition());
+		settings.setValue("mainToolbarPosition",		static_cast<int>(mainTbConfig.getPosition()));
 		settings.setValue("mainToolbarNumber",			mainTbConfig.getNumber());
 		settings.setValue("hasBreakBeforeMainToolbar",	mainTbConfig.hasBreakBefore());
 		settings.setValue("mainToolbarX",				mainTbConfig.getX());
 		settings.setValue("mainToolbarY",				mainTbConfig.getY());
 		auto& subTbConfig = configLocked->getSubToolbarConfiguration();
-		settings.setValue("subToolbarPosition",			subTbConfig.getPosition());
+		settings.setValue("subToolbarPosition",			static_cast<int>(subTbConfig.getPosition()));
 		settings.setValue("subToolbarNumber",			subTbConfig.getNumber());
 		settings.setValue("hasBreakBeforesubToolbar",	subTbConfig.hasBreakBefore());
 		settings.setValue("subToolbarX",				subTbConfig.getX());
@@ -226,11 +234,11 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		// Keys
 		settings.beginGroup("Keys");
 		for (const auto& pair : configLocked->getShortcuts()) {
-			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP_.at(pair.first), gui_utils::utf8ToQString(pair.second));
+			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP.at(pair.first), gui_utils::utf8ToQString(pair.second));
 		}
 		settings.setValue("noteEntryLayout", static_cast<int>(configLocked->getNoteEntryLayout()));
 		for (const auto& pair : configLocked->getCustomLayoutKeys()) {
-			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP_.at(pair.second), gui_utils::utf8ToQString(pair.first));
+			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP.at(pair.second), gui_utils::utf8ToQString(pair.first));
 		}
 		settings.endGroup();
 
@@ -290,10 +298,10 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 	}
 }
 
-bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config)
+bool loadConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ConfigurationHandler::ORGANIZATION_, ConfigurationHandler::APPLICATION_);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, APP_NAME);
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //
@@ -321,15 +329,15 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setVisibleToolbar(settings.value("visibleToolbar", configLocked->getVisibleToolbar()).toBool());
 		configLocked->setVisibleStatusBar(settings.value("visibleStatusBar", configLocked->getVisibleStatusBar()).toBool());
 		configLocked->setVisibleWaveView(settings.value("visibleWaveView", configLocked->getVisibleWaveView()).toBool());
-		configLocked->setPasteMode(static_cast<Configuration::PasteMode>(settings.value("pasteMode", configLocked->getPasteMode()).toInt()));
+		configLocked->setPasteMode(static_cast<Configuration::PasteMode>(settings.value("pasteMode", static_cast<int>(configLocked->getPasteMode())).toInt()));
 		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
-		mainTbConfig.setPosition(static_cast<Configuration::ToolbarConfiguration::ToolbarPosition>(settings.value("mainToolbarPosition", mainTbConfig.getPosition()).toInt()));
+		mainTbConfig.setPosition(static_cast<Configuration::ToolbarPosition>(settings.value("mainToolbarPosition", static_cast<int>(mainTbConfig.getPosition())).toInt()));
 		mainTbConfig.setNumber(settings.value("mainToolbarNumber", mainTbConfig.getNumber()).toInt());
 		mainTbConfig.setBreakBefore(settings.value("hasBreakBeforeMainToolbar", mainTbConfig.hasBreakBefore()).toBool());
 		mainTbConfig.setX(settings.value("mainToolbarX", mainTbConfig.getX()).toInt());
 		mainTbConfig.setY(settings.value("mainToolbarY", mainTbConfig.getY()).toInt());
 		auto& subTbConfig = configLocked->getSubToolbarConfiguration();
-		subTbConfig.setPosition(static_cast<Configuration::ToolbarConfiguration::ToolbarPosition>(settings.value("subToolbarPosition", subTbConfig.getPosition()).toInt()));
+		subTbConfig.setPosition(static_cast<Configuration::ToolbarPosition>(settings.value("subToolbarPosition", static_cast<int>(subTbConfig.getPosition())).toInt()));
 		subTbConfig.setNumber(settings.value("subToolbarNumber", subTbConfig.getNumber()).toInt());
 		subTbConfig.setBreakBefore(settings.value("hasBreakBeforesubToolbar", subTbConfig.hasBreakBefore()).toBool());
 		subTbConfig.setX(settings.value("subToolbarX", subTbConfig.getX()).toInt());
@@ -387,7 +395,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		// Keys
 		settings.beginGroup("Keys");
 		std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
-		for (const auto& pair : SHORTCUTS_NAME_MAP_) {
+		for (const auto& pair : SHORTCUTS_NAME_MAP) {
 			std::string def = configLocked->getShortcuts().at(pair.first);
 			shortcuts[pair.first] = settings.value("shortcut_" + pair.second, gui_utils::utf8ToQString(def)).toString().toUtf8().toStdString();
 		}
@@ -396,12 +404,11 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 											 settings.value("noteEntryLayout",
 															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
 		std::unordered_map<std::string, JamKey> customLayoutNewKeys;
-		for (const auto& pair : JAM_KEY_NAME_MAP_) {
+		for (const auto& pair : JAM_KEY_NAME_MAP) {
 			JamKey currentlyWantedJamKey = pair.first;
 			customLayoutNewKeys[
 					settings.value("customLayout_" + pair.second,
-								   QString::fromStdString((*std::find_if (configLocked->mappingLayouts.at(Configuration::QWERTY).begin(),
-																		  configLocked->mappingLayouts.at(Configuration::QWERTY).end(),
+								   QString::fromStdString((*utils::findIf(configLocked->mappingLayouts.at(Configuration::KeyboardLayout::QWERTY),
 																		  [currentlyWantedJamKey](const std::pair<std::string, JamKey>& t) -> bool {
 				return (t.second) == currentlyWantedJamKey;})
 														   ).first)).toString().toUtf8().toStdString()]
@@ -472,4 +479,5 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 	} catch (...) {
 		return false;
 	}
+}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,7 +25,8 @@
 
 #include "transpose_note_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
-#include "misc.hpp"
+#include "note.hpp"
+#include "utils.hpp"
 
 TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(
 		std::weak_ptr<Module> mod, int songNum, int beginTrack,
@@ -59,7 +60,7 @@ void TransposeNoteInPatternCommand::redo()
 			Step& st = command_utils::getStep(sng, track, order_, step);
 			int n = st.getNoteNumber();
 			if (st.hasGeneralNote()) {
-				st.setNoteNumber(clamp(n + seminote_, 0, 95));
+				st.setNoteNumber(utils::clamp(n + seminote_, 0, Note::NOTE_NUMBER_RANGE - 1));
 			}
 		}
 	}

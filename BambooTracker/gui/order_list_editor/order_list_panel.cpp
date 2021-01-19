@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,16 +36,16 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QAction>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
 #include <QPoint>
 #include <QString>
 #include <QIcon>
-#include "gui/event_guard.hpp"
-#include "gui/command/order/order_commands_qt.hpp"
 #include "playback.hpp"
 #include "track.hpp"
+#include "bamboo_tracker_defs.hpp"
+#include "gui/event_guard.hpp"
+#include "gui/command/order/order_commands_qt.hpp"
 #include "gui/gui_utils.hpp"
+#include "utils.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -851,7 +851,7 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJ
 	}
 
 	if (trackChanged) {	// Update horizontal position
-		int trackVisIdx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), bt_->getCurrentTrackAttribute().number));
+		int trackVisIdx = std::distance(visTracks_.begin(), utils::find(visTracks_, bt_->getCurrentTrackAttribute().number));
 		int prevTrackIdx = std::exchange(curPos_.trackVisIdx, trackVisIdx);
 		if (prevTrackIdx < curPos_.trackVisIdx) {
 			while (calculateColumnsWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx) > geometry().width()) {
@@ -1012,28 +1012,18 @@ void OrderListPanel::copySelectedCells()
 void OrderListPanel::pasteCopiedCells(const OrderPosition& startPos)
 {
 	// Analyze text
-	QString str = QApplication::clipboard()->text().remove(QRegularExpression("ORDER_COPY:"));
-	QString hdRe = "^([0-9]+),([0-9]+),";
-	QRegularExpression re(hdRe);
-	QRegularExpressionMatch match = re.match(str);
-	int w = match.captured(1).toInt();
-	size_t h = match.captured(2).toUInt();
-	str.remove(re);
+	QString str = QApplication::clipboard()->text().remove("ORDER_COPY:");
+	QStringList data = str.split(",");
+	if (data.size() < 2) return;
+	size_t w = data[0].toUInt();
+	size_t h = data[1].toUInt();
+	data.erase(data.begin(), data.begin() + 2);
+	if (static_cast<int>(w * h) != data.size()) return;
 
-	std::vector<std::vector<std::string>> cells;
-	re = QRegularExpression("^([^,]+),");
+	std::vector<std::vector<std::string>> cells(h, std::vector<std::string>(w));
 	for (size_t i = 0; i < h; ++i) {
-		cells.emplace_back();
-		for (int j = 0; j < w; ++j) {
-			match = re.match(str);
-			if (match.hasMatch()) {
-				cells.at(i).push_back(match.captured(1).toStdString());
-				str.remove(re);
-			}
-			else {
-				cells.at(i).push_back(str.toStdString());
-				break;
-			}
+		for (size_t j = 0; j < w; ++j) {
+			cells[i][j] = data[i * w + j].toStdString();
 		}
 	}
 
@@ -1115,9 +1105,9 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	paste->setShortcutVisibleInContextMenu(true);
 #endif
 	auto shortcuts = config_->getShortcuts();
-	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
-	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
-	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
+	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DuplicateOrder)));
+	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ClonePatterns)));
+	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CloneOrder)));
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 

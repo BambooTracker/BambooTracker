@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 #include "track.hpp"
 #include <utility>
 #include <algorithm>
-#include <iterator>
+#include "utils.hpp"
 
 namespace
 {
@@ -87,10 +87,10 @@ Pattern& Track::getPatternFromOrderNumber(int num)
 
 int Track::searchFirstUneditedUnusedPattern() const
 {
-	auto it = std::find_if(patterns_.begin(), patterns_.end(), [](const Pattern& pattern) {
+	auto it = utils::findIf(patterns_, [](const Pattern& pattern) {
 		return (!pattern.hasEvent() && !pattern.getUsedCount());
 	});
-	return (it == patterns_.end() ? -1 : std::distance(patterns_.begin(), it));
+	return (it == patterns_.cend() ? -1 : std::distance(patterns_.cbegin(), it));
 }
 
 int Track::clonePattern(int num)
@@ -105,19 +105,15 @@ int Track::clonePattern(int num)
 
 std::vector<int> Track::getEditedPatternIndices() const
 {
-	std::vector<int> list;
-	for (size_t i = 0; i < PATTERN_SIZE; ++i) {
-		if (patterns_[i].hasEvent()) list.push_back(static_cast<int>(i));
-	}
-	return list;
+	return utils::findIndicesIf(patterns_, [](const Pattern& pattern) { return pattern.hasEvent(); });
 }
 
-std::unordered_set<int> Track::getRegisteredInstruments() const
+std::set<int> Track::getRegisteredInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (const Pattern& pattern : patterns_) {
 		auto&& insts = pattern.getRegisteredInstruments();
-		std::copy(insts.begin(), insts.end(), std::inserter(set, set.end()));
+		std::copy(insts.cbegin(), insts.cend(), std::inserter(set, set.end()));
 	}
 	return set;
 }

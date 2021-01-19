@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,13 +25,16 @@
 
 #pragma once
 
+#include <cstddef>
+
 class Module;
 
 class SongLengthCalculator
 {
 public:
 	SongLengthCalculator(Module& mod, int songNum);
-	double calculateBySecond() const;
+	double approximateLengthBySecond() const;
+	void totalStepCount(size_t& introSize, size_t& loopSize) const;
 
 private:
 	Module& mod_;

@@ -31,6 +31,7 @@
 #include <QRegularExpressionMatch>
 #include <QApplication>
 #include <QClipboard>
+#include "utils.hpp"
 
 GrooveSettingsDialog::GrooveSettingsDialog(QWidget *parent) :
 	QDialog(parent),
@@ -197,7 +198,7 @@ void GrooveSettingsDialog::on_expandPushButton_clicked()
 {
 	size_t id = static_cast<size_t>(ui->grooveListWidget->currentRow());
 	auto& ref = seqs_[id];
-	if (std::find(ref.begin(), ref.end(), 1) != ref.end()) return;
+	if (utils::find(ref, 1) != ref.end()) return;
 
 	std::vector<int> seq;
 	for (auto v : ref) {

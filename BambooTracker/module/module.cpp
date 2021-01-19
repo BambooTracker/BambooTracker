@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "module.hpp"
 #include <algorithm>
 #include <iterator>
+#include "utils.hpp"
 
 Module::Module(const std::string& filePath, const std::string& title,
 			   const std::string& author, const std::string& copyright,
@@ -88,9 +89,7 @@ void Module::sortSongs(const std::vector<int>& numbers)
 
 Song& Module::getSong(int num)
 {
-	auto it = std::find_if(songs_.begin(), songs_.end(),
-						   [num](Song& s) { return s.getNumber() == num; });
-	return *it;
+	return *utils::findIf(songs_, [num](Song& s) { return s.getNumber() == num; });;
 }
 
 void Module::addGroove()
@@ -119,9 +118,9 @@ Groove Module::getGroove(int num) const
 	return grooves_.at(static_cast<size_t>(num));
 }
 
-std::unordered_set<int> Module::getRegisterdInstruments() const
+std::set<int> Module::getRegisterdInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (const Song& song : songs_) {
 		auto&& subset = song.getRegisteredInstruments();
 		std::copy(subset.begin(), subset.end(), std::inserter(set, set.end()));

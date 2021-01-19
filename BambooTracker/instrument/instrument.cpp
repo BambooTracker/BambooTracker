@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,32 +24,16 @@
  */
 
 #include "instrument.hpp"
-#include <algorithm>
+#include "instruments_manager.hpp"
+#include "utils.hpp"
 
-AbstractInstrument::AbstractInstrument(int number, std::string name, InstrumentsManager* owner)
+AbstractInstrument::AbstractInstrument(int number, SoundSource src, InstrumentType type, const std::string& name, InstrumentsManager* owner)
 	: owner_(owner),
 	  number_(number),
-	  name_(name)
-{}
-
-int AbstractInstrument::getNumber() const
+	  name_(name),
+	  sndSrc_(src),
+	  instType_(type)
 {
-	return number_;
-}
-
-void AbstractInstrument::setNumber(int n)
-{
-	number_ = n;
-}
-
-std::string AbstractInstrument::getName() const
-{
-	return name_;
-}
-
-void AbstractInstrument::setName(std::string name)
-{
-	name_ = name;
 }
 
 bool AbstractInstrument::isRegisteredWithManager() const
@@ -59,8 +43,8 @@ bool AbstractInstrument::isRegisteredWithManager() const
 
 /****************************************/
 
-InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
-	AbstractInstrument(number, name, owner),
+InstrumentFM::InstrumentFM(int number, const std::string& name, InstrumentsManager* owner) :
+	AbstractInstrument(number, SoundSource::FM, InstrumentType::FM, name, owner),
 	envNum_(0),
 	lfoEnabled_(false),
 	lfoNum_(0)
@@ -182,44 +166,9 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	};
 }
 
-SoundSource InstrumentFM::getSoundSource() const
-{
-	return SoundSource::FM;
-}
-
-InstrumentType InstrumentFM::getType() const
-{
-	return InstrumentType::FM;
-}
-
 AbstractInstrument* InstrumentFM::clone()
 {
-	auto c = new InstrumentFM(number_, name_, owner_);
-	c->setEnvelopeNumber(envNum_);
-	c->setLFOEnabled(lfoEnabled_);
-	c->setLFONumber(lfoNum_);
-	for (auto pair : opSeqEnabled_)	{
-		c->setOperatorSequenceEnabled(pair.first, pair.second);
-		c->setOperatorSequenceNumber(pair.first, opSeqNum_.at(pair.first));
-	}
-	for (auto pair : arpEnabled_) {
-		c->setArpeggioEnabled(pair.first, pair.second);
-		c->setArpeggioNumber(pair.first, arpNum_.at(pair.first));
-		c->setPitchEnabled(pair.first, ptEnabled_.at(pair.first));
-		c->setPitchNumber(pair.first, ptNum_.at(pair.first));
-		c->setEnvelopeResetEnabled(pair.first, envResetEnabled_.at(pair.first));
-	}
-	return c;
-}
-
-void InstrumentFM::setEnvelopeNumber(int n)
-{
-	envNum_ = n;
-}
-
-int InstrumentFM::getEnvelopeNumber() const
-{
-	return envNum_;
+	return new InstrumentFM(*this);
 }
 
 int InstrumentFM::getEnvelopeParameter(FMEnvelopeParameter param) const
@@ -232,39 +181,9 @@ bool InstrumentFM::getOperatorEnabled(int n) const
 	return owner_->getEnvelopeFMOperatorEnabled(envNum_, n);
 }
 
-void InstrumentFM::setLFOEnabled(bool enabled)
-{
-	lfoEnabled_ = enabled;
-}
-
-bool InstrumentFM::getLFOEnabled() const
-{
-	return lfoEnabled_;
-}
-
-void InstrumentFM::setLFONumber(int n)
-{
-	lfoNum_ = n;
-}
-
-int InstrumentFM::getLFONumber() const
-{
-	return lfoNum_;
-}
-
 int InstrumentFM::getLFOParameter(FMLFOParameter param) const
 {
 	return owner_->getLFOFMparameter(lfoNum_, param);
-}
-
-void InstrumentFM::setEnvelopeResetEnabled(FMOperatorType op, bool enabled)
-{
-	envResetEnabled_.at(op) = enabled;
-}
-
-bool InstrumentFM::getEnvelopeResetEnabled(FMOperatorType op) const
-{
-	return envResetEnabled_.at(op);
 }
 
 void InstrumentFM::setOperatorSequenceEnabled(FMEnvelopeParameter param, bool enabled)
@@ -287,22 +206,22 @@ int InstrumentFM::getOperatorSequenceNumber(FMEnvelopeParameter param) const
 	return opSeqNum_.at(param);
 }
 
-std::vector<CommandSequenceUnit> InstrumentFM::getOperatorSequenceSequence(FMEnvelopeParameter param) const
+std::vector<FMOperatorSequenceUnit> InstrumentFM::getOperatorSequenceSequence(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMSequence(param, opSeqNum_.at(param));
 }
 
-std::vector<Loop> InstrumentFM::getOperatorSequenceLoops(FMEnvelopeParameter param) const
+InstrumentSequenceLoopRoot InstrumentFM::getOperatorSequenceLoopRoot(FMEnvelopeParameter param) const
 {
-	return owner_->getOperatorSequenceFMLoops(param, opSeqNum_.at(param));
+	return owner_->getOperatorSequenceFMLoopRoot(param, opSeqNum_.at(param));
 }
 
-Release InstrumentFM::getOperatorSequenceRelease(FMEnvelopeParameter param) const
+InstrumentSequenceRelease InstrumentFM::getOperatorSequenceRelease(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMRelease(param, opSeqNum_.at(param));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const
+FMOperatorSequenceIter InstrumentFM::getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMIterator(param, opSeqNum_.at(param));
 }
@@ -332,22 +251,22 @@ SequenceType InstrumentFM::getArpeggioType(FMOperatorType op) const
 	return owner_->getArpeggioFMType(arpNum_.at(op));
 }
 
-std::vector<CommandSequenceUnit> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
+std::vector<ArpeggioUnit> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMSequence(arpNum_.at(op));
 }
 
-std::vector<Loop> InstrumentFM::getArpeggioLoops(FMOperatorType op) const
+InstrumentSequenceLoopRoot InstrumentFM::getArpeggioLoopRoot(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMLoops(arpNum_.at(op));
+	return owner_->getArpeggioFMLoopRoot(arpNum_.at(op));
 }
 
-Release InstrumentFM::getArpeggioRelease(FMOperatorType op) const
+InstrumentSequenceRelease InstrumentFM::getArpeggioRelease(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMRelease(arpNum_.at(op));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
+ArpeggioIter InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMIterator(arpNum_.at(op));
 }
@@ -377,30 +296,40 @@ SequenceType InstrumentFM::getPitchType(FMOperatorType op) const
 	return owner_->getPitchFMType(ptNum_.at(op));
 }
 
-std::vector<CommandSequenceUnit> InstrumentFM::getPitchSequence(FMOperatorType op) const
+std::vector<PitchUnit> InstrumentFM::getPitchSequence(FMOperatorType op) const
 {
 	return owner_->getPitchFMSequence(ptNum_.at(op));
 }
 
-std::vector<Loop> InstrumentFM::getPitchLoops(FMOperatorType op) const
+InstrumentSequenceLoopRoot InstrumentFM::getPitchLoopRoot(FMOperatorType op) const
 {
-	return owner_->getPitchFMLoops(ptNum_.at(op));
+	return owner_->getPitchFMLoopRoot(ptNum_.at(op));
 }
 
-Release InstrumentFM::getPitchRelease(FMOperatorType op) const
+InstrumentSequenceRelease InstrumentFM::getPitchRelease(FMOperatorType op) const
 {
 	return owner_->getPitchFMRelease(ptNum_.at(op));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
+PitchIter InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
 {
 	return owner_->getPitchFMIterator(ptNum_.at(op));
 }
 
+void InstrumentFM::setEnvelopeResetEnabled(FMOperatorType op, bool enabled)
+{
+	envResetEnabled_.at(op) = enabled;
+}
+
+bool InstrumentFM::getEnvelopeResetEnabled(FMOperatorType op) const
+{
+	return envResetEnabled_.at(op);
+}
+
 /****************************************/
 
-InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, name, owner),
+InstrumentSSG::InstrumentSSG(int number, const std::string& name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::SSG, InstrumentType::SSG, name, owner),
 	  wfEnabled_(false),
 	  wfNum_(0),
 	  tnEnabled_(false),
@@ -414,170 +343,69 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 {
 }
 
-SoundSource InstrumentSSG::getSoundSource() const
-{
-	return SoundSource::SSG;
-}
-
-InstrumentType InstrumentSSG::getType() const
-{
-	return InstrumentType::SSG;
-}
-
 AbstractInstrument* InstrumentSSG::clone()
 {
-	auto c = new InstrumentSSG(number_, name_, owner_);
-	c->setWaveformEnabled(wfEnabled_);
-	c->setWaveformNumber(wfNum_);
-	c->setToneNoiseEnabled(tnEnabled_);
-	c->setToneNoiseNumber(tnNum_);
-	c->setEnvelopeEnabled(envEnabled_);
-	c->setEnvelopeNumber(envNum_);
-	c->setArpeggioEnabled(arpEnabled_);
-	c->setArpeggioNumber(arpNum_);
-	c->setPitchEnabled(ptEnabled_);
-	c->setPitchNumber(ptNum_);
-	return c;
+	return new InstrumentSSG(*this);
 }
 
-void InstrumentSSG::setWaveformEnabled(bool enabled)
-{
-	wfEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getWaveformEnabled() const
-{
-	return wfEnabled_;
-}
-
-void InstrumentSSG::setWaveformNumber(int n)
-{
-	wfNum_ = n;
-}
-
-int InstrumentSSG::getWaveformNumber() const
-{
-	return wfNum_;
-}
-
-std::vector<CommandSequenceUnit> InstrumentSSG::getWaveformSequence() const
+std::vector<SSGWaveformUnit> InstrumentSSG::getWaveformSequence() const
 {
 	return owner_->getWaveformSSGSequence(wfNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getWaveformLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getWaveformLoopRoot() const
 {
-	return owner_->getWaveformSSGLoops(wfNum_);
+	return owner_->getWaveformSSGLoopRoot(wfNum_);
 }
 
-Release InstrumentSSG::getWaveformRelease() const
+InstrumentSequenceRelease InstrumentSSG::getWaveformRelease() const
 {
 	return owner_->getWaveformSSGRelease(wfNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveformSequenceIterator() const
+SSGWaveformIter InstrumentSSG::getWaveformSequenceIterator() const
 {
 	return owner_->getWaveformSSGIterator(wfNum_);
 }
 
-void InstrumentSSG::setToneNoiseEnabled(bool enabled)
-{
-	tnEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getToneNoiseEnabled() const
-{
-	return tnEnabled_;
-}
-
-void InstrumentSSG::setToneNoiseNumber(int n)
-{
-	tnNum_ = n;
-}
-
-int InstrumentSSG::getToneNoiseNumber() const
-{
-	return tnNum_;
-}
-
-std::vector<CommandSequenceUnit> InstrumentSSG::getToneNoiseSequence() const
+std::vector<SSGToneNoiseUnit> InstrumentSSG::getToneNoiseSequence() const
 {
 	return owner_->getToneNoiseSSGSequence(tnNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getToneNoiseLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getToneNoiseLoopRoot() const
 {
-	return owner_->getToneNoiseSSGLoops(tnNum_);
+	return owner_->getToneNoiseSSGLoopRoot(tnNum_);
 }
 
-Release InstrumentSSG::getToneNoiseRelease() const
+InstrumentSequenceRelease InstrumentSSG::getToneNoiseRelease() const
 {
 	return owner_->getToneNoiseSSGRelease(tnNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getToneNoiseSequenceIterator() const
+SSGToneNoiseIter InstrumentSSG::getToneNoiseSequenceIterator() const
 {
 	return owner_->getToneNoiseSSGIterator(tnNum_);
 }
 
-void InstrumentSSG::setEnvelopeEnabled(bool enabled)
-{
-	envEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getEnvelopeEnabled() const
-{
-	return envEnabled_;
-}
-
-void InstrumentSSG::setEnvelopeNumber(int n)
-{
-	envNum_ = n;
-}
-
-int InstrumentSSG::getEnvelopeNumber() const
-{
-	return envNum_;
-}
-
-std::vector<CommandSequenceUnit> InstrumentSSG::getEnvelopeSequence() const
+std::vector<SSGEnvelopeUnit> InstrumentSSG::getEnvelopeSequence() const
 {
 	return owner_->getEnvelopeSSGSequence(envNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getEnvelopeLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getEnvelopeLoopRoot() const
 {
-	return owner_->getEnvelopeSSGLoops(envNum_);
+	return owner_->getEnvelopeSSGLoopRoot(envNum_);
 }
 
-Release InstrumentSSG::getEnvelopeRelease() const
+InstrumentSequenceRelease InstrumentSSG::getEnvelopeRelease() const
 {
 	return owner_->getEnvelopeSSGRelease(envNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getEnvelopeSequenceIterator() const
+SSGEnvelopeIter InstrumentSSG::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeSSGIterator(envNum_);
-}
-
-void InstrumentSSG::setArpeggioEnabled(bool enabled)
-{
-	arpEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getArpeggioEnabled() const
-{
-	return arpEnabled_;
-}
-
-void InstrumentSSG::setArpeggioNumber(int n)
-{
-	arpNum_ = n;
-}
-
-int InstrumentSSG::getArpeggioNumber() const
-{
-	return arpNum_;
 }
 
 SequenceType InstrumentSSG::getArpeggioType() const
@@ -585,44 +413,24 @@ SequenceType InstrumentSSG::getArpeggioType() const
 	return owner_->getArpeggioSSGType(arpNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getArpeggioSequence() const
+std::vector<ArpeggioUnit> InstrumentSSG::getArpeggioSequence() const
 {
 	return owner_->getArpeggioSSGSequence(arpNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getArpeggioLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getArpeggioLoopRoot() const
 {
-	return owner_->getArpeggioSSGLoops(arpNum_);
+	return owner_->getArpeggioSSGLoopRoot(arpNum_);
 }
 
-Release InstrumentSSG::getArpeggioRelease() const
+InstrumentSequenceRelease InstrumentSSG::getArpeggioRelease() const
 {
 	return owner_->getArpeggioSSGRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getArpeggioSequenceIterator() const
+ArpeggioIter InstrumentSSG::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioSSGIterator(arpNum_);
-}
-
-void InstrumentSSG::setPitchEnabled(bool enabled)
-{
-	ptEnabled_ = enabled;
-}
-
-bool InstrumentSSG::getPitchEnabled() const
-{
-	return ptEnabled_;
-}
-
-void InstrumentSSG::setPitchNumber(int n)
-{
-	ptNum_ = n;
-}
-
-int InstrumentSSG::getPitchNumber() const
-{
-	return ptNum_;
 }
 
 SequenceType InstrumentSSG::getPitchType() const
@@ -630,30 +438,30 @@ SequenceType InstrumentSSG::getPitchType() const
 	return owner_->getPitchSSGType(ptNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getPitchSequence() const
+std::vector<PitchUnit> InstrumentSSG::getPitchSequence() const
 {
 	return owner_->getPitchSSGSequence(ptNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getPitchLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getPitchLoopRoot() const
 {
-	return owner_->getPitchSSGLoops(ptNum_);
+	return owner_->getPitchSSGLoopRoot(ptNum_);
 }
 
-Release InstrumentSSG::getPitchRelease() const
+InstrumentSequenceRelease InstrumentSSG::getPitchRelease() const
 {
 	return owner_->getPitchSSGRelease(ptNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getPitchSequenceIterator() const
+PitchIter InstrumentSSG::getPitchSequenceIterator() const
 {
 	return owner_->getPitchSSGIterator(ptNum_);
 }
 
 /****************************************/
 
-InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, name, owner),
+InstrumentADPCM::InstrumentADPCM(int number, const std::string& name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::ADPCM, InstrumentType::ADPCM, name, owner),
 	  sampNum_(0),
 	  envEnabled_(false),
 	  envNum_(0),
@@ -664,37 +472,9 @@ InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManage
 {
 }
 
-SoundSource InstrumentADPCM::getSoundSource() const
-{
-	return SoundSource::ADPCM;
-}
-
-InstrumentType InstrumentADPCM::getType() const
-{
-	return InstrumentType::ADPCM;
-}
-
 AbstractInstrument* InstrumentADPCM::clone()
 {
-	auto c = new InstrumentADPCM(number_, name_, owner_);
-	c->setSampleNumber(sampNum_);
-	c->setEnvelopeEnabled(envEnabled_);
-	c->setEnvelopeNumber(envNum_);
-	c->setArpeggioEnabled(arpEnabled_);
-	c->setArpeggioNumber(arpNum_);
-	c->setPitchEnabled(ptEnabled_);
-	c->setPitchNumber(ptNum_);
-	return c;
-}
-
-void InstrumentADPCM::setSampleNumber(int n)
-{
-	sampNum_ = n;
-}
-
-int InstrumentADPCM::getSampleNumber() const
-{
-	return sampNum_;
+	return new InstrumentADPCM(*this);
 }
 
 int InstrumentADPCM::getSampleRootKeyNumber() const
@@ -727,64 +507,24 @@ size_t InstrumentADPCM::getSampleStopAddress() const
 	return owner_->getSampleADPCMStopAddress(sampNum_);
 }
 
-void InstrumentADPCM::setEnvelopeEnabled(bool enabled)
-{
-	envEnabled_ = enabled;
-}
-
-bool InstrumentADPCM::getEnvelopeEnabled() const
-{
-	return envEnabled_;
-}
-
-void InstrumentADPCM::setEnvelopeNumber(int n)
-{
-	envNum_ = n;
-}
-
-int InstrumentADPCM::getEnvelopeNumber() const
-{
-	return envNum_;
-}
-
-std::vector<CommandSequenceUnit> InstrumentADPCM::getEnvelopeSequence() const
+std::vector<ADPCMEnvelopeUnit> InstrumentADPCM::getEnvelopeSequence() const
 {
 	return owner_->getEnvelopeADPCMSequence(envNum_);
 }
 
-std::vector<Loop> InstrumentADPCM::getEnvelopeLoops() const
+InstrumentSequenceLoopRoot InstrumentADPCM::getEnvelopeLoopRoot() const
 {
-	return owner_->getEnvelopeADPCMLoops(envNum_);
+	return owner_->getEnvelopeADPCMLoopRoot(envNum_);
 }
 
-Release InstrumentADPCM::getEnvelopeRelease() const
+InstrumentSequenceRelease InstrumentADPCM::getEnvelopeRelease() const
 {
 	return owner_->getEnvelopeADPCMRelease(envNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getEnvelopeSequenceIterator() const
+ADPCMEnvelopeIter InstrumentADPCM::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeADPCMIterator(envNum_);
-}
-
-void InstrumentADPCM::setArpeggioEnabled(bool enabled)
-{
-	arpEnabled_ = enabled;
-}
-
-bool InstrumentADPCM::getArpeggioEnabled() const
-{
-	return arpEnabled_;
-}
-
-void InstrumentADPCM::setArpeggioNumber(int n)
-{
-	arpNum_ = n;
-}
-
-int InstrumentADPCM::getArpeggioNumber() const
-{
-	return arpNum_;
 }
 
 SequenceType InstrumentADPCM::getArpeggioType() const
@@ -792,44 +532,24 @@ SequenceType InstrumentADPCM::getArpeggioType() const
 	return owner_->getArpeggioADPCMType(arpNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentADPCM::getArpeggioSequence() const
+std::vector<ArpeggioUnit> InstrumentADPCM::getArpeggioSequence() const
 {
 	return owner_->getArpeggioADPCMSequence(arpNum_);
 }
 
-std::vector<Loop> InstrumentADPCM::getArpeggioLoops() const
+InstrumentSequenceLoopRoot InstrumentADPCM::getArpeggioLoopRoot() const
 {
-	return owner_->getArpeggioADPCMLoops(arpNum_);
+	return owner_->getArpeggioADPCMLoopRoot(arpNum_);
 }
 
-Release InstrumentADPCM::getArpeggioRelease() const
+InstrumentSequenceRelease InstrumentADPCM::getArpeggioRelease() const
 {
 	return owner_->getArpeggioADPCMRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getArpeggioSequenceIterator() const
+ArpeggioIter InstrumentADPCM::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioADPCMIterator(arpNum_);
-}
-
-void InstrumentADPCM::setPitchEnabled(bool enabled)
-{
-	ptEnabled_ = enabled;
-}
-
-bool InstrumentADPCM::getPitchEnabled() const
-{
-	return ptEnabled_;
-}
-
-void InstrumentADPCM::setPitchNumber(int n)
-{
-	ptNum_ = n;
-}
-
-int InstrumentADPCM::getPitchNumber() const
-{
-	return ptNum_;
 }
 
 SequenceType InstrumentADPCM::getPitchType() const
@@ -837,60 +557,41 @@ SequenceType InstrumentADPCM::getPitchType() const
 	return owner_->getPitchADPCMType(ptNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentADPCM::getPitchSequence() const
+std::vector<PitchUnit> InstrumentADPCM::getPitchSequence() const
 {
 	return owner_->getPitchADPCMSequence(ptNum_);
 }
 
-std::vector<Loop> InstrumentADPCM::getPitchLoops() const
+InstrumentSequenceLoopRoot InstrumentADPCM::getPitchLoopRoot() const
 {
-	return owner_->getPitchADPCMLoops(ptNum_);
+	return owner_->getPitchADPCMLoopRoot(ptNum_);
 }
 
-Release InstrumentADPCM::getPitchRelease() const
+InstrumentSequenceRelease InstrumentADPCM::getPitchRelease() const
 {
 	return owner_->getPitchADPCMRelease(ptNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getPitchSequenceIterator() const
+PitchIter InstrumentADPCM::getPitchSequenceIterator() const
 {
 	return owner_->getPitchADPCMIterator(ptNum_);
 }
 
 /****************************************/
 
-InstrumentDrumkit::InstrumentDrumkit(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, name, owner)
+InstrumentDrumkit::InstrumentDrumkit(int number, const std::string& name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::ADPCM, InstrumentType::Drumkit, name, owner)
 {
-}
-
-SoundSource InstrumentDrumkit::getSoundSource() const
-{
-	return SoundSource::ADPCM;
-}
-
-InstrumentType InstrumentDrumkit::getType() const
-{
-	return InstrumentType::Drumkit;
 }
 
 AbstractInstrument* InstrumentDrumkit::clone()
 {
-	auto c = new InstrumentDrumkit(number_, name_, owner_);
-
-	for (const auto& pair : kit_) {
-		c->setSampleEnabled(pair.first, true);
-		c->setSampleNumber(pair.first, pair.second.sampNum);
-		c->setPitch(pair.first, pair.second.pitch);
-	}
-	return c;
+	return new InstrumentDrumkit(*this);
 }
 
 std::vector<int> InstrumentDrumkit::getAssignedKeys() const
 {
-	std::vector<int> keys(kit_.size());
-	std::transform(kit_.begin(), kit_.end(), keys.begin(), [](const auto& pair) { return pair.first; });
-	return keys;
+	return utils::getMapKeys(kit_);
 }
 
 void InstrumentDrumkit::setSampleEnabled(int key, bool enabled)

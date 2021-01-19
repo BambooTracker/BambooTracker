@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,16 +31,15 @@
 #include <memory>
 #include <unordered_map>
 #include "instrument/envelope_fm.hpp"
+#include "bamboo_tracker_defs.hpp"
 
 enum class InstrumentType;
-enum class SoundSource;
 
 class InstrumentFormManager : public QObject
 {
 	Q_OBJECT
 
 public:
-	InstrumentFormManager();
 	void updateByConfiguration();
 
 	const std::shared_ptr<QWidget> getForm(int n) const;

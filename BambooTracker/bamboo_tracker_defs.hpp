@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,46 +25,20 @@
 
 #pragma once
 
-#include <vector>
-#include <set>
-#include <cstddef>
-#include "step.hpp"
-
-class Pattern
+enum class SoundSource : int
 {
-public:
-	Pattern(int n, size_t defSize);
-
-	inline void setNumber(int n) noexcept { num_ = n; }
-	inline int getNumber() const noexcept { return num_; }
-
-	inline int increaseUsedCount() noexcept { return ++usedCnt_; }
-	inline int decreaseUsedCount() noexcept { return --usedCnt_; }
-	inline int getUsedCount() const noexcept { return usedCnt_; }
-
-	Step& getStep(int n);
-
-	size_t getSize() const;
-	void changeSize(size_t size);
-
-	void insertStep(int n);
-	void deletePreviousStep(int n);
-
-	bool hasEvent() const;
-	std::vector<int> getEditedStepIndices() const;
-	std::set<int> getRegisteredInstruments() const;
-
-	Pattern clone(int asNumber);
-
-	void transpose(int seminotes, const std::vector<int>& excludeInsts);
-
-	void clear();
-
-private:
-	int num_;
-	size_t size_;
-	std::vector<Step> steps_;
-	int usedCnt_;
-
-	Pattern(int n, size_t size, const std::vector<Step>& steps);
+	FM = 1,
+	SSG = 2,
+	RHYTHM = 4,
+	ADPCM = 8
 };
+
+namespace bt_defs
+{
+constexpr int OUTPUT_HISTORY_SIZE = 1024;
+
+constexpr int NSTEP_FM_VOLUME = 0x80;
+constexpr int NSTEP_SSG_VOLUME = 0x10;
+constexpr int NSTEP_RHYTHM_VOLUME = 0x20;
+constexpr int NSTEP_ADPCM_VOLUME = 0x100;
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,9 +24,10 @@
  */
 
 #include "pattern.hpp"
-#include "effect.hpp"
-#include "misc.hpp"
 #include <algorithm>
+#include "effect.hpp"
+#include "note.hpp"
+#include "utils.hpp"
 
 namespace
 {
@@ -92,24 +93,21 @@ void Pattern::deletePreviousStep(int n)
 
 bool Pattern::hasEvent() const
 {
-	auto endIt = steps_.begin() + static_cast<int>(size_);
-	return std::any_of(steps_.begin(), endIt,
+	auto endIt = steps_.cbegin() + static_cast<int>(size_);
+	return std::any_of(steps_.cbegin(), endIt,
 					   [](const Step& step) { return step.hasEvent(); });
 }
 
 std::vector<int> Pattern::getEditedStepIndices() const
 {
-	std::vector<int> list;
-	for (size_t i = 0; i < size_; ++i) {
-		if (steps_.at(i).hasEvent())
-			list.push_back(static_cast<int>(i));
-	}
-	return list;
+	auto endIt = steps_.cbegin() + static_cast<int>(size_);
+	return utils::findIndicesIf(steps_.cbegin(), endIt,
+								[](const Step& step) { return step.hasEvent(); });
 }
 
-std::unordered_set<int> Pattern::getRegisteredInstruments() const
+std::set<int> Pattern::getRegisteredInstruments() const
 {
-	std::unordered_set<int> set;
+	std::set<int> set;
 	for (size_t i = 0; i < size_; ++i) {
 		const Step& step = steps_.at(i);
 		if (step.hasInstrument()) set.insert(step.getInstrumentNumber());
@@ -129,7 +127,7 @@ void Pattern::transpose(int seminotes, const std::vector<int>& excludeInsts)
 		int note = step.getNoteNumber();
 		if (step.hasGeneralNote() && std::none_of(excludeInsts.begin(), excludeInsts.end(),
 									  [a = step.getInstrumentNumber()](int b) { return a == b; })) {
-			step.setNoteNumber(clamp(note + seminotes, 0, 95));
+			step.setNoteNumber(utils::clamp(note + seminotes, 0, Note::NOTE_NUMBER_RANGE - 1));
 		}
 	}
 }
