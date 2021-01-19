@@ -110,7 +110,7 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
 		uint8_t ams = ctr.readUint8(csr++);
 
-		uint8_t am[4];
+		uint8_t am[4] = {};
 		for (const int op : { 0, 2, 1, 3 }) {
 			auto& params = FM_OP_PARAMS[op];
 			instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::ML), ctr.readUint8(csr++));

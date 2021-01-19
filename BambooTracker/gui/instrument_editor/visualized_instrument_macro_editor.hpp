@@ -44,7 +44,7 @@
 #include "gui/color_palette.hpp"
 
 namespace Ui {
-	class VisualizedInstrumentMacroEditor;
+class VisualizedInstrumentMacroEditor;
 }
 
 class VisualizedInstrumentMacroEditor : public QWidget

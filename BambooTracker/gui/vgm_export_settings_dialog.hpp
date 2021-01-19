@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,7 +31,7 @@
 #include "io/export_io.hpp"
 
 namespace Ui {
-	class VgmExportSettingsDialog;
+class VgmExportSettingsDialog;
 }
 
 class VgmExportSettingsDialog : public QDialog

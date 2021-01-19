@@ -36,7 +36,7 @@ enum class FMLFOParameter
 	AM1, AM2, AM3, AM4
 };
 
-class LFOFM : public AbstractInstrumentProperty
+class LFOFM final : public AbstractInstrumentProperty
 {
 public:
 	explicit LFOFM(int n);

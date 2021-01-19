@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -65,7 +65,7 @@ void InstrumentSelectionDialog::setupContents()
 QVector<size_t> InstrumentSelectionDialog::currentInstrumentSelection() const
 {
 	QListWidget *lw = ui_->listWidget;
-	QList<QListWidgetItem *> items = lw->selectedItems();
+	const QList<QListWidgetItem *> items = lw->selectedItems();
 
 	QVector<size_t> selection;
 	selection.reserve(items.size());

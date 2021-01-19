@@ -41,7 +41,7 @@ enum class FMEnvelopeParameter
 	SSGEG1, SSGEG2, SSGEG3, SSGEG4
 };
 
-class EnvelopeFM : public AbstractInstrumentProperty
+class EnvelopeFM final : public AbstractInstrumentProperty
 {
 public:
 	explicit EnvelopeFM(int num);

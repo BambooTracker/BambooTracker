@@ -25,11 +25,12 @@
 
 #include "arpeggio_macro_editor.hpp"
 #include <QRegularExpression>
+#include <QHash>
 #include "note.hpp"
 
 namespace
 {
-const QString TONE_LABS_[96] = {
+const QString TONE_LABS[96] = {
 	"C-0", "C#0", "D-0", "D#0", "E-0", "F-0", "F#0", "G-0", "G#0", "A-0", "A#0", "B-0",
 	"C-1", "C#1", "D-1", "D#1", "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1",
 	"C-2", "C#2", "D-2", "D#2", "E-2", "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2",
@@ -39,7 +40,12 @@ const QString TONE_LABS_[96] = {
 	"C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6", "A-6", "A#6", "B-6",
 	"C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7", "A#7", "B-7"
 };
-static_assert (sizeof(TONE_LABS_) == sizeof(QString) * Note::NOTE_NUMBER_RANGE, "Invalid note name table size");
+static_assert (sizeof(TONE_LABS) == sizeof(QString) * Note::NOTE_NUMBER_RANGE, "Invalid note name table size");
+
+const QHash<QString, int> NOTE_NAME_NUMS = {
+	{ "C-", 0 }, { "C#", 1 }, { "D-", 2 }, { "D#", 3 }, { "E", 4 }, { "F", 5 },
+	{ "F#", 6 }, { "G-", 7 }, { "G#", 8 }, { "A-", 9 }, { "A#", 10 }, { "B", 11 }
+};
 }
 
 ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
@@ -60,7 +66,7 @@ ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
 
 QString ArpeggioMacroEditor::convertSequenceDataUnitToMML(Column col)
 {
-	if (type_ == SequenceType::FixedSequence) return TONE_LABS_[col.row];
+	if (type_ == SequenceType::FixedSequence) return TONE_LABS[col.row];
 	else return VisualizedInstrumentMacroEditor::convertSequenceDataUnitToMML(col);
 }
 
@@ -69,32 +75,8 @@ bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vecto
 	if (type_ == SequenceType::FixedSequence) {
 		QRegularExpressionMatch m = QRegularExpression("^([A-G][-#])([0-7])").match(text);
 		if (m.hasMatch()) {
-			QString tone = m.captured(1);
 			int oct = m.captured(2).toInt();
-			int d = 12 * oct;
-			if (tone.left(1) == "C") {
-				if (tone.right(1) == "-") ;
-				else d += 1;
-			}
-			else if (tone.left(1) == "D") {
-				if (tone.right(1) == "-") d += 2;
-				else d += 3;
-			}
-			else if (tone.left(1) == "E") d +=4;
-			else if (tone.left(1) == "F") {
-				if (tone.right(1) == "-") d += 5;
-				else d += 6;
-			}
-			else if (tone.left(1) == "G") {
-				if (tone.right(1) == "-") d += 7;
-				else d += 8;
-			}
-			else if (tone.left(1) == "A") {
-				if (tone.right(1) == "-") d += 9;
-				else d += 10;
-			}
-			else d += 11;	// 'B'
-
+			int d = 12 * oct + NOTE_NAME_NUMS[m.captured(1)];
 			column.push_back({ d, -1, "" });
 			++cnt;
 			text.remove(QRegularExpression("^[A-G][-#][0-7]"));
@@ -111,7 +93,7 @@ void ArpeggioMacroEditor::updateLabels()
 {
 	if (type_ == SequenceType::FixedSequence) {
 		for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i)
-			setLabel(i, TONE_LABS_[i]);
+			setLabel(i, TONE_LABS[i]);
 	}
 	else {
 		for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i)

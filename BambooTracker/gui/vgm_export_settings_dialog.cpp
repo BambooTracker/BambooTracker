@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -118,74 +118,85 @@ io::GD3Tag VgmExportSettingsDialog::getGD3Tag() const
 	endNull += '\0';
 	endNull += '\0';
 
+	const QByteArray trackNameEn = getTrackNameEnglish().toLatin1();
 	tag.trackNameEn = "";
-	for (const auto& c : getTrackNameEnglish().toLatin1()) {
+	for (const auto& c : trackNameEn) {
 		tag.trackNameEn += c;
 		tag.trackNameEn += '\0';
 	}
 	tag.trackNameEn += endNull;
 
+	const QByteArray trackNameJp = sjis->fromUnicode(getTrackNameJapanese());
 	tag.trackNameJp = "";
-	for (const auto& c : sjis->fromUnicode(getTrackNameJapanese())) {
+	for (const auto& c : trackNameJp) {
 		tag.trackNameJp += c;
 	}
 	tag.trackNameJp += endNull;
 
+	const QByteArray gameNameEn = getGameNameEnglish().toLatin1();
 	tag.gameNameEn = "";
-	for (const auto& c : getGameNameEnglish().toLatin1()) {
+	for (const auto& c : gameNameEn) {
 		tag.gameNameEn += c;
 		tag.gameNameEn += '\0';
 	}
 	tag.gameNameEn += endNull;
 
+	const QByteArray gameNameJp = sjis->fromUnicode(getGameNameJapanese());
 	tag.gameNameJp = "";
-	for (const auto& c : sjis->fromUnicode(getGameNameJapanese())) {
+	for (const auto& c : gameNameJp) {
 		tag.gameNameJp += c;
 	}
 	tag.gameNameJp += endNull;
 
+	const QByteArray systemNameEn = getSystemNameEnglish().toLatin1();
 	tag.systemNameEn = "";
-	for (const auto& c : getSystemNameEnglish().toLatin1()) {
+	for (const auto& c : systemNameEn) {
 		tag.systemNameEn += c;
 		tag.systemNameEn += '\0';
 	}
 	tag.systemNameEn += endNull;
 
+	const QByteArray systemNameJp = sjis->fromUnicode(getSystemNameJapanese());
 	tag.systemNameJp = "";
-	for (const auto& c : sjis->fromUnicode(getSystemNameJapanese())) {
+	for (const auto& c : systemNameJp) {
 		tag.systemNameJp += c;
 	}
 	tag.systemNameJp += endNull;
 
+	const QByteArray authorEn = getTrackAuthorEnglish().toLatin1();
 	tag.authorEn = "";
-	for (const auto& c : getTrackAuthorEnglish().toLatin1()) {
+	for (const auto& c : authorEn) {
 		tag.authorEn += c;
 		tag.authorEn += '\0';
 	}
 	tag.authorEn += endNull;
 
+	const QByteArray authorJp = sjis->fromUnicode(getTrackAuthorJapanese());
 	tag.authorJp = "";
-	for (const auto& c : sjis->fromUnicode(getTrackAuthorJapanese())) {
+	for (const auto& c : authorJp) {
 		tag.authorJp += c;
 	}
 	tag.authorJp += endNull;
 
+	const QByteArray releaseDate = getReleaseDate().toLatin1();
 	tag.releaseDate = "";
-	for (const auto& c : getReleaseDate().toLatin1()) {
+	for (const auto& c : releaseDate) {
 		tag.releaseDate += c;
 		tag.releaseDate += '\0';
 	}
 	tag.releaseDate += endNull;
 
+	const QByteArray vgmCreator = getVgmCreator().toLatin1();
 	tag.vgmCreator = "";
-	for (const auto& c : getVgmCreator().toLatin1()) {
+	for (const auto& c : vgmCreator) {
 		tag.vgmCreator += c;
 		tag.vgmCreator += '\0';
 	}
 	tag.vgmCreator += endNull;
 
+	const QByteArray notes = getNotes().toLatin1();
 	tag.notes = "";
-	for (const auto& c : getNotes().toLatin1()) {
+	for (const auto& c : notes) {
 		tag.notes += c;
 		tag.notes += '\0';
 	}

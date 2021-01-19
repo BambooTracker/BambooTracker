@@ -87,7 +87,7 @@ AbstractBank* BtbIO::load(const BinaryContainer& ctr) const
 		std::string name = u8"";
 		if (nameLen > 0) {
 			name = ctr.readString(iCsr, nameLen);
-			iCsr += nameLen;
+			/* iCsr += nameLen; */
 		}
 		names.push_back(name);
 		instCsr += iOfs;	// Jump to next

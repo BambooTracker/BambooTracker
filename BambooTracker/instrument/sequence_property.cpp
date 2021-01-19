@@ -142,7 +142,7 @@ void InstrumentSequenceLoop::setEndPos(int pos)
 
 bool InstrumentSequenceLoop::addInnerLoop(const InstrumentSequenceLoop& inner)
 {
-	for (auto pair : childs_) {
+	for (auto& pair : childs_) {
 		Ptr& loop = pair.second;
 		if (loop->isOverlapped(inner)) {
 			if (loop->hasSameRegion(inner)) {
@@ -181,7 +181,7 @@ bool InstrumentSequenceLoop::changeInnerLoop(int prevBegin, int prevEnd, const I
 
 void InstrumentSequenceLoop::removeInnerLoop(int begin, int end)
 {
-	for (auto pair : childs_) {
+	for (auto& pair : childs_) {
 		Ptr& loop = pair.second;
 		if (loop->isOverlapped(begin, end)) {
 			if (loop->hasSameRegion(begin, end)) {

@@ -648,7 +648,7 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 
 	loops_ = loop;
 	emit loopCleared();
-	for (const InstrumentSequenceLoop l : loopStack) {
+	for (const InstrumentSequenceLoop& l : loopStack) {
 		emit loopAdded(l);
 	}
 
@@ -798,7 +798,7 @@ void VisualizedInstrumentMacroEditor::moveLoop()
 	}
 
 	emit loopChanged(prevBegin, prevEnd,
-							 InstrumentSequenceLoop(tgtLoopRef.begin, tgtLoopRef.end, tgtLoopRef.times));
+					 InstrumentSequenceLoop(tgtLoopRef.begin, tgtLoopRef.end, tgtLoopRef.times));
 	printMML();
 }
 

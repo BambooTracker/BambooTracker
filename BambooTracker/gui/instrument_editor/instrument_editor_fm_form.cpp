@@ -1242,12 +1242,9 @@ void InstrumentEditorFMForm::resizeAlgorithmDiagram()
 void InstrumentEditorFMForm::copyEnvelope()
 {
 	QApplication::clipboard()->setText(QString("FM_ENVELOPE:%1,%2,\n%3,\n%4,\n%5,\n%6,")
-									   .arg(ui->fbSlider->value())
-									   .arg(ui->alSlider->value())
-									   .arg(ui->op1Table->toString())
-									   .arg(ui->op2Table->toString())
-									   .arg(ui->op3Table->toString())
-									   .arg(ui->op4Table->toString()));
+									   .arg(ui->fbSlider->value()).arg(ui->alSlider->value())
+									   .arg(ui->op1Table->toString(), ui->op2Table->toString(),
+											ui->op3Table->toString(), ui->op4Table->toString()));
 }
 
 void InstrumentEditorFMForm::pasteEnvelope()

@@ -213,19 +213,19 @@ bool MidiInterface::openInputPort(unsigned port, std::string* errDetail)
 	}
 
 	try {
-	RtMidiIn &client = *inputClient_;
-	closeInputPort();
+		RtMidiIn &client = *inputClient_;
+		closeInputPort();
 
-	if (port == ~0u) {
-		client.openVirtualPort(MIDI_INP_PORT_NAME);
-		hasOpenInputPort_ = true;
-	}
-	else {
-		client.openPort(port, MIDI_INP_PORT_NAME);
-		hasOpenInputPort_ = client.isPortOpen();
-	}
-	if (errDetail) *errDetail = "";
-	return true;
+		if (port == ~0u) {
+			client.openVirtualPort(MIDI_INP_PORT_NAME);
+			hasOpenInputPort_ = true;
+		}
+		else {
+			client.openPort(port, MIDI_INP_PORT_NAME);
+			hasOpenInputPort_ = client.isPortOpen();
+		}
+		if (errDetail) *errDetail = "";
+		return true;
 	}
 	catch (RtMidiError& error) {
 		if (errDetail) *errDetail = error.getMessage();

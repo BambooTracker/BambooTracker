@@ -49,7 +49,7 @@ enum class OpnaEmulator
 	Last = Nuked,
 };
 
-class OPNA : public Chip
+class OPNA final : public Chip
 {
 public:
 	// [rate]

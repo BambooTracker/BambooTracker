@@ -130,7 +130,7 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 			assertValue(bitSize_ == 16, fmtp);	// Only support 16-bit
 			assertValue(blockSize_ == nCh_ * bitSize_ / 8, fmtp);
 			buf_.writeUint16(BIT_SIZE_OFFS, bitSize_);
-			fmtp += 2;
+			/* fmtp += 2; */
 		}
 		else if (id == "data") {
 			buf_.writeString(DATA_OFFS, "data");

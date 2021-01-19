@@ -142,7 +142,7 @@ void ADPCMSampleEditor::dragEnterEvent(QDragEnterEvent* event)
 {
 	const QMimeData* mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1
-			&& QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower() == "wav") {
+			&& QFileInfo(mime->urls().constFirst().toLocalFile()).suffix().toLower() == "wav") {
 		event->acceptProposedAction();
 	}
 }
@@ -486,7 +486,7 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	const double centerY = rect.height() >> 1;
 	int y = std::numeric_limits<int16_t>::max() * (centerY - cy) / centerY;
 	cursorSamp_.setY(utils::clamp(y, static_cast<int>(std::numeric_limits<int16_t>::min()),
-						   static_cast<int>(std::numeric_limits<int16_t>::max())));
+								  static_cast<int>(std::numeric_limits<int16_t>::max())));
 
 	// Update position view
 	ui->detailLabel->setText(updateDetailView());

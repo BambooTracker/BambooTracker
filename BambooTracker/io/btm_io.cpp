@@ -183,7 +183,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 			tmp = ctr.readUint8(iCsr);
 			instSSG->setPitchEnabled((0x80 & tmp) ? false : true);
 			instSSG->setPitchNumber(0x7f & tmp);
-			iCsr += 1;
+			/* iCsr += 1; */
 			instManLocked->addInstrument(instSSG);
 			break;
 		}
@@ -202,7 +202,7 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 			tmp = ctr.readUint8(iCsr);
 			instADPCM->setPitchEnabled((0x80 & tmp) ? false : true);
 			instADPCM->setPitchNumber(0x7f & tmp);
-			iCsr += 1;
+			/* iCsr += 1; */
 			instManLocked->addInstrument(instADPCM);
 			break;
 		}
@@ -1191,7 +1191,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				uint32_t len = ctr.readUint32(csr);
 				csr += 4;
 				std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
-				csr += len;
+				/* csr += len; */
 				instManLocked->storeSampleADPCMRawSample(idx, std::move(samples));
 
 				instPropCsr += ofs;

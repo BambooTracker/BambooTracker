@@ -31,7 +31,7 @@
 #include <cmath>
 #include "abstract_instrument_property.hpp"
 
-class SampleADPCM : public AbstractInstrumentProperty
+class SampleADPCM final : public AbstractInstrumentProperty
 {
 public:
 	explicit SampleADPCM(int num);

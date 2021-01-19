@@ -270,7 +270,7 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 		settings.beginGroup("Input");
 		settings.beginWriteArray("fmEnvelopeTextMap");
 		int n = 0;
-		for (auto texts : config.lock()->getFMEnvelopeTexts()) {
+		for (const FMEnvelopeText& texts : config.lock()->getFMEnvelopeTexts()) {
 			settings.setArrayIndex(n++);
 			settings.setValue("type", gui_utils::utf8ToQString(texts.name));
 			QStringList typeList;
@@ -454,7 +454,7 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 			settings.setArrayIndex(i);
 			std::string type = settings.value("type").toString().toUtf8().toStdString();
 			std::vector<FMEnvelopeTextType> data;
-			for (auto d : settings.value("order").toString().split(",")) {
+			for (const QString& d : qAsConst(settings).value("order").toString().split(",")) {
 				data.push_back(static_cast<FMEnvelopeTextType>(d.toInt()));
 			}
 			fmEnvelopeTexts.push_back({ type, data });

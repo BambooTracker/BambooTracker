@@ -34,7 +34,7 @@
 #include "bamboo_tracker.hpp"
 
 namespace Ui {
-	class BookmarkManagerForm;
+class BookmarkManagerForm;
 }
 
 class BookmarkManagerForm : public QWidget

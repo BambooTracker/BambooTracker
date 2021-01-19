@@ -1476,7 +1476,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					uint32_t len = ctr.readUint32(csr);
 					csr += 4;
 					std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
-					csr += len;
+					/* csr += len; */
 					instManLocked->storeSampleADPCMRawSample(idx, std::move(samples));
 
 					instPropCsr += ofs;
