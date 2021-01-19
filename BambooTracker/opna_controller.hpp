@@ -34,16 +34,8 @@
 #include "note.hpp"
 #include "echo_buffer.hpp"
 #include "chip/opna.hpp"
-#include "chip/scci/scci.hpp"
-#include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
 #include "bamboo_tracker_defs.hpp"
-
-struct SSGToneNoise
-{
-	bool isTone, isNoise;
-	int noisePeriod_;
-};
 
 class OPNAController
 {
@@ -77,7 +69,7 @@ public:
 
 	// Chip mode
 	void setMode(SongType mode);
-	SongType getMode() const;
+	SongType getMode() const noexcept;
 
 	// Mute
 	void setMuteState(SoundSource src, int chInSrc, bool isMute);
@@ -99,15 +91,13 @@ private:
 
 	std::vector<std::pair<int, int>> registerSetBuf_;
 
+	void initChip();
+
 	std::unique_ptr<int16_t[]> outputHistory_;
 	size_t outputHistoryIndex_;
 	std::unique_ptr<int16_t[]> outputHistoryReady_;
 	std::mutex outputHistoryReadyMutex_;
-
-	void initChip();
-
 	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
-	void transferReadyHistory();
 
 	using ArpeggioIterInterface = std::unique_ptr<SequenceIteratorInterface<ArpeggioUnit>>;
 	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
@@ -166,7 +156,7 @@ public:
 	bool isKeyOnFM(int ch) const;
 	bool isTonePortamentoFM(int ch) const;
 	bool enableFMEnvelopeReset(int ch) const;
-	Note getFMTone(int ch) const;	// TODO: fix
+	Note getFMLatestNote(int ch) const;
 
 private:
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
@@ -212,7 +202,6 @@ private:
 
 	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
 	FMOperatorType toChannelOperatorType(int ch) const;
-	const std::unordered_map<FMOperatorType, std::vector<FMEnvelopeParameter>> FM_ENV_PARAMS_OP_;
 
 	void updateFMVolume(int ch);
 
@@ -230,77 +219,18 @@ private:
 	void checkOperatorSequenceFM(int ch, int type);
 	void checkVolumeEffectFM(int ch);
 
-	inline void checkRealToneFMByArpeggio(int ch)
-	{
-		checkRealToneByArpeggio(arpItFM_[ch], echoBufFM_[ch], baseNoteFM_[ch], needToneSetFM_[ch]);
-	}
-
-	inline void checkPortamentoFM(int ch)
-	{
-		checkPortamento(arpItFM_[ch], prtmFM_[ch], hasKeyOnBeforeFM_[ch], isTonePrtmFM_[ch], echoBufFM_[ch],
-						baseNoteFM_[ch], needToneSetFM_[ch]);
-	}
-
-	inline void checkRealToneFMByPitch(int ch)
-	{
-		checkRealToneByPitch(ptItFM_[ch], sumPitchFM_[ch], needToneSetFM_[ch]);
-	}
+	void checkRealToneFMByArpeggio(int ch);
+	void checkPortamentoFM(int ch);
+	void checkRealToneFMByPitch(int ch);
 
 	void writePitchFM(int ch);
 
 	void setInstrumentFMProperties(int ch);
 
-	static std::vector<int> getOperatorsInLevel(int level, int al);
-
-	const bool CARRIER_JUDGE_[4][8] /* [operator][algorithm] */ = {
-		{ false, false, false, false, false, false, false, true },
-		{ false, false, false, false, true, true, true, true },
-		{ false, false, false, false, false, true, true, true },
-		{ true, true, true, true, true, true, true, true },
-	};
-	const uint8_t FM_KEYOFF_MASK_[6] = { 0, 1, 2, 4, 5, 6 };
-	const std::unordered_map<int, uint8_t> FM3_KEY_OFF_MASK_ = { { 2, 0xe }, { 6, 0xd }, { 7, 0xb }, { 8, 0x7 }	};
-	const FMEnvelopeParameter PARAM_TL_[4] = {
-		FMEnvelopeParameter::TL1, FMEnvelopeParameter::TL2, FMEnvelopeParameter::TL3, FMEnvelopeParameter::TL4
-	};
-	const FMEnvelopeParameter PARAM_ML_[4] = {
-		FMEnvelopeParameter::ML1, FMEnvelopeParameter::ML2, FMEnvelopeParameter::ML3, FMEnvelopeParameter::ML4
-	};
-	const FMEnvelopeParameter PARAM_AR_[4] = {
-		FMEnvelopeParameter::AR1, FMEnvelopeParameter::AR2, FMEnvelopeParameter::AR3, FMEnvelopeParameter::AR4
-	};
-	const FMEnvelopeParameter PARAM_DR_[4] = {
-		FMEnvelopeParameter::DR1, FMEnvelopeParameter::DR2, FMEnvelopeParameter::DR3, FMEnvelopeParameter::DR4
-	};
-	const FMEnvelopeParameter PARAM_RR_[4] = {
-		FMEnvelopeParameter::RR1, FMEnvelopeParameter::RR2, FMEnvelopeParameter::RR3, FMEnvelopeParameter::RR4
-	};
-
-	inline int toInternalFMChannel(int ch) const
-	{
-		if (0 <= ch && ch < 6) return ch;
-		else if (mode_ == SongType::FM3chExpanded && 6 <= ch && ch < 9) return 2;
-		else throw std::out_of_range("Out of channel range.");
-	}
-
-	inline uint8_t getFMKeyOnOffChannelMask(int ch) const
-	{
-		return FM_KEYOFF_MASK_[toInternalFMChannel(ch)];
-	}
-
-	inline uint8_t getFM3SlotValidStatus() const
-	{
-		return fmOpEnables_[2] & (static_cast<uint8_t>(isKeyOnFM_[2]) | (static_cast<uint8_t>(isKeyOnFM_[6]) << 1)
-				| (static_cast<uint8_t>(isKeyOnFM_[7]) << 2) | (static_cast<uint8_t>(isKeyOnFM_[8]) << 3));
-	}
-
-	inline bool isCarrier(int op, int al) { return CARRIER_JUDGE_[op][al]; }
-
-	inline uint8_t calculateTL(int ch, uint8_t data) const
-	{
-		int v = (tmpVolFM_[ch] == -1) ? baseVolFM_[ch] : tmpVolFM_[ch];
-		return (data > 127 - v) ? 127 : static_cast<uint8_t>(data + v);
-	}
+	uint8_t getFMKeyOnOffChannelMask(int ch) const;
+	int toInternalFMChannel(int ch) const;
+	uint8_t getFM3SlotValidStatus() const;
+	uint8_t calculateTL(int ch, uint8_t data) const;
 
 	/*----- SSG -----*/
 public:
@@ -339,7 +269,7 @@ public:
 	// Chip details
 	bool isKeyOnSSG(int ch) const;
 	bool isTonePortamentoSSG(int ch) const;
-	Note getSSGTone(int ch) const;	// TODO: fix
+	Note getSSGLatestNote(int ch) const;
 
 private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
@@ -349,6 +279,11 @@ private:
 	bool neverSetBaseNoteSSG_[3];
 	Note baseNoteSSG_[3];
 	int sumPitchSSG_[3];
+	struct SSGToneNoise
+	{
+		bool isTone, isNoise;
+		int noisePeriod_;
+	};
 	SSGToneNoise tnSSG_[3];
 	int baseVolSSG_[3], tmpVolSSG_[3];
 	bool isBuzzEffSSG_[3];
@@ -381,7 +316,6 @@ private:
 	int toneNoiseMixSSG_[3];
 	int noisePitchSSG_;
 	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
-	const int AUTO_ENV_SHAPE_TYPE_[15] = { 17, 17, 17, 21, 21, 21, 21, 16, 17, 18, 19, 20, 21, 22, 23 };
 
 	void initSSG();
 
@@ -400,35 +334,15 @@ private:
 
 	void writeEnvelopeSSGToRegister(int ch);
 
-	inline uint8_t SSGToneFlag(int ch) { return (1 << ch); }
-	inline uint8_t SSGNoiseFlag(int ch) { return (8 << ch); }
-
-	inline void checkRealToneSSGByArpeggio(int ch)
-	{
-		checkRealToneByArpeggio(arpItSSG_[ch], echoBufSSG_[ch], baseNoteSSG_[ch], needToneSetSSG_[ch]);
-	}
-
-	inline void checkPortamentoSSG(int ch)
-	{
-		checkPortamento(arpItSSG_[ch], prtmSSG_[ch], hasKeyOnBeforeSSG_[ch], isTonePrtmSSG_[ch], echoBufSSG_[ch],
-						baseNoteSSG_[ch], needToneSetSSG_[ch]);
-	}
-
-	inline void checkRealToneSSGByPitch(int ch)
-	{
-		checkRealToneByPitch(ptItSSG_[ch], sumPitchSSG_[ch], needToneSetSSG_[ch]);
-	}
+	void checkRealToneSSGByArpeggio(int ch);
+	void checkPortamentoSSG(int ch);
+	void checkRealToneSSGByPitch(int ch);
 
 	void writePitchSSG(int ch);
 	void writeAutoEnvelopePitchSSG(int ch, double tonePitch);
 	void writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle);
 
 	void setRealVolumeSSG(int ch);
-
-	inline uint8_t judgeSSEGRegisterValue(int v)
-	{
-		return (v == -1) ? 0 : (0x08 + static_cast<uint8_t>(v));
-	}
 
 	/*----- Rhythm -----*/
 public:
@@ -498,7 +412,7 @@ public:
 	// Chip details
 	bool isKeyOnADPCM() const;
 	bool isTonePortamentoADPCM() const;
-	Note getADPCMTone() const;	// TODO: fix
+	Note getADPCMLatestNote() const;
 	size_t getADPCMStoredSize() const;
 
 private:
@@ -544,21 +458,9 @@ private:
 
 	void writeEnvelopeADPCMToRegister();
 
-	inline void checkRealToneADPCMByArpeggio()
-	{
-		checkRealToneByArpeggio(arpItADPCM_, echoBufADPCM_, baseNoteADPCM_, needToneSetADPCM_);
-	}
-
-	inline void checkPortamentoADPCM()
-	{
-		checkPortamento(arpItADPCM_, prtmADPCM_, hasKeyOnBeforeADPCM_, isTonePrtmADPCM_, echoBufADPCM_,
-						baseNoteADPCM_, needToneSetADPCM_);
-	}
-
-	inline void checkRealToneADPCMByPitch()
-	{
-		checkRealToneByPitch(ptItADPCM_, sumPitchADPCM_, needToneSetADPCM_);
-	}
+	void checkRealToneADPCMByArpeggio();
+	void checkPortamentoADPCM();
+	void checkRealToneADPCMByPitch();
 
 	void writePitchADPCM();
 	void writePitchADPCMToRegister(int pitchDiff, int rtDeltaN);
@@ -567,3 +469,86 @@ private:
 
 	void triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable);
 };
+
+//-----------------------------------------------------------------------------
+
+inline SongType OPNAController::getMode() const noexcept
+{
+	return mode_;
+}
+
+inline void OPNAController::checkRealToneFMByArpeggio(int ch)
+{
+	checkRealToneByArpeggio(arpItFM_[ch], echoBufFM_[ch], baseNoteFM_[ch], needToneSetFM_[ch]);
+}
+
+inline void OPNAController::checkPortamentoFM(int ch)
+{
+	checkPortamento(arpItFM_[ch], prtmFM_[ch], hasKeyOnBeforeFM_[ch], isTonePrtmFM_[ch], echoBufFM_[ch],
+					baseNoteFM_[ch], needToneSetFM_[ch]);
+}
+
+inline void OPNAController::checkRealToneFMByPitch(int ch)
+{
+	checkRealToneByPitch(ptItFM_[ch], sumPitchFM_[ch], needToneSetFM_[ch]);
+}
+
+/*----- FM -----*/
+inline uint8_t OPNAController::getFMKeyOnOffChannelMask(int ch) const
+{
+	static constexpr uint8_t FM_KEYOFF_MASK[6] = { 0, 1, 2, 4, 5, 6 };
+	return FM_KEYOFF_MASK[toInternalFMChannel(ch)];
+}
+
+inline int OPNAController::toInternalFMChannel(int ch) const
+{
+	if (0 <= ch && ch < 6) return ch;
+	else if (mode_ == SongType::FM3chExpanded && 6 <= ch && ch < 9) return 2;
+	else throw std::out_of_range("Out of channel range.");
+}
+
+inline uint8_t OPNAController::getFM3SlotValidStatus() const
+{
+	return fmOpEnables_[2] & (static_cast<uint8_t>(isKeyOnFM_[2]) | (static_cast<uint8_t>(isKeyOnFM_[6]) << 1)
+			| (static_cast<uint8_t>(isKeyOnFM_[7]) << 2) | (static_cast<uint8_t>(isKeyOnFM_[8]) << 3));
+}
+
+inline uint8_t OPNAController::calculateTL(int ch, uint8_t data) const
+{
+	int v = (tmpVolFM_[ch] == -1) ? baseVolFM_[ch] : tmpVolFM_[ch];
+	return (data > 127 - v) ? 127 : static_cast<uint8_t>(data + v);
+}
+
+/*----- SSG -----*/
+inline void OPNAController::checkRealToneSSGByArpeggio(int ch)
+{
+	checkRealToneByArpeggio(arpItSSG_[ch], echoBufSSG_[ch], baseNoteSSG_[ch], needToneSetSSG_[ch]);
+}
+
+inline void OPNAController::checkPortamentoSSG(int ch)
+{
+	checkPortamento(arpItSSG_[ch], prtmSSG_[ch], hasKeyOnBeforeSSG_[ch], isTonePrtmSSG_[ch], echoBufSSG_[ch],
+					baseNoteSSG_[ch], needToneSetSSG_[ch]);
+}
+
+inline void OPNAController::checkRealToneSSGByPitch(int ch)
+{
+	checkRealToneByPitch(ptItSSG_[ch], sumPitchSSG_[ch], needToneSetSSG_[ch]);
+}
+
+/*----- ADPCM/Drumkit -----*/
+inline void OPNAController::checkRealToneADPCMByArpeggio()
+{
+	checkRealToneByArpeggio(arpItADPCM_, echoBufADPCM_, baseNoteADPCM_, needToneSetADPCM_);
+}
+
+inline void OPNAController::checkPortamentoADPCM()
+{
+	checkPortamento(arpItADPCM_, prtmADPCM_, hasKeyOnBeforeADPCM_, isTonePrtmADPCM_, echoBufADPCM_,
+					baseNoteADPCM_, needToneSetADPCM_);
+}
+
+inline void OPNAController::checkRealToneADPCMByPitch()
+{
+	checkRealToneByPitch(ptItADPCM_, sumPitchADPCM_, needToneSetADPCM_);
+}

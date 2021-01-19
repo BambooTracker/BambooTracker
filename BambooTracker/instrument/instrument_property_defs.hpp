@@ -41,6 +41,8 @@ using ArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequen
 using PitchUnit = InstrumentSequenceBaseUnit;
 using PitchIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
+constexpr int SEQ_PITCH_CENTER = 127;
+
 using SSGWaveformUnit = InstrumentSequenceExtendUnit;
 using SSGWaveformIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceExtendUnit>::Iterator>;
 

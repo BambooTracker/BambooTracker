@@ -82,7 +82,7 @@ inline auto makeArpeggioSharedPtr(int n)
 inline auto makePitchSharedPtr(int n)
 {
 	return std::make_shared<InstrumentSequenceProperty<
-			PitchUnit>>(n, SequenceType::AbsoluteSequence, PitchUnit(127), PitchUnit());
+			PitchUnit>>(n, SequenceType::AbsoluteSequence, PitchUnit(SEQ_PITCH_CENTER), PitchUnit());
 }
 
 inline auto makeWaveformSSGSharedPtr(int n)
