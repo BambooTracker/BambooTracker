@@ -5,6 +5,7 @@
 - [#285] - Linux build (thanks [@OPNA2608])
 - [#294] - Build option for linking against system RtAudio and RtMidi ([#263], [#288]; thanks [@OPNA2608])
 - [#286] - Polish support (thanks [@freq-mod])
+- 1 new sample module (thanks [@Zexxerd])
 
 ### Changed
 - [#285] - Change CI service from Travis CI to GitHub Actions (thanks [@OPNA2608])
@@ -19,6 +20,7 @@
 - Fix .tfi import to load the operator 2 and 3 correctly ([#290]; thanks [@OPNA2608])
 - [#299] - Fix a glitch in instrument macro editors when scrolling (thanks [@freq-mod])
 - [#303] - Reduce futile memory copy in WAV export to prevent the memory error (thanks [@Drillimation])
+- [#307] - Fix GitHub Actions workflow for macOS (thanks [@OPNA2608])
 - Clean some code ([#295]; thanks [@freq-mod])
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
@@ -35,6 +37,7 @@
 [#288]: https://github.com/rerrahkr/BambooTracker/pull/288
 [#294]: https://github.com/rerrahkr/BambooTracker/pull/294
 [#303]: https://github.com/rerrahkr/BambooTracker/issues/303
+[#307]: https://github.com/rerrahkr/BambooTracker/pull/307
 
 ## v0.4.5 (2020-11-05)
 ### Added
