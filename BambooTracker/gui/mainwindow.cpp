@@ -1861,14 +1861,14 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		}
 	};
 	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnEvent,
-					 this, [&, jamInst](size_t id, JamKey key) {
+					 this, [&](size_t id, JamKey key) {
 		updateInst(id);
 		bt_->jamKeyOnForced(key, jamInst->getSoundSource(),
 							!config_.lock()->getFixJammingVolume(), jamInst);
 	},
 	Qt::DirectConnection);
 	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnMidiEvent,
-					 this, [&, jamInst](size_t id, int key) {
+					 this, [&](size_t id, int key) {
 		updateInst(id);
 		bt_->jamKeyOnForced(key, jamInst->getSoundSource(),
 							!config_.lock()->getFixJammingVolume(), jamInst);

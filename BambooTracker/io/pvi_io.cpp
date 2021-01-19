@@ -36,7 +36,8 @@ PviIO::PviIO() : AbstractBankIO("pvi", "FMP PVI", true, false) {}
 AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 {
 	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 4) != "PVI2")
+	std::string ident = ctr.readString(globCsr, 4);
+	if (ident != "PVI1" && ident != "PVI2")
 		throw FileCorruptionError(FileType::Bank, globCsr);
 	globCsr += 0x10;
 
