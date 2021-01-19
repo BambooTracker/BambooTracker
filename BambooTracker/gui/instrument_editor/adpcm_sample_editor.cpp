@@ -142,7 +142,7 @@ void ADPCMSampleEditor::dragEnterEvent(QDragEnterEvent* event)
 {
 	const QMimeData* mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1
-			&& QFileInfo(mime->urls().constFirst().toLocalFile()).suffix().toLower() == "wav") {
+			&& QFileInfo(mime->urls().at(0).toLocalFile()).suffix().toLower() == "wav") {
 		event->acceptProposedAction();
 	}
 }

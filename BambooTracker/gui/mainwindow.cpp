@@ -147,7 +147,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	if (config.lock()->getMainWindowX() == -1) {	// When unset
 		QRect rec = geometry();
-		rec.moveCenter(QGuiApplication::screens().constFirst()->geometry().center());
+		rec.moveCenter(QGuiApplication::screens().at(0)->geometry().center());
 		setGeometry(rec);
 		config.lock()->setMainWindowX(x());
 		config.lock()->setMainWindowY(y());
@@ -865,7 +865,7 @@ void MainWindow::showEvent(QShowEvent* event)
 	if (!hasShownOnce_)	{
 		int y = config_.lock()->getMainWindowVerticalSplit();
 		if (y == -1) {
-			config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().constFirst());
+			config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().at(0));
 		}
 		else {
 			ui->splitter->setSizes({ y, ui->splitter->height() - ui->splitter->handleWidth() - y });
@@ -903,7 +903,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	auto mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1) {
-		const std::string ext = QFileInfo(mime->urls().constFirst().toLocalFile()).suffix().toLower().toStdString();
+		const std::string ext = QFileInfo(mime->urls().at(0).toLocalFile()).suffix().toLower().toStdString();
 		if (io::ModuleIO::getInstance().testLoadableFormat(ext)
 				| io::InstrumentIO::getInstance().testLoadableFormat(ext)
 				| io::BankIO::getInstance().testLoadableFormat(ext))
@@ -1006,7 +1006,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		config_.lock()->setMainWindowX(x());
 		config_.lock()->setMainWindowY(y());
 	}
-	config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().constFirst());
+	config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().at(0));
 
 	auto& mainTbConfig = config_.lock()->getMainToolbarConfiguration();
 	auto& subTbConfig = config_.lock()->getSubToolbarConfiguration();
