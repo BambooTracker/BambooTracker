@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -121,7 +121,7 @@ private:
 class PviBank final : public AbstractBank
 {
 public:
-	PviBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples);
+	PviBank(const std::vector<int>& ids, uint16_t deltaN, const std::vector<std::vector<uint8_t>>& samples);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -130,6 +130,7 @@ public:
 
 private:
 	std::vector<int> ids_;
+	uint16_t deltaN_;
 	std::vector<std::vector<uint8_t>> samples_;
 };
 

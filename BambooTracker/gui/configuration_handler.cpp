@@ -454,7 +454,8 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 			settings.setArrayIndex(i);
 			std::string type = settings.value("type").toString().toUtf8().toStdString();
 			std::vector<FMEnvelopeTextType> data;
-			for (const QString& d : qAsConst(settings).value("order").toString().split(",")) {
+			const QStringList list = settings.value("order").toString().split(",");
+			for (const QString& d : list) {
 				data.push_back(static_cast<FMEnvelopeTextType>(d.toInt()));
 			}
 			fmEnvelopeTexts.push_back({ type, data });

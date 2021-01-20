@@ -14,6 +14,7 @@
 - Keep playing state after changing the configuration (thanks [@OPNA2608])
 - [#289] - Change MIDI input initialization ([#288]; thanks [@OPNA2608])
 - [#296] - Make the release build for Windows XP in appveyor (thanks [@OPNA2608])
+- Load a ADPCM deltaN setting in .pvi file ([#308]; thanks [@OPNA2608])
 
 ### Fixed
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])

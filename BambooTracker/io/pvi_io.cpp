@@ -35,25 +35,25 @@ PviIO::PviIO() : AbstractBankIO("pvi", "FMP PVI", true, false) {}
 
 AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 {
-	size_t globCsr = 0;
-	std::string ident = ctr.readString(globCsr, 4);
+	std::string ident = ctr.readString(0, 4);
 	if (ident != "PVI1" && ident != "PVI2")
-		throw FileCorruptionError(FileType::Bank, globCsr);
-	globCsr += 0x10;
+		throw FileCorruptionError(FileType::Bank, 0);
+	uint16_t deltaN = ctr.readUint16(8);
+	uint8_t cnt = ctr.readUint8(11);
 
-	size_t sampOffs = globCsr + 128 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
+	constexpr size_t sampOffs = 0x10 + 128 * 4;
+	if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, 0x10);
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
+	extractADPCMSamples(ctr, 0x10, sampOffs, 128, ids, samples);
+	if (ids.size() != cnt) throw FileCorruptionError(FileType::Bank, 11);
 
-	return new PviBank(ids, samples);
+	return new PviBank(ids, deltaN, samples);
 }
 
-AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t>& sample,
-										  std::weak_ptr<InstrumentsManager> instMan,
-										  int instNum)
+AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t>& sample, uint16_t deltaN,
+										  std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
@@ -64,7 +64,7 @@ AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t>& sample,
 
 	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
 	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x49cd);	// 16000Hz
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, deltaN);
 
 	return adpcm;
 }

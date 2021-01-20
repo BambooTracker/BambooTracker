@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -199,8 +199,8 @@ AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<Instrume
 }
 
 /******************************/
-PviBank::PviBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples)
-	: ids_(ids), samples_(samples)
+PviBank::PviBank(const std::vector<int>& ids, uint16_t deltaN, const std::vector<std::vector<uint8_t>>& samples)
+	: ids_(ids), deltaN_(deltaN), samples_(samples)
 {
 }
 
@@ -222,7 +222,7 @@ std::string PviBank::getInstrumentName(size_t index) const
 
 AbstractInstrument* PviBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return io::PviIO::loadInstrument(samples_.at(index), instMan, instNum);
+	return io::PviIO::loadInstrument(samples_.at(index), deltaN_, instMan, instNum);
 }
 
 /******************************/

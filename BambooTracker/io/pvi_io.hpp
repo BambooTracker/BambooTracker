@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,7 +35,7 @@ public:
 	PviIO();
 	AbstractBank* load(const BinaryContainer& ctr) const override;
 
-	static AbstractInstrument* loadInstrument(const std::vector<uint8_t>& sample,
+	static AbstractInstrument* loadInstrument(const std::vector<uint8_t>& sample, uint16_t deltaN,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
 };
