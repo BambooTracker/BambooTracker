@@ -183,10 +183,10 @@ apt install \
 pacman -S \
   qt5-tools \
   pulseaudio \
-  jack \ 
+  jack \ #optionally
   rtaudio \ #optionally
   rtmidi \ #optionally
-  alsa-plugins #uncertain about this one though
+  alsa-plugins 
 ```
 
 ##### FreeBSD
@@ -228,6 +228,8 @@ git submodule update
 ```
 ... else specify which Rt libraries should be looked up with pkg-config
 `export BT_OPTIONS="$BT_OPTIONS CONFIG+=system_rtaudio CONFIG+=system_rtmidi"`
+
+**WARNING: minimum known-working versions of RtAudio and RtMidi are 5.1.0 and 4.0.0, respectively.**
 
 If you want to build with any of the optional dependencies, append the following options to `export`:
 
