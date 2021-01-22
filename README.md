@@ -49,6 +49,10 @@ Alternatively, you can install the latest BambooTracker release via the [Nix pac
 #### Debian / Ubuntu
 `apt install bambootracker`
 
+#### Arch / Manjaro
+
+AUR package is available: https://aur.archlinux.org/packages/bambootracker-git/ 
+
 #### FreeBSD
 `pkg install bambootracker`
 
@@ -178,11 +182,11 @@ apt install \
   libjack-jackd2-dev # for JACK2, or libjack-dev for JACK1
 ```
 
-##### Arch Linux/Manjaro/Artix:
+##### Arch Linux / Manjaro:
 ```bash
 pacman -S \
   qt5-tools \
-  pulseaudio \
+  libpulse \
   jack \ #optionally
   rtaudio \ #optionally
   rtmidi \ #optionally
