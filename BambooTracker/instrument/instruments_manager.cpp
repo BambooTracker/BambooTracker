@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <functional>
 #include <type_traits>
+#include <stdexcept>
 #include "instrument.hpp"
 #include "note.hpp"
 #include "utils.hpp"
