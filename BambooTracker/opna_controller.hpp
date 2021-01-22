@@ -101,12 +101,12 @@ private:
 
 	using ArpeggioIterInterface = std::unique_ptr<SequenceIteratorInterface<ArpeggioUnit>>;
 	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
-								 const EchoBuffer& echoBuf, Note& baseNote, bool& needToneSet);
+								 const EchoBuffer& echoBuf, Note& baseNote, bool& shouldSetTone);
 	void checkPortamento(const ArpeggioIterInterface& arpIt, int prtm, bool hasKeyOnBefore,
 						 bool isTonePrtm, EchoBuffer& echoBuf, Note& baseNote,
-						 bool& needToneSet);
+						 bool& shouldSetTone);
 	void checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
-							  int& sumPitch, bool& needToneSet);
+							  int& sumPitch, bool& shouldSetTone);
 
 	/*----- FM -----*/
 public:
@@ -393,7 +393,7 @@ public:
 
 	// Set volume
 	void setVolumeADPCM(int volume);
-	void setTemporaryVolumeADPCM(int volume);
+	void setOneshotVolumeADPCM(int volume);
 
 	// Set effect
 	void setPanADPCM(int value);
@@ -423,27 +423,27 @@ private:
 	EchoBuffer echoBufADPCM_;
 	bool neverSetBaseNoteADPCM_;
 	Note baseNoteADPCM_;
-	int sumPitchADPCM_;
-	int baseVolADPCM_, tmpVolADPCM_;
-	uint8_t panADPCM_;
+	int baseVolADPCM_, oneshotVolADPCM_;
+	uint8_t panStateADPCM_;
 	bool isMuteADPCM_;
-	bool hasPreSetTickEventADPCM_;
-	bool needEnvSetADPCM_;
-	bool needToneSetADPCM_;
+	bool shouldSkip1stTickExecADPCM_;	// Use to execute key on/off process in jamming
+	bool shouldWriteEnvADPCM_;
+	bool shouldSetToneADPCM_;
 	size_t startAddrADPCM_, stopAddrADPCM_;	// By 32 bytes
 	size_t storePointADPCM_;	// Move by 32 bytes
-	ADPCMEnvelopeIter envItADPCM_;
-	ArpeggioIterInterface arpItADPCM_;
-	PitchIter ptItADPCM_;
-	bool isArpEffADPCM_;
-	int prtmADPCM_;
-	bool isTonePrtmADPCM_;
-	std::unique_ptr<WavingEffectIterator> vibItADPCM_;
-	std::unique_ptr<WavingEffectIterator> treItADPCM_;
-	int volSldADPCM_, sumVolSldADPCM_;
+	ADPCMEnvelopeIter envItrADPCM_;
+	ArpeggioIterInterface arpItrADPCM_;
+	PitchIter ptItrADPCM_;
+	int ptSumADPCM_;
+	bool hasArpEffADPCM_;
+	int prtmDepthADPCM_;
+	bool hasTonePrtmADPCM_;
+	std::unique_ptr<WavingEffectIterator> vibItrADPCM_;
+	std::unique_ptr<WavingEffectIterator> treItrADPCM_;
+	int volSldADPCM_, volSldSumADPCM_;
 	int detuneADPCM_, fdetuneADPCM_;
 	std::unique_ptr<NoteSlideEffectIterator> nsItADPCM_;
-	int sumNoteSldADPCM_;
+	int nsSumADPCM_;
 	bool noteSldADPCMSetFlag_;
 	int transposeADPCM_;
 	bool hasStartRequestedKit_;
@@ -540,16 +540,16 @@ inline void OPNAController::checkRealToneSSGByPitch(int ch)
 /*----- ADPCM/Drumkit -----*/
 inline void OPNAController::checkRealToneADPCMByArpeggio()
 {
-	checkRealToneByArpeggio(arpItADPCM_, echoBufADPCM_, baseNoteADPCM_, needToneSetADPCM_);
+	checkRealToneByArpeggio(arpItrADPCM_, echoBufADPCM_, baseNoteADPCM_, shouldSetToneADPCM_);
 }
 
 inline void OPNAController::checkPortamentoADPCM()
 {
-	checkPortamento(arpItADPCM_, prtmADPCM_, hasKeyOnBeforeADPCM_, isTonePrtmADPCM_, echoBufADPCM_,
-					baseNoteADPCM_, needToneSetADPCM_);
+	checkPortamento(arpItrADPCM_, prtmDepthADPCM_, hasKeyOnBeforeADPCM_, hasTonePrtmADPCM_, echoBufADPCM_,
+					baseNoteADPCM_, shouldSetToneADPCM_);
 }
 
 inline void OPNAController::checkRealToneADPCMByPitch()
 {
-	checkRealToneByPitch(ptItADPCM_, sumPitchADPCM_, needToneSetADPCM_);
+	checkRealToneByPitch(ptItrADPCM_, ptSumADPCM_, shouldSetToneADPCM_);
 }

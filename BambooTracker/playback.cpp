@@ -1409,7 +1409,7 @@ void PlaybackManager::checkADPCMDelayEventsInTick(const Step& step)
 {
 	// Check volume delay
 	if (!volDlyCntADPCM_)
-		opnaCtrl_->setTemporaryVolumeADPCM(volDlyValueADPCM_);
+		opnaCtrl_->setOneshotVolumeADPCM(volDlyValueADPCM_);
 	// Check note cut
 	if (!ntCutDlyCntADPCM_)
 		opnaCtrl_->keyOffADPCM();

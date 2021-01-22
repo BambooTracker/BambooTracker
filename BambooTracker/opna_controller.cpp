@@ -288,7 +288,7 @@ void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWr
 /********** Internal common process **********/
 void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 											 const EchoBuffer& echoBuf, Note& baseNote,
-											 bool& needToneSet)
+											 bool& shouldSetTone)
 {
 	if (arpIt->hasEnded()) return;
 
@@ -314,13 +314,13 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 		return ;
 	}
 
-	needToneSet = true;
+	shouldSetTone = true;
 }
 
 void OPNAController::checkPortamento(const ArpeggioIterInterface& arpIt,
 									 int prtm, bool hasKeyOnBefore, bool isTonePrtm,
 									 EchoBuffer& echoBuf,
-									 Note& baseNote, bool& needToneSet)
+									 Note& baseNote, bool& shouldSetTone)
 {
 	if ((!arpIt || arpIt->hasEnded()) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
@@ -328,22 +328,22 @@ void OPNAController::checkPortamento(const ArpeggioIterInterface& arpIt,
 			int dif = bufNote.getAbsolutePicth() - baseNote.getAbsolutePicth();
 			if (dif > 0) {
 				baseNote += std::min(dif, prtm);
-				needToneSet = true;
+				shouldSetTone = true;
 			}
 			else if (dif < 0) {
 				baseNote += std::max(dif, -prtm);
-				needToneSet = true;
+				shouldSetTone = true;
 			}
 		}
 		else {
 			baseNote += prtm;
-			needToneSet = true;
+			shouldSetTone = true;
 		}
 	}
 }
 
 void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
-										  int& sumPitch, bool& needToneSet)
+										  int& sumPitch, bool& shouldSetTone)
 {
 	if (ptIt->hasEnded()) return;
 
@@ -358,7 +358,7 @@ void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequen
 		return;
 	}
 
-	needToneSet = true;
+	shouldSetTone = true;
 }
 
 //---------- FM ----------//
@@ -3374,27 +3374,27 @@ void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 
 	echoBufADPCM_.push(note);
 
-	bool isTonePrtm = isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_;
+	bool isTonePrtm = hasTonePrtmADPCM_ && hasKeyOnBeforeADPCM_;
 	if (isTonePrtm) {
-		baseNoteADPCM_ += (sumNoteSldADPCM_ + transposeADPCM_);
+		baseNoteADPCM_ += (nsSumADPCM_ + transposeADPCM_);
 	}
 	else {
 		baseNoteADPCM_ = echoBufADPCM_.latest();
 		neverSetBaseNoteADPCM_ = false;
-		sumPitchADPCM_ = 0;
-		sumVolSldADPCM_ = 0;
-		tmpVolADPCM_ = -1;
+		ptSumADPCM_ = 0;
+		volSldSumADPCM_ = 0;
+		oneshotVolADPCM_ = UNUSED_VALUE;
 	}
-	if (!noteSldADPCMSetFlag_) {
-		nsItADPCM_.reset();
-	}
-	noteSldADPCMSetFlag_ = false;
-	needToneSetADPCM_ = true;
-	sumNoteSldADPCM_ = 0;
+
+	if (noteSldADPCMSetFlag_) noteSldADPCMSetFlag_ = false;
+	else nsItADPCM_.reset();
+
+	shouldSetToneADPCM_ = true;
+	nsSumADPCM_ = 0;
 	transposeADPCM_ = 0;
 
 	setFrontADPCMSequences();
-	hasPreSetTickEventADPCM_ = isJam;
+	shouldSkip1stTickExecADPCM_ = isJam;
 
 	if (!isTonePrtm) {
 		opna_->setRegister(0x101, 0x02);
@@ -3432,7 +3432,7 @@ void OPNAController::keyOffADPCM(bool isJam)
 		return;
 	}
 	releaseStartADPCMSequences();
-	hasPreSetTickEventADPCM_ = isJam;
+	shouldSkip1stTickExecADPCM_ = isJam;
 	isKeyOnADPCM_ = false;
 }
 
@@ -3444,28 +3444,28 @@ void OPNAController::setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst)
 	refInstKit_.reset();
 
 	if (inst->getEnvelopeEnabled())
-		envItADPCM_ = inst->getEnvelopeSequenceIterator();
+		envItrADPCM_ = inst->getEnvelopeSequenceIterator();
 	else
-		envItADPCM_.reset();
-	if (!isArpEffADPCM_) {
+		envItrADPCM_.reset();
+	if (!hasArpEffADPCM_) {
 		if (inst->getArpeggioEnabled())
-			arpItADPCM_ = inst->getArpeggioSequenceIterator();
+			arpItrADPCM_ = inst->getArpeggioSequenceIterator();
 		else
-			arpItADPCM_.reset();
+			arpItrADPCM_.reset();
 	}
 	if (inst->getPitchEnabled())
-		ptItADPCM_ = inst->getPitchSequenceIterator();
+		ptItrADPCM_ = inst->getPitchSequenceIterator();
 	else
-		ptItADPCM_.reset();
+		ptItrADPCM_.reset();
 }
 
 void OPNAController::updateInstrumentADPCM(int instNum)
 {
 	if (refInstADPCM_ && refInstADPCM_->isRegisteredWithManager()
 			&& refInstADPCM_->getNumber() == instNum) {
-		if (!refInstADPCM_->getEnvelopeEnabled()) envItADPCM_.reset();
-		if (!refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
-		if (!refInstADPCM_->getPitchEnabled()) ptItADPCM_.reset();
+		if (!refInstADPCM_->getEnvelopeEnabled()) envItrADPCM_.reset();
+		if (!refInstADPCM_->getArpeggioEnabled()) arpItrADPCM_.reset();
+		if (!refInstADPCM_->getPitchEnabled()) ptItrADPCM_.reset();
 	}
 }
 
@@ -3475,9 +3475,9 @@ void OPNAController::setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> ins
 	refInstKit_ = inst;
 	refInstADPCM_.reset();
 
-	envItADPCM_.reset();
-	arpItADPCM_.reset();
-	ptItADPCM_.reset();
+	envItrADPCM_.reset();
+	arpItrADPCM_.reset();
+	ptItrADPCM_.reset();
 }
 
 void OPNAController::updateInstrumentDrumkit(int instNum, int key)
@@ -3534,16 +3534,16 @@ void OPNAController::setVolumeADPCM(int volume)
 {
 	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
 		baseVolADPCM_ = volume;
-		tmpVolADPCM_ = -1;
+		oneshotVolADPCM_ = UNUSED_VALUE;
 
 		if (isKeyOnADPCM_) setRealVolumeADPCM();
 	}
 }
 
-void OPNAController::setTemporaryVolumeADPCM(int volume)
+void OPNAController::setOneshotVolumeADPCM(int volume)
 {
 	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
-		tmpVolADPCM_ = volume;
+		oneshotVolADPCM_ = volume;
 
 		if (isKeyOnADPCM_) setRealVolumeADPCM();
 	}
@@ -3551,25 +3551,25 @@ void OPNAController::setTemporaryVolumeADPCM(int volume)
 
 void OPNAController::setRealVolumeADPCM()
 {
-	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
-	if (envItADPCM_) {
-		int type = envItADPCM_->data().data;
+	int volume = (oneshotVolADPCM_ == UNUSED_VALUE) ? baseVolADPCM_ : oneshotVolADPCM_;
+	if (envItrADPCM_) {
+		int type = envItrADPCM_->data().data;
 		if (type >= 0) volume -= (bt_defs::NSTEP_ADPCM_VOLUME - 1 - type);
 	}
-	if (treItADPCM_) volume += treItADPCM_->data().data;
-	volume += sumVolSldADPCM_;
+	if (treItrADPCM_) volume += treItrADPCM_->data().data;
+	volume += volSldSumADPCM_;
 
 	volume = utils::clamp(volume, 0, bt_defs::NSTEP_ADPCM_VOLUME - 1);
 
 	opna_->setRegister(0x10b, static_cast<uint8_t>(volume));
-	needEnvSetADPCM_ = false;
+	shouldWriteEnvADPCM_ = false;
 }
 
 /********** Set effect **********/
 void OPNAController::setPanADPCM(int value)
 {
-	panADPCM_ = static_cast<uint8_t>(value << 6);
-	opna_->setRegister(0x101, panADPCM_ | 0x02);
+	panStateADPCM_ = static_cast<uint8_t>(value << 6);
+	opna_->setRegister(0x101, panStateADPCM_ | 0x02);
 }
 
 void OPNAController::setArpeggioEffectADPCM(int second, int third)
@@ -3577,13 +3577,13 @@ void OPNAController::setArpeggioEffectADPCM(int second, int third)
 	if (refInstKit_) return;
 
 	if (second || third) {
-		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
-		isArpEffADPCM_ = true;
+		arpItrADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
+		hasArpEffADPCM_ = true;
 	}
 	else {
-		if (!refInstADPCM_ || !refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
-		else arpItADPCM_ = refInstADPCM_->getArpeggioSequenceIterator();
-		isArpEffADPCM_ = false;
+		if (!refInstADPCM_ || !refInstADPCM_->getArpeggioEnabled()) arpItrADPCM_.reset();
+		else arpItrADPCM_ = refInstADPCM_->getArpeggioSequenceIterator();
+		hasArpEffADPCM_ = false;
 	}
 }
 
@@ -3591,22 +3591,22 @@ void OPNAController::setPortamentoEffectADPCM(int depth, bool isTonePortamento)
 {
 	if (refInstKit_) return;
 
-	prtmADPCM_ = depth;
-	isTonePrtmADPCM_ =  depth ? isTonePortamento : false;
+	prtmDepthADPCM_ = depth;
+	hasTonePrtmADPCM_ = depth ? isTonePortamento : false;
 }
 
 void OPNAController::setVibratoEffectADPCM(int period, int depth)
 {
 	if (refInstKit_) return;
 
-	if (period && depth) vibItADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
-	else vibItADPCM_.reset();
+	if (period && depth) vibItrADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
+	else vibItrADPCM_.reset();
 }
 
 void OPNAController::setTremoloEffectADPCM(int period, int depth)
 {
-	if (period && depth) treItADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
-	else treItADPCM_.reset();
+	if (period && depth) treItrADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
+	else treItrADPCM_.reset();
 }
 
 void OPNAController::setVolumeSlideADPCM(int depth, bool isUp)
@@ -3619,7 +3619,7 @@ void OPNAController::setDetuneADPCM(int pitch)
 	if (refInstKit_) return;
 
 	detuneADPCM_ = pitch;
-	needToneSetADPCM_ = true;
+	shouldSetToneADPCM_ = true;
 }
 
 void OPNAController::setFineDetuneADPCM(int pitch)
@@ -3627,7 +3627,7 @@ void OPNAController::setFineDetuneADPCM(int pitch)
 	if (refInstKit_) return;
 
 	fdetuneADPCM_ = pitch;
-	needToneSetADPCM_ = true;
+	shouldSetToneADPCM_ = true;
 }
 
 void OPNAController::setNoteSlideADPCM(int speed, int seminote)
@@ -3644,17 +3644,17 @@ void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 void OPNAController::setTransposeEffectADPCM(int seminote)
 {
 	transposeADPCM_ += (seminote * Note::SEMINOTE_PITCH);
-	needToneSetADPCM_ = true;
+	shouldSetToneADPCM_ = true;
 }
 
 /********** For state retrieve **********/
 void OPNAController::haltSequencesADPCM()
 {
-	if (treItADPCM_) treItADPCM_->end();
-	if (envItADPCM_) envItADPCM_->end();
-	if (arpItADPCM_) arpItADPCM_->end();
-	if (ptItADPCM_) ptItADPCM_->end();
-	if (vibItADPCM_) vibItADPCM_->end();
+	if (treItrADPCM_) treItrADPCM_->end();
+	if (envItrADPCM_) envItrADPCM_->end();
+	if (arpItrADPCM_) arpItrADPCM_->end();
+	if (ptItrADPCM_) ptItrADPCM_->end();
+	if (vibItrADPCM_) vibItrADPCM_->end();
 	if (nsItADPCM_) nsItADPCM_->end();
 }
 
@@ -3666,7 +3666,7 @@ bool OPNAController::isKeyOnADPCM() const
 
 bool OPNAController::isTonePortamentoADPCM() const
 {
-	return isTonePrtmADPCM_;
+	return hasTonePrtmADPCM_;
 }
 
 Note OPNAController::getADPCMLatestNote() const
@@ -3691,34 +3691,34 @@ void OPNAController::initADPCM()
 	echoBufADPCM_.clear();
 
 	neverSetBaseNoteADPCM_ = true;
-	sumPitchADPCM_ = 0;
 	baseVolADPCM_ = bt_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
-	tmpVolADPCM_ = -1;
-	panADPCM_ = 0xc0;
+	oneshotVolADPCM_ = UNUSED_VALUE;
+	panStateADPCM_ = 0xc0;
+	shouldWriteEnvADPCM_ = false;
+	shouldSetToneADPCM_ = false;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
 	stopAddrADPCM_ = startAddrADPCM_;
 	hasStartRequestedKit_ = false;
 
 	// Init sequence
-	hasPreSetTickEventADPCM_ = false;
-	envItADPCM_.reset();
-	arpItADPCM_.reset();
-	ptItADPCM_.reset();
-	needEnvSetADPCM_ = false;
-	needToneSetADPCM_ = false;
+	shouldSkip1stTickExecADPCM_ = false;
+	envItrADPCM_.reset();
+	arpItrADPCM_.reset();
+	ptItrADPCM_.reset();
+	ptSumADPCM_ = 0;
 
 	// Effect
-	isArpEffADPCM_ = false;
-	prtmADPCM_ = 0;
-	isTonePrtmADPCM_ = false;
-	vibItADPCM_.reset();
-	treItADPCM_.reset();
+	hasArpEffADPCM_ = false;
+	prtmDepthADPCM_ = 0;
+	hasTonePrtmADPCM_ = false;
+	vibItrADPCM_.reset();
+	treItrADPCM_.reset();
 	volSldADPCM_ = 0;
-	sumVolSldADPCM_ = 0;
+	volSldSumADPCM_ = 0;
 	detuneADPCM_ = 0;
 	fdetuneADPCM_ = 0;
 	nsItADPCM_.reset();
-	sumNoteSldADPCM_ = 0;
+	nsSumADPCM_ = 0;
 	noteSldADPCMSetFlag_ = false;
 	transposeADPCM_ = 0;
 
@@ -3748,39 +3748,39 @@ void OPNAController::setFrontADPCMSequences()
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
-	if (treItADPCM_) {
-		treItADPCM_->front();
-		needEnvSetADPCM_ = true;
+	if (treItrADPCM_) {
+		treItrADPCM_->front();
+		shouldWriteEnvADPCM_ = true;
 	}
 	if (volSldADPCM_) {
-		sumVolSldADPCM_ += volSldADPCM_;
-		needEnvSetADPCM_ = true;
+		volSldSumADPCM_ += volSldADPCM_;
+		shouldWriteEnvADPCM_ = true;
 	}
-	if (envItADPCM_) {
-		envItADPCM_->front();
+	if (envItrADPCM_) {
+		envItrADPCM_->front();
 		writeEnvelopeADPCMToRegister();
 	}
 	else setRealVolumeADPCM();
 
-	if (arpItADPCM_) {
-		arpItADPCM_->front();
+	if (arpItrADPCM_) {
+		arpItrADPCM_->front();
 		checkRealToneADPCMByArpeggio();
 	}
 	checkPortamentoADPCM();
 
-	if (ptItADPCM_) {
-		ptItADPCM_->front();
+	if (ptItrADPCM_) {
+		ptItrADPCM_->front();
 		checkRealToneADPCMByPitch();
 	}
-	if (vibItADPCM_) {
-		vibItADPCM_->front();
-		needToneSetADPCM_ = true;
+	if (vibItrADPCM_) {
+		vibItrADPCM_->front();
+		/* shouldSetToneADPCM_ = true; */
 	}
 	if (nsItADPCM_) {
 		nsItADPCM_->front();
 		if (!nsItADPCM_->hasEnded()) {
-			sumNoteSldADPCM_ += nsItADPCM_->data().data;
-			needToneSetADPCM_ = true;
+			nsSumADPCM_ += nsItADPCM_->data().data;
+			/* shouldSetToneADPCM_ = true; */
 		}
 	}
 
@@ -3791,99 +3791,101 @@ void OPNAController::releaseStartADPCMSequences()
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
-	if (treItADPCM_) {
-		treItADPCM_->release();
-		needEnvSetADPCM_ = true;
+	if (treItrADPCM_) {
+		treItrADPCM_->release();
+		shouldWriteEnvADPCM_ = true;
 	}
 	if (volSldADPCM_) {
-		sumVolSldADPCM_ += volSldADPCM_;
-		needEnvSetADPCM_ = true;
+		volSldSumADPCM_ += volSldADPCM_;
+		shouldWriteEnvADPCM_ = true;
 	}
-	if (envItADPCM_) {
-		envItADPCM_->release();
-		if (!envItADPCM_->hasEnded()) opna_->setRegister(0x10b, 0);
+	if (envItrADPCM_) {
+		envItrADPCM_->release();
+		if (!envItrADPCM_->hasEnded()) {
+			opna_->setRegister(0x10b, 0);	// Silence
+			shouldWriteEnvADPCM_ = false;
+		}
 		else writeEnvelopeADPCMToRegister();
 	}
 	else {
-		if (!hasPreSetTickEventADPCM_) {
-			opna_->setRegister(0x10b, 0);
-		}
+		opna_->setRegister(0x10b, 0);	// Silence
+		shouldWriteEnvADPCM_ = false;
 	}
 
-	if (arpItADPCM_) {
-		arpItADPCM_->release();
+	if (arpItrADPCM_) {
+		arpItrADPCM_->release();
 		checkRealToneADPCMByArpeggio();
 	}
 	checkPortamentoADPCM();
 
-	if (ptItADPCM_) {
-		ptItADPCM_->release();
+	if (ptItrADPCM_) {
+		ptItrADPCM_->release();
 		checkRealToneADPCMByPitch();
 	}
-	if (vibItADPCM_) {
-		vibItADPCM_->release();
-		needToneSetADPCM_ = true;
+	if (vibItrADPCM_) {
+		vibItrADPCM_->release();
+		shouldSetToneADPCM_ = true;
 	}
 	if (nsItADPCM_) {
 		nsItADPCM_->release();
 		if (!nsItADPCM_->hasEnded()) {
-			sumNoteSldADPCM_ += nsItADPCM_->data().data;
-			needToneSetADPCM_ = true;
+			nsSumADPCM_ += nsItADPCM_->data().data;
+			shouldSetToneADPCM_ = true;
 		}
 	}
 
-	if (needToneSetADPCM_) writePitchADPCM();
+	if (shouldSetToneADPCM_) writePitchADPCM();
 
 	hasStartRequestedKit_ = false;	// Always silent at relase in drumkit
 }
 
 void OPNAController::tickEventADPCM()
 {
-	if (hasPreSetTickEventADPCM_) {
-		hasPreSetTickEventADPCM_ = false;
+	if (shouldSkip1stTickExecADPCM_) {
+		shouldSkip1stTickExecADPCM_ = false;
 	}
 	else {
 		if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
-		if (treItADPCM_) {
-			treItADPCM_->next();
-			needEnvSetADPCM_ = true;
+		if (treItrADPCM_) {
+			treItrADPCM_->next();
+			shouldWriteEnvADPCM_ = true;
 		}
 		if (volSldADPCM_) {
-			sumVolSldADPCM_ += volSldADPCM_;
-			needEnvSetADPCM_ = true;
+			volSldSumADPCM_ += volSldADPCM_;
+			shouldWriteEnvADPCM_ = true;
 		}
-		if (envItADPCM_) {
-			envItADPCM_->next();
+		if (envItrADPCM_) {
+			envItrADPCM_->next();
 			writeEnvelopeADPCMToRegister();
 		}
-		else if (needEnvSetADPCM_) {
+		else if (shouldWriteEnvADPCM_) {
 			setRealVolumeADPCM();
 		}
 
-		if (arpItADPCM_) {
-			arpItADPCM_->next();
+		if (arpItrADPCM_) {
+			arpItrADPCM_->next();
 			checkRealToneADPCMByArpeggio();
 		}
 		checkPortamentoADPCM();
 
-		if (ptItADPCM_) {
-			ptItADPCM_->next();
+		if (ptItrADPCM_) {
+			ptItrADPCM_->next();
 			checkRealToneADPCMByPitch();
 		}
-		if (vibItADPCM_) {
-			vibItADPCM_->next();
-			needToneSetADPCM_ = true;
+		if (vibItrADPCM_) {
+			vibItrADPCM_->next();
+			shouldSetToneADPCM_ = true;
 		}
 		if (nsItADPCM_) {
 			nsItADPCM_->next();
 			if (!nsItADPCM_->hasEnded()) {
-				sumNoteSldADPCM_ += nsItADPCM_->data().data;
-				needToneSetADPCM_ = true;
+				nsSumADPCM_ += nsItADPCM_->data().data;
+				shouldSetToneADPCM_ = true;
 			}
 		}
 
-		if (needToneSetADPCM_) writePitchADPCM();
+		if (shouldSetToneADPCM_) writePitchADPCM();
 
 		if (hasStartRequestedKit_) {
 			opna_->setRegister(0x101, 0x02);
@@ -3900,9 +3902,8 @@ void OPNAController::tickEventADPCM()
 
 void OPNAController::writeEnvelopeADPCMToRegister()
 {
-	if (!envItADPCM_->hasEnded() || needEnvSetADPCM_) {
+	if (!envItrADPCM_->hasEnded() || shouldWriteEnvADPCM_) {
 		setRealVolumeADPCM();
-		needEnvSetADPCM_ = false;
 	}
 }
 
@@ -3911,10 +3912,10 @@ void OPNAController::writePitchADPCM()
 	if (neverSetBaseNoteADPCM_) return;
 
 	if (refInstADPCM_) {
-		int p = (baseNoteADPCM_ + (sumPitchADPCM_
-								   + (vibItADPCM_ ? vibItADPCM_->data().data : 0)
+		int p = (baseNoteADPCM_ + (ptSumADPCM_
+								   + (vibItrADPCM_ ? vibItrADPCM_->data().data : 0)
 								   + detuneADPCM_
-								   + sumNoteSldADPCM_
+								   + nsSumADPCM_
 								   + transposeADPCM_)).getAbsolutePicth();
 		int diff = p - Note::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
@@ -3929,8 +3930,7 @@ void OPNAController::writePitchADPCM()
 		}
 	}
 
-	needToneSetADPCM_ = false;
-	needEnvSetADPCM_ = false;
+	shouldSetToneADPCM_ = false;
 }
 
 void OPNAController::writePitchADPCMToRegister(int pitchDiff, int rtDeltaN)
@@ -3958,5 +3958,5 @@ void OPNAController::triggerSamplePlayADPCM(size_t startAddress, size_t stopAddr
 	}
 
 	opna_->setRegister(0x100, 0xa0 | repeatFlag);
-	opna_->setRegister(0x101, panADPCM_ | 0x02);
+	opna_->setRegister(0x101, panStateADPCM_ | 0x02);
 }
