@@ -91,7 +91,7 @@ private:
 
 	std::vector<std::pair<int, int>> registerSetBuf_;
 
-	void initChip();
+	void resetState();
 
 	std::unique_ptr<int16_t[]> outputHistory_;
 	size_t outputHistoryIndex_;
@@ -114,7 +114,6 @@ public:
 	void keyOnFM(int ch, const Note& note, bool isJam = false);
 	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
-	void updateEchoBufferFM(int ch, const Note& note);
 
 	// Set instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
@@ -238,7 +237,6 @@ public:
 	void keyOnSSG(int ch, const Note& note, bool isJam = false);
 	void keyOnSSG(int ch, int echoBuf);
 	void keyOffSSG(int ch, bool isJam = false);
-	void updateEchoBufferSSG(int ch, const Note& note);
 
 	// Set instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
@@ -352,19 +350,23 @@ public:
 
 	// Set volume
 	void setVolumeRhythm(int ch, int volume);
+	void setOneshotVolumeRhythm(int ch, int volume);
 	void setMasterVolumeRhythm(int volume);
-	void setTemporaryVolumeRhythm(int ch, int volume);
 
 	// Set effect
 	void setPanRhythm(int ch, int value);
 
 private:
-	uint8_t keyOnFlagRhythm_, keyOffFlagRhythm_;
-	int volRhythm_[6], mVolRhythm_, tmpVolRhythm_[6];
-	/// bit0: right on/off
-	/// bit1: left on/off
-	uint8_t panRhythm_[6];
-	bool isMuteRhythm_[6];
+	struct RhythmChannel
+	{
+		int baseVol_, oneshotVol_;
+		/// bit0: right on/off
+		/// bit1: left on/off
+		uint8_t panState;
+		bool isMute;
+	} rhythm_[6];
+	uint8_t keyOnRequestFlagsRhythm_, keyOffRequestFlagsRhythm_;
+	int masterVolRhythm_;
 
 	void initRhythm();
 
@@ -379,7 +381,6 @@ public:
 	void keyOnADPCM(const Note& note, bool isJam = false);
 	void keyOnADPCM(int echoBuf);
 	void keyOffADPCM(bool isJam = false);
-	void updateEchoBufferADPCM(const Note& note);
 
 	// Set instrument
 	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);

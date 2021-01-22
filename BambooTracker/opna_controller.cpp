@@ -31,6 +31,8 @@
 
 namespace
 {
+constexpr int UNUSED_VALUE = -1;
+
 const std::unordered_map<FMOperatorType, std::vector<FMEnvelopeParameter>> FM_ENV_PARAMS_OP = {
 	{ FMOperatorType::All, {
 		  FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
@@ -87,17 +89,13 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 			opSeqItFM_[ch].emplace(ep, nullptr);
 	}
 
-	for (int ch = 0; ch < 3; ++ch) {
-		isMuteSSG_[ch] = false;
-	}
+	for (int ch = 0; ch < 3; ++ch) isMuteSSG_[ch] = false;
 
-	for (int ch = 0; ch < 6; ++ch) {
-		isMuteRhythm_[ch] = false;
-	}
+	for (auto& rhy : rhythm_) rhy.isMute = false;
 
 	isMuteADPCM_ = false;
 
-	initChip();
+	resetState();
 
 	outputHistory_.reset(new int16_t[2 * bt_defs::OUTPUT_HISTORY_SIZE]{});
 	outputHistoryReady_.reset(new int16_t[2 * bt_defs::OUTPUT_HISTORY_SIZE]{});
@@ -108,12 +106,12 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 void OPNAController::reset()
 {
 	opna_->reset();
-	initChip();
+	resetState();
 	std::fill(&outputHistory_[0], &outputHistory_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
 	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
 }
 
-void OPNAController::initChip()
+void OPNAController::resetState()
 {
 	opna_->setRegister(0x29, 0x80);		// Init interrupt / YM2608 mode
 
@@ -478,7 +476,7 @@ void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 {
 	if (isMuteFM_[ch]) return;
 
-	updateEchoBufferFM(ch, note);
+	echoBufFM_[ch].push(note);
 
 	bool isTonePrtm = isTonePrtmFM_[ch] && hasKeyOnBeforeFM_[ch];
 	if (isTonePrtm) {
@@ -619,11 +617,6 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR4, 127);
 		envFM_[ch]->setParameterValue(FMEnvelopeParameter::RR4, prev);
 	}
-}
-
-void OPNAController::updateEchoBufferFM(int ch, const Note& note)
-{
-	echoBufFM_[ch].push(note);
 }
 
 /********** Set instrument **********/
@@ -2034,7 +2027,6 @@ void OPNAController::setInstrumentFMProperties(int ch)
 //---------- SSG ----------//
 namespace
 {
-constexpr int UNUSED_NOISE_PERIOD = -1;
 constexpr int AUTO_ENV_SHAPE_TYPE[15] = { 17, 17, 17, 21, 21, 21, 21, 16, 17, 18, 19, 20, 21, 22, 23 };
 
 inline uint8_t SSGToneFlag(int ch) { return (1 << ch); }
@@ -2046,7 +2038,7 @@ void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 {
 	if (isMuteSSG_[ch]) return;
 
-	updateEchoBufferSSG(ch, note);
+	echoBufSSG_[ch].push(note);
 
 	if (isTonePrtmSSG_[ch] && hasKeyOnBeforeSSG_[ch]) {
 		baseNoteSSG_[ch] += (sumNoteSldSSG_[ch] + transposeSSG_[ch]);
@@ -2090,11 +2082,6 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 	releaseStartSSGSequences(ch);
 	hasPreSetTickEventSSG_[ch] = isJam;
 	isKeyOnSSG_[ch] = false;
-}
-
-void OPNAController::updateEchoBufferSSG(int ch, const Note& note)
-{
-	echoBufSSG_[ch].push(note);
 }
 
 /********** Set instrument **********/
@@ -2367,7 +2354,7 @@ void OPNAController::initSSG()
 
 		neverSetBaseNoteSSG_[ch] = true;
 		sumPitchSSG_[ch] = 0;
-		tnSSG_[ch] = { false, false, UNUSED_NOISE_PERIOD };
+		tnSSG_[ch] = { false, false, UNUSED_VALUE };
 		baseVolSSG_[ch] = bt_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
@@ -3009,7 +2996,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 		if (tnSSG_[ch].isNoise) {
 			mixerSSG_ |= SSGNoiseFlag(ch);
 			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = UNUSED_NOISE_PERIOD;
+			tnSSG_[ch].noisePeriod_ = UNUSED_VALUE;
 		}
 	}
 	else if (type == 65) {	// None
@@ -3021,7 +3008,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 		if (tnSSG_[ch].isNoise) {
 			mixerSSG_ |= SSGNoiseFlag(ch);
 			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = UNUSED_NOISE_PERIOD;
+			tnSSG_[ch].noisePeriod_ = UNUSED_VALUE;
 		}
 	}
 	else if (type > 32) {	// Tone&Noise
@@ -3273,74 +3260,88 @@ void OPNAController::writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTr
 }
 
 //---------- Rhythm ----------//
+namespace
+{
+inline uint8_t makePanAndVolumeRegVal(uint8_t panState, int volume)
+{
+	return static_cast<uint8_t>((panState << 6) | volume);
+}
+}
+
 /********** Key on/off **********/
 void OPNAController::setKeyOnFlagRhythm(int ch)
 {
-	if (isMuteRhythm_[ch]) return;
+	auto& rhy = rhythm_[ch];
+	if (rhy.isMute) return;
 
-	if (tmpVolRhythm_[ch] != -1)
-		setVolumeRhythm(ch, volRhythm_[ch]);
+	if (rhy.oneshotVol_ != UNUSED_VALUE)
+		setVolumeRhythm(ch, rhy.baseVol_);
 
-	keyOnFlagRhythm_ |= static_cast<uint8_t>(1 << ch);
+	keyOnRequestFlagsRhythm_ |= static_cast<uint8_t>(1 << ch);
 }
 
 void OPNAController::setKeyOffFlagRhythm(int ch)
 {
-	keyOffFlagRhythm_ |= static_cast<uint8_t>(1 << ch);
+	keyOffRequestFlagsRhythm_ |= static_cast<uint8_t>(1 << ch);
 }
 
 /********** Set volume **********/
 void OPNAController::setVolumeRhythm(int ch, int volume)
 {
 	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
-		volRhythm_[ch] = volume;
-		tmpVolRhythm_[ch] = -1;
-		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
+		auto& rhy = rhythm_[ch];
+		rhy.baseVol_ = volume;
+		rhy.oneshotVol_ = UNUSED_VALUE;
+		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), makePanAndVolumeRegVal(rhy.panState, volume));
+	}
+}
+
+void OPNAController::setOneshotVolumeRhythm(int ch, int volume)
+{
+	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
+		auto& rhy = rhythm_[ch];
+		rhy.oneshotVol_ = volume;
+		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), makePanAndVolumeRegVal(rhy.panState, volume));
 	}
 }
 
 void OPNAController::setMasterVolumeRhythm(int volume)
 {
-	mVolRhythm_ = volume;
+	masterVolRhythm_ = volume;
 	opna_->setRegister(0x11, static_cast<uint8_t>(volume));
-}
-
-void OPNAController::setTemporaryVolumeRhythm(int ch, int volume)
-{
-	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
-		tmpVolRhythm_[ch] = volume;
-		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
-	}
 }
 
 /********** Set effect **********/
 void OPNAController::setPanRhythm(int ch, int value)
 {
-	panRhythm_[ch] = static_cast<uint8_t>(value);
-	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((value << 6) | volRhythm_[ch]));
+	auto& rhy = rhythm_[ch];
+	rhy.panState = static_cast<uint8_t>(value);
+	int volume = (rhy.oneshotVol_ == UNUSED_VALUE) ? rhy.baseVol_ : rhy.oneshotVol_;
+	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), makePanAndVolumeRegVal(value, volume));
 }
 
 /***********************************/
 void OPNAController::initRhythm()
 {
-	keyOnFlagRhythm_ = 0;
-	keyOffFlagRhythm_ = 0;
-	mVolRhythm_ = 0x3f;
+	keyOnRequestFlagsRhythm_ = 0;
+	keyOffRequestFlagsRhythm_ = 0;
+	masterVolRhythm_ = 0x3f;
 	opna_->setRegister(0x11, 0x3f);	// Rhythm total volume
 
-	for (int ch = 0; ch < 6; ++ch) {
-		volRhythm_[ch] = bt_defs::NSTEP_RHYTHM_VOLUME - 1;	// Init volume
-		tmpVolRhythm_[ch] = -1;
+	for (size_t ch = 0; ch < 6; ++ch) {
+		auto& rhy = rhythm_[ch];
+		rhy.baseVol_ = bt_defs::NSTEP_RHYTHM_VOLUME - 1;
+		rhy.oneshotVol_ = UNUSED_VALUE;
 
 		// Init pan
-		panRhythm_[ch] = 3;
-		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), 0xdf);
+		rhy.panState = 3;
+		opna_->setRegister(0x18 + ch, 0xdf);
 	}
 }
 
 void OPNAController::setMuteRhythmState(int ch, bool isMute)
 {
-	isMuteRhythm_[ch] = isMute;
+	rhythm_[ch].isMute = isMute;
 
 	if (isMute) {
 		setKeyOffFlagRhythm(ch);
@@ -3350,18 +3351,18 @@ void OPNAController::setMuteRhythmState(int ch, bool isMute)
 
 bool OPNAController::isMuteRhythm(int ch)
 {
-	return isMuteRhythm_[ch];
+	return rhythm_[ch].isMute;
 }
 
 void OPNAController::updateKeyOnOffStatusRhythm()
 {
-	if (keyOnFlagRhythm_) {
-		opna_->setRegister(0x10, keyOnFlagRhythm_);
-		keyOnFlagRhythm_ = 0;
+	if (keyOnRequestFlagsRhythm_) {
+		opna_->setRegister(0x10, keyOnRequestFlagsRhythm_);
+		keyOnRequestFlagsRhythm_ = 0;
 	}
-	if (keyOffFlagRhythm_) {
-		opna_->setRegister(0x10, 0x80 | keyOffFlagRhythm_);
-		keyOffFlagRhythm_ = 0;
+	if (keyOffRequestFlagsRhythm_) {
+		opna_->setRegister(0x10, 0x80 | keyOffRequestFlagsRhythm_);
+		keyOffRequestFlagsRhythm_ = 0;
 	}
 }
 
@@ -3371,7 +3372,7 @@ void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
-	updateEchoBufferADPCM(note);
+	echoBufADPCM_.push(note);
 
 	bool isTonePrtm = isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_;
 	if (isTonePrtm) {
@@ -3433,11 +3434,6 @@ void OPNAController::keyOffADPCM(bool isJam)
 	releaseStartADPCMSequences();
 	hasPreSetTickEventADPCM_ = isJam;
 	isKeyOnADPCM_ = false;
-}
-
-void OPNAController::updateEchoBufferADPCM(const Note& note)
-{
-	echoBufADPCM_.push(note);
 }
 
 /********** Set instrument **********/

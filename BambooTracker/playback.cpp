@@ -1396,7 +1396,7 @@ void PlaybackManager::checkRhythmDelayEventsInTick(const Step& step, int ch)
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
 	if (!volDlyCntRhythm_.at(uch))
-		opnaCtrl_->setTemporaryVolumeRhythm(ch, volDlyValueRhythm_.at(uch));
+		opnaCtrl_->setOneshotVolumeRhythm(ch, volDlyValueRhythm_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntRhythm_.at(uch))
 		opnaCtrl_->setKeyOnFlagRhythm(ch);
