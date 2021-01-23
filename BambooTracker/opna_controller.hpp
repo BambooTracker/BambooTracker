@@ -270,48 +270,53 @@ public:
 	Note getSSGLatestNote(int ch) const;
 
 private:
-	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
-	bool isKeyOnSSG_[3], hasKeyOnBeforeSSG_[3];
-	uint8_t mixerSSG_;
-	EchoBuffer echoBufSSG_[3];
-	bool neverSetBaseNoteSSG_[3];
-	Note baseNoteSSG_[3];
-	int sumPitchSSG_[3];
-	struct SSGToneNoise
+	struct SSGChannel
 	{
-		bool isTone, isNoise;
-		int noisePeriod_;
+		size_t ch;
+		std::shared_ptr<InstrumentSSG> refInst;
+		bool isKeyOn, hasKeyOnBefore;
+		EchoBuffer echoBuf;
+		bool neverSetBaseNote;
+		Note baseNote;
+		int baseVol, oneshotVol;
+		bool isMute;
+		bool shouldSkip1stTickExec;
+		bool shouldSetEnv;
+		bool shouldSetHardEnvIfNecessary;
+		bool shouldUpdateMixState;
+		bool shouldSetTone;
+		bool shouldSetSqMaskFreq;
+		SSGWaveformIter wfItr;
+		SSGWaveformUnit wfState;
+		SSGEnvelopeIter envItr;
+		SSGEnvelopeUnit envState;
+		bool isBuzzEff;
+		bool isHardEnv;
+		SSGToneNoiseIter tnItr;
+		struct SSGToneNoise
+		{
+			bool isTone, isNoise;
+			int noisePeriod;
+		};
+		SSGToneNoise tnState;
+		ArpeggioIterInterface arpItr;
+		PitchIter ptItr;
+		int ptSum;
+		bool isArpEff;
+		int prtmDepth;
+		bool isTonePrtm;
+		std::unique_ptr<WavingEffectIterator> vibItr;
+		std::unique_ptr<WavingEffectIterator> treItr;
+		int volSld, volSldSum;
+		int detune, fdetune;
+		std::unique_ptr<NoteSlideEffectIterator> nsItr;
+		int nsSum;
+		int transpose;
+		int tnMix;
 	};
-	SSGToneNoise tnSSG_[3];
-	int baseVolSSG_[3], tmpVolSSG_[3];
-	bool isBuzzEffSSG_[3];
-	bool isHardEnvSSG_[3];
-	bool isMuteSSG_[3];
-	bool hasPreSetTickEventSSG_[3];
-	bool needEnvSetSSG_[3];
-	bool setHardEnvIfNecessary_[3];
-	bool needMixSetSSG_[3];
-	bool needToneSetSSG_[3];
-	bool needSqMaskFreqSetSSG_[3];
-	SSGWaveformIter wfItSSG_[3];
-	SSGWaveformUnit wfSSG_[3];
-	SSGEnvelopeIter envItSSG_[3];
-	SSGEnvelopeUnit envSSG_[3];
-	SSGToneNoiseIter tnItSSG_[3];
-	ArpeggioIterInterface arpItSSG_[3];
-	PitchIter ptItSSG_[3];
-	bool isArpEffSSG_[3];
-	int prtmSSG_[3];
-	bool isTonePrtmSSG_[3];
-	std::unique_ptr<WavingEffectIterator> vibItSSG_[3];
-	std::unique_ptr<WavingEffectIterator> treItSSG_[3];
-	int volSldSSG_[3], sumVolSldSSG_[3];
-	int detuneSSG_[3], fdetuneSSG_[3];
-	std::unique_ptr<NoteSlideEffectIterator> nsItSSG_[3];
-	int sumNoteSldSSG_[3];
+	SSGChannel ssg_[3];
+	uint8_t mixerSSG_;
 	bool noteSldSSGSetFlag_;
-	int transposeSSG_[3];
-	int toneNoiseMixSSG_[3];
 	int noisePitchSSG_;
 	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
 
@@ -320,27 +325,27 @@ private:
 	void setMuteSSGState(int ch, bool isMuteFM);
 	bool isMuteSSG(int ch);
 
-	void setFrontSSGSequences(int ch);
-	void releaseStartSSGSequences(int ch);
-	void tickEventSSG(int ch);
+	void setFrontSSGSequences(SSGChannel& ssg);
+	void releaseStartSSGSequences(SSGChannel& ssg);
+	void tickEventSSG(SSGChannel& ssg);
 
-	void writeWaveformSSGToRegister(int ch);
-	void writeSquareWaveform(int ch);
+	void writeWaveformSSGToRegister(SSGChannel& ssg);
+	void writeSquareWaveform(SSGChannel& ssg);
 
-	void writeToneNoiseSSGToRegister(int ch);
-	void writeToneNoiseSSGToRegisterNoReference(int ch);
+	void writeToneNoiseSSGToRegister(SSGChannel& ssg);
+	void writeToneNoiseSSGToRegisterNoReference(SSGChannel& ssg);
 
-	void writeEnvelopeSSGToRegister(int ch);
+	void writeEnvelopeSSGToRegister(SSGChannel& ssg);
 
-	void checkRealToneSSGByArpeggio(int ch);
-	void checkPortamentoSSG(int ch);
-	void checkRealToneSSGByPitch(int ch);
+	void checkRealToneSSGByArpeggio(SSGChannel& ssg);
+	void checkPortamentoSSG(SSGChannel& ssg);
+	void checkRealToneSSGByPitch(SSGChannel& ssg);
 
-	void writePitchSSG(int ch);
-	void writeAutoEnvelopePitchSSG(int ch, double tonePitch);
-	void writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle);
+	void writePitchSSG(SSGChannel& ssg);
+	void writeAutoEnvelopePitchSSG(SSGChannel& ssg, double tonePitch);
+	void writeSquareMaskPitchSSG(SSGChannel& ssg, double tonePitch, bool isTriangle);
 
-	void setRealVolumeSSG(int ch);
+	void setRealVolumeSSG(SSGChannel& ssg);
 
 	/*----- Rhythm -----*/
 public:
@@ -359,7 +364,7 @@ public:
 private:
 	struct RhythmChannel
 	{
-		int baseVol_, oneshotVol_;
+		int baseVol, oneshotVol;
 		/// bit0: right on/off
 		/// bit1: left on/off
 		uint8_t panState;
@@ -521,20 +526,20 @@ inline uint8_t OPNAController::calculateTL(int ch, uint8_t data) const
 }
 
 /*----- SSG -----*/
-inline void OPNAController::checkRealToneSSGByArpeggio(int ch)
+inline void OPNAController::checkRealToneSSGByArpeggio(OPNAController::SSGChannel& ssg)
 {
-	checkRealToneByArpeggio(arpItSSG_[ch], echoBufSSG_[ch], baseNoteSSG_[ch], needToneSetSSG_[ch]);
+	checkRealToneByArpeggio(ssg.arpItr, ssg.echoBuf, ssg.baseNote, ssg.shouldSetTone);
 }
 
-inline void OPNAController::checkPortamentoSSG(int ch)
+inline void OPNAController::checkPortamentoSSG(OPNAController::SSGChannel& ssg)
 {
-	checkPortamento(arpItSSG_[ch], prtmSSG_[ch], hasKeyOnBeforeSSG_[ch], isTonePrtmSSG_[ch], echoBufSSG_[ch],
-					baseNoteSSG_[ch], needToneSetSSG_[ch]);
+	checkPortamento(ssg.arpItr, ssg.prtmDepth, ssg.hasKeyOnBefore, ssg.isTonePrtm, ssg.echoBuf,
+					ssg.baseNote, ssg.shouldSetTone);
 }
 
-inline void OPNAController::checkRealToneSSGByPitch(int ch)
+inline void OPNAController::checkRealToneSSGByPitch(OPNAController::SSGChannel& ssg)
 {
-	checkRealToneByPitch(ptItSSG_[ch], sumPitchSSG_[ch], needToneSetSSG_[ch]);
+	checkRealToneByPitch(ssg.ptItr, ssg.ptSum, ssg.shouldSetTone);
 }
 
 /*----- ADPCM/Drumkit -----*/

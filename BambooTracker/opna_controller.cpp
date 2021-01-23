@@ -89,7 +89,7 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 			opSeqItFM_[ch].emplace(ep, nullptr);
 	}
 
-	for (int ch = 0; ch < 3; ++ch) isMuteSSG_[ch] = false;
+	for (auto& ssg : ssg_) ssg.isMute_ = false;
 
 	for (auto& rhy : rhythm_) rhy.isMute = false;
 
@@ -128,7 +128,7 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 {
 	switch (src) {
 	case SoundSource::FM:		tickEventFM(ch);	break;
-	case SoundSource::SSG:		tickEventSSG(ch);	break;
+	case SoundSource::SSG:		tickEventSSG(ssg_[ch]);	break;
 	case SoundSource::RHYTHM:	break;
 	case SoundSource::ADPCM:	tickEventADPCM();	break;
 	}
@@ -2029,101 +2029,106 @@ namespace
 {
 constexpr int AUTO_ENV_SHAPE_TYPE[15] = { 17, 17, 17, 21, 21, 21, 21, 16, 17, 18, 19, 20, 21, 22, 23 };
 
-inline uint8_t SSGToneFlag(int ch) { return (1 << ch); }
-inline uint8_t SSGNoiseFlag(int ch) { return (8 << ch); }
+inline uint8_t SSGToneFlag(size_t ch) { return (1u << ch); }
+inline uint8_t SSGNoiseFlag(size_t ch) { return (8u << ch); }
 }
 
 /********** Key on-off **********/
 void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 {
-	if (isMuteSSG_[ch]) return;
+	auto& ssg = ssg_[ch];
+	if (ssg.isMute) return;
 
-	echoBufSSG_[ch].push(note);
+	ssg.echoBuf.push(note);
 
-	if (isTonePrtmSSG_[ch] && hasKeyOnBeforeSSG_[ch]) {
-		baseNoteSSG_[ch] += (sumNoteSldSSG_[ch] + transposeSSG_[ch]);
+	if (ssg.isTonePrtm && ssg.hasKeyOnBefore) {
+		ssg.baseNote += (ssg.nsSum + ssg.transpose);
 	}
 	else {
-		baseNoteSSG_[ch] = echoBufSSG_[ch].latest();
-		neverSetBaseNoteSSG_[ch] = false;
-		sumPitchSSG_[ch] = 0;
-		sumVolSldSSG_[ch] = 0;
-		tmpVolSSG_[ch] = -1;
+		ssg.baseNote = ssg.echoBuf.latest();
+		ssg.neverSetBaseNote = false;
+		ssg.ptSum = 0;
+		ssg.volSldSum = 0;
+		ssg.oneshotVol = UNUSED_VALUE;
 	}
 	if (!noteSldSSGSetFlag_) {
-		nsItSSG_[ch].reset();
+		ssg.nsItr.reset();
 	}
 	noteSldSSGSetFlag_ = false;
-	needToneSetSSG_[ch] = true;
-	sumNoteSldSSG_[ch] = 0;
-	transposeSSG_[ch] = 0;
+	ssg.shouldSetTone = true;
+	ssg.nsSum = 0;
+	ssg.transpose = 0;
 
-	isKeyOnSSG_[ch] = false;	// For first tick check
+	ssg.isKeyOn = false;	// For first tick check
 
-	setFrontSSGSequences(ch);
+	setFrontSSGSequences(ssg);
 
-	hasPreSetTickEventSSG_[ch] = isJam;
-	isKeyOnSSG_[ch] = true;
-	hasKeyOnBeforeSSG_[ch] = true;
+	ssg.shouldSkip1stTickExec = isJam;
+	ssg.isKeyOn = true;
+	ssg.hasKeyOnBefore = true;
 }
 
 void OPNAController::keyOnSSG(int ch, int echoBuf)
 {
-	if (static_cast<size_t>(echoBuf) < echoBufSSG_[ch].size())
-		keyOnSSG(ch, echoBufSSG_[ch][echoBuf]);
+	auto& ssg = ssg_[ch];
+	if (static_cast<size_t>(echoBuf) < ssg.echoBuf.size())
+		keyOnSSG(ch, ssg.echoBuf[echoBuf]);
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
 {
-	if (!isKeyOnSSG_[ch]) {
-		tickEventSSG(ch);
+	auto& ssg = ssg_[ch];
+	if (!ssg.isKeyOn) {
+		tickEventSSG(ssg);
 		return;
 	}
-	releaseStartSSGSequences(ch);
-	hasPreSetTickEventSSG_[ch] = isJam;
-	isKeyOnSSG_[ch] = false;
+	releaseStartSSGSequences(ssg);
+	ssg.shouldSkip1stTickExec = isJam;
+	ssg.isKeyOn = false;
 }
 
 /********** Set instrument **********/
 /// NOTE: inst != nullptr
 void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
 {
-	refInstSSG_[ch] = inst;
+	auto& ssg = ssg_[ch];
+
+	ssg.refInst = inst;
 
 	if (inst->getWaveformEnabled())
-		wfItSSG_[ch] = inst->getWaveformSequenceIterator();
+		ssg.wfItr = inst->getWaveformSequenceIterator();
 	else
-		wfItSSG_[ch].reset();
+		ssg.wfItr.reset();
 	if (inst->getToneNoiseEnabled())
-		tnItSSG_[ch] = inst->getToneNoiseSequenceIterator();
+		ssg.tnItr = inst->getToneNoiseSequenceIterator();
 	else
-		tnItSSG_[ch].reset();
+		ssg.tnItr.reset();
 	if (inst->getEnvelopeEnabled())
-		envItSSG_[ch] = inst->getEnvelopeSequenceIterator();
+		ssg.envItr = inst->getEnvelopeSequenceIterator();
 	else
-		envItSSG_[ch].reset();
-	if (!isArpEffSSG_[ch]) {
+		ssg.envItr.reset();
+	if (!ssg.isArpEff) {
 		if (inst->getArpeggioEnabled())
-			arpItSSG_[ch] = inst->getArpeggioSequenceIterator();
+			ssg.arpItr = inst->getArpeggioSequenceIterator();
 		else
-			arpItSSG_[ch].reset();
+			ssg.arpItr.reset();
 	}
 	if (inst->getPitchEnabled())
-		ptItSSG_[ch] = inst->getPitchSequenceIterator();
+		ssg.ptItr = inst->getPitchSequenceIterator();
 	else
-		ptItSSG_[ch].reset();
+		ssg.ptItr.reset();
 }
 
 void OPNAController::updateInstrumentSSG(int instNum)
 {
-	for (int ch = 0; ch < 3; ++ch) {
-		if (refInstSSG_[ch] && refInstSSG_[ch]->isRegisteredWithManager()
-				&& refInstSSG_[ch]->getNumber() == instNum) {
-			if (!refInstSSG_[ch]->getWaveformEnabled()) wfItSSG_[ch].reset();
-			if (!refInstSSG_[ch]->getToneNoiseEnabled()) tnItSSG_[ch].reset();
-			if (!refInstSSG_[ch]->getEnvelopeEnabled()) envItSSG_[ch].reset();
-			if (!refInstSSG_[ch]->getArpeggioEnabled()) arpItSSG_[ch].reset();
-			if (!refInstSSG_[ch]->getPitchEnabled()) ptItSSG_[ch].reset();
+	for (auto& ssg : ssg_) {
+		if (ssg.refInst && ssg.refInst->isRegisteredWithManager()
+				&& ssg.refInst->getNumber() == instNum) {
+			if (!ssg.refInst->getWaveformEnabled()) ssg.wfItr.reset();
+			if (!ssg.refInst->getToneNoiseEnabled()) ssg.tnItr.reset();
+			if (!ssg.refInst->getEnvelopeEnabled()) ssg.envItr.reset();
+			if (!ssg.refInst->getArpeggioEnabled()) ssg.arpItr.reset();
+			if (!ssg.refInst->getPitchEnabled()) ssg.ptItr.reset();
 		}
 	}
 }
@@ -2132,40 +2137,42 @@ void OPNAController::updateInstrumentSSG(int instNum)
 void OPNAController::setVolumeSSG(int ch, int volume)
 {
 	if (volume < bt_defs::NSTEP_SSG_VOLUME) {
-		baseVolSSG_[ch] = volume;
-		tmpVolSSG_[ch] = -1;
+		auto& ssg = ssg_[ch];
+		ssg.baseVol = volume;
+		ssg.oneshotVol = UNUSED_VALUE;
 
-		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
+		if (ssg.isKeyOn) setRealVolumeSSG(ssg);
 	}
 }
 
 void OPNAController::setTemporaryVolumeSSG(int ch, int volume)
 {
 	if (volume < bt_defs::NSTEP_SSG_VOLUME) {
-		tmpVolSSG_[ch] = volume;
+		auto& ssg = ssg_[ch];
+		ssg.oneshotVol = volume;
 
-		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
+		if (ssg.isKeyOn) setRealVolumeSSG(ssg);
 	}
 }
 
-void OPNAController::setRealVolumeSSG(int ch)
+void OPNAController::setRealVolumeSSG(SSGChannel& ssg)
 {
-	if (isBuzzEffSSG_[ch] || isHardEnvSSG_[ch]) return;
+	if (ssg.isBuzzEff || ssg.isHardEnv) return;
 
-	int volume = (tmpVolSSG_[ch] == -1) ? baseVolSSG_[ch] : tmpVolSSG_[ch];
-	if (auto& envIt = envItSSG_[ch]) {
-		int d = envIt->data().data;
+	int volume = (ssg.oneshotVol == UNUSED_VALUE) ? ssg.baseVol : ssg.oneshotVol;
+	if (auto& envItr = ssg.envItr) {
+		int d = envItr->data().data;
 		if (0 <= d && d < 16) {
 			volume -= (15 - d);
 		}
 	}
-	if (auto& treIt = treItSSG_[ch]) volume += treIt->data().data;
-	volume += sumVolSldSSG_[ch];
+	if (auto& treItr = ssg.treItr) volume += treItr->data().data;
+	volume += ssg.volSldSum;
 
 	volume = utils::clamp(volume, 0, 15);
 
-	opna_->setRegister(0x08 + static_cast<uint32_t>(ch), static_cast<uint8_t>(volume));
-	needEnvSetSSG_[ch] = false;
+	opna_->setRegister(0x08 + ssg.ch, static_cast<uint8_t>(volume));
+	ssg.shouldSetEnv = false;
 }
 
 void OPNAController::setMasterVolumeSSG(double dB)
@@ -2176,106 +2183,116 @@ void OPNAController::setMasterVolumeSSG(double dB)
 /********** Set effect **********/
 void OPNAController::setArpeggioEffectSSG(int ch, int second, int third)
 {
+	auto& ssg = ssg_[ch];
 	if (second || third) {
-		arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
-		isArpEffSSG_[ch] = true;
+		ssg.arpItr = std::make_unique<ArpeggioEffectIterator>(second, third);
+		ssg.isArpEff = true;
 	}
 	else {
-		if (!refInstSSG_[ch] || !refInstSSG_[ch]->getArpeggioEnabled()) arpItSSG_[ch].reset();
-		else arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
-		isArpEffSSG_[ch] = false;
+		if (!ssg.refInst || !ssg.refInst->getArpeggioEnabled()) ssg.arpItr.reset();
+		else ssg.arpItr = ssg.refInst->getArpeggioSequenceIterator();
+		ssg.isArpEff = false;
 	}
 }
 
 void OPNAController::setPortamentoEffectSSG(int ch, int depth, bool isTonePortamento)
 {
-	prtmSSG_[ch] = depth;
-	isTonePrtmSSG_[ch] =  depth ? isTonePortamento : false;
+	auto& ssg = ssg_[ch];
+	ssg.prtmDepth = depth;
+	ssg.isTonePrtm =  depth ? isTonePortamento : false;
 }
 
 void OPNAController::setVibratoEffectSSG(int ch, int period, int depth)
 {
-	if (period && depth) vibItSSG_[ch] = std::make_unique<WavingEffectIterator>(period, depth);
-	else vibItSSG_[ch].reset();
+	auto& ssg = ssg_[ch];
+	if (period && depth) ssg.vibItr = std::make_unique<WavingEffectIterator>(period, depth);
+	else ssg.vibItr.reset();
 }
 
 void OPNAController::setTremoloEffectSSG(int ch, int period, int depth)
 {
-	if (period && depth) treItSSG_[ch] = std::make_unique<WavingEffectIterator>(period, depth);
-	else treItSSG_[ch].reset();
+	auto& ssg = ssg_[ch];
+	if (period && depth) ssg.treItr = std::make_unique<WavingEffectIterator>(period, depth);
+	else ssg.treItr.reset();
 }
 
 void OPNAController::setVolumeSlideSSG(int ch, int depth, bool isUp)
 {
-	volSldSSG_[ch] = isUp ? depth : -depth;
+	ssg_[ch].volSld = isUp ? depth : -depth;
 }
 
 void OPNAController::setDetuneSSG(int ch, int pitch)
 {
-	detuneSSG_[ch] = pitch;
-	needToneSetSSG_[ch] = true;
+	auto& ssg = ssg_[ch];
+	ssg.detune = pitch;
+	ssg.shouldSetTone = true;
 }
 
 void OPNAController::setFineDetuneSSG(int ch, int pitch)
 {
-	fdetuneSSG_[ch] = pitch;
-	needToneSetSSG_[ch] = true;
+	auto& ssg = ssg_[ch];
+	ssg.fdetune = pitch;
+	ssg.shouldSetTone = true;
 }
 
 void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 {
+	auto& ssg = ssg_[ch];
 	if (seminote) {
-		nsItSSG_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+		ssg.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
 		noteSldSSGSetFlag_ = true;
 	}
-	else nsItSSG_[ch].reset();
+	else ssg.nsItr.reset();
 }
 
 void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 {
-	transposeSSG_[ch] += (seminote * Note::SEMINOTE_PITCH);
-	needToneSetSSG_[ch] = true;
+	auto& ssg = ssg_[ch];
+	ssg.transpose += (seminote * Note::SEMINOTE_PITCH);
+	ssg.shouldSetTone = true;
 }
 
 void OPNAController::setToneNoiseMixSSG(int ch, int value)
 {
-	toneNoiseMixSSG_[ch] = value;
+	auto& ssg = ssg_[ch];
+	ssg.tnMix = value;
 
 	// Tone
-	if ((tnSSG_[ch].isTone = (0x01 & value))) mixerSSG_ &= ~SSGToneFlag(ch);
-	else mixerSSG_ |= SSGToneFlag(ch);
+	if ((ssg.tnState.isTone = (0x01 & value))) mixerSSG_ &= ~SSGToneFlag(ssg.ch);
+	else mixerSSG_ |= SSGToneFlag(ssg.ch);
 	// Noise
-	if ((tnSSG_[ch].isNoise = (0x02 & value))) mixerSSG_ &= ~SSGNoiseFlag(ch);
-	else mixerSSG_ |= SSGNoiseFlag(ch);
+	if ((ssg.tnState.isNoise = (0x02 & value))) mixerSSG_ &= ~SSGNoiseFlag(ssg.ch);
+	else mixerSSG_ |= SSGNoiseFlag(ssg.ch);
 	opna_->setRegister(0x07, mixerSSG_);
 
-	tnItSSG_[ch].reset();
+	ssg.tnItr.reset();
 }
 
 void OPNAController::setNoisePitchSSG(int ch, int pitch)
 {
 	noisePitchSSG_ = pitch;
-	tnSSG_[ch].noisePeriod_ = pitch;
+	ssg_[ch].tnState.noisePeriod = pitch;
 	opna_->setRegister(0x06, static_cast<uint8_t>(31 - pitch));	// Reverse order
 }
 
 void OPNAController::setHardEnvelopePeriod(int ch, bool high, int period)
 {
-	bool sendable = isHardEnvSSG_[ch]
-					&& (envSSG_[ch].type == SSGEnvelopeUnit::RawSubdata);
+	auto& ssg = ssg_[ch];
+	bool sendable = ssg.isHardEnv
+					&& (ssg.envState.type == SSGEnvelopeUnit::RawSubdata);
 	if (high) {
 		hardEnvPeriodHighSSG_ = period;
 		if (sendable) {
-			int sub = (period << 8) | (envSSG_[ch].subdata & 0x00ff);
-			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(envSSG_[ch].data, sub);
+			int sub = (period << 8) | (ssg.envState.subdata & 0x00ff);
+			ssg.envState = SSGEnvelopeUnit::makeRawUnit(ssg.envState.data, sub);
 			opna_->setRegister(0x0c, static_cast<uint8_t>(period));
 		}
 	}
 	else {
 		hardEnvPeriodLowSSG_ = period;
 		if (sendable) {
-			int sub = (envSSG_[ch].subdata & 0xff00) | period;
-			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(envSSG_[ch].data, sub);
+			int sub = (ssg.envState.subdata & 0xff00) | period;
+			ssg.envState = SSGEnvelopeUnit::makeRawUnit(ssg.envState.data, sub);
 			opna_->setRegister(0x0b, static_cast<uint8_t>(period));
 		}
 	}
@@ -2283,56 +2300,58 @@ void OPNAController::setHardEnvelopePeriod(int ch, bool high, int period)
 
 void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 {
+	auto& ssg = ssg_[ch];
 	if (shape) {
 		opna_->setRegister(0x0d, static_cast<uint8_t>(shape));
 		int d = AUTO_ENV_SHAPE_TYPE[shape - 1];
-		opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
-		isHardEnvSSG_[ch] = true;
+		opna_->setRegister(0x08 + ssg.ch, 0x10);
+		ssg.isHardEnv = true;
 		if (shift == -8) {	// Raw
-			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(d, (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_);
+			ssg.envState = SSGEnvelopeUnit::makeRawUnit(d, (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_);
 			opna_->setRegister(0x0c, static_cast<uint8_t>(hardEnvPeriodHighSSG_));
 			opna_->setRegister(0x0b, static_cast<uint8_t>(hardEnvPeriodLowSSG_));
 		}
 		else {
-			envSSG_[ch] = SSGEnvelopeUnit::makeShiftUnit(d, shift);
+			ssg.envState = SSGEnvelopeUnit::makeShiftUnit(d, shift);
 		}
 	}
 	else {
-		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = SSGEnvelopeUnit();
+		ssg.isHardEnv = false;
+		ssg.envState = SSGEnvelopeUnit();
 		// Clear hard envelope in setRealVolumeSSG
 	}
-	needEnvSetSSG_[ch] = true;
-	envItSSG_[ch].reset();
+	ssg.shouldSetEnv = true;
+	ssg.envItr.reset();
 }
 
 /********** For state retrieve **********/
 void OPNAController::haltSequencesSSG(int ch)
 {
-	if (auto& wfIt = wfItSSG_[ch]) wfIt->end();
-	if (auto& treIt = treItSSG_[ch]) treIt->end();
-	if (auto& envIt = envItSSG_[ch]) envIt->end();
-	if (auto& tnIt = tnItSSG_[ch]) tnIt->end();
-	if (auto& arpIt = arpItSSG_[ch]) arpIt->end();
-	if (auto& ptIt = ptItSSG_[ch]) ptIt->end();
-	if (auto& vibIt = vibItSSG_[ch]) vibIt->end();
-	if (auto& nsIt = nsItSSG_[ch]) nsIt->end();
+	auto& ssg = ssg_[ch];
+	if (auto& wfItr = ssg.wfItr) wfItr->end();
+	if (auto& treItr = ssg.treItr) treItr->end();
+	if (auto& envItr = ssg.envItr) envItr->end();
+	if (auto& tnItr = ssg.tnItr) tnItr->end();
+	if (auto& arpItr = ssg.arpItr) arpItr->end();
+	if (auto& ptItr = ssg.ptItr) ptItr->end();
+	if (auto& vibItr = ssg.vibItr) vibItr->end();
+	if (auto& nsItr = ssg.nsItr) nsItr->end();
 }
 
 /********** Chip details **********/
 bool OPNAController::isKeyOnSSG(int ch) const
 {
-	return isKeyOnSSG_[ch];
+	return ssg_[ch].isKeyOn;
 }
 
 bool OPNAController::isTonePortamentoSSG(int ch) const
 {
-	return isTonePrtmSSG_[ch];
+	return ssg_[ch].isTonePrtm;
 }
 
 Note OPNAController::getSSGLatestNote(int ch) const
 {
-	return echoBufSSG_[ch].latest();
+	return ssg_[ch].echoBuf.latest();
 }
 
 /***********************************/
@@ -2344,286 +2363,290 @@ void OPNAController::initSSG()
 	hardEnvPeriodHighSSG_ = 0;
 	hardEnvPeriodLowSSG_ = 0;
 
-	for (int ch = 0; ch < 3; ++ch) {
-		isKeyOnSSG_[ch] = false;
-		hasKeyOnBeforeSSG_[ch] = false;
+	for (size_t ch = 0; ch < 3; ++ch) {
+		auto& ssg = ssg_[ch];
+		ssg.ch = ch;
 
-		refInstSSG_[ch].reset();	// Init envelope
+		ssg.isKeyOn = false;
+		ssg.hasKeyOnBefore = false;
 
-		echoBufSSG_[ch].clear();
+		ssg.refInst.reset();	// Init envelope
 
-		neverSetBaseNoteSSG_[ch] = true;
-		sumPitchSSG_[ch] = 0;
-		tnSSG_[ch] = { false, false, UNUSED_VALUE };
-		baseVolSSG_[ch] = bt_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
-		tmpVolSSG_[ch] = -1;
-		isHardEnvSSG_[ch] = false;
-		isBuzzEffSSG_[ch] = false;
+		ssg.echoBuf.clear();
+
+		ssg.neverSetBaseNote = true;
+		ssg.baseVol = bt_defs::NSTEP_SSG_VOLUME - 1;	// Init volume
+		ssg.oneshotVol = UNUSED_VALUE;
+		ssg.isHardEnv = false;
+		ssg.isBuzzEff = false;
 
 		// Init sequence
-		hasPreSetTickEventSSG_[ch] = false;
-		wfItSSG_[ch].reset();
-		wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::UNSET);
-		envItSSG_[ch].reset();
-		envSSG_[ch] = SSGEnvelopeUnit();
-		tnItSSG_[ch].reset();
-		arpItSSG_[ch].reset();
-		ptItSSG_[ch].reset();
-		needEnvSetSSG_[ch] = false;
-		setHardEnvIfNecessary_[ch] = false;
-		needMixSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = false;
-		needSqMaskFreqSetSSG_[ch] = false;
+		ssg.shouldSkip1stTickExec = false;
+		ssg.wfItr.reset();
+		ssg.wfState = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::UNSET);
+		ssg.envItr.reset();
+		ssg.envState = SSGEnvelopeUnit();
+		ssg.tnItr.reset();
+		ssg.tnState = { false, false, UNUSED_VALUE };
+		ssg.arpItr.reset();
+		ssg.ptItr.reset();
+		ssg.ptSum = 0;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetHardEnvIfNecessary = false;
+		ssg.shouldUpdateMixState = false;
+		ssg.shouldSetTone = false;
+		ssg.shouldSetSqMaskFreq = false;
 
 		// Effect
-		isArpEffSSG_[ch] = false;
-		prtmSSG_[ch] = 0;
-		isTonePrtmSSG_[ch] = false;
-		vibItSSG_[ch].reset();
-		treItSSG_[ch].reset();
-		volSldSSG_[ch] = 0;
-		sumVolSldSSG_[ch] = 0;
-		detuneSSG_[ch] = 0;
-		fdetuneSSG_[ch] = 0;
-		nsItSSG_[ch].reset();
-		sumNoteSldSSG_[ch] = 0;
+		ssg.isArpEff = false;
+		ssg.prtmDepth = 0;
+		ssg.isTonePrtm = false;
+		ssg.vibItr.reset();
+		ssg.treItr.reset();
+		ssg.volSld = 0;
+		ssg.volSldSum = 0;
+		ssg.detune = 0;
+		ssg.fdetune = 0;
+		ssg.nsItr.reset();
+		ssg.nsSum = 0;
 		noteSldSSGSetFlag_ = false;
-		transposeSSG_[ch] = 0;
-		toneNoiseMixSSG_[ch] = 0;
+		ssg.transpose = 0;
+		ssg.tnMix = 0;
 	}
 }
 
 void OPNAController::setMuteSSGState(int ch, bool isMute)
 {
-	isMuteSSG_[ch] = isMute;
+	auto& ssg = ssg_[ch];
+	ssg.isMute = isMute;
 
 	if (isMute) {
-		opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0);
-		isKeyOnSSG_[ch] = false;
+		opna_->setRegister(0x08 + ssg.ch, 0);
+		ssg.isKeyOn = false;
 	}
 }
 
 bool OPNAController::isMuteSSG(int ch)
 {
-	return isMuteSSG_[ch];
+	return ssg_[ch].isMute;
 }
 
-void OPNAController::setFrontSSGSequences(int ch)
+void OPNAController::setFrontSSGSequences(SSGChannel& ssg)
 {
-	if (isMuteSSG_[ch]) return;
+	if (ssg.isMute) return;
 
-	setHardEnvIfNecessary_[ch] = false;
+	ssg.shouldSetHardEnvIfNecessary = false;
 
-	if (auto& wfIt = wfItSSG_[ch]) {
-		wfIt->front();
-		writeWaveformSSGToRegister(ch);
+	if (auto& wfItr = ssg.wfItr) {
+		wfItr->front();
+		writeWaveformSSGToRegister(ssg);
 	}
-	else writeSquareWaveform(ch);
+	else writeSquareWaveform(ssg);
 
-	if (auto& treIt = treItSSG_[ch]) {
-		treIt->front();
-		needEnvSetSSG_[ch] = true;
+	if (auto& treItr = ssg.treItr) {
+		treItr->front();
+		ssg.shouldSetEnv = true;
 	}
-	if (volSldSSG_[ch]) {
-		sumVolSldSSG_[ch] += volSldSSG_[ch];
-		needEnvSetSSG_[ch] = true;
+	if (ssg.volSld) {
+		ssg.volSldSum += ssg.volSld;
+		ssg.shouldSetEnv = true;
 	}
-	if (auto& envIt = envItSSG_[ch]) {
-		envIt->front();
-		writeEnvelopeSSGToRegister(ch);
+	if (auto& envItr = ssg.envItr) {
+		envItr->front();
+		writeEnvelopeSSGToRegister(ssg);
 	}
-	else setRealVolumeSSG(ch);
+	else setRealVolumeSSG(ssg);
 
-	if (tnItSSG_[ch]) {
-		tnItSSG_[ch]->front();
-		writeToneNoiseSSGToRegister(ch);
+	if (auto& tnItr = ssg.tnItr) {
+		tnItr->front();
+		writeToneNoiseSSGToRegister(ssg);
 	}
-	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
+	else if (ssg.shouldUpdateMixState) writeToneNoiseSSGToRegisterNoReference(ssg);
 
-	if (auto& arpIt = arpItSSG_[ch]) {
-		arpIt->front();
-		checkRealToneSSGByArpeggio(ch);
+	if (auto& arpItr = ssg.arpItr) {
+		arpItr->front();
+		checkRealToneSSGByArpeggio(ssg);
 	}
-	checkPortamentoSSG(ch);
+	checkPortamentoSSG(ssg);
 
-	if (auto& ptIt = ptItSSG_[ch]) {
-		ptIt->front();
-		checkRealToneSSGByPitch(ch);
+	if (auto& ptItr = ssg.ptItr) {
+		ptItr->front();
+		checkRealToneSSGByPitch(ssg);
 	}
-	if (auto& vibIt = vibItSSG_[ch]) {
-		vibIt->front();
-		needToneSetSSG_[ch] = true;
+	if (auto& vibItr = ssg.vibItr) {
+		vibItr->front();
+		ssg.shouldSetTone = true;
 	}
-	if (auto& nsIt = nsItSSG_[ch]) {
-		nsIt->front();
-		if (!nsIt->hasEnded()) {
-			sumNoteSldSSG_[ch] += nsIt->data().data;
-			needToneSetSSG_[ch] = true;
+	if (auto& nsItr = ssg.nsItr) {
+		nsItr->front();
+		if (!nsItr->hasEnded()) {
+			ssg.nsSum += nsItr->data().data;
+			ssg.shouldSetTone = true;
 		}
 	}
 
-	writePitchSSG(ch);
+	writePitchSSG(ssg);
 }
 
-void OPNAController::releaseStartSSGSequences(int ch)
+void OPNAController::releaseStartSSGSequences(SSGChannel& ssg)
 {
-	if (isMuteSSG_[ch]) return;
+	if (ssg.isMute) return;
 
-	setHardEnvIfNecessary_[ch] = false;
+	ssg.shouldSetHardEnvIfNecessary = false;
 
-	if (auto& wfIt = wfItSSG_[ch]) {
-		wfIt->release();
-		writeWaveformSSGToRegister(ch);
+	if (auto& wfItr = ssg.wfItr) {
+		wfItr->release();
+		writeWaveformSSGToRegister(ssg);
 	}
 
-	if (auto& treIt = treItSSG_[ch]) {
-		treIt->release();
-		needEnvSetSSG_[ch] = true;
+	if (auto& treItr = ssg.treItr) {
+		treItr->release();
+		ssg.shouldSetEnv = true;
 	}
-	if (volSldSSG_[ch]) {
-		sumVolSldSSG_[ch] += volSldSSG_[ch];
-		needEnvSetSSG_[ch] = true;
+	if (ssg.volSld) {
+		ssg.volSldSum += ssg.volSld;
+		ssg.shouldSetEnv = true;
 	}
-	if (auto& envIt = envItSSG_[ch]) {
-		envIt->release();
-		if (envIt->hasEnded()) {
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0);
-			isHardEnvSSG_[ch] = false;
+	if (auto& envItr = ssg.envItr) {
+		envItr->release();
+		if (envItr->hasEnded()) {
+			opna_->setRegister(0x08 + ssg.ch, 0);
+			ssg.isHardEnv = false;
 		}
-		else writeEnvelopeSSGToRegister(ch);
+		else writeEnvelopeSSGToRegister(ssg);
 	}
 	else {
-		if (!hasPreSetTickEventSSG_[ch]) {
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0);
-			isHardEnvSSG_[ch] = false;
+		if (!ssg.shouldSkip1stTickExec) {
+			opna_->setRegister(0x08 + ssg.ch, 0);
+			ssg.isHardEnv = false;
 		}
 	}
 
-	if (tnItSSG_[ch]) {
-		tnItSSG_[ch]->release();
-		writeToneNoiseSSGToRegister(ch);
+	if (auto& tnItr = ssg.tnItr) {
+		tnItr->release();
+		writeToneNoiseSSGToRegister(ssg);
 	}
-	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
+	else if (ssg.shouldUpdateMixState) writeToneNoiseSSGToRegisterNoReference(ssg);
 
-	if (auto& arpIt = arpItSSG_[ch]) {
-		arpIt->release();
-		checkRealToneSSGByArpeggio(ch);
+	if (auto& arpItr = ssg.arpItr) {
+		arpItr->release();
+		checkRealToneSSGByArpeggio(ssg);
 	}
-	checkPortamentoSSG(ch);
+	checkPortamentoSSG(ssg);
 
-	if (auto& ptIt = ptItSSG_[ch]) {
-		ptIt->release();
-		checkRealToneSSGByPitch(ch);
+	if (auto& ptItr = ssg.ptItr) {
+		ptItr->release();
+		checkRealToneSSGByPitch(ssg);
 	}
-	if (auto& vibIt = vibItSSG_[ch]) {
-		vibIt->release();
-		needToneSetSSG_[ch] = true;
+	if (auto& vibItr = ssg.vibItr) {
+		vibItr->release();
+		ssg.shouldSetTone = true;
 	}
-	if (auto& nsIt = nsItSSG_[ch]) {
-		nsIt->release();
-		if (!nsIt->hasEnded()) {
-			sumNoteSldSSG_[ch] += nsIt->data().data;
-			needToneSetSSG_[ch] = true;
+	if (auto& nsItr = ssg.nsItr) {
+		nsItr->release();
+		if (!nsItr->hasEnded()) {
+			ssg.nsSum += nsItr->data().data;
+			ssg.shouldSetTone = true;
 		}
 	}
 
-	if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
-		writePitchSSG(ch);
+	if (ssg.shouldSetTone || (ssg.isHardEnv && ssg.shouldSetEnv) || ssg.shouldSetSqMaskFreq)
+		writePitchSSG(ssg);
 }
 
-void OPNAController::tickEventSSG(int ch)
+void OPNAController::tickEventSSG(SSGChannel& ssg)
 {
-	if (hasPreSetTickEventSSG_[ch]) {
-		hasPreSetTickEventSSG_[ch] = false;
+	if (ssg.shouldSkip1stTickExec) {
+		ssg.shouldSkip1stTickExec = false;
 	}
 	else {
-		if (isMuteSSG_[ch]) return;
+		if (ssg.isMute) return;
 
-		setHardEnvIfNecessary_[ch] = false;
+		ssg.shouldSetHardEnvIfNecessary = false;
 
-		if (auto& wfIt = wfItSSG_[ch]) {
-			wfIt->next();
-			writeWaveformSSGToRegister(ch);
-		}
-
-		if (auto& treIt = treItSSG_[ch]) {
-			treIt->next();
-			needEnvSetSSG_[ch] = true;
-		}
-		if (volSldSSG_[ch]) {
-			sumVolSldSSG_[ch] += volSldSSG_[ch];
-			needEnvSetSSG_[ch] = true;
-		}
-		if (auto& envIt = envItSSG_[ch]) {
-			envIt->next();
-			writeEnvelopeSSGToRegister(ch);
-		}
-		else if (needToneSetSSG_[ch] || needEnvSetSSG_[ch]) {
-			setRealVolumeSSG(ch);
+		if (auto& wfItr = ssg.wfItr) {
+			wfItr->next();
+			writeWaveformSSGToRegister(ssg);
 		}
 
-		if (tnItSSG_[ch]) {
-			tnItSSG_[ch]->next();
-			writeToneNoiseSSGToRegister(ch);
+		if (auto& treItr = ssg.treItr) {
+			treItr->next();
+			ssg.shouldSetEnv = true;
 		}
-		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
+		if (ssg.volSld) {
+			ssg.volSldSum += ssg.volSld;
+			ssg.shouldSetEnv = true;
+		}
+		if (auto& envItr = ssg.envItr) {
+			envItr->next();
+			writeEnvelopeSSGToRegister(ssg);
+		}
+		else if (ssg.shouldSetTone || ssg.shouldSetEnv) {
+			setRealVolumeSSG(ssg);
+		}
 
-		if (auto& arpIt = arpItSSG_[ch]) {
-			arpIt->next();
-			checkRealToneSSGByArpeggio(ch);
+		if (auto& tnItr = ssg.tnItr) {
+			tnItr->next();
+			writeToneNoiseSSGToRegister(ssg);
 		}
-		checkPortamentoSSG(ch);
+		else if (ssg.shouldUpdateMixState) writeToneNoiseSSGToRegisterNoReference(ssg);
 
-		if (auto& ptIt = ptItSSG_[ch]) {
-			ptIt->next();
-			checkRealToneSSGByPitch(ch);
+		if (auto& arpItr = ssg.arpItr) {
+			arpItr->next();
+			checkRealToneSSGByArpeggio(ssg);
 		}
-		if (auto& vibIt = vibItSSG_[ch]) {
-			vibIt->next();
-			needToneSetSSG_[ch] = true;
+		checkPortamentoSSG(ssg);
+
+		if (auto& ptItr = ssg.ptItr) {
+			ptItr->next();
+			checkRealToneSSGByPitch(ssg);
 		}
-		if (auto& nsIt = nsItSSG_[ch]) {
-			nsIt->next();
-			if (!nsIt->hasEnded()) {
-				sumNoteSldSSG_[ch] += nsIt->data().data;
-				needToneSetSSG_[ch] = true;
+		if (auto& vibItr = ssg.vibItr) {
+			vibItr->next();
+			ssg.shouldSetTone = true;
+		}
+		if (auto& nsItr = ssg.nsItr) {
+			nsItr->next();
+			if (!nsItr->hasEnded()) {
+				ssg.nsSum += nsItr->data().data;
+				ssg.shouldSetTone = true;
 			}
 		}
 
-		if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
-			writePitchSSG(ch);
+		if (ssg.shouldSetTone || (ssg.isHardEnv && ssg.shouldSetEnv) || ssg.shouldSetSqMaskFreq)
+			writePitchSSG(ssg);
 	}
 }
 
-void OPNAController::writeWaveformSSGToRegister(int ch)
+void OPNAController::writeWaveformSSGToRegister(SSGChannel& ssg)
 {
-	auto& wfIt = wfItSSG_[ch];
-	if (wfIt->hasEnded()) return;
+	auto& wfItr = ssg.wfItr;
+	if (wfItr->hasEnded()) return;
 
-	SSGWaveformUnit&& data = wfIt->data();
+	SSGWaveformUnit&& data = wfItr->data();
 	switch (data.data) {
 	case SSGWaveformType::SQUARE:
 	{
-		writeSquareWaveform(ch);
+		writeSquareWaveform(ssg);
 		return;
 	}
 	case SSGWaveformType::TRIANGLE:
 	{
-		if (wfSSG_[ch].data == SSGWaveformType::TRIANGLE && isKeyOnSSG_[ch]) return;
+		if (ssg.wfState.data == SSGWaveformType::TRIANGLE && ssg.isKeyOn) return;
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
 		case SSGWaveformType::SQM_SAW:
 		case SSGWaveformType::SQM_INVSAW:
-			needMixSetSSG_[ch] = true;
+			ssg.shouldUpdateMixState = true;
 			break;
 		default:
 			break;
 		}
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SAW:
@@ -2633,43 +2656,43 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x0d, 0x0e);
 			break;
 		default:
-			if (!isKeyOnSSG_[ch]) opna_->setRegister(0x0d, 0x0e);	// First key on
+			if (!ssg.isKeyOn) opna_->setRegister(0x0d, 0x0e);	// First key on
 			break;
 		}
 
-		if (isHardEnvSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			isHardEnvSSG_[ch] = false;
+		if (ssg.isHardEnv) {
+			ssg.isBuzzEff = true;
+			ssg.isHardEnv = false;
 		}
-		else if (!isBuzzEffSSG_[ch] || !isKeyOnSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
+		else if (!ssg.isBuzzEff || !ssg.isKeyOn) {
+			ssg.isBuzzEff = true;
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
 		}
 
-		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
+		if (ssg.envState.data == 0) ssg.envState = SSGEnvelopeUnit();
 
-		needEnvSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = true;
-		needSqMaskFreqSetSSG_[ch] = false;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetTone = true;
+		ssg.shouldSetSqMaskFreq = false;
 		break;
 	}
 	case SSGWaveformType::SAW:
 	{
-		if (wfSSG_[ch].data == SSGWaveformType::SAW && isKeyOnSSG_[ch]) return;
+		if (ssg.wfState.data == SSGWaveformType::SAW && ssg.isKeyOn) return;
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
 		case SSGWaveformType::SQM_SAW:
 		case SSGWaveformType::SQM_INVSAW:
-			needMixSetSSG_[ch] = true;
+			ssg.shouldUpdateMixState = true;
 			break;
 		default:
 			break;
 		}
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2679,43 +2702,43 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x0d, 0x0c);
 			break;
 		default:
-			if (!isKeyOnSSG_[ch]) opna_->setRegister(0x0d, 0x0c);	// First key on
+			if (!ssg.isKeyOn) opna_->setRegister(0x0d, 0x0c);	// First key on
 			break;
 		}
 
-		if (isHardEnvSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			isHardEnvSSG_[ch] = false;
+		if (ssg.isHardEnv) {
+			ssg.isBuzzEff = true;
+			ssg.isHardEnv = false;
 		}
-		else if (!isBuzzEffSSG_[ch] || !isKeyOnSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
+		else if (!ssg.isBuzzEff || !ssg.isKeyOn) {
+			ssg.isBuzzEff = true;
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
 		}
 
-		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
+		if (ssg.envState.data == 0) ssg.envState = SSGEnvelopeUnit();
 
-		needEnvSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = true;
-		needSqMaskFreqSetSSG_[ch] = false;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetTone = true;
+		ssg.shouldSetSqMaskFreq = false;
 		break;
 	}
 	case SSGWaveformType::INVSAW:
 	{
-		if (wfSSG_[ch].data == SSGWaveformType::INVSAW && isKeyOnSSG_[ch]) return;
+		if (ssg.wfState.data == SSGWaveformType::INVSAW && ssg.isKeyOn) return;
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
 		case SSGWaveformType::SQM_SAW:
 		case SSGWaveformType::SQM_INVSAW:
-			needMixSetSSG_[ch] = true;
+			ssg.shouldUpdateMixState = true;
 			break;
 		default:
 			break;
 		}
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2725,58 +2748,58 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x0d, 0x08);
 			break;
 		default:
-			if (!isKeyOnSSG_[ch]) opna_->setRegister(0x0d, 0x08);	// First key on
+			if (!ssg.isKeyOn) opna_->setRegister(0x0d, 0x08);	// First key on
 			break;
 		}
 
-		if (isHardEnvSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			isHardEnvSSG_[ch] = false;
+		if (ssg.isHardEnv) {
+			ssg.isBuzzEff = true;
+			ssg.isHardEnv = false;
 		}
-		else if (!isBuzzEffSSG_[ch] || !isKeyOnSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
+		else if (!ssg.isBuzzEff || !ssg.isKeyOn) {
+			ssg.isBuzzEff = true;
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
 		}
 
-		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
+		if (ssg.envState.data == 0) ssg.envState = SSGEnvelopeUnit();
 
-		needEnvSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = true;
-		needSqMaskFreqSetSSG_[ch] = false;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetTone = true;
+		ssg.shouldSetSqMaskFreq = false;
 		break;
 	}
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		if (wfSSG_[ch].data == SSGWaveformType::SQM_TRIANGLE && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
+		if (ssg.wfState.data == SSGWaveformType::SQM_TRIANGLE && ssg.wfState.subdata == data.subdata && ssg.isKeyOn) return;
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
-			needMixSetSSG_[ch] = true;
+			ssg.shouldUpdateMixState = true;
 			break;
 		default:
 			break;
 		}
 
-		if (wfSSG_[ch].subdata != data.subdata) {
+		if (ssg.wfState.subdata != data.subdata) {
 			if (data.type == SSGWaveformUnit::RatioSubdata) {
-				needSqMaskFreqSetSSG_[ch] = true;
+				ssg.shouldSetSqMaskFreq = true;
 			}
 			else {
 				uint16_t pitch = static_cast<uint16_t>(data.subdata);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				size_t offset = ssg.ch << 1;
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
-				needSqMaskFreqSetSSG_[ch] = false;
+				ssg.shouldSetSqMaskFreq = false;
 			}
 		}
 		else {
-			needSqMaskFreqSetSSG_[ch] = false;
+			ssg.shouldSetSqMaskFreq = false;
 		}
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SAW:
@@ -2786,57 +2809,57 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x0d, 0x0e);
 			break;
 		default:
-			if (!isKeyOnSSG_[ch]) opna_->setRegister(0x0d, 0x0e);	// First key on
+			if (!ssg.isKeyOn) opna_->setRegister(0x0d, 0x0e);	// First key on
 			break;
 		}
 
-		if (isHardEnvSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			isHardEnvSSG_[ch] = false;
+		if (ssg.isHardEnv) {
+			ssg.isBuzzEff = true;
+			ssg.isHardEnv = false;
 		}
-		else if (!isBuzzEffSSG_[ch] || !isKeyOnSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
+		else if (!ssg.isBuzzEff || !ssg.isKeyOn) {
+			ssg.isBuzzEff = true;
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
 		}
 
-		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
+		if (ssg.envState.data == 0) ssg.envState = SSGEnvelopeUnit();
 
-		needEnvSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = true;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetTone = true;
 		break;
 	}
 	case SSGWaveformType::SQM_SAW:
 	{
-		if (wfSSG_[ch].data == SSGWaveformType::SQM_SAW && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
+		if (ssg.wfState.data == SSGWaveformType::SQM_SAW && ssg.wfState.subdata == data.subdata && ssg.isKeyOn) return;
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
-			needMixSetSSG_[ch] = true;
+			ssg.shouldUpdateMixState = true;
 			break;
 		default:
 			break;
 		}
 
-		if (wfSSG_[ch].subdata != data.subdata) {
+		if (ssg.wfState.subdata != data.subdata) {
 			if (data.type == SSGWaveformUnit::RatioSubdata) {
-				needSqMaskFreqSetSSG_[ch] = true;
+				ssg.shouldSetSqMaskFreq = true;
 			}
 			else {
 				uint16_t pitch = static_cast<uint16_t>(data.subdata);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				size_t offset = ssg.ch << 1;
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
-				needSqMaskFreqSetSSG_[ch] = false;
+				ssg.shouldSetSqMaskFreq = false;
 			}
 		}
 		else {
-			needSqMaskFreqSetSSG_[ch] = false;
+			ssg.shouldSetSqMaskFreq = false;
 		}
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2846,57 +2869,57 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x0d, 0x0c);
 			break;
 		default:
-			if (!isKeyOnSSG_[ch]) opna_->setRegister(0x0d, 0x0c);	// First key on
+			if (!ssg.isKeyOn) opna_->setRegister(0x0d, 0x0c);	// First key on
 			break;
 		}
 
-		if (isHardEnvSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			isHardEnvSSG_[ch] = false;
+		if (ssg.isHardEnv) {
+			ssg.isBuzzEff = true;
+			ssg.isHardEnv = false;
 		}
-		else if (!isBuzzEffSSG_[ch] || !isKeyOnSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
+		else if (!ssg.isBuzzEff || !ssg.isKeyOn) {
+			ssg.isBuzzEff = true;
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
 		}
 
-		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
+		if (ssg.envState.data == 0) ssg.envState = SSGEnvelopeUnit();
 
-		needEnvSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = true;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetTone = true;
 		break;
 	}
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		if (wfSSG_[ch].data == SSGWaveformType::SQM_INVSAW && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
+		if (ssg.wfState.data == SSGWaveformType::SQM_INVSAW && ssg.wfState.subdata == data.subdata && ssg.isKeyOn) return;
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
-			needMixSetSSG_[ch] = true;
+			ssg.shouldUpdateMixState = true;
 			break;
 		default:
 			break;
 		}
 
-		if (wfSSG_[ch].subdata != data.subdata) {
+		if (ssg.wfState.subdata != data.subdata) {
 			if (data.type == SSGWaveformUnit::RatioSubdata) {
-				needSqMaskFreqSetSSG_[ch] = true;
+				ssg.shouldSetSqMaskFreq = true;
 			}
 			else {
 				uint16_t pitch = static_cast<uint16_t>(data.subdata);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				size_t offset = ssg.ch << 1;
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
-				needSqMaskFreqSetSSG_[ch] = false;
+				ssg.shouldSetSqMaskFreq = false;
 			}
 		}
 		else {
-			needSqMaskFreqSetSSG_[ch] = false;
+			ssg.shouldSetSqMaskFreq = false;
 		}
 
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2906,284 +2929,284 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x0d, 0x08);
 			break;
 		default:
-			if (!isKeyOnSSG_[ch]) opna_->setRegister(0x0d, 0x08);	// First key on
+			if (!ssg.isKeyOn) opna_->setRegister(0x0d, 0x08);	// First key on
 			break;
 		}
 
-		if (isHardEnvSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			isHardEnvSSG_[ch] = false;
+		if (ssg.isHardEnv) {
+			ssg.isBuzzEff = true;
+			ssg.isHardEnv = false;
 		}
-		else if (!isBuzzEffSSG_[ch] || !isKeyOnSSG_[ch]) {
-			isBuzzEffSSG_[ch] = true;
-			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
+		else if (!ssg.isBuzzEff || !ssg.isKeyOn) {
+			ssg.isBuzzEff = true;
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
 		}
 
-		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
+		if (ssg.envState.data == 0) ssg.envState = SSGEnvelopeUnit();
 
-		needEnvSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = true;
+		ssg.shouldSetEnv = false;
+		ssg.shouldSetTone = true;
 		break;
 	}
 	default:
 		return;
 	}
-	wfSSG_[ch] = std::move(data);
+	ssg.wfState = std::move(data);
 }
 
-void OPNAController::writeSquareWaveform(int ch)
+void OPNAController::writeSquareWaveform(SSGChannel& ssg)
 {
-	if (wfSSG_[ch].data == SSGWaveformType::SQUARE) {
-		if (!isKeyOnSSG_[ch]) {
-			needEnvSetSSG_[ch] = true;
-			needToneSetSSG_[ch] = true;
+	if (ssg.wfState.data == SSGWaveformType::SQUARE) {
+		if (!ssg.isKeyOn) {
+			ssg.shouldSetEnv = true;
+			ssg.shouldSetTone = true;
 		}
 		return;
 	}
 
-	switch (wfSSG_[ch].data) {
+	switch (ssg.wfState.data) {
 	case SSGWaveformType::SQM_TRIANGLE:
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
 		break;
 	default:
 	{
-		needMixSetSSG_[ch] = true;
+		ssg.shouldUpdateMixState = true;
 		break;
 	}
 	}
 
-	if (isBuzzEffSSG_[ch]) {
-		isBuzzEffSSG_[ch] = false;
-		setHardEnvIfNecessary_[ch] = true;
+	if (ssg.isBuzzEff) {
+		ssg.isBuzzEff = false;
+		ssg.shouldSetHardEnvIfNecessary = true;
 	}
 
-	needEnvSetSSG_[ch] = true;
-	needToneSetSSG_[ch] = true;
-	needSqMaskFreqSetSSG_[ch] = false;
-	wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE);
+	ssg.shouldSetEnv = true;
+	ssg.shouldSetTone = true;
+	ssg.shouldSetSqMaskFreq = false;
+	ssg.wfState = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE);
 }
 
-void OPNAController::writeToneNoiseSSGToRegister(int ch)
+void OPNAController::writeToneNoiseSSGToRegister(SSGChannel& ssg)
 {
-	auto& tnIt = tnItSSG_[ch];
-	if (tnIt->hasEnded()) {
-		if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
+	auto& tnItr = ssg.tnItr;
+	if (tnItr->hasEnded()) {
+		if (ssg.shouldUpdateMixState) writeToneNoiseSSGToRegisterNoReference(ssg);
 		return;
 	}
 
-	int type = tnIt->data().data;
+	int type = tnItr->data().data;
 
 	uint8_t prevMixer = mixerSSG_;
 	if (!type) {	// tone
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
-			if (tnSSG_[ch].isTone) {
-				mixerSSG_ |= SSGToneFlag(ch);
-				tnSSG_[ch].isTone = false;
+			if (ssg.tnState.isTone) {
+				mixerSSG_ |= SSGToneFlag(ssg.ch);
+				ssg.tnState.isTone = false;
 			}
 			break;
 		default:
-			if (!tnSSG_[ch].isTone) {
-				mixerSSG_ &= ~SSGToneFlag(ch);
-				tnSSG_[ch].isTone = true;
+			if (!ssg.tnState.isTone) {
+				mixerSSG_ &= ~SSGToneFlag(ssg.ch);
+				ssg.tnState.isTone = true;
 			}
 			break;
 		}
 
-		if (tnSSG_[ch].isNoise) {
-			mixerSSG_ |= SSGNoiseFlag(ch);
-			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = UNUSED_VALUE;
+		if (ssg.tnState.isNoise) {
+			mixerSSG_ |= SSGNoiseFlag(ssg.ch);
+			ssg.tnState.isNoise = false;
+			ssg.tnState.noisePeriod = UNUSED_VALUE;
 		}
 	}
 	else if (type == 65) {	// None
-		if (tnSSG_[ch].isTone) {
-			mixerSSG_ |= SSGToneFlag(ch);
-			tnSSG_[ch].isTone = false;
+		if (ssg.tnState.isTone) {
+			mixerSSG_ |= SSGToneFlag(ssg.ch);
+			ssg.tnState.isTone = false;
 		}
 
-		if (tnSSG_[ch].isNoise) {
-			mixerSSG_ |= SSGNoiseFlag(ch);
-			tnSSG_[ch].isNoise = false;
-			tnSSG_[ch].noisePeriod_ = UNUSED_VALUE;
+		if (ssg.tnState.isNoise) {
+			mixerSSG_ |= SSGNoiseFlag(ssg.ch);
+			ssg.tnState.isNoise = false;
+			ssg.tnState.noisePeriod = UNUSED_VALUE;
 		}
 	}
 	else if (type > 32) {	// Tone&Noise
-		switch (wfSSG_[ch].data) {
+		switch (ssg.wfState.data) {
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
-			if (tnSSG_[ch].isTone) {
-				mixerSSG_ |= SSGToneFlag(ch);
-				tnSSG_[ch].isTone = false;
+			if (ssg.tnState.isTone) {
+				mixerSSG_ |= SSGToneFlag(ssg.ch);
+				ssg.tnState.isTone = false;
 			}
 			break;
 		default:
-			if (!tnSSG_[ch].isTone) {
-				mixerSSG_ &= ~SSGToneFlag(ch);
-				tnSSG_[ch].isTone = true;
+			if (!ssg.tnState.isTone) {
+				mixerSSG_ &= ~SSGToneFlag(ssg.ch);
+				ssg.tnState.isTone = true;
 			}
 			break;
 		}
 
-		if (!tnSSG_[ch].isNoise) {
-			mixerSSG_ &= ~SSGNoiseFlag(ch);
-			tnSSG_[ch].isNoise = true;
+		if (!ssg.tnState.isNoise) {
+			mixerSSG_ &= ~SSGNoiseFlag(ssg.ch);
+			ssg.tnState.isNoise = true;
 		}
 
 		int p = type - 33;
-		if (tnSSG_[ch].noisePeriod_ != p) {
+		if (ssg.tnState.noisePeriod != p) {
 			opna_->setRegister(0x06, static_cast<uint8_t>(31 - p));	// Reverse order
-			tnSSG_->noisePeriod_ = p;
+			ssg.tnState.noisePeriod = p;
 		}
 	}
 	else {	// Noise
-		if (tnSSG_[ch].isTone) {
-			mixerSSG_ |= SSGToneFlag(ch);
-			tnSSG_[ch].isTone = false;
+		if (ssg.tnState.isTone) {
+			mixerSSG_ |= SSGToneFlag(ssg.ch);
+			ssg.tnState.isTone = false;
 		}
 
-		if (!tnSSG_[ch].isNoise) {
-			mixerSSG_ &= ~SSGNoiseFlag(ch);
-			tnSSG_[ch].isNoise = true;
+		if (!ssg.tnState.isNoise) {
+			mixerSSG_ &= ~SSGNoiseFlag(ssg.ch);
+			ssg.tnState.isNoise = true;
 		}
 
 		int p = type - 1;
-		if (tnSSG_[ch].noisePeriod_ != p) {
+		if (ssg.tnState.noisePeriod != p) {
 			opna_->setRegister(0x06, static_cast<uint8_t>(31 - p));	// Reverse order
-			tnSSG_->noisePeriod_ = p;
+			ssg.tnState.noisePeriod = p;
 		}
 	}
 
 	if (mixerSSG_ != prevMixer) opna_->setRegister(0x07, mixerSSG_);
-	needMixSetSSG_[ch] = false;
+	ssg.shouldUpdateMixState = false;
 }
 
-void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
+void OPNAController::writeToneNoiseSSGToRegisterNoReference(SSGChannel& ssg)
 {
-	switch (wfSSG_[ch].data) {
+	switch (ssg.wfState.data) {
 	case SSGWaveformType::TRIANGLE:
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
-		mixerSSG_ |= SSGToneFlag(ch);
-		tnSSG_[ch].isNoise = false;
+		mixerSSG_ |= SSGToneFlag(ssg.ch);
+		ssg.tnState.isNoise = false;
 		break;
 	default:
-		mixerSSG_ &= ~SSGToneFlag(ch);
-		tnSSG_[ch].isTone = true;
+		mixerSSG_ &= ~SSGToneFlag(ssg.ch);
+		ssg.tnState.isTone = true;
 		break;
 	}
 	opna_->setRegister(0x07, mixerSSG_);
 
-	needMixSetSSG_[ch] = false;
+	ssg.shouldUpdateMixState = false;
 }
 
-void OPNAController::writeEnvelopeSSGToRegister(int ch)
+void OPNAController::writeEnvelopeSSGToRegister(SSGChannel& ssg)
 {
-	if (isBuzzEffSSG_[ch]) return;
-	auto& envIt = envItSSG_[ch];
-	if (envIt->hasEnded()) {
-		if (needEnvSetSSG_[ch]) {
-			setRealVolumeSSG(ch);
-			needEnvSetSSG_[ch] = false;
+	if (ssg.isBuzzEff) return;
+	auto& envItr = ssg.envItr;
+	if (envItr->hasEnded()) {
+		if (ssg.shouldSetEnv) {
+			setRealVolumeSSG(ssg);
+			ssg.shouldSetEnv = false;
 		}
 		return;
 	}
 
-	SSGEnvelopeUnit&& data = envIt->data();
+	SSGEnvelopeUnit&& data = envItr->data();
 	if (data.data < 16) {	// Software envelope
-		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = std::move(data);
-		setRealVolumeSSG(ch);
-		needEnvSetSSG_[ch] = false;
+		ssg.isHardEnv = false;
+		ssg.envState = std::move(data);
+		setRealVolumeSSG(ssg);
+		ssg.shouldSetEnv = false;
 	}
 	else {	// Hardware envelope
-		if (envSSG_[ch].subdata != data.subdata || setHardEnvIfNecessary_[ch]) {
-			envSSG_[ch].type = data.type;
-			envSSG_[ch].subdata = data.subdata;
+		if (ssg.envState.subdata != data.subdata || ssg.shouldSetHardEnvIfNecessary) {
+			ssg.envState.type = data.type;
+			ssg.envState.subdata = data.subdata;
 			if (data.type == SSGEnvelopeUnit::RatioSubdata) {
 				/* Envelope period is set in writePitchSSG */
-				needEnvSetSSG_[ch] = true;
+				ssg.shouldSetEnv = true;
 			}
 			else {
-				opna_->setRegister(0x0b, 0x00ff & envSSG_[ch].subdata);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(envSSG_[ch].subdata >> 8));
-				needEnvSetSSG_[ch] = false;
+				opna_->setRegister(0x0b, 0x00ff & ssg.envState.subdata);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(ssg.envState.subdata >> 8));
+				ssg.shouldSetEnv = false;
 			}
 		}
 		else {
-			needEnvSetSSG_[ch] = false;
+			ssg.shouldSetEnv = false;
 		}
-		if (envSSG_[ch].data != data.data || !isKeyOnSSG_[ch] || setHardEnvIfNecessary_[ch]) {
+		if (ssg.envState.data != data.data || !ssg.isKeyOn || ssg.shouldSetHardEnvIfNecessary) {
 			opna_->setRegister(0x0d, static_cast<uint8_t>(data.data - 16 + 8));
-			envSSG_[ch].data = data.data;
+			ssg.envState.data = data.data;
 			if (data.type == SSGEnvelopeUnit::RatioSubdata)
-				needEnvSetSSG_[ch] = true;
+				ssg.shouldSetEnv = true;
 		}
-		if (!isHardEnvSSG_[ch]) {
-			opna_->setRegister(static_cast<uint32_t>(0x08 + ch), 0x10);
-			isHardEnvSSG_[ch] = true;
+		if (!ssg.isHardEnv) {
+			opna_->setRegister(0x08 + ssg.ch, 0x10);
+			ssg.isHardEnv = true;
 		}
 		// setHardEnvIfNecessary_[ch] = false;
 	}
 }
 
-void OPNAController::writePitchSSG(int ch)
+void OPNAController::writePitchSSG(SSGChannel& ssg)
 {
-	if (neverSetBaseNoteSSG_[ch]) return;
+	if (ssg.neverSetBaseNote) return;
 
-	int p = (baseNoteSSG_[ch] + (sumPitchSSG_[ch]
-								 + (vibItSSG_[ch] ? vibItSSG_[ch]->data().data : 0)
-								 + detuneSSG_[ch]
-								 + sumNoteSldSSG_[ch]
-								 + transposeSSG_[ch])).getAbsolutePicth();
+	int p = (ssg.baseNote + (ssg.ptSum
+								 + (ssg.vibItr ? ssg.vibItr->data().data : 0)
+								 + ssg.detune
+								 + ssg.nsSum
+								 + ssg.transpose)).getAbsolutePicth();
 
-	switch (wfSSG_[ch].data) {
+	switch (ssg.wfState.data) {
 	case SSGWaveformType::SQUARE:
 	{
-		uint16_t pitch = note_utils::calculateSSGSquareTP(p, fdetuneSSG_[ch]);
-		if (needToneSetSSG_[ch]) {
-			uint8_t offset = static_cast<uint8_t>(ch << 1);
+		uint16_t pitch = note_utils::calculateSSGSquareTP(p, ssg.fdetune);
+		if (ssg.shouldSetTone) {
+			size_t offset = ssg.ch << 1;
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
 			opna_->setRegister(0x01 + offset, pitch >> 8);
-			writeAutoEnvelopePitchSSG(ch, pitch);
+			writeAutoEnvelopePitchSSG(ssg, pitch);
 		}
-		else if (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) {
-			writeAutoEnvelopePitchSSG(ch, pitch);
+		else if (ssg.isHardEnv && ssg.shouldSetEnv) {
+			writeAutoEnvelopePitchSSG(ssg, pitch);
 		}
 		break;
 	}
 	case SSGWaveformType::TRIANGLE:
-		if (needToneSetSSG_[ch]) {
-			uint16_t pitch = note_utils::calculateSSGTriangleEP(p, fdetuneSSG_[ch]);
+		if (ssg.shouldSetTone) {
+			uint16_t pitch = note_utils::calculateSSGTriangleEP(p, ssg.fdetune);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
 		break;
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
-		if (needToneSetSSG_[ch]){
-			uint16_t pitch = note_utils::calculateSSGSawEP(p, fdetuneSSG_[ch]);
+		if (ssg.shouldSetTone){
+			uint16_t pitch = note_utils::calculateSSGSawEP(p, ssg.fdetune);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
 		break;
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		uint16_t pitch = note_utils::calculateSSGTriangleEP(p, fdetuneSSG_[ch]);
-		if (needToneSetSSG_[ch]) {
+		uint16_t pitch = note_utils::calculateSSGTriangleEP(p, ssg.fdetune);
+		if (ssg.shouldSetTone) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
-			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
-				writeSquareMaskPitchSSG(ch, pitch, true);
+			if (ssg.wfState.type == SSGWaveformUnit::RatioSubdata) {
+				writeSquareMaskPitchSSG(ssg, pitch, true);
 			}
 		}
-		else if (needSqMaskFreqSetSSG_[ch]) {
-			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
-				writeSquareMaskPitchSSG(ch, pitch, true);
+		else if (ssg.shouldSetSqMaskFreq) {
+			if (ssg.wfState.type == SSGWaveformUnit::RatioSubdata) {
+				writeSquareMaskPitchSSG(ssg, pitch, true);
 			}
 		}
 		break;
@@ -3191,17 +3214,17 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		uint16_t pitch = note_utils::calculateSSGSawEP(p, fdetuneSSG_[ch]);
-		if (needToneSetSSG_[ch]) {
+		uint16_t pitch = note_utils::calculateSSGSawEP(p, ssg.fdetune);
+		if (ssg.shouldSetTone) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
-			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
-				writeSquareMaskPitchSSG(ch, pitch, false);
+			if (ssg.wfState.type == SSGWaveformUnit::RatioSubdata) {
+				writeSquareMaskPitchSSG(ssg, pitch, false);
 			}
 		}
-		else if (needSqMaskFreqSetSSG_[ch]) {
-			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
-				writeSquareMaskPitchSSG(ch, pitch, false);
+		else if (ssg.shouldSetSqMaskFreq) {
+			if (ssg.wfState.type == SSGWaveformUnit::RatioSubdata) {
+				writeSquareMaskPitchSSG(ssg, pitch, false);
 			}
 		}
 		break;
@@ -3210,21 +3233,21 @@ void OPNAController::writePitchSSG(int ch)
 		break;
 	}
 
-	needToneSetSSG_[ch] = false;
-	needEnvSetSSG_[ch] = false;
-	needSqMaskFreqSetSSG_[ch] = false;
+	ssg.shouldSetTone = false;
+	ssg.shouldSetEnv = false;
+	ssg.shouldSetSqMaskFreq = false;
 }
 
-void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
+void OPNAController::writeAutoEnvelopePitchSSG(SSGChannel& ssg, double tonePitch)
 {
 	// Multiple frequency if triangle
-	int div = (envSSG_[ch].data == 18 || envSSG_[ch].data == 22) ? 32 : 16;
+	int div = (ssg.envState.data == 18 || ssg.envState.data == 22) ? 32 : 16;
 
-	switch (envSSG_[ch].type) {
+	switch (ssg.envState.type) {
 	case SSGEnvelopeUnit::RatioSubdata:
 	{
 		int r1, r2;
-		envSSG_[ch].getSubdataAsRatio(r1, r2);
+		ssg.envState.getSubdataAsRatio(r1, r2);
 		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * r1 / (r2 * div)));
 		opna_->setRegister(0x0b, 0x00ff & period);
 		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
@@ -3234,7 +3257,7 @@ void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 	{
 		uint16_t period = static_cast<uint16_t>(std::round(tonePitch / div));
 		int rshift;
-		envSSG_[ch].getSubdataAsShift(rshift);
+		ssg.envState.getSubdataAsShift(rshift);
 		rshift -= 4;	// Adjust rate to that of 0CC-FamiTracker
 		if (rshift < 0) period <<= -rshift;
 		else period >>= rshift;
@@ -3247,14 +3270,14 @@ void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 	}
 }
 
-void OPNAController::writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle)
+void OPNAController::writeSquareMaskPitchSSG(SSGChannel& ssg, double tonePitch, bool isTriangle)
 {
 	int mul = isTriangle ? 32 : 16;	// Multiple frequency if triangle
 	int r1, r2;
-	wfSSG_[ch].getSubdataAsRatio(r1, r2);
+	ssg.wfState.getSubdataAsRatio(r1, r2);
 	// Calculate mask period
 	uint16_t period = static_cast<uint16_t>(std::round(r1 * mul * tonePitch / r2));
-	uint8_t offset = static_cast<uint8_t>(ch << 1);
+	size_t offset = ssg.ch << 1;
 	opna_->setRegister(0x00 + offset, period & 0x00ff);
 	opna_->setRegister(0x01 + offset, period >> 8);
 }
@@ -3274,8 +3297,8 @@ void OPNAController::setKeyOnFlagRhythm(int ch)
 	auto& rhy = rhythm_[ch];
 	if (rhy.isMute) return;
 
-	if (rhy.oneshotVol_ != UNUSED_VALUE)
-		setVolumeRhythm(ch, rhy.baseVol_);
+	if (rhy.oneshotVol != UNUSED_VALUE)
+		setVolumeRhythm(ch, rhy.baseVol);
 
 	keyOnRequestFlagsRhythm_ |= static_cast<uint8_t>(1 << ch);
 }
@@ -3290,8 +3313,8 @@ void OPNAController::setVolumeRhythm(int ch, int volume)
 {
 	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		auto& rhy = rhythm_[ch];
-		rhy.baseVol_ = volume;
-		rhy.oneshotVol_ = UNUSED_VALUE;
+		rhy.baseVol = volume;
+		rhy.oneshotVol = UNUSED_VALUE;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), makePanAndVolumeRegVal(rhy.panState, volume));
 	}
 }
@@ -3300,7 +3323,7 @@ void OPNAController::setOneshotVolumeRhythm(int ch, int volume)
 {
 	if (volume < bt_defs::NSTEP_RHYTHM_VOLUME) {
 		auto& rhy = rhythm_[ch];
-		rhy.oneshotVol_ = volume;
+		rhy.oneshotVol = volume;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), makePanAndVolumeRegVal(rhy.panState, volume));
 	}
 }
@@ -3316,7 +3339,7 @@ void OPNAController::setPanRhythm(int ch, int value)
 {
 	auto& rhy = rhythm_[ch];
 	rhy.panState = static_cast<uint8_t>(value);
-	int volume = (rhy.oneshotVol_ == UNUSED_VALUE) ? rhy.baseVol_ : rhy.oneshotVol_;
+	int volume = (rhy.oneshotVol == UNUSED_VALUE) ? rhy.baseVol : rhy.oneshotVol;
 	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), makePanAndVolumeRegVal(value, volume));
 }
 
@@ -3330,8 +3353,8 @@ void OPNAController::initRhythm()
 
 	for (size_t ch = 0; ch < 6; ++ch) {
 		auto& rhy = rhythm_[ch];
-		rhy.baseVol_ = bt_defs::NSTEP_RHYTHM_VOLUME - 1;
-		rhy.oneshotVol_ = UNUSED_VALUE;
+		rhy.baseVol = bt_defs::NSTEP_RHYTHM_VOLUME - 1;
+		rhy.oneshotVol = UNUSED_VALUE;
 
 		// Init pan
 		rhy.panState = 3;
