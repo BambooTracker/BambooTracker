@@ -1379,7 +1379,7 @@ void PlaybackManager::checkSSGDelayEventsInTick(const Step& step, int ch)
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
 	if (!volDlyCntSSG_.at(uch))
-		opnaCtrl_->setTemporaryVolumeSSG(ch, volDlyValueSSG_.at(uch));
+		opnaCtrl_->setOneshotVolumeSSG(ch, volDlyValueSSG_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntSSG_.at(uch))
 		opnaCtrl_->keyOffSSG(ch);

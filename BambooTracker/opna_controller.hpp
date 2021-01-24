@@ -244,7 +244,7 @@ public:
 
 	// Set volume
 	void setVolumeSSG(int ch, int volume);
-	void setTemporaryVolumeSSG(int ch, int volume);
+	void setOneshotVolumeSSG(int ch, int volume);
 	void setMasterVolumeSSG(double dB);
 
 	// Set effect
@@ -274,7 +274,7 @@ private:
 	{
 		size_t ch;
 		std::shared_ptr<InstrumentSSG> refInst;
-		bool isKeyOn, hasKeyOnBefore;
+		bool isKeyOn, hasKeyOnBefore, isInKeyOnProcess_;
 		EchoBuffer echoBuf;
 		bool neverSetBaseNote;
 		Note baseNote;
@@ -282,9 +282,10 @@ private:
 		bool isMute;
 		bool shouldSkip1stTickExec;
 		bool shouldSetEnv;
+		bool shouldSetSqMaskFreq;
+		bool shouldSetHardEnvFreq;
 		bool shouldUpdateMixState;
 		bool shouldSetTone;
-		bool shouldSetSqMaskFreq;
 		SSGWaveformIter wfItr;
 		SSGWaveformUnit wfChState;
 		SSGEnvelopeIter envItr;
@@ -325,6 +326,7 @@ private:
 	void writeSquareWaveform(SSGChannel& ssg);
 
 	void writeEnvelopeSSGToRegister(SSGChannel& ssg);
+	void setRealVolumeSSG(SSGChannel& ssg);
 
 	void writeMixerSSGToRegisterBySequence(SSGChannel& ssg);
 	void writeMixerSSGToRegisterByNoReference(SSGChannel& ssg);
@@ -336,8 +338,6 @@ private:
 	void writePitchSSG(SSGChannel& ssg);
 	void writeAutoEnvelopePitchSSG(SSGChannel& ssg, double tonePitch);
 	void writeSquareMaskPitchSSG(SSGChannel& ssg, double tonePitch, bool isTriangle);
-
-	void setRealVolumeSSG(SSGChannel& ssg);
 
 	/*----- Rhythm -----*/
 public:
