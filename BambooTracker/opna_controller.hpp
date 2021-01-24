@@ -282,23 +282,15 @@ private:
 		bool isMute;
 		bool shouldSkip1stTickExec;
 		bool shouldSetEnv;
-		bool shouldSetHardEnvIfNecessary;
 		bool shouldUpdateMixState;
 		bool shouldSetTone;
 		bool shouldSetSqMaskFreq;
 		SSGWaveformIter wfItr;
-		SSGWaveformUnit wfState;
+		SSGWaveformUnit wfChState;
 		SSGEnvelopeIter envItr;
 		SSGEnvelopeUnit envState;
-		bool isBuzzEff;
 		bool isHardEnv;
 		SSGToneNoiseIter tnItr;
-		struct SSGToneNoise
-		{
-			bool isTone, isNoise;
-			int noisePeriod;
-		};
-		SSGToneNoise tnState;
 		ArpeggioIterInterface arpItr;
 		PitchIter ptItr;
 		int ptSum;
@@ -312,12 +304,12 @@ private:
 		std::unique_ptr<NoteSlideEffectIterator> nsItr;
 		int nsSum;
 		int transpose;
-		int tnMix;
 	};
 	SSGChannel ssg_[3];
+	/// Flag "on" is key "off"
 	uint8_t mixerSSG_;
+	uint8_t noisePeriodSSG_;
 	bool noteSldSSGSetFlag_;
-	int noisePitchSSG_;
 	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
 
 	void initSSG();
@@ -332,10 +324,10 @@ private:
 	void writeWaveformSSGToRegister(SSGChannel& ssg);
 	void writeSquareWaveform(SSGChannel& ssg);
 
-	void writeToneNoiseSSGToRegister(SSGChannel& ssg);
-	void writeToneNoiseSSGToRegisterNoReference(SSGChannel& ssg);
-
 	void writeEnvelopeSSGToRegister(SSGChannel& ssg);
+
+	void writeMixerSSGToRegisterBySequence(SSGChannel& ssg);
+	void writeMixerSSGToRegisterByNoReference(SSGChannel& ssg);
 
 	void checkRealToneSSGByArpeggio(SSGChannel& ssg);
 	void checkPortamentoSSG(SSGChannel& ssg);
