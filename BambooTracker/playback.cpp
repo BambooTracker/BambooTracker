@@ -1331,7 +1331,7 @@ void PlaybackManager::checkFMDelayEventsInTick(const Step& step, int ch)
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
 	if (!volDlyCntFM_.at(uch))
-		opnaCtrl_->setTemporaryVolumeFM(ch, volDlyValueFM_.at(uch));
+		opnaCtrl_->setOneshotVolumeFM(ch, volDlyValueFM_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntFM_.at(uch))
 		opnaCtrl_->keyOffFM(ch);

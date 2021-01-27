@@ -100,12 +100,12 @@ private:
 	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
 
 	using ArpeggioIterInterface = std::unique_ptr<SequenceIteratorInterface<ArpeggioUnit>>;
-	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
+	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpItr,
 								 const EchoBuffer& echoBuf, Note& baseNote, bool& shouldSetTone);
-	void checkPortamento(const ArpeggioIterInterface& arpIt, int prtm, bool hasKeyOnBefore,
+	void checkPortamento(const ArpeggioIterInterface& arpItr, int prtm, bool hasKeyOnBefore,
 						 bool isTonePrtm, EchoBuffer& echoBuf, Note& baseNote,
 						 bool& shouldSetTone);
-	void checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
+	void checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptItr,
 							  int& sumPitch, bool& shouldSetTone);
 
 	/*----- FM -----*/
@@ -126,7 +126,7 @@ public:
 
 	// Set volume
 	void setVolumeFM(int ch, int volume);
-	void setTemporaryVolumeFM(int ch, int volume);
+	void setOneshotVolumeFM(int ch, int volume);
 	void setMasterVolumeFM(double dB);
 
 	// Set effect
@@ -158,38 +158,47 @@ public:
 	Note getFMLatestNote(int ch) const;
 
 private:
+	// Seperate FM 3ch in FM3chEx mode
+	struct FMChannel
+	{
+		size_t ch, inCh;
+		bool isKeyOn, hasKeyOnBefore;
+		EchoBuffer echoBuf;
+		bool neverSetBaseNote;
+		Note baseNote;
+		int baseVol, oneshotVol;
+		bool isMute;
+		bool isEnabledEnvReset, hasResetEnv;
+		bool hasPreSetTickEvent;
+		bool shouldSetTone;
+		ArpeggioIterInterface arpItr;
+		PitchIter ptItr;
+		int ptSum;
+		bool isArpEff;
+		int prtmDepth;
+		bool isTonePrtm;
+		std::unique_ptr<WavingEffectIterator> vibItr;
+		std::unique_ptr<WavingEffectIterator> treItr;
+		int volSld, volSldSum;
+		int detune, fdetune;
+		std::unique_ptr<NoteSlideEffectIterator> nsItr;
+		int nsSum;
+		bool hasSetNs;
+		int transpose;
+		FMOperatorType opType;
+	};
+	FMChannel fm_[9];
+
+	// Share FM 3ch in FM3chEx mode
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
 	std::unique_ptr<EnvelopeFM> envFM_[6];
-	bool isKeyOnFM_[9], hasKeyOnBeforeFM_[9];
 	uint8_t fmOpEnables_[6];
-	EchoBuffer echoBufFM_[9];
-	bool neverSetBaseNoteFM_[9];
-	Note baseNoteFM_[9];
-	int sumPitchFM_[9];
-	int baseVolFM_[9], tmpVolFM_[9];
 	/// bit0: right on/off
 	/// bit1: left on/off
 	uint8_t panFM_[6];
-	bool isMuteFM_[9];
-	bool enableEnvResetFM_[9], hasResetEnvFM_[9];
 	int lfoFreq_;
 	int lfoStartCntFM_[6];
-	bool hasPreSetTickEventFM_[9];
-	bool needToneSetFM_[9];
 	std::unordered_map<FMEnvelopeParameter, FMOperatorSequenceIter> opSeqItFM_[6];
-	ArpeggioIterInterface arpItFM_[9];
-	PitchIter ptItFM_[9];
-	bool isArpEffFM_[9];
-	int prtmFM_[9];
-	bool isTonePrtmFM_[9];
-	std::unique_ptr<WavingEffectIterator> vibItFM_[9];
-	std::unique_ptr<WavingEffectIterator> treItFM_[9];
-	int volSldFM_[9], sumVolSldFM_[9];
-	int detuneFM_[9], fdetuneFM_[9];
-	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[9];
-	int sumNoteSldFM_[9];
-	bool noteSldFMSetFlag_[9];
-	int transposeFM_[9];
 	bool isFBCtrlFM_[6], isTLCtrlFM_[6][4], isMLCtrlFM_[6][4], isARCtrlFM_[6][4];
 	bool isDRCtrlFM_[6][4], isRRCtrlFM_[6][4];
 	bool isBrightFM_[6][4];
@@ -200,34 +209,31 @@ private:
 	bool isMuteFM(int ch);
 
 	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
-	FMOperatorType toChannelOperatorType(int ch) const;
 
-	void updateFMVolume(int ch);
+	void updateFMVolume(FMChannel& fm);
 
-	void writeFMEnvelopeToRegistersFromInstrument(int inch);
-	void writeFMEnveropeParameterToRegister(int inch, FMEnvelopeParameter param, int value);
+	void writeFMEnvelopeToRegistersFromInstrument(size_t inch);
+	void writeFMEnveropeParameterToRegister(size_t inch, FMEnvelopeParameter param, int value);
 
-	void writeFMLFOAllRegisters(int inch);
-	void writeFMLFORegister(int inch, FMLFOParameter param);
-	void checkLFOUsed();
+	void writeFMLFOAllRegisters(size_t inch);
+	void writeFMLFORegister(size_t inch, FMLFOParameter param);
+	void checkLFOUsedByInstrument();
 
-	void setFrontFMSequences(int ch);
-	void releaseStartFMSequences(int ch);
-	void tickEventFM(int ch);
+	void setFrontFMSequences(FMChannel& fm);
+	void releaseStartFMSequences(FMChannel& fm);
+	void tickEventFM(FMChannel& fm);
 
-	void checkOperatorSequenceFM(int ch, int type);
-	void checkVolumeEffectFM(int ch);
+	void checkOperatorSequenceFM(FMChannel& fm, int type);
+	void checkVolumeEffectFM(FMChannel& fm);
 
-	void checkRealToneFMByArpeggio(int ch);
-	void checkPortamentoFM(int ch);
-	void checkRealToneFMByPitch(int ch);
+	void checkRealToneFMByArpeggio(FMChannel& fm);
+	void checkPortamentoFM(FMChannel& fm);
+	void checkRealToneFMByPitch(FMChannel& fm);
 
-	void writePitchFM(int ch);
+	void writePitchFM(FMChannel& fm);
 
-	void setInstrumentFMProperties(int ch);
+	void setInstrumentFMProperties(FMChannel& fm);
 
-	uint8_t getFMKeyOnOffChannelMask(int ch) const;
-	int toInternalFMChannel(int ch) const;
 	uint8_t getFM3SlotValidStatus() const;
 	uint8_t calculateTL(int ch, uint8_t data) const;
 
@@ -304,13 +310,12 @@ private:
 		int detune, fdetune;
 		std::unique_ptr<NoteSlideEffectIterator> nsItr;
 		int nsSum;
+		bool hasSetNs;
 		int transpose;
-	};
-	SSGChannel ssg_[3];
+	} ssg_[3];
 	/// Flag "on" is key "off"
 	uint8_t mixerSSG_;
 	uint8_t noisePeriodSSG_;
-	bool noteSldSSGSetFlag_;
 	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
 
 	void initSSG();
@@ -441,7 +446,7 @@ private:
 	int detuneADPCM_, fdetuneADPCM_;
 	std::unique_ptr<NoteSlideEffectIterator> nsItADPCM_;
 	int nsSumADPCM_;
-	bool noteSldADPCMSetFlag_;
+	bool hasSetNsADPCM_;
 	int transposeADPCM_;
 	bool hasStartRequestedKit_;
 
@@ -475,46 +480,27 @@ inline SongType OPNAController::getMode() const noexcept
 	return mode_;
 }
 
-inline void OPNAController::checkRealToneFMByArpeggio(int ch)
-{
-	checkRealToneByArpeggio(arpItFM_[ch], echoBufFM_[ch], baseNoteFM_[ch], needToneSetFM_[ch]);
-}
-
-inline void OPNAController::checkPortamentoFM(int ch)
-{
-	checkPortamento(arpItFM_[ch], prtmFM_[ch], hasKeyOnBeforeFM_[ch], isTonePrtmFM_[ch], echoBufFM_[ch],
-					baseNoteFM_[ch], needToneSetFM_[ch]);
-}
-
-inline void OPNAController::checkRealToneFMByPitch(int ch)
-{
-	checkRealToneByPitch(ptItFM_[ch], sumPitchFM_[ch], needToneSetFM_[ch]);
-}
-
 /*----- FM -----*/
-inline uint8_t OPNAController::getFMKeyOnOffChannelMask(int ch) const
+inline void OPNAController::checkRealToneFMByArpeggio(FMChannel& fm)
 {
-	static constexpr uint8_t FM_KEYOFF_MASK[6] = { 0, 1, 2, 4, 5, 6 };
-	return FM_KEYOFF_MASK[toInternalFMChannel(ch)];
+	checkRealToneByArpeggio(fm.arpItr, fm.echoBuf, fm.baseNote, fm.shouldSetTone);
 }
 
-inline int OPNAController::toInternalFMChannel(int ch) const
+inline void OPNAController::checkPortamentoFM(FMChannel& fm)
 {
-	if (0 <= ch && ch < 6) return ch;
-	else if (mode_ == SongType::FM3chExpanded && 6 <= ch && ch < 9) return 2;
-	else throw std::out_of_range("Out of channel range.");
+	checkPortamento(fm.arpItr, fm.prtmDepth, fm.hasKeyOnBefore, fm.isTonePrtm, fm.echoBuf,
+					fm.baseNote, fm.shouldSetTone);
+}
+
+inline void OPNAController::checkRealToneFMByPitch(FMChannel& fm)
+{
+	checkRealToneByPitch(fm.ptItr, fm.ptSum, fm.shouldSetTone);
 }
 
 inline uint8_t OPNAController::getFM3SlotValidStatus() const
 {
-	return fmOpEnables_[2] & (static_cast<uint8_t>(isKeyOnFM_[2]) | (static_cast<uint8_t>(isKeyOnFM_[6]) << 1)
-			| (static_cast<uint8_t>(isKeyOnFM_[7]) << 2) | (static_cast<uint8_t>(isKeyOnFM_[8]) << 3));
-}
-
-inline uint8_t OPNAController::calculateTL(int ch, uint8_t data) const
-{
-	int v = (tmpVolFM_[ch] == -1) ? baseVolFM_[ch] : tmpVolFM_[ch];
-	return (data > 127 - v) ? 127 : static_cast<uint8_t>(data + v);
+	return fmOpEnables_[2] & (static_cast<uint8_t>(fm_[2].isKeyOn) | (static_cast<uint8_t>(fm_[6].isKeyOn) << 1)
+			| (static_cast<uint8_t>(fm_[7].isKeyOn) << 2) | (static_cast<uint8_t>(fm_[8].isKeyOn) << 3));
 }
 
 /*----- SSG -----*/
