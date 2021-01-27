@@ -58,7 +58,7 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 			if (ids.empty()) ofs = start;
 			ids.push_back(static_cast<int>(i));
 			size_t st = sampOffs + static_cast<size_t>((start - ofs) << 5);
-			size_t sampSize = std::min(static_cast<size_t>((stop + 1 - start) << 5), ctr.size() - st);
+			size_t sampSize = std::min<size_t>((stop + 1u - start) << 5, ctr.size() - st);
 			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
 		}
 	}
