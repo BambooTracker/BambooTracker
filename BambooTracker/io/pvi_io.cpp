@@ -46,8 +46,23 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	extractADPCMSamples(ctr, 0x10, sampOffs, 128, ids, samples);
-	if (ids.size() != cnt) throw FileCorruptionError(FileType::Bank, 11);
+	size_t ofs = 0;
+	size_t addrPos = 0x10;
+	for (size_t i = 0; i < cnt; ++i) {
+		uint16_t start = ctr.readUint16(addrPos);
+		addrPos += 2;
+		uint16_t stop = ctr.readUint16(addrPos);
+		addrPos += 2;
+
+		if (start < stop) {
+			if (ids.empty()) ofs = start;
+			ids.push_back(static_cast<int>(i));
+			size_t st = sampOffs + static_cast<size_t>((start - ofs) << 5);
+			size_t sampSize = std::min(static_cast<size_t>((stop + 1 - start) << 5), ctr.size() - st);
+			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
+		}
+	}
+	/* if (ids.size() != cnt) throw FileCorruptionError(FileType::Bank, 11); */
 
 	return new PviBank(ids, deltaN, samples);
 }

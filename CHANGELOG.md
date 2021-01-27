@@ -14,7 +14,7 @@
 - Keep playing state after changing the configuration (thanks [@OPNA2608])
 - [#289] - Change MIDI input initialization ([#288]; thanks [@OPNA2608])
 - [#296] - Make the release build for Windows XP in appveyor (thanks [@OPNA2608])
-- Load a ADPCM deltaN setting in .pvi file ([#308]; thanks [@OPNA2608])
+- Load aDPCM deltaN setting and sample count in .pvi file ([#308], [#316]; thanks [@OPNA2608], [@freq-mod])
 
 ### Fixed
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
@@ -23,7 +23,7 @@
 - [#299] - Fix a glitch in instrument macro editors when scrolling (thanks [@freq-mod])
 - [#303] - Reduce futile memory copy in WAV export to prevent the memory error (thanks [@Drillimation])
 - [#307] - Fix GitHub Actions workflow for macOS (thanks [@OPNA2608])
-- Clean some code ([#295]; thanks [@freq-mod])
+- Clean some code ([#295], [#311], [#312]; thanks [@freq-mod], [@jpcima], [@OPNA2608])
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
 [#284]: https://github.com/rerrahkr/BambooTracker/issues/284
@@ -41,6 +41,9 @@
 [#303]: https://github.com/rerrahkr/BambooTracker/issues/303
 [#307]: https://github.com/rerrahkr/BambooTracker/pull/307
 [#308]: https://github.com/rerrahkr/BambooTracker/issues/308
+[#311]: https://github.com/rerrahkr/BambooTracker/issues/311
+[#312]: https://github.com/rerrahkr/BambooTracker/pull/312
+[#316]: https://github.com/rerrahkr/BambooTracker/issues/316
 
 ## v0.4.5 (2020-11-05)
 ### Added

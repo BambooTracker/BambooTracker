@@ -49,7 +49,22 @@ AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
+	size_t ofs = 0;
+	constexpr int MAX_CNT = 256;
+	for (int i = 0; i < MAX_CNT; ++i) {
+		uint16_t start = ctr.readUint16(globCsr);
+		globCsr += 2;
+		uint16_t stop = ctr.readUint16(globCsr);
+		globCsr += 2;
+
+		if (start < stop) {
+			if (ids.empty()) ofs = start;
+			ids.push_back(i);
+			size_t st = sampOffs + static_cast<size_t>((start - ofs) << 5);
+			size_t sampSize = std::min((stop + 1u - start) << 5, ctr.size() - st);
+			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
+		}
+	}
 
 	return new PpcBank(ids, samples);
 }
