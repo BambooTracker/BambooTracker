@@ -2,7 +2,7 @@
 
 set -e
 
-cp -va ../{img,*.md} .
+cp -va ../*.md .
 macdeployqt BambooTracker.app -verbose=2
 
 LANGDIR="BambooTracker.app/Contents/Resources/lang"
@@ -16,3 +16,4 @@ rm -vrf BambooTracker.app/Contents/Frameworks/Qt{Pdf,Quick,VirtualKeyboard,QmlMo
 rm -vrf BambooTracker.app/Contents/PlugIns/{platforminputcontexts,virtualkeyboard,iconengines,imageformats,audio,bearer,mediaservice}
 
 exit 0
+
