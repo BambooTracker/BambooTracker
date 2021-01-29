@@ -85,9 +85,13 @@ They thus offer the latest or in-development features and fixes, but are not opt
 
 [![Development Build](https://img.shields.io/badge/Download-Development%20Build-yellow?style=for-the-badge)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 - If you're looking for
-  - the latest merged commit, make sure **ONLY** `master -o- (some numbers & letters)` is displayed at the top  
-    (as opposed to e.g. `master (some numbers & letters) ← in_development-bugfix (some numbers & letters)`)
-  - a specific Pull Request, make sure that it says `Pull request #(Pull Request ID)` in the top left  
+  - the latest merged commit, make sure **ONLY**  
+    `master -o- (some numbers & letters)`  
+    is displayed at the top instead of  
+    `master -o- (some numbers & letters) ← in_development-bugfix (some numbers & letters)`
+  - a specific Pull Request, make sure that it says  
+    `Pull request #(Pull Request ID)`  
+    in the top left  
 
   ... otherwise check the History tab to find whichever of those you need.
 - In the "Job name" column, find the row that says `APPVEYOR_JOB_NAME=for (your OS)` and click on it.
@@ -154,27 +158,28 @@ How to acquire these and further required / optional dependencies are specific t
 
 #### Windows
 - C++ compiler: You can use either of these options
-  - MinGW* 
-    Should be a bundled option in the Qt installer.
+  - MinGW  
+    Should be a bundled option in the Qt installer.  
     Otherwise check the Qt docs for your Qt version's compatible GCC version.
-  - Clang* 
+  - Clang  
     Untested but might work.
   - MSVC  
     Either bundled with [Visual Studio](https://visualstudio.microsoft.com) or standalone (check "Build Tools for Visual Studio 2019" download).
-- [Qt5](https://www.qt.io/download-qt-installer)* 
+- [Qt5](https://www.qt.io/download-qt-installer)  
   Older Qt versions (e.g. for an XP builds) may require you to checkout & compile Qt yourself, official prebuilt versions were removed by Qt.
 
 #### macOS
 For simplicity, these instructions assume the use of [Homebrew](https://brew.sh/).
 
 - C++ compiler: Xcode Command Line Tools  
-  The challenge of acquiring these is left to the reader. (The developer writing this doesn't use macOS, try looking on the web for a guide perhaps)
+  The challenge of acquiring these is left to the reader.  
+  (The developer writing this doesn't use macOS, try looking on the web for a guide perhaps)
 - Qt5:  
 ```bash
 brew install qt5
 ```
 
-Optional dependencies:
+**Optional dependencies**:
 - JACK: Support for connecting to a JACK server in vendored RtAudio / RtMidi.  
   Requires JACK (version 1 or 2) headers & libraries.  
   ```bash
@@ -186,7 +191,7 @@ Optional dependencies:
   ```
 - RtAudio / RtMidi: Use a precompiled RtAudio / RtMidi installation instead of our vendored one.  
   (Obsoletes the optional dependencies above)  
-  Requires RtAudio and/or RtMidi + pkg-config.
+  Requires RtAudio (5.1.0 or higher) and/or RtMidi (4.0.0 or higher) + pkg-config.
   ```bash
     brew install rt-audio rt-midi pkg-config
   ```
@@ -195,20 +200,20 @@ Optional dependencies:
 Installing dependencies highly depends on your distribution and package manager of choice, search the subsections below for your distribution
 to find a tested set of install instructions.
 
-Additional dependencies:
+**Additional dependencies**:
 - ALSA: Required for minimal audio & MIDI support.  
   Requires ALSA headers & libraries.
 
-Optional dependencies:
+**Optional dependencies**:
 - PulseAudio: Support for connecting to a PulseAudio server in vendored RtAudio.  
   Requires PulseAudio headers & libraries.  
   Optional: pkg-config, can be skipped but may make finding PulseAudio headers & libraries harder.  
 - JACK: Support for connecting to a JACK server in vendored RtAudio / RtMidi.  
   Requires JACK (version 1 or 2) headers & libraries.  
-  Optional: pkg-config, can be skipped but may make finding JACK headers & libraries harder.  
-- RtAudio / RtMidi: Use a precompiled RtAudio / RtMidi installation instead of our vendored one.
-  (You may skip the optional dependencies above)
-  Requires RtAudio and/or RtMidi + pkg-config.
+  Optional: pkg-config, can be skipped but may make finding JACK headers & libraries harder.
+- RtAudio / RtMidi: Use a precompiled RtAudio / RtMidi installation instead of our vendored one.  
+  (Obsoletes the optional dependencies above)  
+  Requires RtAudio (5.1.0 or higher) and/or RtMidi (4.0.0 or higher) + pkg-config.
 
 ##### Debian / Ubuntu:
 ```bash
@@ -261,7 +266,7 @@ OPTIONALDEPS="$OPTIONALDEPS rtmidi"
 # Install dependencies
 pacman -S \
   qt5-tools \
-  libpulse alsa-plugins \
+  alsa-plugins \
   $OPTIONALDEPS
 ```
 
@@ -325,7 +330,8 @@ make install
 #### Windows
 Enter a shell with Qt5 + your compiler set up before starting the above steps. (Qt5 installer adds scripts you can use for this)
 
-If you're using MinGW, use `mingw32-make` / `mingw64-make` instead of `make`. If you're using MSVC, **TODO**.
+- If you're using MinGW, use `mingw32-make` / `mingw64-make` instead of `make`.
+- If you're using MSVC, **TODO**.
 
 Qt Creator may be used for a more graphical compilation process instead.
 
