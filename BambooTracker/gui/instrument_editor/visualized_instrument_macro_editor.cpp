@@ -648,8 +648,9 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 
 	loops_ = loop;
 	emit loopCleared();
-	for (const InstrumentSequenceLoop& l : loopStack) {
-		emit loopAdded(l);
+	// Reverse order because deepest is first in
+	for (auto itr = loopStack.crbegin(); itr != loopStack.crend(); ++itr) {
+		emit loopAdded(*itr);
 	}
 
 	release_ = release;

@@ -23,6 +23,7 @@
 - [#299] - Fix a glitch in instrument macro editors when scrolling (thanks [@freq-mod])
 - [#303] - Reduce futile memory copy in WAV export to prevent the memory error (thanks [@Drillimation])
 - [#307] - Fix GitHub Actions workflow for macOS (thanks [@OPNA2608])
+- [#304] - Fix the iteration bug of instrument sequence (thanks [@freq-mod])
 - Clean some code ([#295], [#311], [#312]; thanks [@freq-mod], [@jpcima], [@OPNA2608])
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
@@ -44,6 +45,7 @@
 [#311]: https://github.com/rerrahkr/BambooTracker/issues/311
 [#312]: https://github.com/rerrahkr/BambooTracker/pull/312
 [#316]: https://github.com/rerrahkr/BambooTracker/issues/316
+[#304]: https://github.com/rerrahkr/BambooTracker/issues/304
 
 ## v0.4.5 (2020-11-05)
 ### Added
