@@ -400,15 +400,16 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 	for (int i = 0; i < seqLen; ++i) {
 		for (size_t j = 0; j < loops_.size(); ++j) {
 			if (loops_[j].begin <= i && i <= loops_[j].end) {
-				painter.fillRect(w, loopY_, colWidths_[static_cast<size_t>(i)],
-						fontHeight_, palette_->instSeqLoopColor);
+				int colWidth = colWidths_[static_cast<size_t>(i)];
+				painter.fillRect(w, loopY_, colWidth, fontHeight_, palette_->instSeqLoopColor);
 				if (loops_[j].begin == i) {
 					painter.fillRect(w, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
 					QString times = (loops_[j].times == 1) ? "" : QString::number(loops_[j].times);
-					painter.drawText(w + 2, loopBaseY_, tr("Loop %1").arg(times));
+					painter.drawText(QRectF(w + 2, loopY_, colWidth - 2, fontHeight_),
+									 Qt::AlignLeft + Qt::AlignVCenter, tr("Loop %1").arg(times));
 				}
 				if (loops_[j].end == i) {
-					painter.fillRect(w + colWidths_[static_cast<size_t>(i)] - 2, loopY_, 2,
+					painter.fillRect(w + colWidth - 2, loopY_, 2,
 							fontHeight_, palette_->instSeqLoopEdgeColor);
 				}
 			}

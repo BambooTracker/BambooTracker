@@ -24,7 +24,10 @@
 - [#303] - Reduce futile memory copy in WAV export to prevent the memory error (thanks [@Drillimation])
 - [#307] - Fix GitHub Actions workflow for macOS (thanks [@OPNA2608])
 - [#304] - Fix the iteration bug of instrument sequence (thanks [@freq-mod])
+- Fix several text drawing not to overlap (thanks [@EnfauKerus], [@OPNA2608])
 - Clean some code ([#295], [#311], [#312]; thanks [@freq-mod], [@jpcima], [@OPNA2608])
+
+[@EnfauKerus]: https://github.com/EnfauKerus
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
 [#284]: https://github.com/rerrahkr/BambooTracker/issues/284

@@ -642,21 +642,11 @@ void OrderListPanel::drawHeaders(int maxWidth)
 				break;
 			case SongType::FM3chExpanded:
 				switch (attrib.channelInSource) {
-				case 2:
-					str = "OP1";
-					break;
-				case 6:
-					str = "OP2";
-					break;
-				case 7:
-					str = "OP3";
-					break;
-				case 8:
-					str = "OP4";
-					break;
-				default:
-					str = "FM" + QString::number(attrib.channelInSource + 1);
-					break;
+				case 2:		str = "OP1";	break;
+				case 6:		str = "OP2";	break;
+				case 7:		str = "OP3";	break;
+				case 8:		str = "OP4";	break;
+				default:	str = "FM" + QString::number(attrib.channelInSource + 1);	break;
 				}
 				break;
 			}
@@ -665,28 +655,18 @@ void OrderListPanel::drawHeaders(int maxWidth)
 			str = "SG" + QString::number(attrib.channelInSource + 1);
 			break;
 		case SoundSource::RHYTHM:
-			switch (attrib.channelInSource) {
-			case 0:	str = "BD";		break;
-			case 1:	str = "SD";		break;
-			case 2:	str = "TOP";	break;
-			case 3:	str = "HH";		break;
-			case 4:	str = "TOM";	break;
-			case 5:	str = "RIM";	break;
-			}
+			static const QString RHYTM_NAMES[6] = {
+				"BD", "SD", "TOP", "HH", "TOM", "RIM"
+			};
+			str = RHYTM_NAMES[attrib.channelInSource];
 			break;
 		case SoundSource::ADPCM:
 			str = "AP";
 			break;
 		}
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
-		int rw = trackWidth_ - hdFontMets_->horizontalAdvance(str);
-#else
-		int rw = trackWidth_ - hdFontMets_->width(str);
-#endif
-		rw = (rw < 0) ? 0 : (rw / 2);
 		painter.setPen(palette_->odrHeaderTextColor);
-		painter.drawText(x + rw, headerFontAscent_, str);
+		painter.drawText(QRectF(x, 0, trackWidth_, headerFontAscent_), Qt::AlignCenter, str);
 
 		x += trackWidth_;
 	}
