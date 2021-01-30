@@ -38,6 +38,31 @@ class OPNAController;
 class InstrumentsManager;
 class TickCounter;
 
+class EffectMemory
+{
+public:
+	EffectMemory();
+	void enqueue(const Effect& eff);
+	void clear();
+
+	using container_type = std::vector<Effect>;
+	using reference = container_type::reference;
+	using const_reference = container_type::const_reference;
+	using iterator = container_type::iterator;
+	using const_iterator = container_type::const_iterator;
+	using value_type = container_type::value_type;
+
+	iterator begin() noexcept { return mem_.begin(); }
+	const_iterator begin() const noexcept { return mem_.begin(); }
+	const_iterator cbegin() const noexcept { return mem_.cbegin(); }
+	iterator end() noexcept { return mem_.end(); }
+	const_iterator end() const noexcept { return mem_.end(); }
+	const_iterator cend() const noexcept { return mem_.cend(); }
+
+private:
+	std::vector<Effect> mem_;
+};
+
 class PlaybackManager
 {
 public:
@@ -113,10 +138,8 @@ private:
 	void executeRhythmStepEvents(const Step& step, int ch, bool calledByNoteDelay = false);
 	void executeADPCMStepEvents(const Step& step, bool calledByNoteDelay = false);
 
-	using EffectMemory = std::unordered_map<EffectType, int>;
-	EffectMemory stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
-	using EffectMemorySource = std::vector<std::unordered_map<EffectType, int>>;
-	std::unordered_map<SoundSource, EffectMemorySource> keyOnBasedEffs_, stepBeginBasedEffs_;
+	EffectMemory playbackSpeedEffMem_, posChangeEffMem_;
+	std::unordered_map<SoundSource, std::vector<EffectMemory>> effOnKeyOnMem_, effOnStepBeginMem_;
 
 	struct RegisterUnit
 	{

@@ -46,19 +46,33 @@ constexpr int SEQ_PITCH_CENTER = 127;
 using SSGWaveformUnit = InstrumentSequenceExtendUnit;
 using SSGWaveformIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceExtendUnit>::Iterator>;
 
-namespace SSGWaveformType {
-enum : int
-{
-	UNSET = SSGWaveformUnit::ERR_DATA,
-	SQUARE = 0,
-	TRIANGLE = 1,
-	SAW = 2,
-	INVSAW = 3,
-	SQM_TRIANGLE = 4,
-	SQM_SAW = 5,
-	SQM_INVSAW = 6
+class SSGWaveformType {
+public:
+	enum : int
+	{
+		UNSET = SSGWaveformUnit::ERR_DATA,
+		SQUARE = 0,
+		TRIANGLE = 1,
+		SAW = 2,
+		INVSAW = 3,
+		SQM_TRIANGLE = 4,
+		SQM_SAW = 5,
+		SQM_INVSAW = 6
+	};
+
+	constexpr static bool testHardEnvelopeOccupancity(int form)
+	{
+		switch (form) {
+		case SSGWaveformType::UNSET:
+		case SSGWaveformType::SQUARE:
+			return false;
+		default:
+			return true;
+		}
+	}
+
+	SSGWaveformType() = delete;
 };
-}
 
 using SSGToneNoiseUnit = InstrumentSequenceBaseUnit;
 using SSGToneNoiseIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
