@@ -149,6 +149,24 @@ private:
 	std::vector<std::vector<uint8_t>> samples_;
 };
 
+class PziBank final : public AbstractBank
+{
+public:
+	PziBank(const std::vector<int>& ids, const std::vector<int>& deltaNs,
+			const std::vector<bool>& isRepeatedList, const std::vector<std::vector<uint8_t>>& samples);
+
+	size_t getNumInstruments() const override;
+	std::string getInstrumentIdentifier(size_t index) const override;
+	std::string getInstrumentName(size_t index) const override;
+	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+
+private:
+	std::vector<int> ids_;
+	std::vector<int> deltaNs_;
+	std::vector<bool> isRepeatedList_;
+	std::vector<std::vector<uint8_t>> samples_;
+};
+
 class Mucom88Bank final : public AbstractBank
 {
 public:

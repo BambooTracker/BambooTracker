@@ -133,6 +133,7 @@ SOURCES += \
     io/p86_io.cpp \
     io/ppc_io.cpp \
     io/pvi_io.cpp \
+    io/pzi_io.cpp \
     io/tfi_io.cpp \
     io/vgi_io.cpp \
     io/wav_container.cpp \
@@ -324,6 +325,7 @@ HEADERS += \
     io/p86_io.hpp \
     io/ppc_io.hpp \
     io/pvi_io.hpp \
+    io/pzi_io.hpp \
     io/tfi_io.hpp \
     io/vgi_io.hpp \
     io/wav_container.hpp \

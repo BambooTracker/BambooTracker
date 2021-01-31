@@ -5,7 +5,7 @@
 - [#285] - Linux build (thanks [@OPNA2608])
 - [#294] - Build option for linking against system RtAudio and RtMidi ([#263], [#288]; thanks [@OPNA2608])
 - [#308] - Support .pvi import which has a file identifier as `PVI1` (thanks [@freq-mod], [@OPNA2608])
-- [#313] - .p86 support as ADPCM samples (thanks [@OPNA2608])
+- [#313] - .p86 and .pzi support as ADPCM samples (thanks [@OPNA2608])
 - [#286] - Polish support (thanks [@freq-mod])
 - 1 new sample module (thanks [@Zexxerd])
 

@@ -23,57 +23,56 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "p86_io.hpp"
+#include "pzi_io.hpp"
 #include <vector>
+#include <limits>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
 #include "chip/codec/ymb_codec.hpp"
 
 namespace io
 {
-namespace
-{
-inline uint32_t readUint24(const BinaryContainer& ctr, size_t offset)
-{
-	return ctr.readUint8(offset) | (ctr.readUint8(offset + 1) << 8u) | (ctr.readUint8(offset + 2) << 16u);
-}
-}
+PziIO::PziIO() : AbstractBankIO("pzi", "FMP PZI", true, false) {}
 
-P86IO::P86IO() : AbstractBankIO("p86", "PMD P86", true, false) {}
-
-AbstractBank* P86IO::load(const BinaryContainer& ctr) const
+AbstractBank* PziIO::load(const BinaryContainer& ctr) const
 {
-	using namespace std::literals::string_literals;
-
-	std::string id = ctr.readString(0, 12);
-	if (id != "PCM86 DATA\n\0"s)
+	if (ctr.readString(0, 4) != "PZI1")
 		throw FileCorruptionError(FileType::Bank, 0);
-	uint32_t size = readUint24(ctr, 13);
-	if (size != ctr.size())
-		throw FileCorruptionError(FileType::Bank, 13);
 
-	constexpr size_t SAMP_OFFS = 0x610;
-	if (ctr.size() < SAMP_OFFS) throw FileCorruptionError(FileType::Bank, 0x10);
+	constexpr size_t SAMP_OFFS = 0x920;
+	if (ctr.size() < SAMP_OFFS) throw FileCorruptionError(FileType::Bank, 0x20);
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	size_t globCsr = 0x10;
-	size_t offs = 0;
-	constexpr int MAX_CNT = 256;
+	std::vector<bool> isRepeatedList;
+	std::vector<int> deltaNs;
+	size_t globCsr = 0x20;
+	constexpr int MAX_CNT = 128;
 	for (int i = 0; i < MAX_CNT; ++i) {
-		uint32_t start = readUint24(ctr, globCsr);
-		globCsr += 3;
-		uint32_t len = readUint24(ctr, globCsr);
-		globCsr += 3;
+		uint32_t start = ctr.readUint32(globCsr);
+		globCsr += 4;
+		uint32_t len = ctr.readUint32(globCsr);
+		globCsr += 4;
+		uint32_t loopStart = ctr.readUint32(globCsr);
+		globCsr += 4;
+		uint32_t loopEnd = ctr.readUint32(globCsr);
+		globCsr += 4;
+		uint16_t sr = ctr.readUint16(globCsr);
+		globCsr += 2;
+
+		// only support loop within entire region
+		bool isRepeated = (!loopStart && len == loopEnd);
 
 		if (len) {
-			if (ids.empty()) offs = start;
 			ids.push_back(i);
+			isRepeatedList.push_back(isRepeated);
+			deltaNs.push_back(SampleADPCM::calculateADPCMDeltaN(sr));
 
-			std::vector<uint8_t>&& smp = ctr.getSubcontainer(SAMP_OFFS + start - offs, len).toVector();
+			std::vector<uint8_t>&& smp = ctr.getSubcontainer(SAMP_OFFS + start, len).toVector();
 			std::vector<int16_t> buf(smp.size());
 			std::transform(smp.begin(), smp.end(), buf.begin(), [](uint8_t v) {
-				return static_cast<int16_t>(static_cast<int8_t>(v)) << 8;
+				// Centering
+				return (static_cast<int16_t>(v) - std::numeric_limits<int8_t>::max()) << 8;
 			});
 			smp.resize((smp.size() + 1) / 2);
 			smp.shrink_to_fit();
@@ -83,10 +82,11 @@ AbstractBank* P86IO::load(const BinaryContainer& ctr) const
 		}
 	}
 
-	return new P86Bank(ids, samples);
+	return new PziBank(ids, deltaNs, isRepeatedList, samples);
 }
 
-AbstractInstrument* P86IO::loadInstrument(const std::vector<uint8_t>& sample,
+AbstractInstrument* PziIO::loadInstrument(const std::vector<uint8_t>& sample,
+										  int deltaN, bool isRepeated,
 										  std::weak_ptr<InstrumentsManager> instMan,
 										  int instNum)
 {
@@ -99,7 +99,8 @@ AbstractInstrument* P86IO::loadInstrument(const std::vector<uint8_t>& sample,
 
 	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
 	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x4a0d);	// 16540Hz
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, deltaN);
+	instManLocked->setSampleADPCMRepeatEnabled(sampIdx, isRepeated);
 
 	return adpcm;
 }

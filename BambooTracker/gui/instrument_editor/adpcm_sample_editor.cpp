@@ -370,7 +370,7 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
 	ui->rootKeyComboBox->setCurrentIndex(SampleADPCM::DEF_ROOT_KEY % 12);
 	ui->rootKeySpinBox->setValue(SampleADPCM::DEF_ROOT_KEY / 12);
-	ui->rootRateSpinBox->setValue(SampleADPCM::calcADPCMDeltaN(wav->getSampleRate()));
+	ui->rootRateSpinBox->setValue(SampleADPCM::calculateADPCMDeltaN(wav->getSampleRate()));
 
 	emit modified();
 	emit sampleAssignRequested();

@@ -61,7 +61,7 @@ public:
 
 	static constexpr int DEF_ROOT_KEY = 60;	// C5
 
-	inline static int calcADPCMDeltaN(unsigned int rate)
+	inline static int calculateADPCMDeltaN(unsigned int rate)
 	{
 		return static_cast<int>(std::round((rate << 16) / 55500.));
 	}

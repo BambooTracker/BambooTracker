@@ -32,6 +32,7 @@
 #include "io/ppc_io.hpp"
 #include "io/p86_io.hpp"
 #include "io/pvi_io.hpp"
+#include "io/pzi_io.hpp"
 #include "io/dat_io.hpp"
 #include "format/wopn_file.h"
 
@@ -251,6 +252,34 @@ std::string PviBank::getInstrumentName(size_t index) const
 AbstractInstrument* PviBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	return io::PviIO::loadInstrument(samples_.at(index), deltaN_, instMan, instNum);
+}
+
+/******************************/
+PziBank::PziBank(const std::vector<int>& ids, const std::vector<int>& deltaNs,
+				 const std::vector<bool>& isRepeatedList, const std::vector<std::vector<uint8_t>>& samples)
+	: ids_(ids), deltaNs_(deltaNs), isRepeatedList_(isRepeatedList), samples_(samples)
+{
+}
+
+size_t PziBank::getNumInstruments() const
+{
+	return samples_.size();
+}
+
+std::string PziBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string PziBank::getInstrumentName(size_t index) const
+{
+	(void)index;
+	return "";
+}
+
+AbstractInstrument* PziBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return io::PziIO::loadInstrument(samples_.at(index), deltaNs_.at(index), isRepeatedList_.at(index), instMan, instNum);
 }
 
 /******************************/
