@@ -31,6 +31,7 @@
 #include "ff_io.hpp"
 #include "ppc_io.hpp"
 #include "p86_io.hpp"
+#include "pps_io.hpp"
 #include "pvi_io.hpp"
 #include "pzi_io.hpp"
 #include "dat_io.hpp"
@@ -63,6 +64,7 @@ BankIO::BankIO()
 	handler_.add(new FfIO);
 	handler_.add(new PpcIO);
 	handler_.add(new P86IO);
+	handler_.add(new PpsIO);
 	handler_.add(new PviIO);
 	handler_.add(new PziIO);
 	handler_.add(new DatIO);

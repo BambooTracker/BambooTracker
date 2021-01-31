@@ -31,6 +31,7 @@
 #include "io/ff_io.hpp"
 #include "io/ppc_io.hpp"
 #include "io/p86_io.hpp"
+#include "io/pps_io.hpp"
 #include "io/pvi_io.hpp"
 #include "io/pzi_io.hpp"
 #include "io/dat_io.hpp"
@@ -225,6 +226,33 @@ std::string P86Bank::getInstrumentName(size_t index) const
 AbstractInstrument* P86Bank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	return io::P86IO::loadInstrument(samples_.at(index), instMan, instNum);
+}
+
+/******************************/
+PpsBank::PpsBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples)
+	: ids_(ids), samples_(samples)
+{
+}
+
+size_t PpsBank::getNumInstruments() const
+{
+	return samples_.size();
+}
+
+std::string PpsBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string PpsBank::getInstrumentName(size_t index) const
+{
+	(void)index;
+	return "";
+}
+
+AbstractInstrument* PpsBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return io::PpsIO::loadInstrument(samples_.at(index), instMan, instNum);
 }
 
 /******************************/
