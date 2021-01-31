@@ -5,6 +5,7 @@
 - [#285] - Linux build (thanks [@OPNA2608])
 - [#294] - Build option for linking against system RtAudio and RtMidi ([#263], [#288]; thanks [@OPNA2608])
 - [#308] - Support .pvi import which has a file identifier as `PVI1` (thanks [@freq-mod], [@OPNA2608])
+- [#313] - .p86 support as ADPCM samples (thanks [@OPNA2608])
 - [#286] - Polish support (thanks [@freq-mod])
 - 1 new sample module (thanks [@Zexxerd])
 
@@ -49,6 +50,7 @@
 [#312]: https://github.com/rerrahkr/BambooTracker/pull/312
 [#316]: https://github.com/rerrahkr/BambooTracker/issues/316
 [#304]: https://github.com/rerrahkr/BambooTracker/issues/304
+[#313]: https://github.com/rerrahkr/BambooTracker/issues/313
 
 ## v0.4.5 (2020-11-05)
 ### Added

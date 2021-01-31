@@ -60,7 +60,7 @@ public:
 		SQM_INVSAW = 6
 	};
 
-	constexpr static bool testHardEnvelopeOccupancity(int form)
+	static bool testHardEnvelopeOccupancity(int form)
 	{
 		switch (form) {
 		case SSGWaveformType::UNSET:

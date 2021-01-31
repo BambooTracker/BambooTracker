@@ -130,6 +130,7 @@ SOURCES += \
     io/ins_io.cpp \
     io/io_utils.cpp \
     io/opni_io.cpp \
+    io/p86_io.cpp \
     io/ppc_io.cpp \
     io/pvi_io.cpp \
     io/tfi_io.cpp \
@@ -320,6 +321,7 @@ HEADERS += \
     io/io_file_type.hpp \
     io/io_utils.hpp \
     io/opni_io.hpp \
+    io/p86_io.hpp \
     io/ppc_io.hpp \
     io/pvi_io.hpp \
     io/tfi_io.hpp \

@@ -39,7 +39,7 @@ inline int16_t ymb_step(uint8_t step, int16_t* history, int16_t* step_size)
 	return newval;
 }
 
-void ymb_encode(int16_t *buffer,uint8_t *outbuffer,long len)
+inline void ymb_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 {
 	long i;
 	int16_t step_size = 127;
@@ -64,7 +64,7 @@ void ymb_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 	}
 }
 
-void ymb_decode(uint8_t *buffer,int16_t *outbuffer,long len)
+inline void ymb_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 {
 	long i;
 

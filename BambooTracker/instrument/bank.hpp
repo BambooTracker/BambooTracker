@@ -118,6 +118,21 @@ private:
 	std::vector<std::vector<uint8_t>> samples_;
 };
 
+class P86Bank final : public AbstractBank
+{
+public:
+	P86Bank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples);
+
+	size_t getNumInstruments() const override;
+	std::string getInstrumentIdentifier(size_t index) const override;
+	std::string getInstrumentName(size_t index) const override;
+	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+
+private:
+	std::vector<int> ids_;
+	std::vector<std::vector<uint8_t>> samples_;
+};
+
 class PviBank final : public AbstractBank
 {
 public:

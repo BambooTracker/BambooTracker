@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,52 +23,69 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "ppc_io.hpp"
+#include "p86_io.hpp"
 #include <vector>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
+#include "chip/codec/ymb_codec.hpp"
 
 namespace io
 {
-PpcIO::PpcIO() : AbstractBankIO("ppc", "PMD PPC", true, false) {}
-
-AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
+namespace
 {
-	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
-		throw FileCorruptionError(FileType::Bank, globCsr);
-	globCsr += 30;
-	uint16_t nextAddr = ctr.readUint16(globCsr);
-	if ((nextAddr - 0x26u) * 0x20u + 0x420u != ctr.size())	// File size check
-		throw FileCorruptionError(FileType::Bank, globCsr);
-	globCsr += 2;
+inline uint32_t readUint24(const BinaryContainer& ctr, size_t offset)
+{
+	return ctr.readUint8(offset) | (ctr.readUint8(offset + 1) << 8u) | (ctr.readUint8(offset + 2) << 16u);
+}
+}
 
-	size_t sampOffs = globCsr + 256 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
+P86IO::P86IO() : AbstractBankIO("p86", "PMD P86", true, false) {}
+
+AbstractBank* P86IO::load(const BinaryContainer& ctr) const
+{
+	using namespace std::literals::string_literals;
+
+	std::string id = ctr.readString(0, 12);
+	if (id != "PCM86 DATA\n\0"s)
+		throw FileCorruptionError(FileType::Bank, 0);
+	uint32_t size = readUint24(ctr, 13);
+	if (size != ctr.size())
+		throw FileCorruptionError(FileType::Bank, 13);
+
+	constexpr size_t SAMP_OFFS = 0x610;
+	if (ctr.size() < SAMP_OFFS) throw FileCorruptionError(FileType::Bank, 0x10);
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	size_t offs = 0;
+	size_t globCsr = 0x10;
+	size_t ofs = 0;
 	constexpr int MAX_CNT = 256;
 	for (int i = 0; i < MAX_CNT; ++i) {
-		uint16_t start = ctr.readUint16(globCsr);
-		globCsr += 2;
-		uint16_t stop = ctr.readUint16(globCsr);
-		globCsr += 2;
+		uint32_t start = readUint24(ctr, globCsr);
+		globCsr += 3;
+		uint32_t len = readUint24(ctr, globCsr);
+		globCsr += 3;
 
-		if (start < stop) {
-			if (ids.empty()) offs = start;
+		if (len) {
+			if (ids.empty()) ofs = start;
 			ids.push_back(i);
-			size_t st = sampOffs + static_cast<size_t>((start - offs) << 5);
-			size_t sampSize = std::min<size_t>((stop + 1u - start) << 5, ctr.size() - st);
-			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
+
+			std::vector<uint8_t>&& smp = ctr.getSubcontainer(SAMP_OFFS + start - ofs, len).toVector();
+			std::vector<int16_t> buf(smp.size());
+			std::transform(smp.begin(), smp.end(), buf.begin(),
+						   [](uint8_t v) { return static_cast<int16_t>(v) << 8; });
+			smp.resize((smp.size() + 1) / 2);
+			smp.shrink_to_fit();
+			smp.back() = 0;	// Clear last data
+			codec::ymb_encode(buf.data(), smp.data(), buf.size());
+			samples.push_back(std::move(smp));
 		}
 	}
 
-	return new PpcBank(ids, samples);
+	return new P86Bank(ids, samples);
 }
 
-AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t>& sample,
+AbstractInstrument* P86IO::loadInstrument(const std::vector<uint8_t>& sample,
 										  std::weak_ptr<InstrumentsManager> instMan,
 										  int instNum)
 {
@@ -81,7 +98,7 @@ AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t>& sample,
 
 	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
 	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x49cd);	// 16000Hz
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x4a0d);	// 16540Hz
 
 	return adpcm;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +30,7 @@
 #include "wopn_io.hpp"
 #include "ff_io.hpp"
 #include "ppc_io.hpp"
+#include "p86_io.hpp"
 #include "pvi_io.hpp"
 #include "dat_io.hpp"
 
@@ -60,6 +61,7 @@ BankIO::BankIO()
 	handler_.add(new WopnIO);
 	handler_.add(new FfIO);
 	handler_.add(new PpcIO);
+	handler_.add(new P86IO);
 	handler_.add(new PviIO);
 	handler_.add(new DatIO);
 }

@@ -27,7 +27,6 @@
 #include <vector>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
-#include "io_utils.hpp"
 
 namespace io
 {
@@ -46,7 +45,7 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	size_t ofs = 0;
+	size_t offs = 0;
 	size_t addrPos = 0x10;
 	for (size_t i = 0; i < cnt; ++i) {
 		uint16_t start = ctr.readUint16(addrPos);
@@ -55,9 +54,9 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 		addrPos += 2;
 
 		if (start < stop) {
-			if (ids.empty()) ofs = start;
+			if (ids.empty()) offs = start;
 			ids.push_back(static_cast<int>(i));
-			size_t st = sampOffs + static_cast<size_t>((start - ofs) << 5);
+			size_t st = sampOffs + static_cast<size_t>((start - offs) << 5);
 			size_t sampSize = std::min<size_t>((stop + 1u - start) << 5, ctr.size() - st);
 			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
 		}

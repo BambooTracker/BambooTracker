@@ -30,6 +30,7 @@
 #include "io/btb_io.hpp"
 #include "io/ff_io.hpp"
 #include "io/ppc_io.hpp"
+#include "io/p86_io.hpp"
 #include "io/pvi_io.hpp"
 #include "io/dat_io.hpp"
 #include "format/wopn_file.h"
@@ -196,6 +197,33 @@ std::string PpcBank::getInstrumentName(size_t index) const
 AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	return io::PpcIO::loadInstrument(samples_.at(index), instMan, instNum);
+}
+
+/******************************/
+P86Bank::P86Bank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples)
+	: ids_(ids), samples_(samples)
+{
+}
+
+size_t P86Bank::getNumInstruments() const
+{
+	return samples_.size();
+}
+
+std::string P86Bank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string P86Bank::getInstrumentName(size_t index) const
+{
+	(void)index;
+	return "";
+}
+
+AbstractInstrument* P86Bank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return io::P86IO::loadInstrument(samples_.at(index), instMan, instNum);
 }
 
 /******************************/
