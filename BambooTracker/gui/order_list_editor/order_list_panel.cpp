@@ -1423,10 +1423,13 @@ bool OrderListPanel::keyPressed(QKeyEvent* event)
 			return true;
 		}
 	default:
-		if (event->modifiers().testFlag(Qt::NoModifier)) {
+	{
+		auto modifiers = event->modifiers();
+		if (modifiers.testFlag(Qt::NoModifier) || modifiers.testFlag(Qt::KeypadModifier)) {
 			return enterOrder(event->key());
 		}
 		return false;
+	}
 	}
 }
 

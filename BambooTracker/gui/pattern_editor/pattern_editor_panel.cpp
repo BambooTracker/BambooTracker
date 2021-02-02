@@ -1524,7 +1524,8 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 {
 	int baseOct = bt_->getCurrentOctave();
 
-	if (event->modifiers().testFlag(Qt::NoModifier)) {
+	auto modifiers = event->modifiers();
+	if (modifiers.testFlag(Qt::NoModifier) || modifiers.testFlag(Qt::KeypadModifier)) {
 		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
 			JamKey possibleJamKey = getJamKeyFromLayoutMapping(qtKey, config_);
@@ -2779,23 +2780,39 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			case 0:
 				return enterToneData(event);
 			case 1:
-				if (event->modifiers().testFlag(Qt::NoModifier)) return enterInstrumentData(event->key());
+			{
+				auto modifiers = event->modifiers();
+				if (modifiers.testFlag(Qt::NoModifier) || modifiers.testFlag(Qt::KeypadModifier))
+					return enterInstrumentData(event->key());
 				break;
+			}
 			case 2:
-				if (event->modifiers().testFlag(Qt::NoModifier)) return enterVolumeData(event->key());
+			{
+				auto modifiers = event->modifiers();
+				if (modifiers.testFlag(Qt::NoModifier) || modifiers.testFlag(Qt::KeypadModifier))
+					return enterVolumeData(event->key());
 				break;
+			}
 			case 3:
 			case 5:
 			case 7:
 			case 9:
-				if (event->modifiers().testFlag(Qt::NoModifier)) return enterEffectID(event->key());
+			{
+				auto modifiers = event->modifiers();
+				if (modifiers.testFlag(Qt::NoModifier) || modifiers.testFlag(Qt::KeypadModifier))
+					return enterEffectID(event->key());
 				break;
+			}
 			case 4:
 			case 6:
 			case 8:
 			case 10:
-				if (event->modifiers().testFlag(Qt::NoModifier)) return enterEffectValue(event->key());
+			{
+				auto modifiers = event->modifiers();
+				if (modifiers.testFlag(Qt::NoModifier) || modifiers.testFlag(Qt::KeypadModifier))
+					return enterEffectValue(event->key());
 				break;
+			}
 			}
 		}
 		return false;

@@ -26,6 +26,7 @@
 - [#307] - Fix GitHub Actions workflow for macOS (thanks [@OPNA2608])
 - [#304] - Fix the iteration bug of instrument sequence (thanks [@freq-mod])
 - Fix several text drawing not to overlap (thanks [@EnfauKerus], [@OPNA2608])
+- [#320] - Accept digit input with numpad (thanks [@OPNA2608])
 - Clean some code ([#295], [#311], [#312]; thanks [@freq-mod], [@jpcima], [@OPNA2608])
 
 [@EnfauKerus]: https://github.com/EnfauKerus
@@ -51,6 +52,7 @@
 [#316]: https://github.com/rerrahkr/BambooTracker/issues/316
 [#304]: https://github.com/rerrahkr/BambooTracker/issues/304
 [#313]: https://github.com/rerrahkr/BambooTracker/issues/313
+[#320]: https://github.com/rerrahkr/BambooTracker/issues/320
 
 ## v0.4.5 (2020-11-05)
 ### Added
