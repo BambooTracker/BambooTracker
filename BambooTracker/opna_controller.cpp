@@ -2936,7 +2936,7 @@ void OPNAController::writeMixerSSGToRegisterBySequence(SSGChannel& ssg)
 		}
 		mixerSSG_ &= ~SSGNoiseFlag(ssg.ch);
 
-		uint8_t p = static_cast<uint8_t>(64 - type - 33);	// Reverse order
+		uint8_t p = static_cast<uint8_t>(64 - type);	// Reverse order
 		if (noisePeriodSSG_ != p) {
 			noisePeriodSSG_ = p;
 			opna_->setRegister(0x06, p);
