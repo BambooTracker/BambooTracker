@@ -2201,8 +2201,14 @@ void MainWindow::assignADPCMSamples()
 	lockWidgets(false);
 	if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
 	else stream_->stop();
-	bt_->assignSampleADPCMRawSamples();	// Mutex register
+	bool isStoredAll = bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();
+
+	if (!isStoredAll) {
+		QMessageBox::warning(this, tr("Warning"),
+							 tr("Insufficient memory size to load ADPCM samples. Please delete the unused samples."));
+	}
+
 	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
 	else stream_->start();
 }

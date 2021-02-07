@@ -835,18 +835,23 @@ void BambooTracker::clearSampleADPCMRawSample(int sampNum)
 	instMan_->clearSampleADPCMRawSample(sampNum);
 }
 
-void BambooTracker::assignSampleADPCMRawSamples()
+bool BambooTracker::assignSampleADPCMRawSamples()
 {
 	opnaCtrl_->clearSamplesADPCM();
 	std::vector<int> idcs = storeOnlyUsedSamples_ ? instMan_->getSampleADPCMValidIndices()
 												  : instMan_->getSampleADPCMEntriedIndices();
+	bool storedAll = true;
 	for (auto sampNum : idcs) {
 		size_t startAddr, stopAddr;
 		if (opnaCtrl_->storeSampleADPCM(instMan_->getSampleADPCMRawSample(sampNum), startAddr, stopAddr)) {
 			instMan_->setSampleADPCMStartAddress(sampNum, startAddr);
 			instMan_->setSampleADPCMStopAddress(sampNum, stopAddr);
 		}
+		else {
+			storedAll = false;
+		}
 	}
+	return storedAll;
 }
 
 size_t BambooTracker::getSampleADPCMStartAddress(int sampNum) const

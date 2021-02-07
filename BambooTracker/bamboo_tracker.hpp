@@ -225,7 +225,7 @@ public:
 	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
 	void clearSampleADPCMRawSample(int sampNum);
-	void assignSampleADPCMRawSamples();
+	bool assignSampleADPCMRawSamples();
 	size_t getSampleADPCMStartAddress(int sampNum) const;
 	size_t getSampleADPCMStopAddress(int sampNum) const;
 	void setInstrumentADPCMSample(int instNum, int sampNum);
