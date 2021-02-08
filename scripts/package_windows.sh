@@ -18,9 +18,10 @@ for opt in ${EXLIB_OPTS[@]}; do
   fi
 done
 
-cp -va ../{img,*.md} .
+cp -va ../*.md .
 windeployqt BambooTracker.exe $DEPLOY_OPTS
 cp -va translations/*.qm lang
 rm -vrf imageformats translations
 
 exit 0
+
