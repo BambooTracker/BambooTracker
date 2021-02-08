@@ -48,7 +48,7 @@ public:
 	inline void setKeyOff() { note_ = NOTE_KEY_OFF; }
 	inline void setEchoBuffer(int n) { note_ = NOTE_ECHO0 - n; }
 	inline void clearNoteNumber() noexcept { note_ = NOTE_NONE; }
-	inline bool hasGeneralNote() const noexcept { return note_ > NOTE_KEY_OFF; }
+	inline bool hasGeneralNote() const noexcept { return note_ > NOTE_NONE; }
 	inline bool hasKeyOff() const noexcept { return note_ == NOTE_KEY_OFF; }
 	inline bool hasNoteEchoBuffer(int n) const { return note_ == (NOTE_ECHO0 - n); }
 	inline bool isEmptyNote() const noexcept { return note_ == NOTE_NONE; }
