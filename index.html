@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="BambooTracker - YM2608 music tracker">
+    <meta property="og:description" content="BambooTracker is a cross-platform music tracker for the Yamaha YM2608 (OPNA) sound chip which was used in NEC PC-8801/9801 series computers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://rerrahkr.github.io/BambooTracker/">
+    <meta property="og:image" content="http://rerrahkr.github.io/BambooTracker/image/twitter-card.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:creator" content="@RerrahKRynn">
+
+    <link rel="icon" href="./favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href="./style/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous" defer></script>
+    <script src="./js/all.min.js"></script>
+    <script src="./js/script.js" defer></script>
+
+    <title>BambooTracker - YM2608 music tracker</title>
+  </head>
+  <body>
+    <header class="container-fluid text-center py-4">
+      <h1 class="display-3">BambooTracker</h1>
+      <span class="lead">YM2608 music tracker</span>
+    </header>
+
+    <div class="container-fluid bg-light py-4" id="mainContainer">
+      <div class="container text-center">
+        <div class="container py-4">
+          <img src="./img/overview.gif" class="img-fluid shadow" alt="screenshot">
+          <p class="pt-5 mb-0">
+            BambooTracker is a cross-platform music tracker for the Yamaha YM2608 (OPNA) sound chip which was used in NEC PC-8801/9801 series computers.
+          </p>
+        </div>
+
+        <div class="conatner text-center pb-4" id="dl-dropdown">
+          <div class="btn-group shadow rounded-2">
+            <a class="btn btn-success" id="dl-head" href="https://github.com/rerrahkr/BambooTracker/releases" role="button">
+              <i class="fas fa-download" aria-hidden="true"></i>Download
+            </a>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><a class="dropdown-item" id="release-note" href="https://github.com/rerrahkr/BambooTracker/releases">Release note</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item disabled" id="dl-windows" href="#"><i class="fab fa-windows fa-fw" aria-hidden="true"></i>Windows (7 or later)</a></li>
+              <li><a class="dropdown-item disabled" id="dl-windows-xp" href="#"><i class="fab fa-windows fa-fw" aria-hidden="true"></i>Windows (XP)</a></li>
+              <li><a class="dropdown-item disabled" id="dl-macos" href="#"><i class="fab fa-apple fa-fw" aria-hidden="true"></i>macOS</a></li>
+              <li><a class="dropdown-item disabled" id="dl-linux" href="#"><i class="fab fa-linux fa-fw" aria-hidden="true"></i>Linux</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="https://github.com/rerrahkr/BambooTracker/releases">Get older version</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center pb-4">
+          <div class="shadow rounded-2 mx-2">
+            <a class="btn btn-primary" href="https://github.com/rerrahkr/BambooTracker" role="button">
+              <i class="fab fa-github fa-lg" aria-hidden="true"></i>GitHub
+            </a>
+          </div>
+          <div class="shadow rounded-2 mx-2">
+            <a class="btn btn-primary" href="https://discord.gg/gBscTMF" role="button">
+              <i class="fab fa-discord fa-lg" aria-hidden="true"></i>Discord
+            </a>
+          </div>
+        </div>
+
+        <div class="py-4">
+          <h2>Features</h2>
+          <!--
+          <div class="row g-5 row-cols-1 row-cols-lg-3 mt-0 mb-5">
+            <div class="col">
+              <div class="card border-0 shadow">
+                <div class="card-body">
+                  <h5 class="card-title">Special title treatment</h5>
+                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card border-0 shadow">
+                <div class="card-body">
+                  <h5 class="card-title">Special title treatment</h5>
+                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          -->
+          <div class="d-flex justify-content-center">
+          <div class="shadow rounded-2">
+            <a class="btn btn-secondary" href="https://github.com/rerrahkr/BambooTracker/wiki" role="button">Read more in the wiki</a>
+          </div>
+        </div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="container-fluid text-center bg-light py-3">
+      <small class="text-muted">&copy; <span id="year"></span> Rerrah</small>
+    </footer>
+  </body>
+</html>

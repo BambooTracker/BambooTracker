@@ -1,0 +1,20 @@
+@charset "utf-8";
+
+:root {
+  --theme-color: #41228e;
+}
+
+header {
+  color: #ffffff;
+  background-color: var(--theme-color);
+}
+
+#mainContainer
+{
+  color: #242738;
+}
+
+/* Spacesing between Fontawesome icon and after */
+svg[data-prefix="fas"], svg[data-prefix="fab"] {
+  margin-right: 0.5em;
+}
