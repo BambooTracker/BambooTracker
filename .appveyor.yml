@@ -14,12 +14,12 @@ branches:
 
 # Skipping commits with particular message or from specific user
 skip_commits:
-    message: /Created.*\.(png|jpg|jpeg|bmp|gif|md)/       # Regex for matching commit message
-    files:
-        - '*.md'
-        - '*.txt'
-        - 'LICENSE'
-        - '.gitignore'
+  message: /Created.*\.(png|jpg|jpeg|bmp|gif|md)/       # Regex for matching commit message
+  files:
+    - '*.md'
+    - '*.txt'
+    - 'LICENSE'
+    - '.gitignore'
 
 #---------------------------------#
 #    environment configuration    #

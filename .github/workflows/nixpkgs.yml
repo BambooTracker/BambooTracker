@@ -4,8 +4,18 @@ on:
   push:
     branches: master
     tags: 'v*.*.*'
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'LICENSE'
+      - '.gitignore'
   pull_request:
     branches: master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'LICENSE'
+      - '.gitignore'
 
 defaults:
   run:
