@@ -66,7 +66,9 @@ fetch("https://api.github.com/repos/rerrahkr/BambooTracker/releases/latest", {
       }
     }
     else if (name.endsWith("linux.zip")) {
-      document.getElementById("dl-linux").href = dlUrl;
+      const item = document.getElementById("dl-linux");
+      item.href = dlUrl;
+      item.classList.remove("disabled");
       if (os == "linux") {
         head.href = dlUrl;
       }
