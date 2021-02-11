@@ -29,6 +29,7 @@
 - [#304] - Fix the iteration bug of instrument sequence (thanks [@freq-mod])
 - Fix several text drawing not to overlap (thanks [@EnfauKerus], [@OPNA2608])
 - [#320] - Accept digit input with numpad (thanks [@OPNA2608])
+- Force execution of SSG mixer effect which is set upon key on (thanks [@EnfauKerus])
 - Clean some code ([#295], [#311], [#312], [#324]; thanks [@freq-mod], [@jpcima], [@OPNA2608], [@EnfauKerus])
 
 [@EnfauKerus]: https://github.com/EnfauKerus

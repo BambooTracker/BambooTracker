@@ -298,6 +298,7 @@ private:
 		SSGEnvelopeUnit envState;
 		bool isHardEnv;
 		SSGToneNoiseIter tnItr;
+		bool hasRequestedTnEffSet;
 		ArpeggioIterInterface arpItr;
 		PitchIter ptItr;
 		int ptSum;
@@ -333,6 +334,7 @@ private:
 	void writeEnvelopeSSGToRegister(SSGChannel& ssg);
 	void setRealVolumeSSG(SSGChannel& ssg);
 
+	void writeMixerSSGToRegisterByEffect(SSGChannel& ssg);
 	void writeMixerSSGToRegisterBySequence(SSGChannel& ssg);
 	void writeMixerSSGToRegisterByNoReference(SSGChannel& ssg);
 

@@ -2154,9 +2154,8 @@ void OPNAController::setToneNoiseMixSSG(int ch, int value)
 	// Noise
 	if (value & ToneNoiseState::NOISE_TN) mixerSSG_ &= ~SSGNoiseFlag(ssg.ch);
 	else mixerSSG_ |= SSGNoiseFlag(ssg.ch);
-	opna_->setRegister(0x07, mixerSSG_);
 
-	ssg.tnItr.reset();
+	ssg.hasRequestedTnEffSet = true;
 }
 
 void OPNAController::setNoisePitchSSG(int ch, int pitch)
@@ -2307,6 +2306,7 @@ void OPNAController::initSSG()
 		ssg.nsSum = 0;
 		ssg.hasSetNs = false;
 		ssg.transpose = 0;
+		ssg.hasRequestedTnEffSet = false;
 	}
 }
 
@@ -2350,7 +2350,10 @@ void OPNAController::setFrontSSGSequences(SSGChannel& ssg)
 	}
 	else setRealVolumeSSG(ssg);
 
-	if (auto& tnItr = ssg.tnItr) {
+	if (ssg.hasRequestedTnEffSet) {	// Reflect mixer effect
+		writeMixerSSGToRegisterByEffect(ssg);
+	}
+	else if (auto& tnItr = ssg.tnItr) {
 		tnItr->front();
 		writeMixerSSGToRegisterBySequence(ssg);
 	}
@@ -2415,7 +2418,10 @@ void OPNAController::releaseStartSSGSequences(SSGChannel& ssg)
 		ssg.isHardEnv = false;
 	}
 
-	if (auto& tnItr = ssg.tnItr) {
+	if (ssg.hasRequestedTnEffSet) {	// Reflect mixer effect
+		writeMixerSSGToRegisterByEffect(ssg);
+	}
+	else if (auto& tnItr = ssg.tnItr) {
 		tnItr->release();
 		writeMixerSSGToRegisterBySequence(ssg);
 	}
@@ -2476,7 +2482,10 @@ void OPNAController::tickEventSSG(SSGChannel& ssg)
 			setRealVolumeSSG(ssg);
 		}
 
-		if (auto& tnItr = ssg.tnItr) {
+		if (ssg.hasRequestedTnEffSet) {	// Reflect mixer effect
+			writeMixerSSGToRegisterByEffect(ssg);
+		}
+		else if (auto& tnItr = ssg.tnItr) {
 			tnItr->next();
 			writeMixerSSGToRegisterBySequence(ssg);
 		}
@@ -2893,6 +2902,14 @@ void OPNAController::writeEnvelopeSSGToRegister(SSGChannel& ssg)
 		}
 	}
 	ssg.shouldSetEnv = false;
+}
+
+void OPNAController::writeMixerSSGToRegisterByEffect(SSGChannel& ssg)
+{
+	ssg.tnItr.reset();
+	opna_->setRegister(0x07, mixerSSG_);
+	ssg.hasRequestedTnEffSet = false;
+	ssg.shouldUpdateMixState = false;
 }
 
 void OPNAController::writeMixerSSGToRegisterBySequence(SSGChannel& ssg)
