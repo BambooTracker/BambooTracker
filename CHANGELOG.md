@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.4.6 (2021-02-11)
 ### Added
 - [#285] - Linux build (thanks [@OPNA2608])
 - [#294] - Build option for linking against system RtAudio and RtMidi ([#263], [#288]; thanks [@OPNA2608])

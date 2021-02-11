@@ -2949,8 +2949,8 @@ void MainWindow::on_actionAbout_triggered()
 					tr("About"),
 					QString("<h2>BambooTracker v%1</h2>").arg(
 						QString::fromStdString(Version::ofApplicationInString()))
-					+ tr("<b>YM2608 (OPNA) Music Tracker<br>"
-						 "Copyright (C) 2018-2020 Rerrah</b><br>"
+					+ tr("<b>YM2608 Music Tracker<br>"
+						 "Copyright (C) 2018-2021 Rerrah</b><br>"
 						 "<hr>"
 						 "Libraries:<br>"
 						 "- C86CTL by (C) honet (BSD 3-Clause)<br>"
