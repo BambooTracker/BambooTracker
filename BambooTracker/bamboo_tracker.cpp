@@ -1381,7 +1381,7 @@ bool BambooTracker::assignADPCMBeforeForcedJamKeyOn(
 		opnaCtrl_->clearSamplesADPCM();
 		if (opnaCtrl_->storeSampleADPCM(
 					std::dynamic_pointer_cast<InstrumentADPCM>(inst)->getRawSample(), start, stop)) {
-			sampAddrs[0] = { start, stop };
+			sampAddrs[0] = {{ start, stop }};
 			isAssignedAll = true;
 		}
 		break;
@@ -1396,7 +1396,7 @@ bool BambooTracker::assignADPCMBeforeForcedJamKeyOn(
 			int n = kit->getSampleNumber(key);
 			if (!sampAddrs.count(n)) {
 				bool assigned = opnaCtrl_->storeSampleADPCM(kit->getRawSample(key), start, stop);
-				if (assigned) sampAddrs[n] = { start, stop };
+				if (assigned) sampAddrs[n] = {{ start, stop }};
 				isAssignedAll &= assigned;
 			}
 		}
