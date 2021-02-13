@@ -173,9 +173,11 @@ void SongLengthCalculator::totalStepCount(size_t &introSize, size_t &loopSize) c
 		totalStepCnt += (ptnFullSize - curStep);
 
 		// Check next order position
+		const int odr = std::exchange(curOrder, (curOrder + 1) % (lastOrder + 1));
+		curStep = 0;
 		for (const auto& attrib : attribs) {
 			const Step& step = song.getTrack(attrib.number)
-							   .getPatternFromOrderNumber(curOrder).getStep(ptnFullSize - 1);
+							   .getPatternFromOrderNumber(odr).getStep(ptnFullSize - 1);
 			for (int i = 0; i < Step::N_EFFECT; ++i) {
 				Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
 				switch (eff.type) {
@@ -195,8 +197,7 @@ void SongLengthCalculator::totalStepCount(size_t &introSize, size_t &loopSize) c
 						curOrder = 0;
 						curStep = eff.value;
 					}
-					else if (eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder + 1))) {
-						++curOrder;
+					else if (eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder))) {
 						curStep = eff.value;
 					}
 					break;

@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
+
+[#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 
 ## v0.4.6 (2021-02-11)
 ### Added
