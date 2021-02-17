@@ -39,7 +39,7 @@
 #include "ym3438.h"
 
 /*OPN-MOD: define the quantization in bits at which channels clip*/
-static const unsigned channel_clipbits = 11; /*YM2612 has 9 bits*/
+static const unsigned channel_clipbits = 16; /*YM2612 has 9 bits*/
 
 enum {
     eg_num_attack = 0,
@@ -1100,7 +1100,8 @@ void OPN2_ChGenerate(ym3438_t *chip)
     }
     if (fm_algorithm[op][5][chip->connect[channel]] && !test_dac)
     {
-        add += chip->fm_out[slot] >> 5;
+        /*OPN-MOD: drop 1 bit (YM2608) instead of 5 (YM2612)*/
+        add += chip->fm_out[slot] >> 1;
     }
     sum = acc + add;
     /* Clamp */
@@ -1892,8 +1893,9 @@ void OPN2_Generate(ym3438_t *chip, sample *samples)
     {
         OPN2_Clock(chip, buffer);
 
-        samples[0] += buffer[0] * 11;
-        samples[1] += buffer[1] * 11;
+        /*OPN-MOD: adjust FM output to mix*/
+        samples[0] += (buffer[0] * 11) >> 4;
+        samples[1] += (buffer[1] * 11) >> 4;
 
         /*OPN-MOD: mix rhythm samples*/
         samples[0] += buffer[2];
