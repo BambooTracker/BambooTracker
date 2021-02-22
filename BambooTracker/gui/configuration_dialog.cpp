@@ -223,7 +223,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		QObject::connect(button, &QToolButton::clicked, seq, &QKeySequenceEdit::clear);
 		auto layout = widget->layout();
 		layout->setSpacing(0);
-		layout->setMargin(0);
+		layout->setContentsMargins(0, 0, 0, 0);
 		layout->addWidget(seq);
 		layout->addWidget(button);
 		ui->shortcutsTreeWidget->setItemWidget(item, 1, widget);

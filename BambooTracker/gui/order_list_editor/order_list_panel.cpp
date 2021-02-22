@@ -105,7 +105,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	headerFont_.setPointSize(10);
 	rowFont_ = QFont("Monospace", 10);
 	rowFont_.setStyleHint(QFont::TypeWriter);
-	rowFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
+	rowFont_.setStyleStrategy(QFont::PreferMatch);
 
 	updateSizes();
 

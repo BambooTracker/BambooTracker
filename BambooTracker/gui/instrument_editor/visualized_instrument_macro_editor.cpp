@@ -406,7 +406,7 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 					painter.fillRect(w, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
 					QString times = (loops_[j].times == 1) ? "" : QString::number(loops_[j].times);
 					painter.drawText(QRectF(w + 2, loopY_, colWidth - 2, fontHeight_),
-									 Qt::AlignLeft + Qt::AlignVCenter, tr("Loop %1").arg(times));
+									 Qt::AlignLeft | Qt::AlignVCenter, tr("Loop %1").arg(times));
 				}
 				if (loops_[j].end == i) {
 					painter.fillRect(w + colWidth - 2, loopY_, 2,

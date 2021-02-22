@@ -157,7 +157,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	headerFont_.setPointSize(10);
 	stepFont_ = QFont("Monospace", 10);
 	stepFont_.setStyleHint(QFont::TypeWriter);
-	stepFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
+	stepFont_.setStyleStrategy(QFont::PreferMatch);
 
 	updateSizes();
 

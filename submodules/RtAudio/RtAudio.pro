@@ -17,7 +17,7 @@ else {
     DEFINES += __WINDOWS_DS__
     LIBS += -lole32 -lwinmm -ldsound -luser32
 
-    greaterThan(QT_MAJOR_VERSION, 4):greaterThan(QT_MINOR_VERSION, 5) {
+    if(equals(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 5))|greaterThan(QT_MAJOR_VERSION, 5) {
       message("[default] Adding WASAPI")
       DEFINES += __WINDOWS_WASAPI__
       LIBS += -lksuser -lmfplat -lmfuuid -lwmcodecdspuuid
