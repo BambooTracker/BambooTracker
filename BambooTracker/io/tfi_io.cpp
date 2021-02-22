@@ -45,7 +45,7 @@ AbstractInstrument* TfiIO::load(const BinaryContainer& ctr, const std::string& f
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(1));
 
 	size_t csr = 2;
-	for (int op = 0; op < 4; ++op) {
+	for (int op : { 0, 2, 1, 3 }) {
 		const auto& params = FM_OP_PARAMS[op];
 		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::ML), ctr.readUint8(csr++));
 		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::DT),
