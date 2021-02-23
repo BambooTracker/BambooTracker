@@ -93,7 +93,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  repaintingCnt_(0),
 	  playingRow_(-1),
 	  insSc1_(Qt::Key_Insert, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  insSc2_(Qt::ALT + Qt::Key_B, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  insSc2_(Qt::ALT | Qt::Key_B, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  menuSc_(Qt::Key_Menu, this, nullptr, nullptr, Qt::WidgetShortcut)
 {
 	setAttribute(Qt::WA_Hover);
@@ -1088,8 +1088,8 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DuplicateOrder)));
 	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ClonePatterns)));
 	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CloneOrder)));
-	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+	copy->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
+	paste->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_V));
 
 	if (pos.row < 0 || pos.trackVisIdx < 0) {
 		remove->setEnabled(false);

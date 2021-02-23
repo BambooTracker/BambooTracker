@@ -122,29 +122,29 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  repaintingCnt_(0),
 	  isInitedFirstMod_(false),
 	  upSc_(Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  upWSSc_(Qt::SHIFT + Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  upWSSc_(Qt::SHIFT | Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  dnSc_(Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  dnWSSc_(Qt::SHIFT + Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  dnWSSc_(Qt::SHIFT | Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  pgUpSc_(Qt::Key_PageUp, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  pgUpWSSc_(Qt::SHIFT + Qt::Key_PageUp, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  pgUpWSSc_(Qt::SHIFT | Qt::Key_PageUp, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  pgDnSc_(Qt::Key_PageDown, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  pgDnWSSc_(Qt::SHIFT + Qt::Key_PageDown, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  pgDnWSSc_(Qt::SHIFT | Qt::Key_PageDown, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  homeSc_(Qt::Key_Home, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  homeWSSc_(Qt::SHIFT + Qt::Key_Home, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  homeWSSc_(Qt::SHIFT | Qt::Key_Home, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  endSc_(Qt::Key_End, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  endWSSc_(Qt::SHIFT + Qt::Key_End, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  endWSSc_(Qt::SHIFT | Qt::Key_End, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  hlUpSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  hlUpWSSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  hlDnSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  hlDnWSSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  ltSc_(Qt::Key_Left, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  ltWSSc_(Qt::SHIFT + Qt::Key_Left, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  ltWSSc_(Qt::SHIFT | Qt::Key_Left, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  rtSc_(Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  rtWSSc_(Qt::SHIFT + Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  rtWSSc_(Qt::SHIFT | Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  keyOffSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  echoBufSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
-	  stepMvUpSc_(Qt::ALT + Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  stepMvDnSc_(Qt::ALT + Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  stepMvUpSc_(Qt::ALT | Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  stepMvDnSc_(Qt::ALT | Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  expandColSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  shrinkColSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut)
 {	
@@ -2182,12 +2182,12 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	sheff->setShortcutVisibleInContextMenu(true);
 #endif
 	auto shortcuts = config_->getShortcuts();
-	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
-	redo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
-	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
-	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
-	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+	undo->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z));
+	redo->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
+	undo->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z));
+	copy->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
+	cut->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
+	paste->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_V));
 	pasteMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteMix)));
 	pasteOver->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteOverwrite)));
 	pasteIns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::PasteInsert)));
