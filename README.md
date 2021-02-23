@@ -146,8 +146,8 @@ See [FILEIO.md](./FILEIO.md).
 ### Dependencies
 To build BambooTracker, you'll need the following dependencies across all platforms:
 
-- Qt5
-- Qt5 Tools (qmake, lrelease, ...)
+- Qt (5.5 or higher)
+- Qt Tools (qmake, lrelease, ...)
 - A Qt-supported C++ compiler (GCC, Clang, MSVC, ...)
 - make
 
@@ -162,11 +162,11 @@ How to acquire these and further required / optional dependencies are specific t
     Untested but might work.
   - MSVC  
     Either bundled with [Visual Studio](https://visualstudio.microsoft.com) or standalone (check "Build Tools for Visual Studio 2019" download).
-- [Qt5](https://www.qt.io/download-qt-installer)  
+- [Qt](https://www.qt.io/download-qt-installer)
   Older Qt versions (e.g. for an XP builds) may require you to checkout & compile Qt yourself, official prebuilt versions were removed by Qt.
 
 #### macOS
-For simplicity, these instructions assume the use of [Homebrew](https://brew.sh/).
+For simplicity, these instructions assume the use of [Homebrew](https://brew.sh/) & Qt5.
 
 - C++ compiler: Xcode Command Line Tools  
   The challenge of acquiring these is left to the reader.  
@@ -324,7 +324,7 @@ make install
 ```
 
 #### Windows
-Enter a shell with Qt5 + your compiler set up before starting the above steps. (Qt5 installer adds scripts you can use for this)
+Enter a shell with Qt + your compiler set up before starting the above steps. (Qt installer adds scripts you can use for this)
 
 - If you're using MinGW, use `mingw32-make` / `mingw64-make` instead of `make`.
 - If you're using MSVC, **TODO**.

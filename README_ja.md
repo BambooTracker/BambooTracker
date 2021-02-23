@@ -146,8 +146,8 @@ pkg install bambootracker
 ### 依存関係
 BambooTrackerをビルドする際には全てのプラットフォームで以下の依存関係を用意してください。
 
-- Qt5 
-- Qt5 Tools (qmake, lrelease, ...)
+- Qt (5.5以降)
+- Qt Tools (qmake, lrelease, ...)
 - QtでサポートされているC++コンパイラ (GCC, Clang, MSVC, ...)
 - make
 
@@ -162,12 +162,11 @@ BambooTrackerをビルドする際には全てのプラットフォームで以�
     未テストですが恐らく動作します。
   - MSVC  
     [Visual Studio](https://visualstudio.microsoft.com)にバンドルされているものか、スタンドアロン版("Build Tools for Visual Studio 2019"のダウンロードを確認してください)
-- [Qt5](https://www.qt.io/download-qt-installer)  
-  Older Qt versions (e.g. for an XP builds) may require you to checkout & compile Qt yourself, official prebuilt versions were removed by Qt.
+- [Qt](https://www.qt.io/download-qt-installer)
   古いバージョンのQt(XPビルドなど)では、自分でチェックアウトしてコンパイルする必要があるかもしれませんが、公式のプリビルド版はQtによって削除されました。
 
 #### macOS
-ここではHomebrewを用いた導入方法を紹介します。
+ここではHomebrew & Qt5を用いた導入方法を紹介します。
 
 - C++コンパイラ: Xcode Command Line Tools  
   (開発者はmacOSを使っていないので、導入方法については検索してください。すみません)
@@ -326,7 +325,7 @@ make install
 ```
 
 #### Windows
-上記の手順を始める前に、Qt5とコンパイラをセットアップしたシェルに入ります。(Qt5のインストーラには、このために使えるスクリプトが追加されています)
+上記の手順を始める前に、Qtとコンパイラをセットアップしたシェルに入ります。(Qtのインストーラには、このために使えるスクリプトが追加されています)
 
 - MinGWを使う場合は`make`ではなく`mingw32-make` / `mingw64-make`を使って下さい.
 - MSVCを使う場合は**TODO**。
