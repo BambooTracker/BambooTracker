@@ -3664,7 +3664,7 @@ void OPNAController::releaseStartADPCMSequences()
 	}
 	if (envItrADPCM_) {
 		envItrADPCM_->release();
-		if (!envItrADPCM_->hasEnded()) {
+		if (envItrADPCM_->hasEnded()) {
 			opna_->setRegister(0x10b, 0);	// Silence
 			shouldWriteEnvADPCM_ = false;
 		}

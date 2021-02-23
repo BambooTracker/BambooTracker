@@ -5,11 +5,13 @@
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
 - [#336] - Fix noise distortion for Nuked OPN-Mod ([#255]; thanks [@OPNA2608], [@jpcima], [@freq-mod], [@nukeykt])
 - [#339] - Fix the order of loading FM operators in .vgi and .tfi (thanks [@OPNA2608])
+- [#340] - Fix ADPCM note off when the instrument release is not set (thanks [@Zexxerd])
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
 [#336]: https://github.com/rerrahkr/BambooTracker/pull/336
 [#339]: https://github.com/rerrahkr/BambooTracker/issues/339
+[#340]: https://github.com/rerrahkr/BambooTracker/issues/340
 
 ## v0.4.6 (2021-02-11)
 ### Added
