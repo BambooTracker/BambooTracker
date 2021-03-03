@@ -69,7 +69,7 @@ void ReplaceInstrumentInPatternCommand::undo()
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
 			Step& st = command_utils::getStep(sng, track, order_, step);
-			if (st.hasInstrument()) st.setInstrumentNumber(prevInsts_.at(i));
+			if (st.hasInstrument()) st.setInstrumentNumber(prevInsts_.at(i++));
 		}
 	}
 }

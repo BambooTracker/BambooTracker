@@ -6,12 +6,16 @@
 - [#336] - Fix noise distortion for Nuked OPN-Mod ([#255]; thanks [@OPNA2608], [@jpcima], [@freq-mod], [@nukeykt])
 - [#339] - Fix the order of loading FM operators in .vgi and .tfi (thanks [@OPNA2608])
 - [#340] - Fix ADPCM note off when the instrument release is not set (thanks [@Zexxerd])
+- [#341] - Fix undo behaviour of instrument replacement (thanks [@Mugenri])
+
+[@Mugenri]: https://github.com/Mugenri
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
 [#336]: https://github.com/rerrahkr/BambooTracker/pull/336
 [#339]: https://github.com/rerrahkr/BambooTracker/issues/339
 [#340]: https://github.com/rerrahkr/BambooTracker/issues/340
+[#341]: https://github.com/rerrahkr/BambooTracker/issues/341
 
 ## v0.4.6 (2021-02-11)
 ### Added
