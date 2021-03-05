@@ -37,6 +37,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QPoint>
+#include <QPointF>
 #include <QString>
 #include <QIcon>
 #include "playback.hpp"
@@ -1494,22 +1495,23 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 			setSelectedRectangle(mousePressPos_, hovPos_);
 		}
 
-		if (event->x() < rowNumWidth_ && leftTrackVisIdx_ > 0) {
+		QPointF pos = event->position();
+		if (pos.x() < rowNumWidth_ && leftTrackVisIdx_ > 0) {
 			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(-1);
 			else
 				moveViewToRight(-1);
 		}
-		else if (event->x() > geometry().width() - rowNumWidth_ && hovPos_.trackVisIdx != -1) {
+		else if (pos.x() > geometry().width() - rowNumWidth_ && hovPos_.trackVisIdx != -1) {
 			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(1);
 			else
 				moveViewToRight(1);
 		}
-		if (event->pos().y() < headerHeight_ + rowFontHeight_) {
+		if (pos.y() < headerHeight_ + rowFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 		}
-		else if (event->pos().y() > geometry().height() - rowFontHeight_) {
+		else if (pos.y() > geometry().height() - rowFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(1);
 		}
 	}
@@ -1567,7 +1569,7 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 
 bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 {
-	QPoint pos = event->pos();
+	QPointF pos = event->position();
 
 	OrderPosition oldPos = hovPos_;
 

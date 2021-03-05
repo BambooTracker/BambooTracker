@@ -200,7 +200,7 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 		}
 		case QEvent::HoverMove:
 		{
-			auto pos = dynamic_cast<QHoverEvent*>(ev)->pos();
+			auto pos = dynamic_cast<QHoverEvent*>(ev)->position();
 			detectCursorSamplePosition(pos.x(), pos.y());
 
 			if (prevPressedSamp_.x() != -1) {	// Change sample

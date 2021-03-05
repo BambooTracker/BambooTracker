@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,9 +37,10 @@ void DropDetectListWidget::dropEvent(QDropEvent* event)
 	QListWidget::dropEvent(event);
 
 	if (event->source() == this) {
-		QListWidgetItem* tgt = itemAt(event->pos());
+		QPoint pos = event->position().toPoint();
+		QListWidgetItem* tgt = itemAt(pos);
 		if (tgt == nullptr) return;
-		int tgtIdx = indexAt(event->pos()).row();
+		int tgtIdx = indexAt(pos).row();
 
 		int drpIdx;
 		{	// Only 1 item stored

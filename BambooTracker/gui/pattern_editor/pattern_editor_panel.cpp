@@ -35,6 +35,7 @@
 #include <QFontMetrics>
 #include <QFontInfo>
 #include <QPoint>
+#include <QPointF>
 #include <QApplication>
 #include <QClipboard>
 #include <QMenu>
@@ -2889,7 +2890,8 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 			setSelectedRectangle(mousePressPos_, hovPos_);
 		}
 
-		if (event->x() < stepNumWidth_ && leftTrackVisIdx_ > 0) {
+		QPointF pos = event->position();
+		if (pos.x() < stepNumWidth_ && leftTrackVisIdx_ > 0) {
 			if (config_->getMoveCursorByHorizontalScroll()) {
 				moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackVisIdx_) - 1)));
 			}
@@ -2897,7 +2899,7 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 				moveViewToRight(-1);
 			}
 		}
-		else if (event->x() > geometry().width() - stepNumWidth_ && hovPos_.trackVisIdx != -1) {
+		else if (pos.x() > geometry().width() - stepNumWidth_ && hovPos_.trackVisIdx != -1) {
 			if (config_->getMoveCursorByHorizontalScroll()) {
 				moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackVisIdx_)));
 			}
@@ -2905,10 +2907,10 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 				moveViewToRight(1);
 			}
 		}
-		if (event->pos().y() < headerHeight_ + stepFontHeight_) {
+		if (pos.y() < headerHeight_ + stepFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 		}
-		else if (event->pos().y() > geometry().height() - stepFontHeight_) {
+		else if (pos.y() > geometry().height() - stepFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(1);
 		}
 	}
@@ -3058,7 +3060,7 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 
 bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 {
-	QPoint pos = event->pos();
+	QPointF pos = event->position();
 	PatternPosition oldPos = hovPos_;
 
 	// Detect Step

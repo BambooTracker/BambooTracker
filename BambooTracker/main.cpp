@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 		std::shared_ptr<Configuration> config = std::make_shared<Configuration>();
 		io::loadConfiguration(config);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 		QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
@@ -94,14 +94,16 @@ void setupTranslations()
 
 	if (!qtDir.isEmpty()) {
 		QString baseName = "qt_" + lang;
-		qtTr->load(baseName, qtDir);
-		qDebug() << "Translation" << baseName << "from" << qtDir;
+		if (qtTr->load(baseName, qtDir)) {
+			qDebug() << "Translation" << baseName << "from" << qtDir;
+		}
 	}
 
 	if (!appDir.isEmpty()) {
 		QString baseName = "bamboo_tracker_" + lang;
-		appTr->load(baseName, appDir);
-		qDebug() << "Translation" << baseName << "from" << appDir;
+		if (appTr->load(baseName, appDir)) {
+			qDebug() << "Translation" << baseName << "from" << appDir;
+		}
 	}
 
 	a->installTranslator(qtTr);
