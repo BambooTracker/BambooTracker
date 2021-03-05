@@ -37,7 +37,9 @@
 #include <QMenu>
 #include <QAction>
 #include <QPoint>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QPointF>
+#endif
 #include <QString>
 #include <QIcon>
 #include "playback.hpp"
@@ -1495,7 +1497,11 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 			setSelectedRectangle(mousePressPos_, hovPos_);
 		}
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		QPointF pos = event->position();
+#else
+		QPoint pos = event->pos();
+#endif
 		if (pos.x() < rowNumWidth_ && leftTrackVisIdx_ > 0) {
 			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(-1);
@@ -1569,7 +1575,11 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 
 bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	QPointF pos = event->position();
+#else
+	QPoint pos = event->pos();
+#endif
 
 	OrderPosition oldPos = hovPos_;
 

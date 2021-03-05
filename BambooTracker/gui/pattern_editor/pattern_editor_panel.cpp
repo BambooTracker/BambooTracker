@@ -35,7 +35,9 @@
 #include <QFontMetrics>
 #include <QFontInfo>
 #include <QPoint>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QPointF>
+#endif
 #include <QApplication>
 #include <QClipboard>
 #include <QMenu>
@@ -2890,7 +2892,11 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 			setSelectedRectangle(mousePressPos_, hovPos_);
 		}
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		QPointF pos = event->position();
+#else
+		QPoint pos = event->pos();
+#endif
 		if (pos.x() < stepNumWidth_ && leftTrackVisIdx_ > 0) {
 			if (config_->getMoveCursorByHorizontalScroll()) {
 				moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackVisIdx_) - 1)));
@@ -3060,7 +3066,11 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 
 bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	QPointF pos = event->position();
+#else
+	QPoint pos = event->pos();
+#endif
 	PatternPosition oldPos = hovPos_;
 
 	// Detect Step

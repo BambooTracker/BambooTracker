@@ -33,7 +33,11 @@
 #include <QApplication>
 #include <QFontMetrics>
 #include <QPainter>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QPointF>
+#else
+#include <QPoint>
+#endif
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include "gui/event_guard.hpp"
@@ -1091,7 +1095,11 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 	int oldCol = hovCol_;
 	int oldRow = hovRow_;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	QPointF pos = event->position();
+#else
+	QPoint pos = event->pos();
+#endif
 
 	// Detect column
 	if (pos.x() < labWidth_) {
