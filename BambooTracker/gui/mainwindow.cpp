@@ -1677,7 +1677,11 @@ void MainWindow::loadInstrument()
 				   [](const std::string& f) { return QString::fromStdString(f); });
 	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter);
+												filters.join(";;"), &defaultFilter
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) return;
 
 	int index = getSelectedFileFilter(file, filters);
@@ -1739,7 +1743,11 @@ void MainWindow::saveInstrument()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save instrument"),
 					   QString("%1/%2.bti").arg(dir.isEmpty() ? "." : dir, name),
-					   filters.join(";;"), &defaultFilter);
+					   filters.join(";;"), &defaultFilter
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+					   , QFileDialog::DontUseNativeDialog
+#endif
+					   );
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
@@ -1780,7 +1788,11 @@ void MainWindow::importInstrumentsFromBank()
 				   [](const std::string& f) { return QString::fromStdString(f); });
 	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter);
+												filters.join(";;"), &defaultFilter
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) {
 		return;
 	}
@@ -1943,7 +1955,11 @@ void MainWindow::exportInstrumentsToBank()
 				   [](const std::string& f) { return QString::fromStdString(f); });
 	QString defaultFilter = filters.front();	// btb
 	QString file = QFileDialog::getSaveFileName(this, tr("Save bank"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter);
+												filters.join(";;"), &defaultFilter
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) return;
 
 	QVector<size_t> selection = dlg.currentInstrumentSelection();
@@ -2512,7 +2528,7 @@ QString MainWindow::getModuleFileBaseName() const
 int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
 {
 	QRegularExpression re(R"(\(\*\.(.+)\))");
-	QString ex = QFileInfo(file).suffix();
+	QString ex = QFileInfo(file).suffix().toLower();
 	for (int i = 0; i < filters.size(); ++i)
 		if (ex == re.match(filters[i]).captured(1)) return i;
 	return -1;
@@ -3144,7 +3160,11 @@ bool MainWindow::on_actionSave_As_triggered()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save module"),
 					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("BambooTracker module (*.btm)"));
+					   tr("BambooTracker module (*.btm)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+					   , QFileDialog::DontUseNativeDialog
+#endif
+					   );
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
@@ -3212,7 +3232,11 @@ void MainWindow::on_actionOpen_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
-												tr("BambooTracker module (*.btm)"));
+												tr("BambooTracker module (*.btm)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) return;
 
 	bt_->stopPlaySong();
@@ -3318,7 +3342,11 @@ void MainWindow::on_actionWAV_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to WAV"),
 					   QString("%1/%2.wav").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("WAV signed 16-bit PCM (*.wav)"));
+					   tr("WAV signed 16-bit PCM (*.wav)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+					   , QFileDialog::DontUseNativeDialog
+#endif
+					   );
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
 
@@ -3386,7 +3414,11 @@ void MainWindow::on_actionVGM_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to VGM"),
 					   QString("%1/%2.vgm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("VGM file (*.vgm)"));
+					   tr("VGM file (*.vgm)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+					   , QFileDialog::DontUseNativeDialog
+#endif
+					   );
 	if (path.isNull()) return;
 	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
@@ -3449,7 +3481,11 @@ void MainWindow::on_actionS98_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to S98"),
 					   QString("%1/%2.s98").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("S98 file (*.s98)"));
+					   tr("S98 file (*.s98)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+					   , QFileDialog::DontUseNativeDialog
+#endif
+					   );
 	if (path.isNull()) return;
 	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
