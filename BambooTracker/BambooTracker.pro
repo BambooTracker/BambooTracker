@@ -80,11 +80,6 @@ else:clang|if(gcc:!intel_icc) {
   message("Compiler is version" $$COMPILER_VERSION)
 
   # Temporary known-error downgrades here
-
-  # WIP Requires a deeper look into the warnings to make Qt5 -> Qt6 transition clean
-  greaterThan(QT_MAJOR_VERSION, 5) {
-    CPP_WARNING_FLAGS += -Wno-error=deprecated-declarations -Wno-error=unused-result
-  }
 }
 else {
   message("Configured compiler is unknown, no attempt to add warning & pedantic compiler switches")
