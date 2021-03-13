@@ -218,6 +218,7 @@ private:
 	void setCellOrderNum(int n);
 
 	void pasteCopiedCells(const OrderPosition& startPos);
+	void clonePatterns(const OrderPosition& singlePos);
 
 	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);
 	bool isSelectedCell(int trackIdx, int row);

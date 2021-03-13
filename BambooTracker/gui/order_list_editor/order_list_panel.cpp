@@ -1012,6 +1012,25 @@ void OrderListPanel::pasteCopiedCells(const OrderPosition& startPos)
 	comStack_.lock()->push(new PasteCopiedDataToOrderQtCommand(this));
 }
 
+void OrderListPanel::clonePatterns(const OrderPosition& singlePos)
+{
+	int bo, bt, eo, et;
+	if (selLeftAbovePos_.row != -1) {
+		bo = selLeftAbovePos_.row;
+		bt = visTracks_.at(selLeftAbovePos_.trackVisIdx);
+		eo = selRightBelowPos_.row;
+		et = visTracks_.at(selRightBelowPos_.trackVisIdx);
+	}
+	else if (singlePos.row >= 0 && singlePos.trackVisIdx >= 0) {
+		bo = eo = singlePos.row;
+		bt = et = visTracks_.at(singlePos.trackVisIdx);
+	}
+	else return;
+
+	bt_->clonePatterns(curSongNum_, bo, bt, eo, et);
+	comStack_.lock()->push(new ClonePatternsQtCommand(this));
+}
+
 void OrderListPanel::setSelectedRectangle(const OrderPosition& start, const OrderPosition& end)
 {
 	if (start.trackVisIdx > end.trackVisIdx) {
@@ -1053,31 +1072,31 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* insert = menu.addAction(tr("&Insert Order"));
 	insert->setIcon(QIcon(":/icon/insert_order"));
-	QObject::connect(insert, &QAction::triggered, this, [&]() { insertOrderBelow(); });
+	QObject::connect(insert, &QAction::triggered, this, [&] { insertOrderBelow(); });
 	QAction* remove = menu.addAction(tr("&Remove Order"));
 	remove->setIcon(QIcon(":/icon/remove_order"));
-	QObject::connect(remove, &QAction::triggered, this, [&]() { deleteOrder(); });
+	QObject::connect(remove, &QAction::triggered, this, [&] { deleteOrder(); });
 	QAction* duplicate = menu.addAction(tr("&Duplicate Order"));
 	duplicate->setIcon(QIcon(":/icon/duplicate_order"));
 	QObject::connect(duplicate, &QAction::triggered, this, &OrderListPanel::onDuplicatePressed);
 	QAction* clonep = menu.addAction(tr("&Clone Patterns"));
-	QAction::connect(clonep, &QAction::triggered, this, &OrderListPanel::onClonePatternsPressed);
+	QAction::connect(clonep, &QAction::triggered, this, [&, pos] { clonePatterns(pos); });
 	QAction* cloneo = menu.addAction(tr("Clone &Order"));
 	QObject::connect(cloneo, &QAction::triggered, this, &OrderListPanel::onCloneOrderPressed);
 	menu.addSeparator();
 	QAction* moveUp = menu.addAction(tr("Move Order &Up"));
 	moveUp->setIcon(QIcon(":/icon/order_up"));
-	QObject::connect(moveUp, &QAction::triggered, this, [&]() { onMoveOrderPressed(true); });
+	QObject::connect(moveUp, &QAction::triggered, this, [&] { onMoveOrderPressed(true); });
 	QAction* moveDown = menu.addAction(tr("Move Order Do&wn"));
 	moveDown->setIcon(QIcon(":/icon/order_down"));
-	QObject::connect(moveDown, &QAction::triggered, this, [&]() { onMoveOrderPressed(false); });
+	QObject::connect(moveDown, &QAction::triggered, this, [&] { onMoveOrderPressed(false); });
 	menu.addSeparator();
 	QAction* copy = menu.addAction(tr("Cop&y"));
 	copy->setIcon(QIcon(":/icon/copy"));
 	QObject::connect(copy, &QAction::triggered, this, &OrderListPanel::copySelectedCells);
 	QAction* paste = menu.addAction(tr("&Paste"));
 	paste->setIcon(QIcon(":/icon/paste"));
-	QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(pos); });
+	QObject::connect(paste, &QAction::triggered, this, [&] { pasteCopiedCells(pos); });
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	duplicate->setShortcutVisibleInContextMenu(true);
 	clonep->setShortcutVisibleInContextMenu(true);
@@ -1091,7 +1110,8 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 
-	if (pos.row < 0 || pos.trackVisIdx < 0) {
+	bool notCurHov = (pos.row < 0 || pos.trackVisIdx < 0);
+	if (notCurHov) {
 		remove->setEnabled(false);
 		moveUp->setEnabled(false);
 		moveDown->setEnabled(false);
@@ -1115,8 +1135,9 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	}
 	if (selRightBelowPos_.row < 0
 			|| !isSelectedCell(pos.trackVisIdx, pos.row)) {
-		clonep->setEnabled(false);
 		copy->setEnabled(false);
+		// Turn off when no pattern is hilighted
+		if (notCurHov) clonep->setEnabled(false);
 	}
 	if (pos.row == 0) {
 		moveUp->setEnabled(false);
@@ -1291,11 +1312,7 @@ void OrderListPanel::onMoveOrderPressed(bool isUp)
 
 void OrderListPanel::onClonePatternsPressed()
 {
-	if (selLeftAbovePos_.row == -1) return;
-
-	bt_->clonePatterns(curSongNum_, selLeftAbovePos_.row, visTracks_.at(selLeftAbovePos_.trackVisIdx),
-					   selRightBelowPos_.row, visTracks_.at(selRightBelowPos_.trackVisIdx));
-	comStack_.lock()->push(new ClonePatternsQtCommand(this));
+	clonePatterns(curPos_);
 }
 
 void OrderListPanel::onCloneOrderPressed()

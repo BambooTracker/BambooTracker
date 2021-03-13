@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
+
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
 - [#336] - Fix noise distortion for Nuked OPN-Mod ([#255]; thanks [@OPNA2608], [@jpcima], [@freq-mod], [@nukeykt])
@@ -16,6 +19,7 @@
 [#339]: https://github.com/rerrahkr/BambooTracker/issues/339
 [#340]: https://github.com/rerrahkr/BambooTracker/issues/340
 [#341]: https://github.com/rerrahkr/BambooTracker/issues/341
+[#333]: https://github.com/rerrahkr/BambooTracker/issues/333
 
 ## v0.4.6 (2021-02-11)
 ### Added
