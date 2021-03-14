@@ -125,7 +125,11 @@ QString findQtTranslationsDir()
 	return QApplication::applicationDirPath() + "/lang";
 #else
 	// the files are located in the installation of Qt
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+#else
 	return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+#endif
 #endif
 }
 
