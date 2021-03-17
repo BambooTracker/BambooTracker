@@ -1,4 +1,4 @@
-name: Windows (7 and up, 32-bit, Qt5)
+name: Windows 7 and up (32-bit, Qt5)
 
 on:
   push:
@@ -22,7 +22,7 @@ defaults:
     shell: bash
 
 env:
-  BUILD_TARGET: windows
+  BUILD_TARGET: windows-x86
   MAKE: mingw32-make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
   MINGW_VERSION: 8.1.0
