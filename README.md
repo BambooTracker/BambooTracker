@@ -14,8 +14,11 @@
   </a>
   <br />
   (Build tests)<br />
-  <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+%287+and+up%29%22">
-    <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/Windows%20(7%20and%20up)?logo=windows&logoColor=white" alt="BambooTracker Build-Test Status on Windows" />
+  <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+7+and+up+%2832-bit%2C+Qt5%29%22">
+    <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/Windows%207%20and%20up%20(32-bit,%20Qt5)?logo=windows&logoColor=white" alt="BambooTracker Build-Test Status on Windows (Qt5)" />
+  </a>
+  <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+10+%2864-bit%2C+Qt6%29%22">
+    <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/Windows%2010%20(64-bit,%20Qt6)?logo=windows&logoColor=white" alt="BambooTracker Build-Test Status on Windows (Qt6)" />
   </a>
   <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3AmacOS">
     <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/macOS?logo=apple&logoColor=white" alt="BambooTracker Build-Test Status on macOS" />
