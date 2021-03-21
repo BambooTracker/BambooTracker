@@ -22,7 +22,7 @@ defaults:
     shell: bash
 
 env:
-  BUILD_TARGET: macos-x86_64
+  BUILD_TARGET: macos-64bit
   SCRIPT_NAME: osx
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/

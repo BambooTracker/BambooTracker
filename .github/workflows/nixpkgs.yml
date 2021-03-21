@@ -22,7 +22,7 @@ defaults:
     shell: bash
 
 env:
-  BUILD_TARGET: linux-x86_64
+  BUILD_TARGET: linux-64bit
   NIXPKGS_CHANNEL: nixos-20.09
   BT_INSTALLBASE: ${{ github.workspace }}/target/
 

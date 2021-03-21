@@ -22,7 +22,7 @@ defaults:
     shell: bash
 
 env:
-  BUILD_TARGET: windows-x86
+  BUILD_TARGET: windows-7-32bit
   MAKE: mingw32-make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
   MINGW_VERSION: 8.1.0
