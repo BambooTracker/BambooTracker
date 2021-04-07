@@ -4,7 +4,7 @@ system_rtaudio {
   message("Vendored RtAudio disabled.")
 }
 else {
-  include("../common/library.pri")
+  include("../../qmake/library.pri")
 
   CONFIG(debug, debug|release):TARGET = rtaudiod
   else:CONFIG(release, debug|release):TARGET = rtaudio

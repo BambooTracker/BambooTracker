@@ -216,4 +216,4 @@ $RECYCLE.BIN/
 
 !/BambooTracker/res/icon
 BambooTracker/BambooTracker
-submodules/config.tests/*/test
+qmake/config.tests/*/test

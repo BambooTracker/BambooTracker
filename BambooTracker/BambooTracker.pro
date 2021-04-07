@@ -22,12 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-# This produces the installation rule for the program and resources.
-# Use a default destination prefix if none is given.
-isEmpty(PREFIX) {
-    win32:PREFIX = C:/BambooTracker
-    else:PREFIX = /usr/local
-}
+include("../qmake/variables.pri")
+
 INSTALLS += target
 win32|install_flat {
     target.path = $$PREFIX
@@ -37,51 +33,13 @@ else {
 }
 
 CONFIG += c++14
-
-# C/C++ compiler flags
-message("Qt is version" $$QT_VERSION)
-msvc {
-  message("Configured compiler is MSVC")
-  message("Compiler is version" $$QT_MSC_FULL_VER)
-  CPP_WARNING_FLAGS += /Wall /Wp64 /WX
-  CPP_WARNING_FLAGS += /source-charset:utf-8
-}
-else:clang|if(gcc:!intel_icc) {
-  # Pedantic settings, warning -> error escalation and C standard specification
-  CPP_WARNING_FLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
+clang|if(gcc:!intel_icc) {
   QMAKE_CFLAGS += -std=gnu11
-
-  # Get the compiler version for version-specific handling
-  clang {
-    defined(QMAKE_APPLE_CLANG_MAJOR_VERSION, var) {
-      message("Configured compiler is Apple LLVM")
-      CONFIG += clang-apple
-      COMPILER_MAJOR_VERSION = $$QT_APPLE_CLANG_MAJOR_VERSION
-      COMPILER_MINOR_VERSION = $$QT_APPLE_CLANG_MINOR_VERSION
-      COMPILER_PATCH_VERSION = $$QT_APPLE_CLANG_PATCH_VERSION
-    }
-    else {
-      message("Configured compiler is LLVM")
-      CONFIG += clang-normal
-      COMPILER_MAJOR_VERSION = $$QT_CLANG_MAJOR_VERSION
-      COMPILER_MINOR_VERSION = $$QT_CLANG_MINOR_VERSION
-      COMPILER_PATCH_VERSION = $$QT_CLANG_PATCH_VERSION
-    }
-  }
-  else {
-    message("Configured compiler is GCC")
-    COMPILER_MAJOR_VERSION = $$QT_GCC_MAJOR_VERSION
-    COMPILER_MINOR_VERSION = $$QT_GCC_MINOR_VERSION
-    COMPILER_PATCH_VERSION = $$QT_GCC_PATCH_VERSION
-  }
-  COMPILER_VERSION = $${COMPILER_MAJOR_VERSION}.$${COMPILER_MINOR_VERSION}.$${COMPILER_PATCH_VERSION}
-  message("Compiler is version" $$COMPILER_VERSION)
-
-  # Temporary known-error downgrades here
 }
-else {
-  message("Configured compiler is unknown, no attempt to add warning & pedantic compiler switches")
-}
+
+# Temporary downgrades of problematic compiler flags here
+# CPP_WARNING_FLAGS +=
+
 QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 

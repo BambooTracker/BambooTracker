@@ -4,7 +4,7 @@ CONFIG += staticlib create_prl
 CONFIG += c++11
 
 load(configure)
-QMAKE_CONFIG_TESTS_DIR = $$PWD/../config.tests
+QMAKE_CONFIG_TESTS_DIR = $$PWD/config.tests
 CONFIG += recheck
 
 DESTDIR = $$OUT_PWD
