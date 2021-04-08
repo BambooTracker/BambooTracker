@@ -33,7 +33,11 @@
 #include <QApplication>
 #include <QFontMetrics>
 #include <QPainter>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QPointF>
+#else
 #include <QPoint>
+#endif
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include "gui/event_guard.hpp"
@@ -406,7 +410,7 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 					painter.fillRect(w, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
 					QString times = (loops_[j].times == 1) ? "" : QString::number(loops_[j].times);
 					painter.drawText(QRectF(w + 2, loopY_, colWidth - 2, fontHeight_),
-									 Qt::AlignLeft + Qt::AlignVCenter, tr("Loop %1").arg(times));
+									 Qt::AlignLeft | Qt::AlignVCenter, tr("Loop %1").arg(times));
 				}
 				if (loops_[j].end == i) {
 					painter.fillRect(w + colWidth - 2, loopY_, 2,
@@ -1091,7 +1095,11 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 	int oldCol = hovCol_;
 	int oldRow = hovRow_;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	QPointF pos = event->position();
+#else
 	QPoint pos = event->pos();
+#endif
 
 	// Detect column
 	if (pos.x() < labWidth_) {

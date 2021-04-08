@@ -37,6 +37,9 @@
 #include <QMenu>
 #include <QAction>
 #include <QPoint>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QPointF>
+#endif
 #include <QString>
 #include <QIcon>
 #include "playback.hpp"
@@ -93,7 +96,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  repaintingCnt_(0),
 	  playingRow_(-1),
 	  insSc1_(Qt::Key_Insert, this, nullptr, nullptr, Qt::WidgetShortcut),
-	  insSc2_(Qt::ALT + Qt::Key_B, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  insSc2_(Qt::ALT | Qt::Key_B, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  menuSc_(Qt::Key_Menu, this, nullptr, nullptr, Qt::WidgetShortcut)
 {
 	setAttribute(Qt::WA_Hover);
@@ -105,7 +108,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	headerFont_.setPointSize(10);
 	rowFont_ = QFont("Monospace", 10);
 	rowFont_.setStyleHint(QFont::TypeWriter);
-	rowFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
+	rowFont_.setStyleStrategy(QFont::PreferMatch);
 
 	updateSizes();
 
@@ -1107,8 +1110,8 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::DuplicateOrder)));
 	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ClonePatterns)));
 	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::CloneOrder)));
-	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+	copy->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
+	paste->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_V));
 
 	bool notCurHov = (pos.row < 0 || pos.trackVisIdx < 0);
 	if (notCurHov) {
@@ -1511,22 +1514,27 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 			setSelectedRectangle(mousePressPos_, hovPos_);
 		}
 
-		if (event->x() < rowNumWidth_ && leftTrackVisIdx_ > 0) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		QPointF pos = event->position();
+#else
+		QPoint pos = event->pos();
+#endif
+		if (pos.x() < rowNumWidth_ && leftTrackVisIdx_ > 0) {
 			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(-1);
 			else
 				moveViewToRight(-1);
 		}
-		else if (event->x() > geometry().width() - rowNumWidth_ && hovPos_.trackVisIdx != -1) {
+		else if (pos.x() > geometry().width() - rowNumWidth_ && hovPos_.trackVisIdx != -1) {
 			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(1);
 			else
 				moveViewToRight(1);
 		}
-		if (event->pos().y() < headerHeight_ + rowFontHeight_) {
+		if (pos.y() < headerHeight_ + rowFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 		}
-		else if (event->pos().y() > geometry().height() - rowFontHeight_) {
+		else if (pos.y() > geometry().height() - rowFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(1);
 		}
 	}
@@ -1584,7 +1592,11 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 
 bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	QPointF pos = event->position();
+#else
 	QPoint pos = event->pos();
+#endif
 
 	OrderPosition oldPos = hovPos_;
 

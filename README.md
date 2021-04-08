@@ -14,8 +14,11 @@
   </a>
   <br />
   (Build tests)<br />
-  <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+%287+and+up%29%22">
-    <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/Windows%20(7%20and%20up)?logo=windows&logoColor=white" alt="BambooTracker Build-Test Status on Windows" />
+  <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+7+and+up+%2832-bit%2C+Qt5%29%22">
+    <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/Windows%207%20and%20up%20(32-bit,%20Qt5)?logo=windows-xp&logoColor=white" alt="BambooTracker Build-Test Status on Windows (Qt5)" />
+  </a>
+  <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+10+%2864-bit%2C+Qt6%29%22">
+    <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/Windows%2010%20(64-bit,%20Qt6)?logo=windows&logoColor=white" alt="BambooTracker Build-Test Status on Windows (Qt6)" />
   </a>
   <a href="https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3AmacOS">
     <img src="https://img.shields.io/github/workflow/status/rerrahkr/BambooTracker/macOS?logo=apple&logoColor=white" alt="BambooTracker Build-Test Status on macOS" />
@@ -146,8 +149,8 @@ See [FILEIO.md](./FILEIO.md).
 ### Dependencies
 To build BambooTracker, you'll need the following dependencies across all platforms:
 
-- Qt5
-- Qt5 Tools (qmake, lrelease, ...)
+- Qt (5.5 or higher)
+- Qt Tools (qmake, lrelease, ...)
 - A Qt-supported C++ compiler (GCC, Clang, MSVC, ...)
 - make
 
@@ -162,11 +165,11 @@ How to acquire these and further required / optional dependencies are specific t
     Untested but might work.
   - MSVC  
     Either bundled with [Visual Studio](https://visualstudio.microsoft.com) or standalone (check "Build Tools for Visual Studio 2019" download).
-- [Qt5](https://www.qt.io/download-qt-installer)  
+- [Qt](https://www.qt.io/download-qt-installer)
   Older Qt versions (e.g. for an XP builds) may require you to checkout & compile Qt yourself, official prebuilt versions were removed by Qt.
 
 #### macOS
-For simplicity, these instructions assume the use of [Homebrew](https://brew.sh/).
+For simplicity, these instructions assume the use of [Homebrew](https://brew.sh/) & Qt5.
 
 - C++ compiler: Xcode Command Line Tools  
   The challenge of acquiring these is left to the reader.  
@@ -324,7 +327,7 @@ make install
 ```
 
 #### Windows
-Enter a shell with Qt5 + your compiler set up before starting the above steps. (Qt5 installer adds scripts you can use for this)
+Enter a shell with Qt + your compiler set up before starting the above steps. (Qt installer adds scripts you can use for this)
 
 - If you're using MinGW, use `mingw32-make` / `mingw64-make` instead of `make`.
 - If you're using MSVC, **TODO**.
