@@ -613,7 +613,12 @@ void ADPCMSampleEditor::on_action_Import_triggered()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Import sample"),
-												(dir.isEmpty() ? "./" : dir), tr("WAV signed 16-bit PCM (*.wav)"));
+												(dir.isEmpty() ? "./" : dir),
+												tr("WAV signed 16-bit PCM (*.wav)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) return;
 
 	importSampleFrom(file);

@@ -665,7 +665,11 @@ void ConfigurationDialog::on_colorLoadPushButton_clicked()
 {
 	QString file = QFileDialog::getOpenFileName(this, tr("Open color scheme"),
 												QApplication::applicationDirPath() + "/skins",
-												tr("ini file (*.ini)"));
+												tr("ini file (*.ini)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) return;
 
 	ColorPalette palette;
@@ -681,7 +685,11 @@ void ConfigurationDialog::on_colorSavePushButton_clicked()
 {
 	QString file = QFileDialog::getSaveFileName(this, tr("Save color scheme"),
 												QApplication::applicationDirPath() + "/skins",
-												tr("ini file (*.ini)"));
+												tr("ini file (*.ini)"), nullptr
+#if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
+												, QFileDialog::DontUseNativeDialog
+#endif
+												);
 	if (file.isNull()) return;
 	if (!file.endsWith(".ini")) file += ".ini";	// For linux
 
