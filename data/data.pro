@@ -1,5 +1,7 @@
 TEMPLATE = aux
 
+include("../qmake/variables.pri")
+
 # Common path variables
 
 win32|install_flat {

@@ -4,7 +4,7 @@ system_rtmidi {
   message("Vendored RtMidi disabled.")
 }
 else {
-  include("../common/library.pri")
+  include("../../qmake/library.pri")
 
   CONFIG(debug, debug|release):TARGET = rtmidid
   else:CONFIG(release, debug|release):TARGET = rtmidi
