@@ -96,16 +96,19 @@ void VgmLogger::recordRegisterChange(uint32_t offset, uint8_t value)
 			(ssg != io::Export_InternalSsg) ? 0xa0
 											: (fm == io::Export_YM2608) ? 0x56
 																		: (fm == io::Export_YM2203) ? 0x55
-																									: 0x00;
+																									: (fm == io::Export_YM2610B) ? 0x58
+																																 : 0x00;
 	const uint8_t cmdFmPortA =
 			(fm == io::Export_YM2608) ? 0x56
 									  : (fm == io::Export_YM2612) ? 0x52
 																  : (fm == io::Export_YM2203) ? 0x55
-																							  : 0x00;
+																							  : (fm == io::Export_YM2610B) ? 0x58
+																														   : 0x00;
 	const uint8_t cmdFmPortB =
 			(fm == io::Export_YM2608) ? 0x57
 									  : (fm == io::Export_YM2612) ? 0x53
-																  : 0x00;
+																  : (fm == io::Export_YM2610B) ? 0x59
+																							   : 0x00;
 
 	if (cmdSsg && offset < 0x10) {
 		buf_.push_back(cmdSsg);

@@ -215,6 +215,8 @@ int VgmExportSettingsDialog::getExportTarget() const
 		target |= io::Export_YM2612;
 	else if (ui->ym2203RadioButton->isChecked())
 		target |= io::Export_YM2203;
+	else if (ui->ym2610bRadioButton->isChecked())
+		target |= io::Export_YM2610B;
 
 	if (ui->ay8910PsgRadioButton->isChecked())
 		target |= io::Export_AY8910Psg;
@@ -244,7 +246,7 @@ void VgmExportSettingsDialog::updateSupportInformation()
 		break;
 	}
 
-	bool haveSsg = fm == io::Export_YM2608 || fm == io::Export_YM2203 || ssg != io::Export_InternalSsg;
+	bool haveSsg = fm == io::Export_YM2608 || fm == io::Export_YM2203 || fm == io::Export_YM2610B || ssg != io::Export_InternalSsg;
 	bool haveRhythm = fm == io::Export_YM2608;
 	bool haveAdpcm = fm == io::Export_YM2608;
 
