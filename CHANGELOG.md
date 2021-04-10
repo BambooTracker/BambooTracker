@@ -1,8 +1,13 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
+
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
+- [#348] - Update RtAudio & RtMidi library (thanks [@OPNA2608])
+- [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
@@ -10,6 +15,8 @@
 - [#339] - Fix the order of loading FM operators in .vgi and .tfi (thanks [@OPNA2608])
 - [#340] - Fix ADPCM note off when the instrument release is not set (thanks [@Zexxerd])
 - [#341] - Fix undo behaviour of instrument replacement (thanks [@Mugenri])
+- [#353] - Fix definition of qmake variables ([#352]; thanks [@OPNA2608])
+- [#344] - Fix document (thanks [@freq-mod])
 
 [@Mugenri]: https://github.com/Mugenri
 
@@ -20,6 +27,14 @@
 [#340]: https://github.com/rerrahkr/BambooTracker/issues/340
 [#341]: https://github.com/rerrahkr/BambooTracker/issues/341
 [#333]: https://github.com/rerrahkr/BambooTracker/issues/333
+[#344]: https://github.com/rerrahkr/BambooTracker/pull/344
+[#332]: https://github.com/rerrahkr/BambooTracker/pull/332
+[#298]: https://github.com/rerrahkr/BambooTracker/issues/298
+[#348]: https://github.com/rerrahkr/BambooTracker/pull/348
+[#342]: https://github.com/rerrahkr/BambooTracker/pull/342
+[#338]: https://github.com/rerrahkr/BambooTracker/issues/338
+[#353]: https://github.com/rerrahkr/BambooTracker/pull/353
+[#352]: https://github.com/rerrahkr/BambooTracker/issues/352
 
 ## v0.4.6 (2021-02-11)
 ### Added
