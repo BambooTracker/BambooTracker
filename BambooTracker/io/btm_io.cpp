@@ -1210,11 +1210,12 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				csr += 2;
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
-					csr += 6;	// Skip subdata
+					csr += 2;
 					if (l == 0)
 						instManLocked->setEnvelopeADPCMSequenceData(idx, 0, data);
 					else
 						instManLocked->addEnvelopeADPCMSequenceData(idx, data);
+					if (version < Version::toBCD(1, 6, 0)) csr += 4;
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1762,11 +1763,11 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 				ctr.appendUint8(0x03);
 				auto instKit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
 				std::vector<int> keys = instKit->getAssignedKeys();
-				ctr.appendUint8(keys.size());
+				ctr.appendUint8(static_cast<uint8_t>(keys.size()));
 				for (const int& key : keys) {
 					ctr.appendUint8(static_cast<uint8_t>(key));
 					ctr.appendUint8(static_cast<uint8_t>(instKit->getSampleNumber(key)));
-					ctr.appendInt8(instKit->getPitch(key));
+					ctr.appendInt8(static_cast<int8_t>(instKit->getPitch(key)));
 				}
 				break;
 			}
@@ -2258,7 +2259,6 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& unit : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(unit.data));
-				ctr.appendInt32(0);	// Dummy set　for past format
 			}
 			auto loops = instManLocked->getEnvelopeADPCMLoopRoot(idx).getAllLoops();
 			ctr.appendUint16(static_cast<uint16_t>(loops.size()));

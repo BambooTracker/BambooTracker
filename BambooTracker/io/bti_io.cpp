@@ -1495,11 +1495,12 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					csr += 2;
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
-						csr += 6;	// Skip subdata
+						csr += 2;
 						if (l == 0)
 							instManLocked->setEnvelopeADPCMSequenceData(idx, 0, data);
 						else
 							instManLocked->addEnvelopeADPCMSequenceData(idx, data);
+						if (fileVersion < Version::toBCD(1, 5, 0)) csr += 4;
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1815,7 +1816,7 @@ void BtiIO::save(BinaryContainer& ctr,
 			ctr.appendUint8(0x03);
 			auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
 			std::vector<int> keys = kit->getAssignedKeys();
-			ctr.appendUint8(keys.size());
+			ctr.appendUint8(static_cast<uint8_t>(keys.size()));
 			int sampCnt = 0;
 			std::unordered_map<int, int> sampMap;
 			for (const int& key : keys) {
@@ -1823,7 +1824,7 @@ void BtiIO::save(BinaryContainer& ctr,
 				int samp = kit->getSampleNumber(key);
 				if (!sampMap.count(samp)) sampMap[samp] = sampCnt++;
 				ctr.appendUint8(static_cast<uint8_t>(sampMap[samp]));
-				ctr.appendInt8(kit->getPitch(key));
+				ctr.appendInt8(static_cast<int8_t>(kit->getPitch(key)));
 			}
 			break;
 		}
@@ -2271,7 +2272,6 @@ void BtiIO::save(BinaryContainer& ctr,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& unit : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(unit.data));
-				ctr.appendInt32(0);	// Dummy set　for past format
 			}
 			auto loops = instManLocked->getEnvelopeADPCMLoopRoot(envNum).getAllLoops();
 			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
