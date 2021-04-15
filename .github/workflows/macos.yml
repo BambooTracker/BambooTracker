@@ -74,13 +74,14 @@ jobs:
 
       - name: Installing dependencies.
         run: |
+          export HOMEBREW_NO_INSTALL_CLEANUP=1
           brew update
           # JACK implies brew link python-3.9, fails due to shipped python binaries
           brew unlink python@3.9
           brew link --overwrite python@3.9
           brew upgrade --force python@3.9
-          brew install qt5 pkg-config jack
-          brew link --force qt5
+          brew install qt@5 pkg-config jack
+          brew link --force qt@5
 
       ## End macOS-specific steps
 
