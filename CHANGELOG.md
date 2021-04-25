@@ -16,6 +16,7 @@
 - [#340] - Fix ADPCM note off when the instrument release is not set (thanks [@Zexxerd])
 - [#341] - Fix undo behaviour of instrument replacement (thanks [@Mugenri])
 - [#353] - Fix definition of qmake variables ([#352]; thanks [@OPNA2608])
+- [#358] - Fix AR3 parsing from text (thanks [@freq-mod])
 - [#344] - Fix document (thanks [@freq-mod])
 
 [@Mugenri]: https://github.com/Mugenri
@@ -35,6 +36,7 @@
 [#338]: https://github.com/rerrahkr/BambooTracker/issues/338
 [#353]: https://github.com/rerrahkr/BambooTracker/pull/353
 [#352]: https://github.com/rerrahkr/BambooTracker/issues/352
+[#358]: https://github.com/rerrahkr/BambooTracker/issues/358
 
 ## v0.4.6 (2021-02-11)
 ### Added

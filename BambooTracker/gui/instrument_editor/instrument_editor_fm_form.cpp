@@ -958,7 +958,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 			case FMEnvelopeTextType::KS2:	ui->op2Table->setValue(Ui::FMOperatorParameter::KS, rangeCheck(d, 0, 3));	break;
 			case FMEnvelopeTextType::ML2:	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, rangeCheck(d, 0, 15));	break;
 			case FMEnvelopeTextType::DT2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, rangeCheckDT(d));	break;
-			case FMEnvelopeTextType::AR3:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::AR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::AR, rangeCheck(d, 0, 31));	break;
 			case FMEnvelopeTextType::DR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, rangeCheck(d, 0, 31));	break;
 			case FMEnvelopeTextType::SR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, rangeCheck(d, 0, 31));	break;
 			case FMEnvelopeTextType::RR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::RR, rangeCheck(d, 0, 15));	break;
