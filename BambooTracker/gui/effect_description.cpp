@@ -59,6 +59,7 @@ const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDesc
 	{ EffectType::ARControl, { "Axyy", QT_TR_NOOP("AR control, x: operator (1-4), yy: attack rate (00-1F)") } },
 	{ EffectType::Brightness, { "B0xx", QT_TR_NOOP("Brightness, xx: relative value (01-FF)") } },
 	{ EffectType::DRControl, { "Dxyy", QT_TR_NOOP("DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
+	{ EffectType::EnvelopeReset, { "ESxx", QT_TR_NOOP("Envelope reset, xx: count (00-FF)") } },
 	{ EffectType::FBControl, { "FBxx", QT_TR_NOOP("FB control, xx: feedback value (00-07)") } },
 	{ EffectType::FineDetune, { "FPxx", QT_TR_NOOP("Fine detune, xx: pitch (00-FF)") } },
 	{ EffectType::MLControl, { "MLxy", QT_TR_NOOP("ML control, x: operator (1-4), y: multiple (0-F)") } },

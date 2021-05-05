@@ -178,7 +178,7 @@ private:
 	void checkRhythmDelayEventsInTick(const Step& step, int ch);
 	void checkADPCMDelayEventsInTick(const Step& step);
 
-	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
+	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_, envRstDlyCntFM_;
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
 	std::vector<int> ntDlyCntRhythm_, ntCutDlyCntRhythm_, volDlyCntRhythm_;
 	int ntDlyCntADPCM_, ntCutDlyCntADPCM_, volDlyCntADPCM_;

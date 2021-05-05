@@ -2,6 +2,8 @@
 
 ## Unreleased
 ### Added
+- 1 new pattern effect
+  - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed
@@ -37,6 +39,7 @@
 [#353]: https://github.com/rerrahkr/BambooTracker/pull/353
 [#352]: https://github.com/rerrahkr/BambooTracker/issues/352
 [#358]: https://github.com/rerrahkr/BambooTracker/issues/358
+[#301]: https://github.com/rerrahkr/BambooTracker/issues/301
 
 ## v0.4.6 (2021-02-11)
 ### Added

@@ -107,6 +107,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	volDlyValueFM_ = std::vector<int>(fmch, -1);
 	tposeDlyCntFM_ = std::vector<int>(fmch);
 	tposeDlyValueFM_ = std::vector<int>(fmch);
+	envRstDlyCntFM_ = std::vector<int>(fmch);
 
 	isNoteDelay_[SoundSource::SSG] = std::vector<bool>(3);
 	effOnKeyOnMem_[SoundSource::SSG] = std::vector<EffectMemory>(3);
@@ -706,6 +707,7 @@ bool PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
 	case EffectType::DRControl:
 	case EffectType::RRControl:
 	case EffectType::Brightness:
+	case EffectType::EnvelopeReset:
 		effOnKeyOnMem_[SoundSource::FM].at(static_cast<size_t>(ch)).enqueue(eff);
 		return false;
 	case EffectType::SpeedTempoChange:
@@ -853,6 +855,9 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 				if (0 < eff.value) opnaCtrl_->setBrightnessFM(ch, eff.value - 0x80);
 				break;
 			}
+			case EffectType::EnvelopeReset:
+				envRstDlyCntFM_.at(uch) = eff.value;
+				break;
 			default:
 				break;
 			}
@@ -1336,7 +1341,7 @@ void PlaybackManager::tickProcess(int rest)
 					return;
 				}
 			}
-			envelopeResetEffectFM(step, ch);
+			if (envRstDlyCntFM_.at(static_cast<size_t>(ch))) envelopeResetEffectFM(step, ch);
 		}
 		else {
 			opnaCtrl_->tickEvent(attrib.source, ch);
@@ -1357,6 +1362,9 @@ void PlaybackManager::checkFMDelayEventsInTick(const Step& step, int ch)
 	// Check transpose delay
 	if (!tposeDlyCntFM_.at(uch))
 		opnaCtrl_->setTransposeEffectFM(ch, tposeDlyValueFM_.at(uch));
+	// Check envelope reset delay
+	if (!envRstDlyCntFM_.at(uch))
+		opnaCtrl_->resetFMChannelEnvelope(ch);
 	// Check note delay and envelope reset
 	checkFMNoteDelayAndEnvelopeReset(step, ch);
 }
@@ -1367,7 +1375,7 @@ void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch)
 	if (!cnt) {
 		executeFMStepEvents(step, ch, true);
 	}
-	else if (cnt == 1) {
+	else if (cnt == 1 && envRstDlyCntFM_.at(static_cast<size_t>(ch))) {
 		// Channel envelope reset before next key on
 		envelopeResetEffectFM(step, ch);
 	}
@@ -1467,6 +1475,7 @@ void PlaybackManager::clearNoteDelayCounts()
 void PlaybackManager::clearDelayBeyondStepCounts()
 {
 	std::fill(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), -1);
+	std::fill(envRstDlyCntFM_.begin(), envRstDlyCntFM_.end(), -1);
 	std::fill(volDlyCntFM_.begin(), volDlyCntFM_.end(), -1);
 	std::fill(volDlyValueFM_.begin(), volDlyValueFM_.end(), -1);
 	std::fill(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), -1);
@@ -1493,6 +1502,7 @@ void PlaybackManager::clearFMDelayBeyondStepCounts(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	ntCutDlyCntFM_.at(uch) = -1;
+	envRstDlyCntFM_.at(uch) = -1;
 	volDlyCntFM_.at(uch) = -1;
 	volDlyValueFM_.at(uch) = -1;
 	tposeDlyCntFM_.at(uch) = -1;
@@ -1544,6 +1554,7 @@ void PlaybackManager::updateDelayEventCounts()
 	std::transform(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), tposeDlyCntFM_.begin(), f);
 	std::transform(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), tposeDlyCntSSG_.begin(), f);
 	--tposeDlyCntADPCM_;
+	std::transform(envRstDlyCntFM_.begin(), envRstDlyCntFM_.end(), envRstDlyCntFM_.begin(), f);
 }
 
 void PlaybackManager::checkPlayPosition(int maxStepSize)
