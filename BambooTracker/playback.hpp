@@ -178,19 +178,23 @@ private:
 	void checkRhythmDelayEventsInTick(const Step& step, int ch);
 	void checkADPCMDelayEventsInTick(const Step& step);
 
-	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_, envRstDlyCntFM_;
-	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
-	std::vector<int> ntDlyCntRhythm_, ntCutDlyCntRhythm_, volDlyCntRhythm_;
-	int ntDlyCntADPCM_, ntCutDlyCntADPCM_, volDlyCntADPCM_;
+	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_, envRstDlyCntFM_, rtrgCntFM_;
+	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_, rtrgCntSSG_;
+	std::vector<int> ntDlyCntRhythm_, ntCutDlyCntRhythm_, volDlyCntRhythm_, rtrgCntRhythm_;
+	int ntDlyCntADPCM_, ntCutDlyCntADPCM_, volDlyCntADPCM_, rtrgCntADPCM_;
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueRhythm_;
 	int volDlyValueADPCM_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	int tposeDlyCntADPCM_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
 	int tposeDlyValueADPCM_;
+	std::vector<int> rtrgCntValueFM_, rtrgCntValueSSG_, rtrgCntValueRhythm_;
+	int rtrgCntValueADPCM_;
+	std::vector<int> rtrgVolValueFM_, rtrgVolValueSSG_, rtrgVolValueRhythm_;
+	int rtrgVolValueADPCM_;
 
 	void clearEffectMaps();
-	void clearNoteDelayCounts();
+	void clearDelayWithinStepCounts();
 	void clearDelayBeyondStepCounts();
 	void clearFMDelayBeyondStepCounts(int ch);
 	void clearSSGDelayBeyondStepCounts(int ch);

@@ -610,6 +610,57 @@ void OPNAController::keyOffFM(int ch, bool isJam)
 	}
 }
 
+void OPNAController::retriggerKeyOnFM(int ch, int volDiff)
+{
+	auto& fm = fm_[ch];
+	if (!fm.isKeyOn || fm.isMute) return;
+
+	if (volDiff) {
+		setOneshotVolumeFM(ch, utils::clamp(((fm.oneshotVol == UNUSED_VALUE) ? fm.baseVol
+																			 : fm.oneshotVol) + volDiff, 0, 127));
+	}
+
+	setFrontFMSequences(fm);
+
+	uint8_t chdata = FM_KEYOFF_MASK[fm.inCh];
+	switch (mode_) {
+	case SongType::Standard:
+	{
+		if (fm.isKeyOn) opna_->setRegister(0x28, chdata);	// Key off
+		else fm.isKeyOn = true;
+		opna_->setRegister(0x28, static_cast<uint8_t>(fmOpEnables_[ch] << 4) | chdata);
+		break;
+	}
+	case SongType::FM3chExpanded:
+	{
+		uint8_t slot = 0;
+		switch (ch) {
+		case 2:
+		case 6:
+		case 7:
+		case 8:
+		{
+			bool prev = fm.isKeyOn;
+			fm.isKeyOn = true;
+			slot = getFM3SlotValidStatus();
+			if (prev) {	// Key off
+				uint8_t flags = static_cast<uint8_t>(((slot & FM3_KEY_OFF_MASK.at(ch)) << 4)) | chdata;
+				opna_->setRegister(0x28, flags);
+			}
+			break;
+		}
+		default:
+			slot = fmOpEnables_[ch];
+			if (fm.isKeyOn) opna_->setRegister(0x28, chdata);	// Key off
+			else fm.isKeyOn = true;
+			break;
+		}
+		opna_->setRegister(0x28, static_cast<uint8_t>(slot << 4) | chdata);
+		break;
+	}
+	}
+}
+
 // Change register only
 void OPNAController::resetFMChannelEnvelope(int ch)
 {	
@@ -1976,6 +2027,23 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 	ssg.isKeyOn = false;
 }
 
+void OPNAController::retriggerKeyOnSSG(int ch, int volDiff)
+{
+	auto& ssg = ssg_[ch];
+	if (!ssg.isKeyOn || ssg.isMute) return;
+
+	if (volDiff) {
+		ssg.oneshotVol = utils::clamp(((ssg.oneshotVol == UNUSED_VALUE) ? ssg.baseVol
+																		: ssg.oneshotVol) + volDiff, 0, 15);
+	}
+
+	{
+		ssg.isInKeyOnProcess_ = true;
+		setFrontSSGSequences(ssg);
+		ssg.isInKeyOnProcess_ = false;
+	}
+}
+
 /********** Set instrument **********/
 /// NOTE: inst != nullptr
 void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
@@ -3148,6 +3216,19 @@ void OPNAController::setKeyOffFlagRhythm(int ch)
 	keyOffRequestFlagsRhythm_ |= static_cast<uint8_t>(1 << ch);
 }
 
+void OPNAController::retriggerKeyOnFlagRhythm(int ch, int volDiff)
+{
+	auto& rhy = rhythm_[ch];
+	if (rhy.isMute) return;
+
+	if (volDiff) {
+		setOneshotVolumeRhythm(ch, utils::clamp(((rhy.oneshotVol == UNUSED_VALUE) ? rhy.baseVol
+																				  : rhy.oneshotVol) + volDiff, 0, 31));
+	}
+
+	keyOnRequestFlagsRhythm_ |= static_cast<uint8_t>(1 << ch);
+}
+
 /********** Set volume **********/
 void OPNAController::setVolumeRhythm(int ch, int volume)
 {
@@ -3297,6 +3378,34 @@ void OPNAController::keyOffADPCM(bool isJam)
 	releaseStartADPCMSequences();
 	shouldSkip1stTickExecADPCM_ = isJam;
 	isKeyOnADPCM_ = false;
+}
+
+void OPNAController::retriggerKeyOnADPCM(int volDiff)
+{
+	if (!isKeyOnADPCM_ || isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
+
+	if (volDiff) {
+		oneshotVolADPCM_ = utils::clamp(((oneshotVolADPCM_ == UNUSED_VALUE) ? baseVolADPCM_
+																			: oneshotVolADPCM_) + volDiff, 0, 255);
+	}
+
+	setFrontADPCMSequences();
+
+	opna_->setRegister(0x101, 0x02);
+	opna_->setRegister(0x100, 0xa1);
+
+	if (refInstADPCM_) {
+		triggerSamplePlayADPCM(refInstADPCM_->getSampleStartAddress(),
+							   refInstADPCM_->getSampleStopAddress(),
+							   refInstADPCM_->isSampleRepeatable());
+	}
+	else if (hasStartRequestedKit_) {	// valid key in refInstKit_
+		int key = baseNoteADPCM_.getNoteNumber();
+		triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
+							   refInstKit_->getSampleStopAddress(key),
+							   refInstKit_->isSampleRepeatable(key));
+		hasStartRequestedKit_ = false;
+	}
 }
 
 /********** Set instrument **********/

@@ -44,6 +44,7 @@ const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDesc
 	{ EffectType::AutoEnvelope, { "0Hxy", QT_TR_NOOP("Auto envelope, x: shift amount (0-F), y: shape (0-F)") } },
 	{ EffectType::HardEnvHighPeriod, { "0Ixx", QT_TR_NOOP("Hardware envelope period 1, xx: high byte (00-FF)") } },
 	{ EffectType::HardEnvLowPeriod, { "0Jxx", QT_TR_NOOP("Hardware envelope period 2, xx: low byte (00-FF)") } },
+	{ EffectType::Retrigger, { "0Kxy", QT_TR_NOOP("Retrigger, x: volume slide (0,8: no change 1-7: up, 9-F: down), y: tick (1-F)") } },
 	{ EffectType::Groove, { "0Oxx", QT_TR_NOOP("Set groove xx") } },
 	{ EffectType::Detune, { "0Pxx", QT_TR_NOOP("Detune, xx: pitch (00-FF)") } },
 	{ EffectType::NoteSlideUp, { "0Qxy", QT_TR_NOOP("Note slide up, x: count (0-F), y: seminote (0-F)") } },

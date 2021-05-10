@@ -2,7 +2,8 @@
 
 ## Unreleased
 ### Added
-- 1 new pattern effect
+- 2 new pattern effect
+  - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
 
@@ -22,6 +23,7 @@
 - [#344] - Fix document (thanks [@freq-mod])
 
 [@Mugenri]: https://github.com/Mugenri
+[@Speedvicio]: https://github.com/Speedvicio
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
@@ -40,6 +42,7 @@
 [#352]: https://github.com/rerrahkr/BambooTracker/issues/352
 [#358]: https://github.com/rerrahkr/BambooTracker/issues/358
 [#301]: https://github.com/rerrahkr/BambooTracker/issues/301
+[#249]: https://github.com/rerrahkr/BambooTracker/issues/249
 
 ## v0.4.6 (2021-02-11)
 ### Added

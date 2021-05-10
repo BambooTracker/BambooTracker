@@ -172,6 +172,9 @@ EffectType validateEffectId(SoundSource src, const std::string& id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "0K") {
+		return EffectType::Retrigger;
+	}
 	else if (id == "0O") {
 		return EffectType::Groove;
 	}

@@ -55,6 +55,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::AutoEnvelope, { SoundSource::SSG });
 	addRow(EffectType::HardEnvHighPeriod, { SoundSource::SSG });
 	addRow(EffectType::HardEnvLowPeriod, { SoundSource::SSG });
+	addRow(EffectType::Retrigger, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
 	addRow(EffectType::Groove, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
 	addRow(EffectType::Detune, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
 	addRow(EffectType::NoteSlideUp, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
