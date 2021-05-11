@@ -261,7 +261,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	octave_->setValue(bt_->getCurrentOctave());
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
+					 this, [&](int octave) {
+		bt_->setCurrentOctave(octave);
+		statusOctave_->setText(tr("Octave: %1").arg(octave));
+	});
 	ui->subToolBar->addWidget(octave_);
 	auto volLab = new QLabel(tr("Volume"));
 	volLab->setMargin(6);

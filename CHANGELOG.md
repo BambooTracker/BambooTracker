@@ -20,6 +20,7 @@
 - [#341] - Fix undo behaviour of instrument replacement (thanks [@Mugenri])
 - [#353] - Fix definition of qmake variables ([#352]; thanks [@OPNA2608])
 - [#358] - Fix AR3 parsing from text (thanks [@freq-mod])
+- Update octave status display when changing octave spinbox
 - [#344] - Fix document (thanks [@freq-mod])
 
 [@Mugenri]: https://github.com/Mugenri
