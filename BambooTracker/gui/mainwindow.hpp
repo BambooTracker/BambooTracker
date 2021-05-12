@@ -187,7 +187,7 @@ private:
 	QSpinBox *octave_, *highlight1_, *highlight2_, *volume_;
 
 	// Status bars
-	QLabel *statusDetail_, *statusStyle_, *statusInst_, *statusOctave_;
+	QLabel *statusStyle_, *statusInst_, *statusOctave_;
 	QLabel *statusIntr_, *statusMixer_, *statusBpm_, *statusPlayPos_;
 
 	// Shortcuts

@@ -11,6 +11,7 @@
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
 - [#348] - Update RtAudio & RtMidi library (thanks [@OPNA2608])
 - [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
+- Change item widths in the status bar
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])

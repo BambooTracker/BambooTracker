@@ -97,6 +97,8 @@ const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS
 	{ Configuration::ToolbarPosition::LeftPosition, Qt::LeftToolBarArea },
 	{ Configuration::ToolbarPosition::RightPosition, Qt::RightToolBarArea }
 };
+
+constexpr int STATUS_DISPLAY_TIMEOUT = 0;
 }
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -476,7 +478,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->patternEditor, &PatternEditor::volumeEntered,
 					 this, [&](int volume) { volume_->setValue(volume); });
 	QObject::connect(ui->patternEditor, &PatternEditor::effectEntered,
-					 this, [&](QString text) { statusDetail_->setText(text); });
+					 this, [&](QString text) { ui->statusBar->showMessage(text, STATUS_DISPLAY_TIMEOUT); });
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 this, &MainWindow::onCurrentTrackChanged);
 
@@ -503,32 +505,31 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		visualTimer_->start(static_cast<int>(std::round(1000. / config.lock()->getWaveViewFrameRate())));
 
 	/* Status bar */
-	statusDetail_ = new QLabel();
-	statusDetail_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 	statusStyle_ = new QLabel();
-	statusStyle_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusStyle_->setAlignment(Qt::AlignRight);
 	statusInst_ = new QLabel();
-	statusInst_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusInst_->setFixedWidth(110);
 	statusOctave_ = new QLabel();
-	statusOctave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusOctave_->setFixedWidth(90);
 	statusIntr_ = new QLabel();
-	statusIntr_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusIntr_->setFixedWidth(50);
 	statusMixer_ = new QLabel();
-	statusMixer_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusMixer_->setFixedWidth(200);
 	statusBpm_ = new QLabel();
-	statusBpm_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusBpm_->setFixedWidth(90);
 	statusPlayPos_ = new QLabel();
-	statusPlayPos_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-	ui->statusBar->addWidget(statusDetail_, 4);
-	ui->statusBar->addPermanentWidget(statusStyle_, 1);
-	ui->statusBar->addPermanentWidget(statusInst_, 1);
-	ui->statusBar->addPermanentWidget(statusOctave_, 1);
-	ui->statusBar->addPermanentWidget(statusIntr_, 1);
-	ui->statusBar->addPermanentWidget(statusMixer_, 1);
-	ui->statusBar->addPermanentWidget(statusBpm_, 1);
-	ui->statusBar->addPermanentWidget(statusPlayPos_, 1);
+	statusPlayPos_->setFixedWidth(40);
+	ui->statusBar->addPermanentWidget(statusStyle_);
+	ui->statusBar->addPermanentWidget(statusInst_);
+	ui->statusBar->addPermanentWidget(statusOctave_);
+	ui->statusBar->addPermanentWidget(statusIntr_);
+	ui->statusBar->addPermanentWidget(statusMixer_);
+	ui->statusBar->addPermanentWidget(statusBpm_);
+	ui->statusBar->addPermanentWidget(statusPlayPos_);
 	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
+	ui->statusBar->showMessage(tr("Welcome to BambooTracker v%1!").arg(QString::fromStdString(Version::ofApplicationInString())),
+							   STATUS_DISPLAY_TIMEOUT);
 
 	/* Bookmark */
 	bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
@@ -2942,7 +2943,7 @@ void MainWindow::on_actionEdit_Mode_triggered()
 	else if (isEditedPattern_) updateMenuByPattern();
 
 	bool editable = !bt_->isJamMode();
-	statusDetail_->setText(editable ? tr("Change to edit mode") : tr("Change to jam mode"));
+	ui->statusBar->showMessage(editable ? tr("Change to edit mode") : tr("Change to jam mode"), STATUS_DISPLAY_TIMEOUT);
 	ui->action_Toggle_Bookmark->setEnabled(editable);
 }
 
