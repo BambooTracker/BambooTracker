@@ -22,10 +22,13 @@
 - [#353] - Fix definition of qmake variables ([#352]; thanks [@OPNA2608])
 - [#358] - Fix AR3 parsing from text (thanks [@freq-mod])
 - Update octave status display when changing octave spinbox
+- [#360], [#361] - Cancel renaming an instrument before removing it (thanks [@OPNA2608], [@RaijinXBlade])
+- [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 
 [@Mugenri]: https://github.com/Mugenri
 [@Speedvicio]: https://github.com/Speedvicio
+[@RaijinXBlade]: https://github.com/RaijinXBlade
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
@@ -45,6 +48,9 @@
 [#358]: https://github.com/rerrahkr/BambooTracker/issues/358
 [#301]: https://github.com/rerrahkr/BambooTracker/issues/301
 [#249]: https://github.com/rerrahkr/BambooTracker/issues/249
+[#334]: https://github.com/rerrahkr/BambooTracker/pull/334
+[#360]: https://github.com/rerrahkr/BambooTracker/issues/360
+[#361]: https://github.com/rerrahkr/BambooTracker/issues/361
 
 ## v0.4.6 (2021-02-11)
 ### Added

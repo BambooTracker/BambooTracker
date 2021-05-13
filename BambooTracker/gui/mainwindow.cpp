@@ -1384,6 +1384,14 @@ void MainWindow::removeInstrument(int row)
 	}
 
 	bt_->removeInstrument(num);
+
+	// Cancel renaming instrument
+	if (list->item(row) == renamingInstItem_) {
+		list->removeItemWidget(renamingInstItem_);
+		renamingInstItem_ = nullptr;
+		renamingInstEdit_ = nullptr;
+	}
+
 	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, gui_utils::utf8ToQString(inst->getName()),
 												  inst->getType(), instForms_, this, updateRequest));
 }
