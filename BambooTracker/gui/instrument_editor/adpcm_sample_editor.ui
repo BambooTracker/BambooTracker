@@ -282,7 +282,7 @@
   </layout>
   <action name="action_Resize">
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/settings</normaloff>:/icon/settings</iconset>
    </property>
    <property name="text">
@@ -291,7 +291,7 @@
   </action>
   <action name="actionRe_verse">
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/reverse</normaloff>:/icon/reverse</iconset>
    </property>
    <property name="text">
@@ -300,7 +300,7 @@
   </action>
   <action name="actionZoom_In">
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/zoom_in</normaloff>:/icon/zoom_in</iconset>
    </property>
    <property name="text">
@@ -309,7 +309,7 @@
   </action>
   <action name="actionZoom_Out">
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/zoom_out</normaloff>:/icon/zoom_out</iconset>
    </property>
    <property name="text">
@@ -318,7 +318,7 @@
   </action>
   <action name="action_Import">
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/load_inst</normaloff>:/icon/load_inst</iconset>
    </property>
    <property name="text">
@@ -327,7 +327,7 @@
   </action>
   <action name="action_Clear">
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/duplicate_order</normaloff>:/icon/duplicate_order</iconset>
    </property>
    <property name="text">
@@ -339,7 +339,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/eye</normaloff>:/icon/eye</iconset>
    </property>
    <property name="text">
@@ -356,7 +356,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/edit_inst</normaloff>:/icon/edit_inst</iconset>
    </property>
    <property name="text">
@@ -368,7 +368,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../bamboo_tracker.qrc">
+    <iconset resource="../../resources/icon/icon.qrc">
      <normaloff>:/icon/chart_edit</normaloff>:/icon/chart_edit</iconset>
    </property>
    <property name="text">
@@ -385,7 +385,7 @@
   <tabstop>rootRateSpinBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../../bamboo_tracker.qrc"/>
+  <include location="../../resources/icon/icon.qrc"/>
  </resources>
  <connections/>
 </ui>

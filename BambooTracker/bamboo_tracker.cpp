@@ -2266,6 +2266,16 @@ size_t BambooTracker::getEffectDisplayWidth(int songNum, int trackNum) const
 	return mod_->getSong(songNum).getTrack(trackNum).getEffectDisplayWidth();
 }
 
+void BambooTracker::setTrackVisibility(int songNum, int trackNum, bool visible)
+{
+	mod_->getSong(songNum).getTrack(trackNum).setVisibility(visible);
+}
+
+bool BambooTracker::isVisibleTrack(int songNum, int trackNum)
+{
+	return mod_->getSong(songNum).getTrack(trackNum).isVisible();
+}
+
 /*----- Order -----*/
 std::vector<OrderInfo> BambooTracker::getOrderData(int songNum, int orderNum) const
 {

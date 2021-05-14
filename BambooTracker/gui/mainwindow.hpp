@@ -209,9 +209,6 @@ private:
 	std::atomic_bool bankJamMidiCtrl_;
 	std::unique_ptr<InstrumentSelectionDialog> importBankDiag_;
 
-	// Track visibility
-	void setTrackVisibility(const std::vector<int>& visTracks);
-
 	// Meta methods
 	int tickEventMethod_;
 	int midiKeyEventMethod_;

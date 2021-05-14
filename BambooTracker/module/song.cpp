@@ -126,19 +126,26 @@ void Song::changeType(SongType type)
 
 	switch (type_) {
 	case SongType::Standard:	// Previous type: FM3chExpanded
+	{
+		const bool vis3ch = tracks_[2].isVisible() || tracks_[3].isVisible()
+				|| tracks_[4].isVisible() || tracks_[5].isVisible();
 		// Remove FM3-OP2,3,4 (track 3,4,5)
 		tracks_.erase(tracks_.begin() + 3, tracks_.begin() + 6);
 		for (size_t i = 3; i < tracks_.size(); ++i) {
 			const auto attrib = tracks_[i].getAttribute();
 			tracks_[i].setAttribute(static_cast<int>(i), attrib.source, attrib.channelInSource);
 		}
+		tracks_[3].setVisibility(vis3ch);
 		break;
+	}
 	case SongType::FM3chExpanded:	// Previous type: Standard
+		const bool vis3ch = tracks_[2].isVisible();
 		// Expand FM3 track
 		for (int i = 3; i < 6; ++i) {
 			Track src = tracks_[2];
 			src.setAttribute(i, SoundSource::FM, i + 3);
 			tracks_.insert(tracks_.begin() + i, std::move(src));
+			tracks_[static_cast<size_t>(i)].setVisibility(vis3ch);
 		}
 		for (size_t i = 6; i < tracks_.size(); ++i) {
 			const auto attrib = tracks_[i].getAttribute();

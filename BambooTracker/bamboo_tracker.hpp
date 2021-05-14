@@ -427,6 +427,8 @@ public:
 	/*----- Track -----*/
 	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);
 	size_t getEffectDisplayWidth(int songNum, int trackNum) const;
+	void setTrackVisibility(int songNum, int trackNum, bool visible);
+	bool isVisibleTrack(int songNum, int trackNum);
 	/*----- Order -----*/
 	std::vector<OrderInfo> getOrderData(int songNum, int orderNum) const;
 	void setOrderPatternDigit(int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry);

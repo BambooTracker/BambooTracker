@@ -1467,6 +1467,13 @@ size_t loadSongSection(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
 						   static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
 		auto& song = modLocked->getSong(idx);
 
+		if (version >= Version::toBCD(1, 6, 0)) {
+			const uint8_t invisCnt = ctr.readUint8(scsr++);
+			for (uint8_t invis = 0; invis < invisCnt; ++invis) {
+				song.getTrack(ctr.readUint8(scsr++)).setVisibility(false);
+			}
+		}
+
 		// Bookmark
 		if (Version::toBCD(1, 4, 1) <= version) {
 			int bmSize = ctr.readUint8(scsr++);
@@ -2438,6 +2445,12 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 		case SongType::FM3chExpanded:	ctr.appendUint8(0x01);	break;
 		default:	throw std::out_of_range("");
 		}
+		std::vector<int> inviss;
+		for (const auto& attrib : style.trackAttribs) {
+			if (!sng.getTrack(attrib.number).isVisible()) inviss.push_back(attrib.number);
+		}
+		ctr.appendUint8(static_cast<uint8_t>(inviss.size()));
+		if (!inviss.empty()) for (int n : inviss) ctr.appendUint8(static_cast<uint8_t>(n));
 
 		// Bookmark
 		size_t bmSize = sng.getBookmarkSize();

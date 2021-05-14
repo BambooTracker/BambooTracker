@@ -228,9 +228,9 @@ Sequence-type data block (e.g. FM arpeggio, SSG envelope) is defined as:
 
 And repeat sequence data units.
 
-| Type   | Field        | Description                                                                                                                                                                                   |
-| ------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor. For details, see the subsection *Sequence Unit*.                                                                            |
+| Type   | Field        | Description                                                                                                                            |
+| ------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor. For details, see the subsection *Sequence Unit*.                     |
 | int32  | Unit subdata | Unit subdata. Only used by SSG waveform and envelope, and omitted in other sequences. For details, see the subsection *Sequence Unit*. |
 
 After sequences, loops are stored.
@@ -357,13 +357,33 @@ Each song block is defined as:
 | uint32           | Speed                           | Speed.                                                                                                       |
 | uint8            | Pattern size                    | Stored default pattern size - 1.                                                                             |
 | uint8            | Song type                       | Type of tracks. See table below for details.                                                                 |
+| uint8            | Invisible track count           | Number of tracks to hide from the display. When this is set to 0, all tracks will be displayed.              |
+| uint8 x N        | Invisible track number          | List of track numbers to hide from the display. When Invisible track count is 0, this field is omitted.      |
 
-Song type defined number and order of tracks.
+Song type defines number and order of tracks.
+This can take one of 2 values:
 
-| Type                    | Track0 | Track1 | Track2    | Track3    | Track4    | Track5    | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 | Track15 | Track16 | Track17 | Track18 |
-| ----------------------- | ------ | ------ | --------- | --------- | --------- | --------- | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
-| `0x00` (Standard)       | FM1ch  | FM2ch  | FM3ch     | FM4ch     | FM5ch     | FM6ch     | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     | ADPCM   | -       | -       | -       |
-| `0x01` (FM3ch expanded) | FM1ch  | FM2ch  | FM3ch-op1 | FM3ch-op2 | FM3ch-op3 | FM3ch-op4 | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch  | SSG3ch  | BD      | SD      | TOP     | HH      | TOM     | RIM     | ADPCM   |
+| Track number | Song type `0x00` (Standard) | Song type `0x01` (FM3ch expanded) |
+| ------------ | --------------------------- | --------------------------------- |
+| 0            | FM 1ch                      | FM 1ch                            |
+| 1            | FM 2ch                      | FM 2ch                            |
+| 3            | FM 3ch                      | FM 3ch op1                        |
+| 4            | FM 4ch                      | FM 3ch op2                        |
+| 5            | FM 5ch                      | FM 3ch op3                        |
+| 6            | FM 6ch                      | FM 3ch op4                        |
+| 7            | SSG 1ch                     | FM 4ch                            |
+| 8            | SSG 2ch                     | FM 5ch                            |
+| 9            | SSG 3ch                     | FM 6ch                            |
+| 10           | Bass drum                   | SSG 1ch                           |
+| 11           | Snare drum                  | SSG 2ch                           |
+| 12           | Top cymbal                  | SSG 3ch                           |
+| 13           | Hi-hat                      | Bass drum                         |
+| 14           | Tom                         | Snare drum                        |
+| 15           | Rim shot                    | Top cymbal                        |
+| 16           | ADPCM                       | Hi-hat                            |
+| 17           | -                           | Tom                               |
+| 18           | -                           | Rim shot                          |
+| 19           | -                           | ADPCM                             |
 
 Song block has bookmark subsection.
 
@@ -384,13 +404,13 @@ After bookmarks, song block includes some track subblock.
 
 | Type      | Field               | Description                                                                               |
 | --------- | ------------------- | ----------------------------------------------------------------------------------------- |
-| uint8     | Track number        | Number of tracks.                                                                         |
+| uint8     | Track number        | Number of track.                                                                          |
 | uint32    | Track offset        | Relative offset to end of track subblock.                                                 |
 | uint8     | Order length        | Set Length of order - 1.                                                                  |
 | uint8 x N | Order data          | Stored order data list.                                                                   |
 | uint8     | Effect column width | Set display width of pattern effect columns (number of pairs of effect ID and value - 1). |
 
-After order data, repeat pattern subblocks.
+After Effect column width, repeat pattern subblocks.
 
 | Type   | Field          | Description                                 |
 | ------ | -------------- | ------------------------------------------- |
@@ -446,7 +466,7 @@ Key event details:
 ## History
 | Version | Date       | Detail                                                             |
 | ------- | ---------- | ------------------------------------------------------------------ |
-| 1.6.0   | 2021-xx-xx | xxxxx                                                              |
+| 1.6.0   | 2021-xx-xx | Added track visibility and removed unused subdata of ADPCM envelope                                            |
 | 1.5.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                    |
 | 1.4.1   | 2020-03-01 | Added bookmark section.                                            |
 | 1.4.0   | 2020-02-25 | Added ADPCM instrument.                                            |

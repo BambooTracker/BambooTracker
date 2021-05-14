@@ -76,7 +76,6 @@ SOURCES += \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     gui/swap_tracks_dialog.cpp \
-    gui/track_visibility_memory_handler.cpp \
     gui/transpose_song_dialog.cpp \
     instrument/sample_adpcm.cpp \
     instrument/sequence_property.cpp \
@@ -267,7 +266,6 @@ HEADERS += \
     chip/resampler.hpp \
     bamboo_tracker.hpp \
     gui/swap_tracks_dialog.hpp \
-    gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
     instrument/instrument_property_defs.hpp \
     instrument/sample_adpcm.hpp \

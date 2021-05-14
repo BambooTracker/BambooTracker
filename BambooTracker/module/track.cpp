@@ -35,7 +35,7 @@ constexpr int MAX_ORDER_SIZE = 256;
 }
 
 Track::Track(int number, SoundSource source, int channelInSource, int defPattenSize)
-	: effetDisplayWidth_(0)
+	: effetDisplayWidth_(0), visibility_(true)
 
 {	
 	setAttribute(number, source, channelInSource);
