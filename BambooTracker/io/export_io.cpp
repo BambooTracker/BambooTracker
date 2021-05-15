@@ -50,40 +50,44 @@ void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>
 	uint8_t header[0x100] = {'V', 'g', 'm', ' '};
 	// 0x04: EOF offset
 	uint32_t offset = 0x100 + samples.size() + 1 + tagLen - 4;
-	*reinterpret_cast<uint32_t *>(header + 0x04) = offset;
+	*reinterpret_cast<uint32_t*>(header + 0x04) = offset;
 	// 0x08: Version [v1.71]
 	uint32_t version = 0x171;
-	*reinterpret_cast<uint32_t *>(header + 0x08) = version;
+	*reinterpret_cast<uint32_t*>(header + 0x08) = version;
 	// 0x14: GD3 offset
 	uint32_t gd3Offset = gd3TagEnabled ? (0x100 + samples.size() + 1 - 0x14) : 0;
-	*reinterpret_cast<uint32_t *>(header + 0x14) = gd3Offset;
+	*reinterpret_cast<uint32_t*>(header + 0x14) = gd3Offset;
 	// 0x18: Total # samples
-	*reinterpret_cast<uint32_t *>(header + 0x18) = totalSamples;
+	*reinterpret_cast<uint32_t*>(header + 0x18) = totalSamples;
 	// 0x1c: Loop offset
 	uint32_t loopOffset = loopFlag ? (loopPoint + 0x100 - 0x1c) : 0;
-	*reinterpret_cast<uint32_t *>(header + 0x1c) = loopOffset;
+	*reinterpret_cast<uint32_t*>(header + 0x1c) = loopOffset;
 	// 0x20: Loop # samples
 	uint32_t loopSamps = loopFlag ? loopSamples : 0;
-	*reinterpret_cast<uint32_t *>(header + 0x20) = loopSamps;
+	*reinterpret_cast<uint32_t*>(header + 0x20) = loopSamps;
 	// 0x24: Rate
-	*reinterpret_cast<uint32_t *>(header + 0x24) = rate;
+	*reinterpret_cast<uint32_t*>(header + 0x24) = rate;
 	// 0x34: VGM data offset
 	uint32_t dataOffset = 0xcc;
-	*reinterpret_cast<uint32_t *>(header + 0x34) = dataOffset;
+	*reinterpret_cast<uint32_t*>(header + 0x34) = dataOffset;
 
 	switch (target & Export_FmMask) {
 	default:
 	case Export_YM2608:
 		// 0x48: YM2608 clock
-		*reinterpret_cast<uint32_t *>(header + 0x48) = clock;
+		*reinterpret_cast<uint32_t*>(header + 0x48) = clock;
 		break;
 	case Export_YM2612:
 		// 0x2c: YM2612 clock
-		*reinterpret_cast<uint32_t *>(header + 0x2c) = clock;
+		*reinterpret_cast<uint32_t*>(header + 0x2c) = clock;
 		break;
 	case Export_YM2203:
 		// 0x44: YM2203 clock
-		*reinterpret_cast<uint32_t *>(header + 0x44) = clock / 2;
+		*reinterpret_cast<uint32_t*>(header + 0x44) = clock / 2;
+		break;
+	case Export_YM2610B:
+		// 0x4c: YM2610/B clock
+		*reinterpret_cast<uint32_t*>(header + 0x4c) = clock;
 		break;
 	case Export_NoneFm:
 		break;
@@ -94,12 +98,12 @@ void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>
 		break;
 	default:
 		// 0x74: AY8910 clock
-		*reinterpret_cast<uint32_t *>(header + 0x74) = clock / 4;
+		*reinterpret_cast<uint32_t*>(header + 0x74) = clock / 4;
 		// 0x78: AY8910 chip type
 		if ((target & Export_SsgMask) == Export_YM2149Psg)
-			*reinterpret_cast<uint32_t *>(header + 0x78) = 0x10;
+			*reinterpret_cast<uint32_t*>(header + 0x78) = 0x10;
 		// 0x79: AY8910 flags
-		*reinterpret_cast<uint32_t *>(header + 0x79) = 0x01;
+		*reinterpret_cast<uint32_t*>(header + 0x79) = 0x01;
 		break;
 	}
 
