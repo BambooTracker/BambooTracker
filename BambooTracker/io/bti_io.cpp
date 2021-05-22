@@ -500,6 +500,13 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
+				case 0x2a:	// FM pan
+				{
+					nums.push_back(instManLocked->findFirstAssignablePanFM());
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
+					break;
+				}
 				case 0x30:	// SSG waveform
 				{
 					nums.push_back(instManLocked->findFirstAssignableWaveformSSG());
@@ -564,6 +571,13 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 				case 0x43:	// ADPCM pitch
 				{
 					nums.push_back(instManLocked->findFirstAssignablePitchADPCM());
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
+					break;
+				}
+				case 0x44:	// ADPCM pan
+				{
+					nums.push_back(instManLocked->findFirstAssignablePanADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
@@ -1070,6 +1084,58 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 								throw FileCorruptionError(FileType::Inst, csr);
 							}
 						}
+					}
+
+					instPropCsr += ofs;
+					break;
+				}
+				case 0x2a:	// FM pan
+				{
+					int idx = *numIt++;
+					auto fm = dynamic_cast<InstrumentFM*>(inst);
+					fm->setPanEnabled(true);
+					fm->setPanNumber(idx);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					size_t csr = instPropCsr + 2;
+
+					uint16_t seqLen = ctr.readUint16(csr);
+					csr += 2;
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = ctr.readUint16(csr);
+						csr += 2;
+						if (l == 0)
+							instManLocked->setPanFMSequenceData(idx, 0, data);
+						else
+							instManLocked->addPanFMSequenceData(idx, data);
+					}
+
+					uint16_t loopCnt = ctr.readUint16(csr);
+					csr += 2;
+					for (uint16_t l = 0; l < loopCnt; ++l) {
+						int begin = ctr.readUint16(csr);
+						csr += 2;
+						int end = ctr.readUint16(csr);
+						csr += 2;
+						int times = ctr.readUint8(csr++);
+						instManLocked->addPanFMLoop(idx, InstrumentSequenceLoop(begin, end, times));
+					}
+
+					switch (ctr.readUint8(csr++)) {
+					case 0x00:	// No release
+						instManLocked->setPanFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = ctr.readUint16(csr);
+						csr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setPanFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+						else instManLocked->setPanFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					instPropCsr += ofs;
@@ -1684,6 +1750,58 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					instPropCsr += ofs;
 					break;
 				}
+				case 0x44:	// ADPCM pan
+				{
+					int idx = *numIt++;
+					auto adpcm = dynamic_cast<InstrumentADPCM*>(inst);
+					adpcm->setPanEnabled(true);
+					adpcm->setPanNumber(idx);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					size_t csr = instPropCsr + 2;
+
+					uint16_t seqLen = ctr.readUint16(csr);
+					csr += 2;
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = ctr.readUint16(csr);
+						csr += 2;
+						if (l == 0)
+							instManLocked->setPanADPCMSequenceData(idx, 0, data);
+						else
+							instManLocked->addPanADPCMSequenceData(idx, data);
+					}
+
+					uint16_t loopCnt = ctr.readUint16(csr);
+					csr += 2;
+					for (uint16_t l = 0; l < loopCnt; ++l) {
+						int begin = ctr.readUint16(csr);
+						csr += 2;
+						int end = ctr.readUint16(csr);
+						csr += 2;
+						int times = ctr.readUint8(csr++);
+						instManLocked->addPanADPCMLoop(idx, InstrumentSequenceLoop(begin, end, times));
+					}
+
+					switch (ctr.readUint8(csr++)) {
+					case 0x00:	// No release
+						instManLocked->setPanADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = ctr.readUint16(csr);
+						csr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setPanADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+						else instManLocked->setPanADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileType::Inst, csr);
+					}
+
+					instPropCsr += ofs;
+					break;
+				}
 				default:
 					throw FileCorruptionError(FileType::Inst, instPropCsr);
 				}
@@ -2022,6 +2140,45 @@ void BtiIO::save(BinaryContainer& ctr,
 			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
+			}
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
+		}
+
+		// FM pan
+		if (instFM->getPanEnabled()) {
+			int panNum = instFM->getPanNumber();
+			ctr.appendUint8(0x2a);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instManLocked->getPanFMSequence(panNum);
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+			}
+			auto loops = instManLocked->getPanFMLoopRoot(panNum).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
+			}
+			auto release = instManLocked->getPanFMRelease(panNum);
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
+				ctr.appendUint8(0x00);
+				break;
+			case InstrumentSequenceRelease::FixedRelease:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
+				break;
+			case InstrumentSequenceRelease::AbsoluteRelease:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
+				break;
+			case InstrumentSequenceRelease::RelativeRelease:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
+				break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
@@ -2387,6 +2544,45 @@ void BtiIO::save(BinaryContainer& ctr,
 			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
+			}
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
+		}
+
+		// ADPCM pan
+		if (instADPCM->getPanEnabled()) {
+			int panNum = instADPCM->getPanNumber();
+			ctr.appendUint8(0x44);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instManLocked->getPanADPCMSequence(panNum);
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+			}
+			auto loops = instManLocked->getPanADPCMLoopRoot(panNum).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
+			}
+			auto release = instManLocked->getPanADPCMRelease(panNum);
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
+				ctr.appendUint8(0x00);
+				break;
+			case InstrumentSequenceRelease::FixedRelease:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
+				break;
+			case InstrumentSequenceRelease::AbsoluteRelease:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
+				break;
+			case InstrumentSequenceRelease::RelativeRelease:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
+				break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}

@@ -85,7 +85,7 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 	for (size_t inch = 0; inch < 6; ++inch) {
 		fmOpEnables_[inch] = 0xf;
 		for (auto ep : FM_ENV_PARAMS_OP.at(FMOperatorType::All))
-			opSeqItFM_[inch].emplace(ep, nullptr);
+			opSeqIrtFM_[inch].emplace(ep, nullptr);
 	}
 	for (auto& fm : fm_) fm.isMute = false;
 	for (auto& ssg : ssg_) ssg.isMute = false;
@@ -690,7 +690,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	if (fm.isKeyOn && lfoStartCntFM_[inch] == UNUSED_VALUE) writeFMLFOAllRegisters(inch);
 	for (auto& p : FM_ENV_PARAMS_OP.at(opType)) {
 		if (inst->getOperatorSequenceEnabled(p)) {
-			opSeqItFM_[inch].at(p) = inst->getOperatorSequenceSequenceIterator(p);
+			opSeqIrtFM_[inch].at(p) = inst->getOperatorSequenceSequenceIterator(p);
 			switch (p) {
 			case FMEnvelopeParameter::FB:	isFBCtrlFM_[inch] = false;		break;
 			case FMEnvelopeParameter::TL1:
@@ -729,7 +729,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 			}
 		}
 		else {
-			opSeqItFM_[inch].at(p).reset();
+			opSeqIrtFM_[inch].at(p).reset();
 		}
 	}
 	if (!fm.isArpEff) {
@@ -742,6 +742,11 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 		fm.ptItr = inst->getPitchSequenceIterator(opType);
 	else
 		fm.ptItr.reset();
+	if (inst->getPanEnabled())
+		panItrFM_[inch] = inst->getPanSequenceIterator();
+	else {
+		panItrFM_[inch].reset();
+	}
 	setInstrumentFMProperties(fm);
 
 	checkLFOUsedByInstrument();
@@ -761,10 +766,11 @@ void OPNAController::updateInstrumentFM(int instNum)
 			FMOperatorType opType = fm.opType;
 			for (auto& p : FM_ENV_PARAMS_OP.at(opType)) {
 				if (!inst->getOperatorSequenceEnabled(p))
-					opSeqItFM_[inch].at(p).reset();
+					opSeqIrtFM_[inch].at(p).reset();
 			}
 			if (!inst->getArpeggioEnabled(opType)) fm.arpItr.reset();
 			if (!inst->getPitchEnabled(opType)) fm.ptItr.reset();
+			if (!inst->getPanEnabled()) panItrFM_[inch].reset();
 			setInstrumentFMProperties(fm);
 		}
 	}
@@ -878,18 +884,9 @@ void OPNAController::setMasterVolumeFM(double dB)
 /********** Set effect **********/
 void OPNAController::setPanFM(int ch, int value)
 {
-	size_t inch = fm_[ch].inCh;
-
-	panFM_[inch] = static_cast<uint8_t>(value);
-
-	uint32_t bch = getFMChannelOffset(ch);	// Bank and channel offset
-	uint8_t data = static_cast<uint8_t>(value << 6);
-	auto& inst = refInstFM_[inch];
-	if (inst && inst->getLFOEnabled()) {
-		data |= (inst->getLFOParameter(FMLFOParameter::AMS) << 4);
-		data |= inst->getLFOParameter(FMLFOParameter::PMS);
-	}
-	opna_->setRegister(0xb4 + bch, data);
+	auto& fm = fm_[ch];
+	panItrFM_[fm.inCh].reset();
+	writePanFM(fm, value);
 }
 
 void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
@@ -973,7 +970,7 @@ void OPNAController::setFBControlFM(int ch, int value)
 	size_t inch = fm_[ch].inCh;
 	writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::FB, value);
 	isFBCtrlFM_[inch] = true;
-	opSeqItFM_[inch].at(FMEnvelopeParameter::FB).reset();
+	opSeqIrtFM_[inch].at(FMEnvelopeParameter::FB).reset();
 }
 
 void OPNAController::setTLControlFM(int ch, int op, int value)
@@ -982,7 +979,7 @@ void OPNAController::setTLControlFM(int ch, int op, int value)
 	FMEnvelopeParameter param = PARAM_TL[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isTLCtrlFM_[inch][op] = true;
-	opSeqItFM_[inch].at(param).reset();
+	opSeqIrtFM_[inch].at(param).reset();
 }
 
 void OPNAController::setMLControlFM(int ch, int op, int value)
@@ -991,7 +988,7 @@ void OPNAController::setMLControlFM(int ch, int op, int value)
 	FMEnvelopeParameter param = PARAM_ML[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isMLCtrlFM_[inch][op] = true;
-	opSeqItFM_[inch].at(param).reset();
+	opSeqIrtFM_[inch].at(param).reset();
 }
 
 void OPNAController::setARControlFM(int ch, int op, int value)
@@ -1000,7 +997,7 @@ void OPNAController::setARControlFM(int ch, int op, int value)
 	FMEnvelopeParameter param = PARAM_AR[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isARCtrlFM_[inch][op] = true;
-	opSeqItFM_[inch].at(param).reset();
+	opSeqIrtFM_[inch].at(param).reset();
 }
 
 void OPNAController::setDRControlFM(int ch, int op, int value)
@@ -1009,7 +1006,7 @@ void OPNAController::setDRControlFM(int ch, int op, int value)
 	FMEnvelopeParameter param = PARAM_DR[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isDRCtrlFM_[inch][op] = true;
-	opSeqItFM_[inch].at(param).reset();
+	opSeqIrtFM_[inch].at(param).reset();
 }
 
 void OPNAController::setRRControlFM(int ch, int op, int value)
@@ -1018,7 +1015,7 @@ void OPNAController::setRRControlFM(int ch, int op, int value)
 	FMEnvelopeParameter param = PARAM_RR[op];
 	writeFMEnveropeParameterToRegister(inch, param, value);
 	isRRCtrlFM_[inch][op] = true;
-	opSeqItFM_[inch].at(param).reset();
+	opSeqIrtFM_[inch].at(param).reset();
 }
 
 void OPNAController::setBrightnessFM(int ch, int value)
@@ -1030,7 +1027,7 @@ void OPNAController::setBrightnessFM(int ch, int value)
 		int v = utils::clamp(envFM_[inch]->getParameterValue(param) + value, 0, 127);
 		writeFMEnveropeParameterToRegister(inch, param, v);
 		isBrightFM_[inch][op] = true;
-		opSeqItFM_[inch].at(param).reset();
+		opSeqIrtFM_[inch].at(param).reset();
 	}
 }
 
@@ -1039,13 +1036,14 @@ void OPNAController::haltSequencesFM(int ch)
 {
 	auto& fm = fm_[ch];
 	for (auto& p : FM_ENV_PARAMS_OP.at(fm.opType)) {
-		if (auto& itr = opSeqItFM_[fm.inCh].at(p)) itr->end();
+		if (auto& itr = opSeqIrtFM_[fm.inCh].at(p)) itr->end();
 	}
 	if (auto& treItr = fm.treItr) treItr->end();
 	if (auto& arpItr = fm.arpItr) arpItr->end();
 	if (auto& ptItr = fm.ptItr) ptItr->end();
 	if (auto& vibItr = fm.vibItr) vibItr->end();
 	if (auto& nsItr = fm.nsItr) nsItr->end();
+	if (auto& panItr = panItrFM_[fm.inCh]) panItr->end();
 }
 
 /********** Chip details **********/
@@ -1089,11 +1087,12 @@ void OPNAController::initFM()
 
 		// Init pan
 		uint32_t bch = getFMChannelOffset(inch);
-		panFM_[inch] = 3;
+		panStateFM_[inch] = PanType::CENTER;
+		panItrFM_[inch].reset();
 		opna_->setRegister(0xb4 + bch, 0xc0);
 
 		// Init sequence
-		for (auto& p : opSeqItFM_[inch]) {
+		for (auto& p : opSeqIrtFM_[inch]) {
 			p.second.reset();
 		}
 
@@ -1587,7 +1586,7 @@ void OPNAController::writeFMLFOAllRegisters(size_t inch)
 {
 	if (!refInstFM_[inch]->getLFOEnabled() || lfoStartCntFM_[inch] > 0) {	// Clear data
 		uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
-		opna_->setRegister(0xb4 + bch, static_cast<uint8_t>(panFM_[inch] << 6));
+		opna_->setRegister(0xb4 + bch, static_cast<uint8_t>(panStateFM_[inch] << 6));
 		for (size_t op = 0; op < 4; ++op)
 			opna_->setRegister(0x60 + bch + OP_OFFSET[op],
 							   static_cast<uint8_t>(envFM_[inch]->getParameterValue(PARAM_DR[op])));
@@ -1614,7 +1613,7 @@ void OPNAController::writeFMLFORegister(size_t inch, FMLFOParameter param)
 		break;
 	case FMLFOParameter::PMS:
 	case FMLFOParameter::AMS:
-		data = static_cast<uint8_t>(panFM_[inch] << 6);
+		data = static_cast<uint8_t>(panStateFM_[inch] << 6);
 		data |= (refInstFM_[inch]->getLFOParameter(FMLFOParameter::AMS) << 4);
 		data |= refInstFM_[inch]->getLFOParameter(FMLFOParameter::PMS);
 		opna_->setRegister(0xb4 + bch, data);
@@ -1677,6 +1676,8 @@ void OPNAController::setFrontFMSequences(FMChannel& fm)
 	fm.volSldSum += fm.volSld;
 	checkVolumeEffectFM(fm);
 
+	checkPanFM(fm, 1);
+
 	if (auto& arpItr = fm.arpItr) {
 		arpItr->front();
 		checkRealToneFMByArpeggio(fm);
@@ -1717,6 +1718,8 @@ void OPNAController::releaseStartFMSequences(FMChannel& fm)
 	if (auto& treItr = fm.treItr) treItr->release();
 	fm.volSldSum += fm.volSld;
 	checkVolumeEffectFM(fm);
+
+	checkPanFM(fm, 2);
 
 	if (auto& arpItr = fm.arpItr) {
 		arpItr->release();
@@ -1763,6 +1766,8 @@ void OPNAController::tickEventFM(FMChannel& fm)
 		fm.volSldSum += fm.volSld;
 		checkVolumeEffectFM(fm);
 
+		checkPanFM(fm, 0);
+
 		if (auto& arpItr = fm.arpItr) {
 			arpItr->next();
 			checkRealToneFMByArpeggio(fm);
@@ -1793,15 +1798,15 @@ void OPNAController::checkOperatorSequenceFM(FMChannel& fm, int type)
 {
 	size_t inch = fm.inCh;
 	for (auto& p : FM_ENV_PARAMS_OP.at(fm.opType)) {
-		if (auto& it = opSeqItFM_[inch].at(p)) {
+		if (auto& itr = opSeqIrtFM_[inch].at(p)) {
 			switch (type) {
-			case 0:	it->next();		break;
-			case 1:	it->front();	break;
-			case 2:	it->release();	break;
+			case 0:	itr->next();	break;
+			case 1:	itr->front();	break;
+			case 2:	itr->release();	break;
 			default:	throw std::out_of_range("The range of type is 0-2.");
 			}
-			if (!it->hasEnded()) {
-				int d = it->data().data;
+			if (!itr->hasEnded()) {
+				int d = itr->data().data;
 				if (d != envFM_[inch]->getParameterValue(p)) {
 					writeFMEnveropeParameterToRegister(inch, p, d);
 				}
@@ -1869,6 +1874,38 @@ void OPNAController::checkVolumeEffectFM(FMChannel& fm)
 		break;
 	}
 	}
+}
+
+void OPNAController::checkPanFM(FMChannel& fm, int type)
+{
+	if (auto& itr = panItrFM_[fm.inCh]) {
+		switch (type) {
+		case 0:	itr->next();	break;
+		case 1:	itr->front();	break;
+		case 2:	itr->release();	break;
+		default:	throw std::out_of_range("The range of type is 0-2.");
+		}
+		if (!itr->hasEnded()) {
+			writePanFM(fm, itr->data().data);
+		}
+	}
+}
+
+void OPNAController::writePanFM(FMChannel& fm, int pos)
+{
+	uint8_t v = static_cast<uint8_t>(pos);
+	if (v == panStateFM_[fm.inCh]) return;
+
+	panStateFM_[fm.inCh] = v;
+
+	uint32_t bch = getFMChannelOffset(fm.ch);	// Bank and channel offset
+	uint8_t data = static_cast<uint8_t>(v << 6);
+	auto& inst = refInstFM_[fm.inCh];
+	if (inst && inst->getLFOEnabled()) {
+		data |= (inst->getLFOParameter(FMLFOParameter::AMS) << 4);
+		data |= inst->getLFOParameter(FMLFOParameter::PMS);
+	}
+	opna_->setRegister(0xb4 + bch, data);
 }
 
 void OPNAController::writePitchFM(FMChannel& fm)
@@ -3320,6 +3357,10 @@ void OPNAController::setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst)
 		ptItrADPCM_ = inst->getPitchSequenceIterator();
 	else
 		ptItrADPCM_.reset();
+	if (inst->getPanEnabled())
+		panItrADPCM_ = inst->getPanSequenceIterator();
+	else
+		panItrADPCM_.reset();
 }
 
 void OPNAController::updateInstrumentADPCM(int instNum)
@@ -3329,6 +3370,7 @@ void OPNAController::updateInstrumentADPCM(int instNum)
 		if (!refInstADPCM_->getEnvelopeEnabled()) envItrADPCM_.reset();
 		if (!refInstADPCM_->getArpeggioEnabled()) arpItrADPCM_.reset();
 		if (!refInstADPCM_->getPitchEnabled()) ptItrADPCM_.reset();
+		if (!refInstADPCM_->getPanEnabled()) panItrADPCM_.reset();
 	}
 }
 
@@ -3431,8 +3473,8 @@ void OPNAController::setRealVolumeADPCM()
 /********** Set effect **********/
 void OPNAController::setPanADPCM(int value)
 {
-	panStateADPCM_ = static_cast<uint8_t>(value << 6);
-	opna_->setRegister(0x101, panStateADPCM_ | 0x02);
+	panItrADPCM_.reset();
+	writePanADPCM(value);
 }
 
 void OPNAController::setArpeggioEffectADPCM(int second, int third)
@@ -3519,6 +3561,7 @@ void OPNAController::haltSequencesADPCM()
 	if (ptItrADPCM_) ptItrADPCM_->end();
 	if (vibItrADPCM_) vibItrADPCM_->end();
 	if (nsItADPCM_) nsItADPCM_->end();
+	if (panItrADPCM_) panItrADPCM_->end();
 }
 
 /********** Chip details **********/
@@ -3556,7 +3599,7 @@ void OPNAController::initADPCM()
 	neverSetBaseNoteADPCM_ = true;
 	baseVolADPCM_ = bt_defs::NSTEP_ADPCM_VOLUME - 1;	// Init volume
 	oneshotVolADPCM_ = UNUSED_VALUE;
-	panStateADPCM_ = 0xc0;
+	panStateADPCM_ = PanType::CENTER << 6;
 	shouldWriteEnvADPCM_ = false;
 	shouldSetToneADPCM_ = false;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
@@ -3569,6 +3612,7 @@ void OPNAController::initADPCM()
 	arpItrADPCM_.reset();
 	ptItrADPCM_.reset();
 	ptSumADPCM_ = 0;
+	panItrADPCM_.reset();
 
 	// Effect
 	hasArpEffADPCM_ = false;
@@ -3625,6 +3669,8 @@ void OPNAController::setFrontADPCMSequences()
 	}
 	else setRealVolumeADPCM();
 
+	checkPanADPCM(1);
+
 	if (arpItrADPCM_) {
 		arpItrADPCM_->front();
 		checkRealToneADPCMByArpeggio();
@@ -3674,6 +3720,8 @@ void OPNAController::releaseStartADPCMSequences()
 		opna_->setRegister(0x10b, 0);	// Silence
 		shouldWriteEnvADPCM_ = false;
 	}
+
+	checkPanADPCM(2);
 
 	if (arpItrADPCM_) {
 		arpItrADPCM_->release();
@@ -3726,6 +3774,8 @@ void OPNAController::tickEventADPCM()
 			setRealVolumeADPCM();
 		}
 
+		checkPanADPCM(0);
+
 		if (arpItrADPCM_) {
 			arpItrADPCM_->next();
 			checkRealToneADPCMByArpeggio();
@@ -3767,6 +3817,29 @@ void OPNAController::writeEnvelopeADPCMToRegister()
 {
 	if (!envItrADPCM_->hasEnded() || shouldWriteEnvADPCM_) {
 		setRealVolumeADPCM();
+	}
+}
+
+void OPNAController::checkPanADPCM(int type)
+{
+	if (panItrADPCM_) {
+		switch (type) {
+		case 0:	panItrADPCM_->next();	break;
+		case 1:	panItrADPCM_->front();	break;
+		case 2:	panItrADPCM_->release();	break;
+		default:	throw std::out_of_range("The range of type is 0-2.");
+		}
+		if (!panItrADPCM_->hasEnded())
+			writePanADPCM(panItrADPCM_->data().data);
+	}
+}
+
+void OPNAController::writePanADPCM(int pos)
+{
+	uint8_t v = static_cast<uint8_t>(pos << 6);
+	if (v != panStateADPCM_) {
+		panStateADPCM_ = v;
+		opna_->setRegister(0x101, panStateADPCM_ | 0x02);
 	}
 }
 

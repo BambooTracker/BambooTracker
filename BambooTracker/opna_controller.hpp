@@ -193,12 +193,11 @@ private:
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
 	std::unique_ptr<EnvelopeFM> envFM_[6];
 	uint8_t fmOpEnables_[6];
-	/// bit0: right on/off
-	/// bit1: left on/off
-	uint8_t panFM_[6];
+	uint8_t panStateFM_[6];
+	PanIter panItrFM_[6];
 	int lfoFreq_;
 	int lfoStartCntFM_[6];
-	std::unordered_map<FMEnvelopeParameter, FMOperatorSequenceIter> opSeqItFM_[6];
+	std::unordered_map<FMEnvelopeParameter, FMOperatorSequenceIter> opSeqIrtFM_[6];
 	bool isFBCtrlFM_[6], isTLCtrlFM_[6][4], isMLCtrlFM_[6][4], isARCtrlFM_[6][4];
 	bool isDRCtrlFM_[6][4], isRRCtrlFM_[6][4];
 	bool isBrightFM_[6][4];
@@ -225,6 +224,9 @@ private:
 
 	void checkOperatorSequenceFM(FMChannel& fm, int type);
 	void checkVolumeEffectFM(FMChannel& fm);
+
+	void checkPanFM(FMChannel& fm, int type);
+	void writePanFM(FMChannel& fm, int pos);
 
 	void checkRealToneFMByArpeggio(FMChannel& fm);
 	void checkPortamentoFM(FMChannel& fm);
@@ -429,6 +431,7 @@ private:
 	Note baseNoteADPCM_;
 	int baseVolADPCM_, oneshotVolADPCM_;
 	uint8_t panStateADPCM_;
+	PanIter panItrADPCM_;
 	bool isMuteADPCM_;
 	bool shouldSkip1stTickExecADPCM_;	// Use to execute key on/off process in jamming
 	bool shouldWriteEnvADPCM_;
@@ -462,6 +465,9 @@ private:
 	void tickEventADPCM();
 
 	void writeEnvelopeADPCMToRegister();
+
+	void checkPanADPCM(int type);
+	void writePanADPCM(int pos);
 
 	void checkRealToneADPCMByArpeggio();
 	void checkPortamentoADPCM();

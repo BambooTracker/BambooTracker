@@ -146,6 +146,18 @@ public:
 	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::multiset<int> getPitchFMUsers(int ptNum) const;
 
+	void addPanFMSequenceData(int panNum, int data);
+	void removePanFMSequenceData(int panNum);
+	void setPanFMSequenceData(int panNum, int cnt, int data);
+	void addPanFMLoop(int panNum, const InstrumentSequenceLoop& loop);
+	void removePanFMLoop(int panNum, int begin, int end);
+	void changePanFMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPanFMLoops(int panNum);
+	void setPanFMRelease(int panNum, const InstrumentSequenceRelease& release);
+	void setInstrumentFMPan(int instNum, int panNum);
+	void setInstrumentFMPanEnabled(int instNum, bool enabled);
+	std::multiset<int> getPanFMUsers(int panNum) const;
+
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 	//--- SSG
@@ -268,6 +280,18 @@ public:
 	void setInstrumentADPCMPitch(int instNum, int ptNum);
 	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
 	std::multiset<int> getPitchADPCMUsers(int ptNum) const;
+
+	void addPanADPCMSequenceData(int panNum, int data);
+	void removePanADPCMSequenceData(int panNum);
+	void setPanADPCMSequenceData(int panNum, int cnt, int data);
+	void addPanADPCMLoop(int panNum, const InstrumentSequenceLoop& loop);
+	void removePanADPCMLoop(int panNum, int begin, int end);
+	void changePanADPCMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPanADPCMLoops(int panNum);
+	void setPanADPCMRelease(int panNum, const InstrumentSequenceRelease& release);
+	void setInstrumentADPCMPan(int instNum, int panNum);
+	void setInstrumentADPCMPanEnabled(int instNum, bool enabled);
+	std::multiset<int> getPanADPCMUsers(int panNum) const;
 
 	//--- Drumkit
 	void setInstrumentDrumkitSample(int instNum, int key, int sampNum);

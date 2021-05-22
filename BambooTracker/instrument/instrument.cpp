@@ -47,7 +47,9 @@ InstrumentFM::InstrumentFM(int number, const std::string& name, InstrumentsManag
 	AbstractInstrument(number, SoundSource::FM, InstrumentType::FM, name, owner),
 	envNum_(0),
 	lfoEnabled_(false),
-	lfoNum_(0)
+	lfoNum_(0),
+	panEnabled_(false),
+	panNum_(0)
 {
 	opSeqEnabled_ = {
 		{ FMEnvelopeParameter::AL,	false },
@@ -316,6 +318,46 @@ PitchIter InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
 	return owner_->getPitchFMIterator(ptNum_.at(op));
 }
 
+void InstrumentFM::setPanEnabled(bool enabled)
+{
+	panEnabled_ = enabled;
+}
+
+bool InstrumentFM::getPanEnabled() const
+{
+	return panEnabled_;
+}
+
+void InstrumentFM::setPanNumber(int n)
+{
+	panNum_ = n;
+}
+
+int InstrumentFM::getPanNumber() const
+{
+	return panNum_;
+}
+
+std::vector<PanUnit> InstrumentFM::getPanSequence() const
+{
+	return owner_->getPanFMSequence(panNum_);
+}
+
+InstrumentSequenceLoopRoot InstrumentFM::getPanLoopRoot() const
+{
+	return owner_->getPanFMLoopRoot(panNum_);
+}
+
+InstrumentSequenceRelease InstrumentFM::getPanRelease() const
+{
+	return owner_->getPanFMRelease(panNum_);
+}
+
+PanIter InstrumentFM::getPanSequenceIterator() const
+{
+	return owner_->getPanFMIterator(panNum_);
+}
+
 void InstrumentFM::setEnvelopeResetEnabled(FMOperatorType op, bool enabled)
 {
 	envResetEnabled_.at(op) = enabled;
@@ -468,7 +510,9 @@ InstrumentADPCM::InstrumentADPCM(int number, const std::string& name, Instrument
 	  arpEnabled_(false),
 	  arpNum_(0),
 	  ptEnabled_(false),
-	  ptNum_(0)
+	  ptNum_(0),
+	  panEnabled_(false),
+	  panNum_(0)
 {
 }
 
@@ -575,6 +619,26 @@ InstrumentSequenceRelease InstrumentADPCM::getPitchRelease() const
 PitchIter InstrumentADPCM::getPitchSequenceIterator() const
 {
 	return owner_->getPitchADPCMIterator(ptNum_);
+}
+
+std::vector<PanUnit> InstrumentADPCM::getPanSequence() const
+{
+	return owner_->getPanADPCMSequence(panNum_);
+}
+
+InstrumentSequenceLoopRoot InstrumentADPCM::getPanLoopRoot() const
+{
+	return owner_->getPanADPCMLoopRoot(panNum_);
+}
+
+InstrumentSequenceRelease InstrumentADPCM::getPanRelease() const
+{
+	return owner_->getPanADPCMRelease(panNum_);
+}
+
+PanIter InstrumentADPCM::getPanSequenceIterator() const
+{
+	return owner_->getPanADPCMIterator(panNum_);
 }
 
 /****************************************/

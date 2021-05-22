@@ -468,6 +468,63 @@ std::multiset<int> BambooTracker::getPitchFMUsers(int ptNum) const
 	return instMan_->getPitchFMUsers(ptNum);
 }
 
+void BambooTracker::addPanFMSequenceData(int panNum, int data)
+{
+	instMan_->addPanFMSequenceData(panNum, data);
+}
+
+void BambooTracker::removePanFMSequenceData(int panNum)
+{
+	instMan_->removePanFMSequenceData(panNum);
+}
+
+void BambooTracker::setPanFMSequenceData(int panNum, int cnt, int data)
+{
+	instMan_->setPanFMSequenceData(panNum, cnt, data);
+}
+
+void BambooTracker::addPanFMLoop(int panNum, const InstrumentSequenceLoop& loop)
+{
+	instMan_->addPanFMLoop(panNum, loop);
+}
+
+void BambooTracker::removePanFMLoop(int panNum, int begin, int end)
+{
+	instMan_->removePanFMLoop(panNum, begin, end);
+}
+
+void BambooTracker::changePanFMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changePanFMLoop(panNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearPanFMLoops(int panNum)
+{
+	instMan_->clearPanFMLoops(panNum);
+}
+
+void BambooTracker::setPanFMRelease(int panNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setPanFMRelease(panNum, release);
+}
+
+void BambooTracker::setInstrumentFMPan(int instNum, int panNum)
+{
+	instMan_->setInstrumentFMPan(instNum, panNum);
+	opnaCtrl_->updateInstrumentFM(instNum);
+}
+
+void BambooTracker::setInstrumentFMPanEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentFMPanEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentFM(instNum);
+}
+
+std::multiset<int> BambooTracker::getPanFMUsers(int panNum) const
+{
+	return instMan_->getPanFMUsers(panNum);
+}
+
 void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled)
 {
 	instMan_->setInstrumentFMEnvelopeResetEnabled(instNum, op, enabled);
@@ -1054,6 +1111,63 @@ void BambooTracker::setInstrumentADPCMPitchEnabled(int instNum, bool enabled)
 std::multiset<int> BambooTracker::getPitchADPCMUsers(int ptNum) const
 {
 	return instMan_->getPitchADPCMUsers(ptNum);
+}
+
+void BambooTracker::addPanADPCMSequenceData(int panNum, int data)
+{
+	instMan_->addPanADPCMSequenceData(panNum, data);
+}
+
+void BambooTracker::removePanADPCMSequenceData(int panNum)
+{
+	instMan_->removePanADPCMSequenceData(panNum);
+}
+
+void BambooTracker::setPanADPCMSequenceData(int panNum, int cnt, int data)
+{
+	instMan_->setPanADPCMSequenceData(panNum, cnt, data);
+}
+
+void BambooTracker::addPanADPCMLoop(int panNum, const InstrumentSequenceLoop& loop)
+{
+	instMan_->addPanADPCMLoop(panNum, loop);
+}
+
+void BambooTracker::removePanADPCMLoop(int panNum, int begin, int end)
+{
+	instMan_->removePanADPCMLoop(panNum, begin, end);
+}
+
+void BambooTracker::changePanADPCMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changePanADPCMLoop(panNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearPanADPCMLoops(int panNum)
+{
+	instMan_->clearPanADPCMLoops(panNum);
+}
+
+void BambooTracker::setPanADPCMRelease(int panNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setPanADPCMRelease(panNum, release);
+}
+
+void BambooTracker::setInstrumentADPCMPan(int instNum, int panNum)
+{
+	instMan_->setInstrumentADPCMPan(instNum, panNum);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+void BambooTracker::setInstrumentADPCMPanEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentADPCMPanEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+std::multiset<int> BambooTracker::getPanADPCMUsers(int panNum) const
+{
+	return instMan_->getPanADPCMUsers(panNum);
 }
 
 //--- Drumkit

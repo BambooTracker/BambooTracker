@@ -112,6 +112,15 @@ public:
 	InstrumentSequenceRelease getPitchRelease(FMOperatorType op) const;
 	PitchIter getPitchSequenceIterator(FMOperatorType op) const;
 
+	void setPanEnabled(bool enabled);
+	bool getPanEnabled() const;
+	void setPanNumber(int n);
+	int getPanNumber() const;
+	std::vector<PanUnit> getPanSequence() const;
+	InstrumentSequenceLoopRoot getPanLoopRoot() const;
+	InstrumentSequenceRelease getPanRelease() const;
+	PanIter getPanSequenceIterator() const;
+
 	void setEnvelopeResetEnabled(FMOperatorType op, bool enabled);
 	bool getEnvelopeResetEnabled(FMOperatorType op) const;
 
@@ -125,6 +134,8 @@ private:
 	std::unordered_map<FMOperatorType, int> arpNum_;
 	std::unordered_map<FMOperatorType, bool> ptEnabled_;
 	std::unordered_map<FMOperatorType, int> ptNum_;
+	bool panEnabled_;
+	int panNum_;
 
 	std::unordered_map<FMOperatorType, bool> envResetEnabled_;
 };
@@ -241,6 +252,15 @@ public:
 	InstrumentSequenceRelease getPitchRelease() const;
 	PitchIter getPitchSequenceIterator() const;
 
+	inline void setPanEnabled(bool enabled) noexcept { panEnabled_ = enabled; }
+	inline bool getPanEnabled() const noexcept { return panEnabled_; }
+	inline void setPanNumber(int n) noexcept { panNum_ = n; }
+	inline int getPanNumber() const noexcept { return panNum_; }
+	std::vector<PanUnit> getPanSequence() const;
+	InstrumentSequenceLoopRoot getPanLoopRoot() const;
+	InstrumentSequenceRelease getPanRelease() const;
+	PanIter getPanSequenceIterator() const;
+
 private:
 	int sampNum_;
 	bool envEnabled_;
@@ -249,6 +269,8 @@ private:
 	int arpNum_;
 	bool ptEnabled_;
 	int ptNum_;
+	bool panEnabled_;
+	int panNum_;
 };
 
 

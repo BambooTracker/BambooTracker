@@ -43,10 +43,25 @@ using PitchIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceB
 
 constexpr int SEQ_PITCH_CENTER = 127;
 
+using PanUnit = InstrumentSequenceBaseUnit;
+using PanIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
+
+namespace PanType
+{
+enum : uint8_t
+{
+	SILENCE = 0,
+	RIGHT = 1,
+	LEFT = 2,
+	CENTER = RIGHT | LEFT
+};
+}
+
 using SSGWaveformUnit = InstrumentSequenceExtendUnit;
 using SSGWaveformIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceExtendUnit>::Iterator>;
 
-class SSGWaveformType {
+class SSGWaveformType
+{
 public:
 	enum : int
 	{

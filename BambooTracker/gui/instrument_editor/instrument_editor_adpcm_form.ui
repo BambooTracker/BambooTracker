@@ -262,6 +262,74 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_5">
+      <attribute name="title">
+       <string>Panning</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QGroupBox" name="panEditGroupBox">
+         <property name="title">
+          <string>Panning</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QSpinBox" name="panNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+            <property name="prefix">
+             <string notr="true">#</string>
+            </property>
+            <property name="maximum">
+             <number>127</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="PanMacroEditor" name="panEditor" native="true"/>
+          </item>
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="panUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="panUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -277,6 +345,12 @@
    <class>ArpeggioMacroEditor</class>
    <extends>QWidget</extends>
    <header>gui/instrument_editor/arpeggio_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PanMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/pan_macro_editor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -296,6 +370,8 @@
   <tabstop>ptEditGroupBox</tabstop>
   <tabstop>ptNumSpinBox</tabstop>
   <tabstop>ptTypeComboBox</tabstop>
+  <tabstop>panEditGroupBox</tabstop>
+  <tabstop>panNumSpinBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>

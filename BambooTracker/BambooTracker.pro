@@ -72,6 +72,7 @@ SOURCES += \
     gui/instrument_editor/instrument_editor_adpcm_form.cpp \
     gui/instrument_editor/instrument_editor_drumkit_form.cpp \
     gui/instrument_editor/instrument_editor_utils.cpp \
+    gui/instrument_editor/pan_macro_editor.cpp \
     gui/instrument_editor/sample_length_dialog.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
@@ -248,6 +249,7 @@ HEADERS += \
     gui/instrument_editor/instrument_editor_adpcm_form.hpp \
     gui/instrument_editor/instrument_editor_drumkit_form.hpp \
     gui/instrument_editor/instrument_editor_utils.hpp \
+    gui/instrument_editor/pan_macro_editor.hpp \
     gui/instrument_editor/sample_length_dialog.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/jam_layout.hpp \
