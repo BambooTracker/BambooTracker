@@ -817,14 +817,9 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 				tposeDlyValueFM_.at(uch) = ((eff.value & 0x80) ? -1 : 1) * (eff.value & 0x0f);
 				break;
 			case EffectType::VolumeDelay:
-			{
-				int count = eff.value >> 8;
-				if (count > 0) {
-					volDlyCntFM_.at(uch) = count;
-					volDlyValueFM_.at(uch) = eff.value & 0x00ff;
-				}
+				volDlyCntFM_.at(uch) = eff.value >> 8;
+				volDlyValueFM_.at(uch) = eff.value & 0x00ff;
 				break;
-			}
 			case EffectType::FBControl:
 				if (-1 < eff.value && eff.value < 8) opnaCtrl_->setFBControlFM(ch, eff.value);
 				break;
@@ -1019,14 +1014,9 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 				opnaCtrl_->setHardEnvelopePeriod(ch, false, eff.value);
 				break;
 			case EffectType::VolumeDelay:
-			{
-				int count = eff.value >> 8;
-				if (count > 0) {
-					volDlyCntSSG_.at(uch) = count;
-					volDlyValueSSG_.at(uch) = eff.value & 0x00ff;
-				}
+				volDlyCntSSG_.at(uch) = eff.value >> 8;
+				volDlyValueSSG_.at(uch) = eff.value & 0x00ff;
 				break;
-			}
 			case EffectType::AutoEnvelope:
 				opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.value >> 4) - 8, eff.value & 0x0f);
 				break;
@@ -1257,14 +1247,9 @@ void PlaybackManager::executeStoredEffectsADPCM()
 				tposeDlyValueADPCM_ = ((eff.value & 0x80) ? -1 : 1) * ((eff.value & 0x70) >> 4);
 				break;
 			case EffectType::VolumeDelay:
-			{
-				int count = eff.value >> 8;
-				if (count > 0) {
-					volDlyCntADPCM_ = count;
-					volDlyValueADPCM_ = eff.value & 0x00ff;
-				}
+				volDlyCntADPCM_ = eff.value >> 8;
+				volDlyValueADPCM_ = eff.value & 0x00ff;
 				break;
-			}
 			case EffectType::Retrigger:
 			{
 				int cnt = eff.value & 0x0f;

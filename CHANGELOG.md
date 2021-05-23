@@ -5,12 +5,14 @@
 - 2 new pattern effect
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
+- [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
 - [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
 - [#348] - Update RtAudio & RtMidi library (thanks [@OPNA2608])
 - [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
+- Change delay effects to be executed even on the 0th count
 - Change item widths in the status bar
 
 ### Fixed
@@ -29,6 +31,7 @@
 [@Mugenri]: https://github.com/Mugenri
 [@Speedvicio]: https://github.com/Speedvicio
 [@RaijinXBlade]: https://github.com/RaijinXBlade
+[@ToughkidDev]: https://github.com/ToughkidDev
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
@@ -51,6 +54,8 @@
 [#334]: https://github.com/rerrahkr/BambooTracker/pull/334
 [#360]: https://github.com/rerrahkr/BambooTracker/issues/360
 [#361]: https://github.com/rerrahkr/BambooTracker/issues/361
+[#354]: https://github.com/rerrahkr/BambooTracker/pull/354
+[#335]: https://github.com/rerrahkr/BambooTracker/issues/335
 
 ## v0.4.6 (2021-02-11)
 ### Added
