@@ -905,51 +905,63 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	auto mime = event->mimeData();
-	if (mime->hasUrls() && mime->urls().length() == 1) {
-		const std::string ext = QFileInfo(mime->urls().at(0).toLocalFile()).suffix().toLower().toStdString();
-		if (io::ModuleIO::getInstance().testLoadableFormat(ext)
-				| io::InstrumentIO::getInstance().testLoadableFormat(ext)
-				| io::BankIO::getInstance().testLoadableFormat(ext))
-			event->acceptProposedAction();
+	if (mime->hasUrls()) {
+		const auto urls = mime->urls();
+		for (auto& url : urls) {
+			const std::string ext = QFileInfo(url.toLocalFile()).suffix().toLower().toStdString();
+			if (io::ModuleIO::getInstance().testLoadableFormat(ext)
+					|| io::BankIO::getInstance().testLoadableFormat(ext)) {
+				if (urls.size() == 1) event->acceptProposedAction();
+			}
+			if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
+				continue;
+			}
+			return;
+		}
+		if (!urls.empty()) event->acceptProposedAction();	// For instruments
 	}
 }
 
 void MainWindow::dropEvent(QDropEvent* event)
 {
-	QString file = event->mimeData()->urls().first().toLocalFile();
-
-	const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
-	if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
-		if (isWindowModified()) {
-			QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-			if (modTitle.isEmpty()) modTitle = tr("Untitled");
-			QMessageBox dialog(QMessageBox::Warning,
-							   "BambooTracker",
-							   tr("Save changes to %1?").arg(modTitle),
-							   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-			switch (dialog.exec()) {
-			case QMessageBox::Yes:
-				if (!on_actionSave_triggered()) return;
-				break;
-			case QMessageBox::No:
-				break;
-			case QMessageBox::Cancel:
-				return;
-			default:
-				break;
+	const auto urls = event->mimeData()->urls();
+	for (const auto& url : urls) {
+		const QString file = url.toLocalFile();
+		const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
+		if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
+			if (isWindowModified()) {
+				QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
+				if (modTitle.isEmpty()) modTitle = tr("Untitled");
+				QMessageBox dialog(QMessageBox::Warning,
+								   "BambooTracker",
+								   tr("Save changes to %1?").arg(modTitle),
+								   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+				switch (dialog.exec()) {
+				case QMessageBox::Yes:
+					if (!on_actionSave_triggered()) return;
+					break;
+				case QMessageBox::No:
+					break;
+				case QMessageBox::Cancel:
+					return;
+				default:
+					break;
+				}
 			}
+
+			bt_->stopPlaySong();
+			lockWidgets(false);
+
+			openModule(file);
+			return;
 		}
-
-		bt_->stopPlaySong();
-		lockWidgets(false);
-
-		openModule(file);
-	}
-	else if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
-		funcLoadInstrument(file);
-	}
-	if (io::BankIO::getInstance().testLoadableFormat(ext)) {
-		funcImportInstrumentsFromBank(file);
+		else if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
+			funcLoadInstrument(file);
+		}
+		if (io::BankIO::getInstance().testLoadableFormat(ext)) {
+			funcImportInstrumentsFromBank(file);
+			return;
+		}
 	}
 }
 
@@ -1687,19 +1699,18 @@ void MainWindow::loadInstrument()
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
 	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
-	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter
+	const QStringList files = QFileDialog::getOpenFileNames(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
+															filters.join(";;"), &defaultFilter
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
-												, QFileDialog::DontUseNativeDialog
+															, QFileDialog::DontUseNativeDialog
 #endif
-												);
-	if (file.isNull()) return;
+															);
+	if (files.empty()) return;
 
-	int index = getSelectedFileFilter(file, filters);
+	int index = getSelectedFileFilter(files.front(), filters);
 	if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
 
-
-	funcLoadInstrument(file);
+	for (const QString& file : files) funcLoadInstrument(file);
 }
 
 void MainWindow::funcLoadInstrument(QString file)
@@ -2536,7 +2547,7 @@ QString MainWindow::getModuleFileBaseName() const
 	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).completeBaseName());
 }
 
-int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
+int MainWindow::getSelectedFileFilter(const QString &file, const QStringList &filters) const
 {
 	QRegularExpression re(R"(\(\*\.(.+)\))");
 	QString ex = QFileInfo(file).suffix().toLower();

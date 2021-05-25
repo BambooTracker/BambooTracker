@@ -13,6 +13,7 @@
 - [#348] - Update RtAudio & RtMidi library (thanks [@OPNA2608])
 - [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
 - Change delay effects to be executed even on the 0th count
+- [#366] - Load multiple instrument files at a time (thanks [@OPNA2608])
 - Change item widths in the status bar
 
 ### Fixed
@@ -56,6 +57,7 @@
 [#361]: https://github.com/rerrahkr/BambooTracker/issues/361
 [#354]: https://github.com/rerrahkr/BambooTracker/pull/354
 [#335]: https://github.com/rerrahkr/BambooTracker/issues/335
+[#366]: https://github.com/rerrahkr/BambooTracker/issues/366
 
 ## v0.4.6 (2021-02-11)
 ### Added

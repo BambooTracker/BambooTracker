@@ -169,7 +169,7 @@ private:
 	void setModifiedTrue();
 	void setInitialSelectedInstrument();
 	QString getModuleFileBaseName() const;
-	int getSelectedFileFilter(QString& file, QStringList& filters) const;
+	int getSelectedFileFilter(const QString& file, const QStringList& filters) const;
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPattern_, isSelectedOrder_;
