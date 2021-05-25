@@ -2,19 +2,6 @@ TEMPLATE = aux
 
 include("../qmake/variables.pri")
 
-# Common path variables
-
-win32|install_flat {
-  DIST_INSTALL_PATH = $$PREFIX
-  DATA_INSTALL_PATH = $$PREFIX
-  LICENSE_INSTALL_PATH = $$PREFIX
-}
-else {
-  DIST_INSTALL_PATH = $$PREFIX/share
-  DATA_INSTALL_PATH = $${DIST_INSTALL_PATH}/BambooTracker
-  LICENSE_INSTALL_PATH = $${DIST_INSTALL_PATH}/doc/BambooTracker
-}
-
 # Simple data-only targets
 
 licenses.files = $$PWD/../licenses $$PWD/../LICENSE

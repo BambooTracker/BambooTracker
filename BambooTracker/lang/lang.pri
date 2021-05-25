@@ -15,8 +15,8 @@ equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
       qmfile  ~= s/.ts$/.qm/
       qmfile  ~= s,/lang/,/.qm/,
 
-      win32:$${qmfile}.commands = mkdir $$PWD/.qm;
-      else:$${qmfile}.commands = test -d $$PWD/.qm/ || mkdir -p $$PWD/.qm/;
+      win32:$${qmfile}.commands = mkdir $$PWD/../.qm;
+      else:$${qmfile}.commands = test -d $$PWD/../.qm/ || mkdir -p $$PWD/../.qm/;
       $${qmfile}.commands += lrelease -qm $$qmfile $$tsfile
       $${qmfile}.depends = $${tsfile}
 

@@ -5,15 +5,28 @@ isEmpty(PREFIX) {
     else:PREFIX = /usr/local
 }
 
+# Common path variables
+
+win32|install_flat {
+  DIST_INSTALL_PATH = $$PREFIX
+  DATA_INSTALL_PATH = $$PREFIX
+  LICENSE_INSTALL_PATH = $$PREFIX
+}
+else {
+  DIST_INSTALL_PATH = $$PREFIX/share
+  DATA_INSTALL_PATH = $${DIST_INSTALL_PATH}/BambooTracker
+  LICENSE_INSTALL_PATH = $${DIST_INSTALL_PATH}/doc/BambooTracker
+}
+
 # Detects the most commonly used C/C++ compilers, sets variables to
 # - help subprojects distinguish between them if needed
 #   (CONFIG += clang-normal vs clang-apple),
 # - get the compiler version details via generic variable names
-#   (COMPILER_*_VERSION, COMPILER_VERSION) and 
+#   (COMPILER_*_VERSION, COMPILER_VERSION) and
 # - offer (shared C/C++) compiler-specific flags for pedantic warnings,
 #   standard compliance and warning-disabling if needed.
 #   may be too strong/optimistic when including external projects,
-#   so you need to manually append/overwrite CPP_WARNING_FLAGS and 
+#   so you need to manually append/overwrite CPP_WARNING_FLAGS and
 #   append it to QMAKE_CFLAGS_WARN_ON and QMAKE_CXXFLAGS_WARN_ON
 message("Qt is version" $$QT_VERSION)
 msvc|clang|if(gcc:!intel_icc) {
