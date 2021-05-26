@@ -34,7 +34,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QDialog>
-#include <QRegularExpression>
 #include <QFileDialog>
 #include <QFile>
 #include <QFileInfo>
@@ -1698,17 +1697,17 @@ void MainWindow::loadInstrument()
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
-	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
+	QString selectedFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
 	const QStringList files = QFileDialog::getOpenFileNames(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-															filters.join(";;"), &defaultFilter
+															filters.join(";;"), &selectedFilter
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 															, QFileDialog::DontUseNativeDialog
 #endif
 															);
 	if (files.empty()) return;
 
-	int index = getSelectedFileFilter(files.front(), filters);
-	if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
+	int index = std::distance(filters.begin(), utils::find(filters, selectedFilter));
+	config_.lock()->setInstrumentOpenFormat(index);
 
 	for (const QString& file : files) funcLoadInstrument(file);
 }
@@ -1808,20 +1807,17 @@ void MainWindow::importInstrumentsFromBank()
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
-	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
+	QString selectedFilter = filters.at(config_.lock()->getBankOpenFormat());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter
+												filters.join(";;"), &selectedFilter
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 												, QFileDialog::DontUseNativeDialog
 #endif
 												);
-	if (file.isNull()) {
-		return;
-	}
-	else {
-		int index = getSelectedFileFilter(file, filters);
-		if (index != -1) config_.lock()->setBankOpenFormat(index);
-	}
+	if (file.isNull()) return;
+
+	int index = std::distance(filters.begin(), utils::find(filters, selectedFilter));
+	config_.lock()->setBankOpenFormat(index);
 
 	funcImportInstrumentsFromBank(file);
 }
@@ -2547,15 +2543,6 @@ QString MainWindow::getModuleFileBaseName() const
 	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).completeBaseName());
 }
 
-int MainWindow::getSelectedFileFilter(const QString &file, const QStringList &filters) const
-{
-	QRegularExpression re(R"(\(\*\.(.+)\))");
-	QString ex = QFileInfo(file).suffix().toLower();
-	for (int i = 0; i < filters.size(); ++i)
-		if (ex == re.match(filters[i]).captured(1)) return i;
-	return -1;
-}
-
 /******************************/
 /********** Instrument list events **********/
 void MainWindow::on_instrumentList_customContextMenuRequested(const QPoint &pos)
@@ -3182,7 +3169,7 @@ bool MainWindow::on_actionSave_As_triggered()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save module"),
 					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("BambooTracker module (*.btm)"), nullptr
+					   tr("BambooTracker module (*.btm)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif
@@ -3254,7 +3241,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
-												tr("BambooTracker module (*.btm)"), nullptr
+												tr("BambooTracker module (*.btm)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 												, QFileDialog::DontUseNativeDialog
 #endif
@@ -3364,7 +3351,7 @@ void MainWindow::on_actionWAV_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to WAV"),
 					   QString("%1/%2.wav").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("WAV signed 16-bit PCM (*.wav)"), nullptr
+					   tr("WAV signed 16-bit PCM (*.wav)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif
@@ -3436,7 +3423,7 @@ void MainWindow::on_actionVGM_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to VGM"),
 					   QString("%1/%2.vgm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("VGM file (*.vgm)"), nullptr
+					   tr("VGM file (*.vgm)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif
@@ -3503,7 +3490,7 @@ void MainWindow::on_actionS98_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to S98"),
 					   QString("%1/%2.s98").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("S98 file (*.s98)"), nullptr
+					   tr("S98 file (*.s98)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif

@@ -14,6 +14,7 @@
 - [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
 - Change delay effects to be executed even on the 0th count
 - [#366] - Load multiple instrument files at a time (thanks [@OPNA2608])
+- [#367] - Offer wildcard and "all supported formats" extensions in file dialogues (thanks [@OPNA2608])
 - Change item widths in the status bar
 
 ### Fixed
@@ -26,6 +27,7 @@
 - [#358] - Fix AR3 parsing from text (thanks [@freq-mod])
 - Update octave status display when changing octave spinbox
 - [#360], [#361] - Cancel renaming an instrument before removing it (thanks [@OPNA2608], [@RaijinXBlade])
+- [#346] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 
@@ -58,6 +60,8 @@
 [#354]: https://github.com/rerrahkr/BambooTracker/pull/354
 [#335]: https://github.com/rerrahkr/BambooTracker/issues/335
 [#366]: https://github.com/rerrahkr/BambooTracker/issues/366
+[#368]: https://github.com/rerrahkr/BambooTracker/pull/368
+[#367]: https://github.com/rerrahkr/BambooTracker/issues/367
 
 ## v0.4.6 (2021-02-11)
 ### Added

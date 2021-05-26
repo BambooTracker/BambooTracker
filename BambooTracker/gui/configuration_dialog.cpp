@@ -665,7 +665,7 @@ void ConfigurationDialog::on_colorLoadPushButton_clicked()
 {
 	QString file = QFileDialog::getOpenFileName(this, tr("Open color scheme"),
 												QApplication::applicationDirPath() + "/skins",
-												tr("ini file (*.ini)"), nullptr
+												tr("ini file (*.ini)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 												, QFileDialog::DontUseNativeDialog
 #endif
@@ -685,7 +685,7 @@ void ConfigurationDialog::on_colorSavePushButton_clicked()
 {
 	QString file = QFileDialog::getSaveFileName(this, tr("Save color scheme"),
 												QApplication::applicationDirPath() + "/skins",
-												tr("ini file (*.ini)"), nullptr
+												tr("ini file (*.ini)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 												, QFileDialog::DontUseNativeDialog
 #endif

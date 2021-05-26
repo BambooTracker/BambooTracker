@@ -43,23 +43,44 @@ template<class T>
 class FileIOHandlerMap
 {
 public:
+	FileIOHandlerMap()
+	{
+		const std::string all = "All files (*)";
+		ldFilters_.push_back(all);
+		svFilters_.push_back(all);
+	}
 	void add(T* handler)
 	{
-		map_[handler->getExtension()].reset(handler);
+		const std::string ext = handler->getExtension();
+		map_[ext].reset(handler);
 		const std::string filter = handler->getFilterText();
-		if (handler->isLoadable()) ldFilters_.push_back(filter);
-		if (handler->isSavable()) svFilters_.push_back(filter);
+		if (handler->isLoadable()) {
+			ldFilters_.insert(ldFilters_.end() - 1, filter);
+			if (ldFilters_.size() > 1) ldExts_ += " ";
+			ldExts_ += ("*." + ext);
+		}
+		if (handler->isSavable()) {
+			svFilters_.insert(svFilters_.end() - 1, filter);
+			if (svFilters_.size() > 1) svExts_ += " ";
+			svExts_ += ("*." + ext);
+		}
 	}
-	inline bool containExtension(const std::string& ext) const { return map_.count(ext); }
-	inline bool testLoadableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isLoadable()); }
-	inline bool testSavableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isSavable()); }
-	inline const std::unique_ptr<T>& at(const std::string& ext) const { return map_.at(ext); }
-	inline std::vector<std::string> getLoadFilterList() const noexcept { return ldFilters_; }
-	inline std::vector<std::string> getSaveFilterList() const noexcept { return svFilters_; }
+	bool containExtension(const std::string& ext) const { return map_.count(ext); }
+	bool testLoadableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isLoadable()); }
+	bool testSavableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isSavable()); }
+	const std::unique_ptr<T>& at(const std::string& ext) const { return map_.at(ext); }
+	std::vector<std::string> getLoadFilterList() const noexcept
+	{
+		std::vector<std::string> filters = ldFilters_;
+		filters.insert(filters.begin(), "All supported formats (" + ldExts_ + ")");
+		return filters;
+	}
+	std::vector<std::string> getSaveFilterList() const noexcept { return svFilters_; }
 
 private:
 	std::unordered_map<std::string, std::unique_ptr<T>> map_;
 	std::vector<std::string> ldFilters_, svFilters_;
+	std::string ldExts_, svExts_;
 };
 
 enum class FMOperatorParameter

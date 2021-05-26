@@ -45,7 +45,7 @@ public:
 	virtual void save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> instMan,
 					  const std::vector<int>& instNums) const;
 	inline std::string getExtension() const noexcept { return ext_; }
-	inline std::string getFilterText() const { return desc_ + "(*." + ext_ + ")"; }
+	inline std::string getFilterText() const { return desc_ + " (*." + ext_ + ")"; }
 	inline bool isLoadable() const noexcept { return loadable_; }
 	inline bool isSavable() const noexcept { return savable_; }
 
