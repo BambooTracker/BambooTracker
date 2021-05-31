@@ -73,7 +73,8 @@ enum ExportTargetFlag
 	Export_YM2608 = 1,
 	Export_YM2612 = 2,
 	Export_YM2203 = 4,
-	Export_FmMask = Export_NoneFm|Export_YM2608|Export_YM2612|Export_YM2203,
+	Export_YM2610B = 8,
+	Export_FmMask = Export_NoneFm | Export_YM2608 | Export_YM2612 | Export_YM2203 | Export_YM2610B,
 	/* target bit 4-5 : SSG type */
 	Export_InternalSsg = 0,
 	Export_AY8910Psg = 16,

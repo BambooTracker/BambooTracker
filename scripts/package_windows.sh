@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Remember to port any changes in here the powershell port in .appveyor.yml!
+
 set -e
 
 HELP_OUT=$(windeployqt -h)

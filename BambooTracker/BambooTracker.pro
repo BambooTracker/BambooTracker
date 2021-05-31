@@ -442,6 +442,9 @@ INCLUDEPATH += \
 # In-app resource bundle. Needs to be handled here because it generates an object file to link against
 include("resources/resources.pri")
 
+# App translations. lupdate requires the source code for updating these to work
+include("lang/lang.pri")
+
 !system_rtaudio|!system_rtmidi {
   CONFIG += link_prl
 }

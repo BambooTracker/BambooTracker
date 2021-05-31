@@ -34,7 +34,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QDialog>
-#include <QRegularExpression>
 #include <QFileDialog>
 #include <QFile>
 #include <QFileInfo>
@@ -96,6 +95,8 @@ const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS
 	{ Configuration::ToolbarPosition::LeftPosition, Qt::LeftToolBarArea },
 	{ Configuration::ToolbarPosition::RightPosition, Qt::RightToolBarArea }
 };
+
+constexpr int STATUS_DISPLAY_TIMEOUT = 0;
 }
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -260,7 +261,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	octave_->setValue(bt_->getCurrentOctave());
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
+					 this, [&](int octave) {
+		bt_->setCurrentOctave(octave);
+		statusOctave_->setText(tr("Octave: %1").arg(octave));
+	});
 	ui->subToolBar->addWidget(octave_);
 	auto volLab = new QLabel(tr("Volume"));
 	volLab->setMargin(6);
@@ -472,7 +476,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->patternEditor, &PatternEditor::volumeEntered,
 					 this, [&](int volume) { volume_->setValue(volume); });
 	QObject::connect(ui->patternEditor, &PatternEditor::effectEntered,
-					 this, [&](QString text) { statusDetail_->setText(text); });
+					 this, [&](QString text) { ui->statusBar->showMessage(text, STATUS_DISPLAY_TIMEOUT); });
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 this, &MainWindow::onCurrentTrackChanged);
 
@@ -499,32 +503,31 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		visualTimer_->start(static_cast<int>(std::round(1000. / config.lock()->getWaveViewFrameRate())));
 
 	/* Status bar */
-	statusDetail_ = new QLabel();
-	statusDetail_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 	statusStyle_ = new QLabel();
-	statusStyle_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusStyle_->setAlignment(Qt::AlignRight);
 	statusInst_ = new QLabel();
-	statusInst_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusInst_->setFixedWidth(110);
 	statusOctave_ = new QLabel();
-	statusOctave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusOctave_->setFixedWidth(90);
 	statusIntr_ = new QLabel();
-	statusIntr_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusIntr_->setFixedWidth(50);
 	statusMixer_ = new QLabel();
-	statusMixer_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusMixer_->setFixedWidth(200);
 	statusBpm_ = new QLabel();
-	statusBpm_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	statusBpm_->setFixedWidth(90);
 	statusPlayPos_ = new QLabel();
-	statusPlayPos_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-	ui->statusBar->addWidget(statusDetail_, 4);
-	ui->statusBar->addPermanentWidget(statusStyle_, 1);
-	ui->statusBar->addPermanentWidget(statusInst_, 1);
-	ui->statusBar->addPermanentWidget(statusOctave_, 1);
-	ui->statusBar->addPermanentWidget(statusIntr_, 1);
-	ui->statusBar->addPermanentWidget(statusMixer_, 1);
-	ui->statusBar->addPermanentWidget(statusBpm_, 1);
-	ui->statusBar->addPermanentWidget(statusPlayPos_, 1);
+	statusPlayPos_->setFixedWidth(40);
+	ui->statusBar->addPermanentWidget(statusStyle_);
+	ui->statusBar->addPermanentWidget(statusInst_);
+	ui->statusBar->addPermanentWidget(statusOctave_);
+	ui->statusBar->addPermanentWidget(statusIntr_);
+	ui->statusBar->addPermanentWidget(statusMixer_);
+	ui->statusBar->addPermanentWidget(statusBpm_);
+	ui->statusBar->addPermanentWidget(statusPlayPos_);
 	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
+	ui->statusBar->showMessage(tr("Welcome to BambooTracker v%1!").arg(QString::fromStdString(Version::ofApplicationInString())),
+							   STATUS_DISPLAY_TIMEOUT);
 
 	/* Bookmark */
 	bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
@@ -886,51 +889,63 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	auto mime = event->mimeData();
-	if (mime->hasUrls() && mime->urls().length() == 1) {
-		const std::string ext = QFileInfo(mime->urls().at(0).toLocalFile()).suffix().toLower().toStdString();
-		if (io::ModuleIO::getInstance().testLoadableFormat(ext)
-				| io::InstrumentIO::getInstance().testLoadableFormat(ext)
-				| io::BankIO::getInstance().testLoadableFormat(ext))
-			event->acceptProposedAction();
+	if (mime->hasUrls()) {
+		const auto urls = mime->urls();
+		for (auto& url : urls) {
+			const std::string ext = QFileInfo(url.toLocalFile()).suffix().toLower().toStdString();
+			if (io::ModuleIO::getInstance().testLoadableFormat(ext)
+					|| io::BankIO::getInstance().testLoadableFormat(ext)) {
+				if (urls.size() == 1) event->acceptProposedAction();
+			}
+			if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
+				continue;
+			}
+			return;
+		}
+		if (!urls.empty()) event->acceptProposedAction();	// For instruments
 	}
 }
 
 void MainWindow::dropEvent(QDropEvent* event)
 {
-	QString file = event->mimeData()->urls().first().toLocalFile();
-
-	const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
-	if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
-		if (isWindowModified()) {
-			QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-			if (modTitle.isEmpty()) modTitle = tr("Untitled");
-			QMessageBox dialog(QMessageBox::Warning,
-							   "BambooTracker",
-							   tr("Save changes to %1?").arg(modTitle),
-							   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-			switch (dialog.exec()) {
-			case QMessageBox::Yes:
-				if (!on_actionSave_triggered()) return;
-				break;
-			case QMessageBox::No:
-				break;
-			case QMessageBox::Cancel:
-				return;
-			default:
-				break;
+	const auto urls = event->mimeData()->urls();
+	for (const auto& url : urls) {
+		const QString file = url.toLocalFile();
+		const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
+		if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
+			if (isWindowModified()) {
+				QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
+				if (modTitle.isEmpty()) modTitle = tr("Untitled");
+				QMessageBox dialog(QMessageBox::Warning,
+								   "BambooTracker",
+								   tr("Save changes to %1?").arg(modTitle),
+								   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+				switch (dialog.exec()) {
+				case QMessageBox::Yes:
+					if (!on_actionSave_triggered()) return;
+					break;
+				case QMessageBox::No:
+					break;
+				case QMessageBox::Cancel:
+					return;
+				default:
+					break;
+				}
 			}
+
+			bt_->stopPlaySong();
+			lockWidgets(false);
+
+			openModule(file);
+			return;
 		}
-
-		bt_->stopPlaySong();
-		lockWidgets(false);
-
-		openModule(file);
-	}
-	else if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
-		funcLoadInstrument(file);
-	}
-	if (io::BankIO::getInstance().testLoadableFormat(ext)) {
-		funcImportInstrumentsFromBank(file);
+		else if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
+			funcLoadInstrument(file);
+		}
+		if (io::BankIO::getInstance().testLoadableFormat(ext)) {
+			funcImportInstrumentsFromBank(file);
+			return;
+		}
 	}
 }
 
@@ -1348,6 +1363,14 @@ void MainWindow::removeInstrument(int row)
 	}
 
 	bt_->removeInstrument(num);
+
+	// Cancel renaming instrument
+	if (list->item(row) == renamingInstItem_) {
+		list->removeItemWidget(renamingInstItem_);
+		renamingInstItem_ = nullptr;
+		renamingInstEdit_ = nullptr;
+	}
+
 	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, gui_utils::utf8ToQString(inst->getName()),
 												  inst->getType(), instForms_, this, updateRequest));
 }
@@ -1642,20 +1665,19 @@ void MainWindow::loadInstrument()
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
-	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
-	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter
+	QString selectedFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
+	const QStringList files = QFileDialog::getOpenFileNames(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
+															filters.join(";;"), &selectedFilter
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
-												, QFileDialog::DontUseNativeDialog
+															, QFileDialog::DontUseNativeDialog
 #endif
-												);
-	if (file.isNull()) return;
+															);
+	if (files.empty()) return;
 
-	int index = getSelectedFileFilter(file, filters);
-	if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
+	int index = std::distance(filters.begin(), utils::find(filters, selectedFilter));
+	config_.lock()->setInstrumentOpenFormat(index);
 
-
-	funcLoadInstrument(file);
+	for (const QString& file : files) funcLoadInstrument(file);
 }
 
 void MainWindow::funcLoadInstrument(QString file)
@@ -1753,20 +1775,17 @@ void MainWindow::importInstrumentsFromBank()
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
-	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
+	QString selectedFilter = filters.at(config_.lock()->getBankOpenFormat());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												filters.join(";;"), &defaultFilter
+												filters.join(";;"), &selectedFilter
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 												, QFileDialog::DontUseNativeDialog
 #endif
 												);
-	if (file.isNull()) {
-		return;
-	}
-	else {
-		int index = getSelectedFileFilter(file, filters);
-		if (index != -1) config_.lock()->setBankOpenFormat(index);
-	}
+	if (file.isNull()) return;
+
+	int index = std::distance(filters.begin(), utils::find(filters, selectedFilter));
+	config_.lock()->setBankOpenFormat(index);
 
 	funcImportInstrumentsFromBank(file);
 }
@@ -2502,15 +2521,6 @@ QString MainWindow::getModuleFileBaseName() const
 	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).completeBaseName());
 }
 
-int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
-{
-	QRegularExpression re(R"(\(\*\.(.+)\))");
-	QString ex = QFileInfo(file).suffix().toLower();
-	for (int i = 0; i < filters.size(); ++i)
-		if (ex == re.match(filters[i]).captured(1)) return i;
-	return -1;
-}
-
 /******************************/
 /********** Instrument list events **********/
 void MainWindow::on_instrumentList_customContextMenuRequested(const QPoint &pos)
@@ -2917,7 +2927,7 @@ void MainWindow::on_actionEdit_Mode_triggered()
 	else if (isEditedPattern_) updateMenuByPattern();
 
 	bool editable = !bt_->isJamMode();
-	statusDetail_->setText(editable ? tr("Change to edit mode") : tr("Change to jam mode"));
+	ui->statusBar->showMessage(editable ? tr("Change to edit mode") : tr("Change to jam mode"), STATUS_DISPLAY_TIMEOUT);
 	ui->action_Toggle_Bookmark->setEnabled(editable);
 }
 
@@ -3137,7 +3147,7 @@ bool MainWindow::on_actionSave_As_triggered()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save module"),
 					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("BambooTracker module (*.btm)"), nullptr
+					   tr("BambooTracker module (*.btm)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif
@@ -3209,7 +3219,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
-												tr("BambooTracker module (*.btm)"), nullptr
+												tr("BambooTracker module (*.btm)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 												, QFileDialog::DontUseNativeDialog
 #endif
@@ -3319,7 +3329,7 @@ void MainWindow::on_actionWAV_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to WAV"),
 					   QString("%1/%2.wav").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("WAV signed 16-bit PCM (*.wav)"), nullptr
+					   tr("WAV signed 16-bit PCM (*.wav)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif
@@ -3391,7 +3401,7 @@ void MainWindow::on_actionVGM_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to VGM"),
 					   QString("%1/%2.vgm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("VGM file (*.vgm)"), nullptr
+					   tr("VGM file (*.vgm)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif
@@ -3458,7 +3468,7 @@ void MainWindow::on_actionS98_triggered()
 	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to S98"),
 					   QString("%1/%2.s98").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("S98 file (*.s98)"), nullptr
+					   tr("S98 file (*.s98)") + ";;" + tr("All files (*)"), nullptr
 #if defined(Q_OS_LINUX) || (defined(Q_OS_BSD4) && !defined(Q_OS_DARWIN))
 					   , QFileDialog::DontUseNativeDialog
 #endif

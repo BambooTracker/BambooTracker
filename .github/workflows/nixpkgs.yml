@@ -36,14 +36,21 @@ jobs:
         run: |
           case ${GITHUB_REF} in
             refs/tags/* )
-              TAG=${GITHUB_REF/refs\/tags\//}
+              TAG=${GITHUB_REF#refs/tags/}
               echo "Release ${TAG}"
               echo "::set-output name=build-tag::${TAG}"
               echo "::set-output name=release::true"
               echo "::set-output name=buildVersion::${TAG#v}" # nixpkgs
               ;;
+            refs/pull/*)
+              PR=$(echo ${GITHUB_REF} | cut -d/ -f3)
+              echo "Test PR #${PR}"
+              echo "::set-output name=build-tag::pr-${PR}"
+              echo "::set-output name=release::false"
+              echo "::set-output name=buildVersion::pr-${PR}-${GITHUB_SHA}" # nixpkgs
+              ;;
             refs/heads/* )
-              BRANCH=${GITHUB_REF/refs\/heads\//}
+              BRANCH=${GITHUB_REF#refs/heads/}
               echo "Test ${BRANCH}"
               echo "::set-output name=build-tag::${BRANCH}"
               echo "::set-output name=release::false"

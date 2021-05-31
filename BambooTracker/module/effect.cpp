@@ -172,6 +172,9 @@ EffectType validateEffectId(SoundSource src, const std::string& id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "0K") {
+		return EffectType::Retrigger;
+	}
 	else if (id == "0O") {
 		return EffectType::Groove;
 	}
@@ -249,6 +252,14 @@ EffectType validateEffectId(SoundSource src, const std::string& id)
 		switch (src) {
 		case SoundSource::FM:
 			return EffectType::Brightness;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "ES") {
+		switch (src) {
+		case SoundSource::FM:
+			return EffectType::EnvelopeReset;
 		default:
 			return EffectType::NoEffect;
 		}

@@ -114,6 +114,7 @@ public:
 	void keyOnFM(int ch, const Note& note, bool isJam = false);
 	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
+	void retriggerKeyOnFM(int ch, int volDiff);
 
 	// Set instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
@@ -245,6 +246,7 @@ public:
 	void keyOnSSG(int ch, const Note& note, bool isJam = false);
 	void keyOnSSG(int ch, int echoBuf);
 	void keyOffSSG(int ch, bool isJam = false);
+	void retriggerKeyOnSSG(int ch, int volDiff);
 
 	// Set instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
@@ -353,6 +355,7 @@ public:
 	// Key on/off
 	void setKeyOnFlagRhythm(int ch);
 	void setKeyOffFlagRhythm(int ch);
+	void retriggerKeyOnFlagRhythm(int ch, int volDiff);
 
 	// Set volume
 	void setVolumeRhythm(int ch, int volume);
@@ -387,6 +390,7 @@ public:
 	void keyOnADPCM(const Note& note, bool isJam = false);
 	void keyOnADPCM(int echoBuf);
 	void keyOffADPCM(bool isJam = false);
+	void retriggerKeyOnADPCM(int volDiff);
 
 	// Set instrument
 	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);

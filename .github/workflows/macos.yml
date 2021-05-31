@@ -38,13 +38,19 @@ jobs:
         run: |
           case ${GITHUB_REF} in
             refs/tags/* )
-              TAG=${GITHUB_REF/refs\/tags\//}
+              TAG=${GITHUB_REF#refs/tags/}
               echo "Release ${TAG}"
               echo "::set-output name=build-tag::${TAG}"
               echo "::set-output name=release::true"
               ;;
+            refs/pull/*)
+              PR=$(echo ${GITHUB_REF} | cut -d/ -f3)
+              echo "Test PR #${PR}"
+              echo "::set-output name=build-tag::pr-${PR}"
+              echo "::set-output name=release::false"
+              ;;
             refs/heads/* )
-              BRANCH=${GITHUB_REF/refs\/heads\//}
+              BRANCH=${GITHUB_REF#refs/heads/}
               echo "Test ${BRANCH}"
               echo "::set-output name=build-tag::${BRANCH}"
               echo "::set-output name=release::false"
@@ -68,13 +74,14 @@ jobs:
 
       - name: Installing dependencies.
         run: |
+          export HOMEBREW_NO_INSTALL_CLEANUP=1
           brew update
           # JACK implies brew link python-3.9, fails due to shipped python binaries
           brew unlink python@3.9
           brew link --overwrite python@3.9
           brew upgrade --force python@3.9
-          brew install qt5 pkg-config jack
-          brew link --force qt5
+          brew install qt@5 pkg-config jack
+          brew link --force qt@5
 
       ## End macOS-specific steps
 
