@@ -89,7 +89,7 @@ inline auto makePitchSharedPtr(int n)
 inline auto makePanSharedPtr(int n)
 {
 	return std::make_shared<InstrumentSequenceProperty<
-			PanUnit>>(n, SequenceType::AbsoluteSequence, PanUnit(3), PanUnit());
+			PanUnit>>(n, SequenceType::AbsoluteSequence, PanUnit(PanType::CENTER), PanUnit());
 }
 
 inline auto makeWaveformSSGSharedPtr(int n)
@@ -492,6 +492,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		for (const int& key : refKit->getAssignedKeys()) {
 			setInstrumentDrumkitSamples(cloneInstNum, key, refKit->getSampleNumber(key));
 			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+			setInstrumentDrumkitPan(cloneInstNum, key, refKit->getPan(key));
 		}
 		break;
 	}
@@ -652,6 +653,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			sampADPCM_[static_cast<size_t>(sampCloneMap[srcNum])]->registerUserInstrument(cloneInstNum);
 
 			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+			setInstrumentDrumkitPan(cloneInstNum, key, refKit->getPan(key));
 		}
 		break;
 	}
@@ -2598,6 +2600,11 @@ void InstrumentsManager::setInstrumentDrumkitPitch(int instNum, int key, int pit
 	std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->setPitch(key, pitch);
 }
 
+void InstrumentsManager::setInstrumentDrumkitPan(int instNum, int key, int pan)
+{
+	std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->setPan(key, pan);
+}
+
 bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
 {
 	auto aKit = std::dynamic_pointer_cast<InstrumentDrumkit>(a);
@@ -2614,6 +2621,8 @@ bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrume
 		if (*sampADPCM_[aKit->getSampleNumber(key)] != *sampADPCM_[bKit->getSampleNumber(key)])
 			return false;
 		if (aKit->getPitch(key) != bKit->getPitch(key))
+			return false;
+		if (aKit->getPan(key) != bKit->getPan(key))
 			return false;
 	}
 

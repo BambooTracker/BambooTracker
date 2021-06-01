@@ -130,11 +130,14 @@ public:
 	int getInstrumentDrumkitWindowWidth() const { return instKitW_; }
 	void setInstrumentDrumkitWindowHeight(int h) { instKitH_ = h; }
 	int getInstrumentDrumkitWindowHeight() const { return instKitH_; }
+	void setInstrumentDrumkitWindowHorizontalSplit(int y) { instKitHSplit_ = y; }
+	int getInstrumentDrumkitWindowHorizontalSplit() const { return instKitHSplit_; }
 private:
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
 	int instADPCMW_, instADPCMH_;
 	int instKitW_, instKitH_;
+	int instKitHSplit_;
 
 	// Toolbar state
 public:

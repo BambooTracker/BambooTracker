@@ -660,7 +660,7 @@ std::vector<int> InstrumentDrumkit::getAssignedKeys() const
 
 void InstrumentDrumkit::setSampleEnabled(int key, bool enabled)
 {
-	if (enabled) kit_[key] = { 0, 0 };
+	if (enabled) kit_[key] = { 0, 0, PanType::CENTER };
 	else kit_.erase(key);
 }
 
@@ -717,4 +717,14 @@ void InstrumentDrumkit::setPitch(int key, int pitch)
 int InstrumentDrumkit::getPitch(int key) const
 {
 	return kit_.at(key).pitch;
+}
+
+void InstrumentDrumkit::setPan(int key, int pan)
+{
+	if (kit_.count(key)) kit_.at(key).pan = pan;
+}
+
+int InstrumentDrumkit::getPan(int key) const
+{
+	return kit_.at(key).pan;
 }

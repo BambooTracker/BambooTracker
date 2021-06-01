@@ -6,6 +6,8 @@
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
+- [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
+- Panning settings in the drumkit editor
 - [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed
@@ -16,7 +18,7 @@
 - Change delay effects to be executed even on the 0th count
 - [#366] - Load multiple instrument files at a time (thanks [@OPNA2608])
 - [#367] - Offer wildcard and "all supported formats" extensions in file dialogues (thanks [@OPNA2608])
-- Change item widths in the status bar
+- Modify item widths in the status bar
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
@@ -63,6 +65,8 @@
 [#366]: https://github.com/rerrahkr/BambooTracker/issues/366
 [#368]: https://github.com/rerrahkr/BambooTracker/pull/368
 [#367]: https://github.com/rerrahkr/BambooTracker/issues/367
+[#346]: https://github.com/rerrahkr/BambooTracker/pull/346
+[#314]: https://github.com/rerrahkr/BambooTracker/issues/314
 
 ## v0.4.6 (2021-02-11)
 ### Added

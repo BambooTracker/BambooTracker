@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -57,6 +57,7 @@ signals:
 	void modified();
 
 protected:
+	bool eventFilter(QObject* watched, QEvent* event) override;
 	void showEvent(QShowEvent*) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
@@ -75,7 +76,15 @@ private:
 
 private slots:
 	void on_keyTreeWidget_currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*);
-	void on_pitshSpinBox_valueChanged(int arg1);
+	void on_splitter_splitterMoved(int pos, int);
+
+	//========== Pitch ==========//
+private slots:
+	void on_pitchSpinBox_valueChanged(int arg1);
+
+	//========== Pan ==========//
+private slots:
+	void on_panHorizontalSlider_valueChanged(int value);
 
 	//========== Sample ==========//
 signals:

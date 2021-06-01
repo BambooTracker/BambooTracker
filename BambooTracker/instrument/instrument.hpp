@@ -296,7 +296,10 @@ public:
 	void setPitch(int key, int pitch);
 	int getPitch(int key) const;
 
+	void setPan(int key, int pan);
+	int getPan(int key) const;
+
 private:
-	struct KitProperty { int sampNum, pitch; };
+	struct KitProperty { int sampNum, pitch, pan; };
 	std::unordered_map<int, KitProperty> kit_;
 };

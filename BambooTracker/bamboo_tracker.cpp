@@ -1189,6 +1189,12 @@ void BambooTracker::setInstrumentDrumkitPitch(int instNum, int key, int pitch)
 	opnaCtrl_->updateInstrumentDrumkit(instNum, key);
 }
 
+void BambooTracker::setInstrumentDrumkitPan(int instNum, int key, int pan)
+{
+	instMan_->setInstrumentDrumkitPan(instNum, key, pan);
+	opnaCtrl_->updateInstrumentDrumkit(instNum, key);
+}
+
 /********** Song edit **********/
 int BambooTracker::getCurrentSongNumber() const
 {

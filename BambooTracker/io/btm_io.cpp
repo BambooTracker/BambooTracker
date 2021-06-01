@@ -227,6 +227,9 @@ size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
 				instKit->setSampleEnabled(key, true);
 				instKit->setSampleNumber(key, ctr.readUint8(iCsr++));
 				instKit->setPitch(key, ctr.readInt8(iCsr++));
+				if (version >= Version::toBCD(1, 6, 0)) {
+					instKit->setPan(key, ctr.readUint8(iCsr++));
+				}
 			}
 			instManLocked->addInstrument(instKit);
 			break;
@@ -1895,6 +1898,7 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 					ctr.appendUint8(static_cast<uint8_t>(key));
 					ctr.appendUint8(static_cast<uint8_t>(instKit->getSampleNumber(key)));
 					ctr.appendInt8(static_cast<int8_t>(instKit->getPitch(key)));
+					ctr.appendUint8(static_cast<uint8_t>(instKit->getPan(key)));
 				}
 				break;
 			}

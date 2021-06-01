@@ -160,6 +160,7 @@ Configuration::Configuration()
 	instADPCMH_ = 430;
 	instKitW_ = 590;
 	instKitH_ = 430;
+	instKitHSplit_ = -1;	// Dummy
 
 	// Toolbar state
 	mainTb_.setPosition(ToolbarPosition::TopPosition);

@@ -436,6 +436,7 @@ public:
 	int getInstrumentDrumkitSamples(int instNum, int key);
 
 	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
+	void setInstrumentDrumkitPan(int instNum, int key, int pan);
 
 private:
 	bool equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;

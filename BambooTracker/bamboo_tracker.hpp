@@ -297,6 +297,7 @@ public:
 	void setInstrumentDrumkitSample(int instNum, int key, int sampNum);
 	void setInstrumentDrumkitSampleEnabled(int instNum, int key, bool enabled);
 	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
+	void setInstrumentDrumkitPan(int instNum, int key, int pan);
 
 	// Song edit
 	void setCurrentSongNumber(int num);

@@ -31,6 +31,19 @@
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_utils.hpp"
+#include "gui/slider_style.hpp"
+
+namespace
+{
+const QString PAN_TEXT[] = { QT_TR_NOOP("Left"), QT_TR_NOOP("Center"), QT_TR_NOOP("Right") };
+constexpr int PAN_UI2INTRNL[] = { PanType::LEFT, PanType::CENTER, PanType::RIGHT };
+
+inline int convertPanInternalToUi(int intrPan)
+{
+	return std::distance(std::begin(PAN_UI2INTRNL),
+						 std::find(std::begin(PAN_UI2INTRNL), std::end(PAN_UI2INTRNL), intrPan));
+}
+}
 
 InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -41,11 +54,11 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 {
 	ui->setupUi(this);
 
-	ui->keyTreeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	QString tone[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-" };
+	ui->keyTreeWidget->header()->setDefaultSectionSize(40);	// Rearrange header widths
+	const static QString tone[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-" };
 	for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i) {
 		ui->keyTreeWidget->addTopLevelItem(
-					new QTreeWidgetItem({ tone[i % 12] + QString::number(i / 12), "-", "-" }));
+					new QTreeWidgetItem({ tone[i % 12] + QString::number(i / 12), "-", "-", "-" }));
 	}
 
 	//========== Sample ==========//
@@ -69,6 +82,11 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 					 this, [&] { emit sampleAssignRequested(); });
 	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleMemoryChanged,
 					 this, [&] { emit sampleMemoryChanged(); });
+
+	//========== Pan ==========//
+	ui->panHorizontalSlider->setStyle(new SliderStyle);
+	ui->panHorizontalSlider->installEventFilter(this);
+	ui->panPosLabel->setText(PAN_TEXT[ui->panHorizontalSlider->value()]);
 }
 
 InstrumentEditorDrumkitForm::~InstrumentEditorDrumkitForm()
@@ -120,12 +138,33 @@ void InstrumentEditorDrumkitForm::updateInstrumentParameters()
 }
 
 /********** Events **********/
+bool InstrumentEditorDrumkitForm::eventFilter(QObject* watched, QEvent* event)
+{
+	if (watched == ui->panHorizontalSlider) {
+		if (event->type() == QEvent::Wheel) {
+			auto e = dynamic_cast<QWheelEvent*>(event);
+			if (e->angleDelta().y() > 0) ui->panHorizontalSlider->setValue(ui->panHorizontalSlider->value() + 1);
+			else if (e->angleDelta().y() < 0) ui->panHorizontalSlider->setValue(ui->panHorizontalSlider->value() - 1);
+			return true;
+		}
+	}
+
+	return QWidget::eventFilter(watched, event);
+}
+
 void InstrumentEditorDrumkitForm::showEvent(QShowEvent*)
 {
 	if (!hasShown_) {
 		ui->keyTreeWidget->setCurrentItem(ui->keyTreeWidget->topLevelItem(Note::DEFAULT_NOTE_NUM));
 		ui->keyTreeWidget->scrollTo(ui->keyTreeWidget->model()->index(Note::DEFAULT_NOTE_NUM, 0),
 									QAbstractItemView::PositionAtTop);
+		int x = config_.lock()->getInstrumentDrumkitWindowHorizontalSplit();
+		if (x == -1) {
+			config_.lock()->setInstrumentDrumkitWindowHorizontalSplit(ui->splitter->sizes().at(0));
+		}
+		else {
+			ui->splitter->setSizes({ x, ui->splitter->width() - ui->splitter->handleWidth() - x });
+		}
 	}
 	hasShown_ = true;
 }
@@ -178,11 +217,18 @@ void InstrumentEditorDrumkitForm::on_keyTreeWidget_currentItemChanged(QTreeWidge
 	ui->sampleGroupBox->setChecked(enabled);
 	if (enabled) {
 		setInstrumentSampleParameters(key);
-		ui->pitshSpinBox->setValue(instKit->getPitch(key));
+		ui->pitchSpinBox->setValue(instKit->getPitch(key));
+		ui->panHorizontalSlider->setValue(convertPanInternalToUi(instKit->getPan(key)));
 	}
 }
 
-void InstrumentEditorDrumkitForm::on_pitshSpinBox_valueChanged(int arg1)
+void InstrumentEditorDrumkitForm::on_splitter_splitterMoved(int pos, int)
+{
+	config_.lock()->setInstrumentDrumkitWindowHorizontalSplit(pos);
+}
+
+//--- Pitch
+void InstrumentEditorDrumkitForm::on_pitchSpinBox_valueChanged(int arg1)
 {
 	int key = ui->keyTreeWidget->currentIndex().row();
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
@@ -191,6 +237,23 @@ void InstrumentEditorDrumkitForm::on_pitshSpinBox_valueChanged(int arg1)
 	if (instKit->getSampleEnabled(key)) {
 		bt_.lock()->setInstrumentDrumkitPitch(instNum_, key, arg1);
 		ui->keyTreeWidget->currentItem()->setText(2, QString::number(arg1));
+		emit modified();
+	}
+}
+
+//--- Pan
+void InstrumentEditorDrumkitForm::on_panHorizontalSlider_valueChanged(int value)
+{
+	const QString text = PAN_TEXT[value];
+	ui->panPosLabel->setText(text);
+
+	int key = ui->keyTreeWidget->currentIndex().row();
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
+
+	if (instKit->getSampleEnabled(key)) {
+		bt_.lock()->setInstrumentDrumkitPan(instNum_, key, PAN_UI2INTRNL[value]);
+		ui->keyTreeWidget->currentItem()->setText(3, text);
 		emit modified();
 	}
 }
@@ -211,6 +274,7 @@ void InstrumentEditorDrumkitForm::setInstrumentSampleParameters(int key)
 					instKit->getRawSample(key));
 		item->setText(1, QString::number(sampNum));
 		item->setText(2, QString::number(instKit->getPitch(key)));
+		item->setText(3, PAN_TEXT[convertPanInternalToUi(instKit->getPan(key))]);
 	}
 	else {
 		ui->sampleEditor->setInstrumentSampleParameters(
@@ -222,6 +286,7 @@ void InstrumentEditorDrumkitForm::setInstrumentSampleParameters(int key)
 					bt_.lock()->getSampleADPCMRawSample(0));
 		item->setText(1, "-");
 		item->setText(2, "-");
+		item->setText(3, "-");
 	}
 }
 
@@ -261,7 +326,8 @@ void InstrumentEditorDrumkitForm::on_sampleGroupBox_clicked(bool checked)
 	int key = ui->keyTreeWidget->currentIndex().row();
 	bt_.lock()->setInstrumentDrumkitSampleEnabled(instNum_, key, checked);
 	if (checked) {
-		ui->pitshSpinBox->setValue(0);
+		ui->pitchSpinBox->setValue(0);
+		ui->panHorizontalSlider->setValue(convertPanInternalToUi(PanType::CENTER));
 		setInstrumentSampleParameters(key);
 	}
 	else {
@@ -274,8 +340,10 @@ void InstrumentEditorDrumkitForm::on_sampleGroupBox_clicked(bool checked)
 					bt_.lock()->getSampleADPCMStopAddress(0),
 					bt_.lock()->getSampleADPCMRawSample(0));
 
-		ui->keyTreeWidget->currentItem()->setText(1, "-");
-		ui->keyTreeWidget->currentItem()->setText(2, "-");
+		auto item = ui->keyTreeWidget->currentItem();
+		item->setText(1, "-");
+		item->setText(2, "-");
+		item->setText(3, "-");
 	}
 
 	emit sampleNumberChanged();

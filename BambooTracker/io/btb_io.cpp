@@ -204,6 +204,7 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 					ctr.appendUint8(static_cast<uint8_t>(key));
 					ctr.appendUint8(static_cast<uint8_t>(instKit->getSampleNumber(key)));
 					ctr.appendInt8(static_cast<int8_t>(instKit->getPitch(key)));
+					ctr.appendUint8(static_cast<uint8_t>(instKit->getPan(key)));
 				}
 				break;
 			}
@@ -2186,6 +2187,11 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 			/* Pitch */
 			kit->setPitch(key, instCtr.readInt8(instCsr++));
+
+			/* Pan */
+			if (bankVersion >= Version::toBCD(1, 3, 0)) {
+				kit->setPan(key, instCtr.readUint8(instCsr++));
+			}
 		}
 
 		return kit;

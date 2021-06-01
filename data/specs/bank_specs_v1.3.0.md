@@ -99,11 +99,12 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 
 After key count, it repeats data of assigned key.
 
-| Type  | Field         | Description          |
-| ----- | ------------- | -------------------- |
-| uint8 | Key number    | Assigned key number. |
-| uint8 | Sample number | Sample number.       |
-| int8  | Key pitch     | Assigned key pitch.  |
+| Type  | Field         | Description                       |
+| ----- | ------------- | --------------------------------- |
+| uint8 | Key number    | Assigned key number.              |
+| uint8 | Sample number | Sample number.                    |
+| int8  | Key pitch     | Assigned key pitch.               |
+| uint8 | Panning flags | Bit 0 is right and bit 1 is left. |
 
 
 ## Instrument Property Section
@@ -293,11 +294,11 @@ When unit data is set to use hardware envelope, unit subdata is set one of the 2
 ---
 
 ## History
-| Version | Date       | Detail                                                                        |
-| ------- | ---------- | ----------------------------------------------------------------------------- |
-| 1.3.0   | 2021-xx-xx | Added FM/ADPCM panning sequence and removed unused subdata of ADPCM envelope. |
-| 1.2.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                               |
-| 1.1.0   | 2020-02-25 | Added ADPCM instrument.                                                       |
-| 1.0.2   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.                    |
-| 1.0.1   | 2019-11-09 | Reversed SSG noise pitch order.                                               |
-| 1.0.0   | 2019-07-14 | Initial release.                                                              |
+| Version | Date       | Detail                                                                                          |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| 1.3.0   | 2021-xx-xx | Added FM/ADPCM panning sequence, drumkit panning, and removed unused subdata of ADPCM envelope. |
+| 1.2.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                                                 |
+| 1.1.0   | 2020-02-25 | Added ADPCM instrument.                                                                         |
+| 1.0.2   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.                                      |
+| 1.0.1   | 2019-11-09 | Reversed SSG noise pitch order.                                                                 |
+| 1.0.0   | 2019-07-14 | Initial release.                                                                                |

@@ -182,6 +182,9 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 				else kitSampFileMap[samp] = { key };
 				kit->setSampleEnabled(key, true);
 				kit->setPitch(key, ctr.readInt8(instCsr++));
+				if (fileVersion >= Version::toBCD(1, 5, 0)) {
+					kit->setPan(key, ctr.readUint8(instCsr++));
+				}
 			}
 			break;
 		}
@@ -1943,6 +1946,7 @@ void BtiIO::save(BinaryContainer& ctr,
 				if (!sampMap.count(samp)) sampMap[samp] = sampCnt++;
 				ctr.appendUint8(static_cast<uint8_t>(sampMap[samp]));
 				ctr.appendInt8(static_cast<int8_t>(kit->getPitch(key)));
+				ctr.appendUint8(static_cast<uint8_t>(kit->getPan(key)));
 			}
 			break;
 		}

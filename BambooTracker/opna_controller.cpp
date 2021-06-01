@@ -3348,6 +3348,15 @@ void OPNAController::updateKeyOnOffStatusRhythm()
 }
 
 //---------- ADPCM ----------//
+
+namespace
+{
+int calculateCurrentKeyOfDrumkit(int noteNum, int transpose)
+{
+	return utils::clamp(noteNum + transpose / Note::SEMINOTE_PITCH, 0, Note::NOTE_NUMBER_RANGE - 1);
+}
+}
+
 /********** Key on-off **********/
 void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 {
@@ -3941,6 +3950,12 @@ void OPNAController::checkPanADPCM(int type)
 		if (!panItrADPCM_->hasEnded())
 			writePanADPCM(panItrADPCM_->data().data);
 	}
+	else if (refInstKit_ && type == 1) {
+		int key = calculateCurrentKeyOfDrumkit(baseNoteADPCM_.getNoteNumber(), transposeADPCM_);
+		if (refInstKit_->getSampleEnabled(key)) {
+			writePanADPCM(refInstKit_->getPan(key));
+		}
+	}
 }
 
 void OPNAController::writePanADPCM(int pos)
@@ -3966,8 +3981,7 @@ void OPNAController::writePitchADPCM()
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
-		int key = utils::clamp(baseNoteADPCM_.getNoteNumber()
-							   + transposeADPCM_ / Note::SEMINOTE_PITCH, 0, Note::NOTE_NUMBER_RANGE - 1);
+		int key = calculateCurrentKeyOfDrumkit(baseNoteADPCM_.getNoteNumber(), transposeADPCM_);
 		if (refInstKit_->getSampleEnabled(key)) {
 			int diff = Note::SEMINOTE_PITCH * refInstKit_->getPitch(key);
 			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));
