@@ -86,7 +86,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="247"/>
         <source>B</source>
-        <translation>B</translation>
+        <translation>H</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="265"/>
@@ -734,7 +734,7 @@
         <location filename="../gui/configuration_dialog.ui" line="1672"/>
         <location filename="../gui/configuration_dialog.ui" line="2520"/>
         <source>B</source>
-        <translation>B</translation>
+        <translation>H</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="1972"/>
