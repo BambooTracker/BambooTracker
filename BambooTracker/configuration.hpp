@@ -56,6 +56,12 @@ enum class RealChipInterface : int
 	C86CTL = 2
 };
 
+enum class NoteNotationSystem : int
+{
+	ENGLISH = 0,
+	GERMAN = 1
+};
+
 class Configuration
 {
 public:
@@ -230,6 +236,14 @@ public:
 	int getWaveViewFrameRate() const { return waveViewFps_; }
 private:
 	int waveViewFps_;
+
+	// Note names
+public:
+	void setNotationSystem(NoteNotationSystem sys) { notationSys_ = sys; }
+	NoteNotationSystem getNotationSystem() const { return notationSys_; }
+
+private:
+	NoteNotationSystem notationSys_;
 
 	// Keys
 public:

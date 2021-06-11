@@ -75,6 +75,7 @@ SOURCES += \
     gui/instrument_editor/sample_length_dialog.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
+    gui/note_name_manager.cpp \
     gui/swap_tracks_dialog.cpp \
     gui/track_visibility_memory_handler.cpp \
     gui/transpose_song_dialog.cpp \
@@ -266,6 +267,7 @@ HEADERS += \
     chip/opna.hpp \
     chip/resampler.hpp \
     bamboo_tracker.hpp \
+    gui/note_name_manager.hpp \
     gui/swap_tracks_dialog.hpp \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \

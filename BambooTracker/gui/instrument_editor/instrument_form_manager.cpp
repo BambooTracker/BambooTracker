@@ -36,8 +36,18 @@
 void InstrumentFormManager::updateByConfiguration()
 {
 	for (auto& pair : map_) {
-		if (static_cast<InstrumentType>(pair.second->property("Type").toInt()) == InstrumentType::FM) {
+		switch (static_cast<InstrumentType>(pair.second->property("Type").toInt())) {
+		case InstrumentType::FM:
 			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->updateConfigurationForDisplay();
+			break;
+		case InstrumentType::SSG:
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->updateConfigurationForDisplay();
+			break;
+		case InstrumentType::ADPCM:
+			qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get())->updateConfigurationForDisplay();
+			break;
+		default:
+			break;
 		}
 	}
 }

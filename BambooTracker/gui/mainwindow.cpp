@@ -85,6 +85,7 @@
 #include "gui/hide_tracks_dialog.hpp"
 #include "gui/track_visibility_memory_handler.hpp"
 #include "gui/file_io_error_message_box.hpp"
+#include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
 #include "utils.hpp"
 
@@ -100,7 +101,7 @@ const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS
 constexpr int STATUS_DISPLAY_TIMEOUT = 0;
 }
 
-MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
+MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool configLoaded, QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	config_(config),
@@ -155,6 +156,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	else {
 		move(config.lock()->getMainWindowX(), config.lock()->getMainWindowY());
 	}
+	if (!configLoaded) {	// On the first launch
+		const QHash<QString, NoteNotationSystem> defNoteSysMap = {
+			{ "English", NoteNotationSystem::ENGLISH },
+			{ "German", NoteNotationSystem::GERMAN }
+		};
+		//: Set the name of suitable notation system (English or German)
+		config.lock()->setNotationSystem(defNoteSysMap[tr("English", "Default notation system")]);
+	}
 	resize(config.lock()->getMainWindowWidth(), config.lock()->getMainWindowHeight());
 	if (config.lock()->getMainWindowMaximized()) showMaximized();
 	ui->action_Status_Bar->setChecked(config.lock()->getVisibleStatusBar());
@@ -177,6 +186,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	if (config.lock()->getOrderListRowsFont().empty()) {
 		config.lock()->setOrderListRowsFont(ui->orderList->getRowsFont().toStdString());
 	}
+	NoteNameManager::getManager().setNotationSystem(config.lock()->getNotationSystem());
 	ui->patternEditor->setConfiguration(config_.lock());
 	ui->orderList->setConfiguration(config_.lock());
 	updateFonts();
@@ -676,7 +686,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
 	QString audioApi = gui_utils::utf8ToQString(config.lock()->getSoundAPI());
-	if (audioApi.isEmpty()) {	// On the first launch
+	if (!configLoaded) {	// On the first launch
 		bool streamState = false;
 		QString streamErr;
 		for (const QString& audioApi : stream_->getAvailableBackends()) {
@@ -2359,6 +2369,7 @@ void MainWindow::changeConfiguration()
 	}
 
 	setMidiConfiguration();
+	NoteNameManager::getManager().setNotationSystem(config_.lock()->getNotationSystem());
 	updateFonts();
 	ui->orderList->setHorizontalScrollMode(config_.lock()->getMoveCursorByHorizontalScroll());
 	ui->patternEditor->setHorizontalScrollMode(config_.lock()->getMoveCursorByHorizontalScroll());

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>432</height>
+    <width>550</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,51 @@
        <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="waveViewGroupBox">
+         <property name="title">
+          <string>Wave view</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="waveViewRateLabel">
+            <property name="text">
+             <string>Frame rate</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="waveViewRateSpinBox">
+            <property name="suffix">
+             <string notr="true">fps</string>
+            </property>
+            <property name="minimum">
+             <number>20</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>30</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="editSettingsGroupBox">
          <property name="title">
@@ -53,20 +98,7 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="1">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="0" rowspan="3">
+       <item row="0" column="0" rowspan="4">
         <widget class="QGroupBox" name="generalSettingsGroupBox">
          <property name="title">
           <string>General settings</string>
@@ -244,34 +276,21 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="waveViewGroupBox">
+       <item row="2" column="1">
+        <widget class="QGroupBox" name="noteNameGroupBox">
          <property name="title">
-          <string>Wave view</string>
+          <string>Note names</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QLabel" name="waveViewRateLabel">
+           <widget class="QLabel" name="noteNameLabel">
             <property name="text">
-             <string>Frame rate</string>
+             <string>Notation system</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="waveViewRateSpinBox">
-            <property name="suffix">
-             <string notr="true">fps</string>
-            </property>
-            <property name="minimum">
-             <number>20</number>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>30</number>
-            </property>
-           </widget>
+           <widget class="QComboBox" name="noteNameComboBox"/>
           </item>
          </layout>
         </widget>
@@ -2656,6 +2675,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>generalSettingsListWidget</tabstop>
   <tabstop>pageJumpLengthSpinBox</tabstop>
   <tabstop>waveViewRateSpinBox</tabstop>
+  <tabstop>noteNameComboBox</tabstop>
   <tabstop>emulatorComboBox</tabstop>
   <tabstop>audioApiComboBox</tabstop>
   <tabstop>audioDeviceComboBox</tabstop>

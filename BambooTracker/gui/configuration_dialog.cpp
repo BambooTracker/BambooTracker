@@ -44,10 +44,11 @@
 #include "audio/audio_stream.hpp"
 #include "midi/midi.hpp"
 #include "jamming.hpp"
-#include "slider_style.hpp"
-#include "fm_envelope_set_edit_dialog.hpp"
-#include "color_palette_handler.hpp"
-#include "gui_utils.hpp"
+#include "gui/slider_style.hpp"
+#include "gui/fm_envelope_set_edit_dialog.hpp"
+#include "gui/color_palette_handler.hpp"
+#include "gui/note_name_manager.hpp"
+#include "gui/gui_utils.hpp"
 
 namespace
 {
@@ -60,6 +61,17 @@ inline bool fromCheckState(Qt::CheckState state)
 {
 	return (state == Qt::Checked) ? true : false;
 }
+
+struct NotationSystemAttribute
+{
+	QString name, dispName;
+	NoteNotationSystem ev;
+};
+
+const NotationSystemAttribute NOTATION_SYSS[] = {
+	{ "English", QT_TR_NOOP("English"), NoteNotationSystem::ENGLISH },
+	{ "German", QT_TR_NOOP("German"), NoteNotationSystem::GERMAN }
+};
 }
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
@@ -133,6 +145,17 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 
 	// Wave view
 	ui->waveViewRateSpinBox->setValue(configLocked->getWaveViewFrameRate());
+
+	// Note names
+	{
+		QSignalBlocker blocker(ui->noteNameComboBox);
+		for (const auto& attrib : NOTATION_SYSS) {
+			ui->noteNameComboBox->addItem(attrib.dispName);
+			if (attrib.ev == configLocked->getNotationSystem()) {
+				ui->noteNameComboBox->setCurrentIndex(ui->noteNameComboBox->count() - 1);
+			}
+		}
+	}
 
 	// Keys
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -266,6 +289,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	for (const auto& pair : configLocked->getCustomLayoutKeys()) {
 		customLayoutKeysMap_.at(pair.second)->setKeySequence(QKeySequence(gui_utils::utf8ToQString(pair.first)));
 	}
+	updateNoteNames();
 
 	// Emulation //
 	ui->emulatorComboBox->addItem("MAME YM2608", static_cast<int>(chip::OpnaEmulator::Mame));
@@ -413,6 +437,9 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	// Wave view
 	configLocked->setWaveViewFrameRate(ui->waveViewRateSpinBox->value());
 
+	// Note names
+	configLocked->setNotationSystem(NOTATION_SYSS[ui->noteNameComboBox->currentIndex()].ev);
+
 	// Keys
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
 	for (const auto& pair: shortcutsMap_) {
@@ -480,6 +507,22 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		text = item->data(Qt::UserRole).toString();
 	}
 	ui->descPlainTextEdit->setPlainText(tr("Description: %1").arg(text));
+}
+
+void ConfigurationDialog::on_noteNameComboBox_currentIndexChanged(int index)
+{
+	// Change notation system temporary
+	NoteNameManager& man = NoteNameManager::getManager();
+	man.setNotationSystem(NOTATION_SYSS[index].ev);
+	updateNoteNames();
+
+	// Restore global notation system
+	for (const auto& attrib : NOTATION_SYSS) {
+		if (attrib.ev == config_.lock()->getNotationSystem()) {
+			man.setNotationSystem(attrib.ev);
+			return;
+		}
+	}
 }
 
 /***** Mixer *****/
@@ -648,6 +691,43 @@ std::string ConfigurationDialog::getShortcutString(int row) const
 	return qobject_cast<QKeySequenceEdit*>(
 				ui->shortcutsTreeWidget->itemWidget(ui->shortcutsTreeWidget->topLevelItem(row), 1)
 				)->keySequence().toString().toStdString();
+}
+
+void ConfigurationDialog::updateNoteNames()
+{
+	const NoteNameManager& man = NoteNameManager::getManager();
+	ui->lowCLabel->setText(man.getNoteName(0));
+	ui->lowCSLabel->setText(man.getNoteName(1));
+	ui->lowDLabel->setText(man.getNoteName(2));
+	ui->lowDSLabel->setText(man.getNoteName(3));
+	ui->lowELabel->setText(man.getNoteName(4));
+	ui->lowFLabel->setText(man.getNoteName(5));
+	ui->lowFSLabel->setText(man.getNoteName(6));
+	ui->lowGLabel->setText(man.getNoteName(7));
+	ui->lowGSLabel->setText(man.getNoteName(8));
+	ui->lowALabel->setText(man.getNoteName(9));
+	ui->lowASLabel->setText(man.getNoteName(10));
+	ui->lowBLabel->setText(man.getNoteName(11));
+	ui->lowHighCLabel->setText(man.getNoteName(0));
+	ui->lowHighCLabel->setText(man.getNoteName(1));
+	ui->lowHighCSLabel->setText(man.getNoteName(2));
+	ui->lowHighDLabel->setText(man.getNoteName(3));
+	ui->highCLabel->setText(man.getNoteName(0));
+	ui->highCSLabel->setText(man.getNoteName(1));
+	ui->highDLabel->setText(man.getNoteName(2));
+	ui->highDSLabel->setText(man.getNoteName(3));
+	ui->highELabel->setText(man.getNoteName(4));
+	ui->highFLabel->setText(man.getNoteName(5));
+	ui->highFSLabel->setText(man.getNoteName(6));
+	ui->highGLabel->setText(man.getNoteName(7));
+	ui->highGSLabel->setText(man.getNoteName(8));
+	ui->highALabel->setText(man.getNoteName(9));
+	ui->highASLabel->setText(man.getNoteName(10));
+	ui->highBLabel->setText(man.getNoteName(11));
+	ui->highHighCLabel->setText(man.getNoteName(0));
+	ui->highHighCLabel->setText(man.getNoteName(1));
+	ui->highHighCSLabel->setText(man.getNoteName(2));
+	ui->highHighDLabel->setText(man.getNoteName(3));
 }
 
 /***** Appearance *****/

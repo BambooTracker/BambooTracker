@@ -326,6 +326,11 @@ void InstrumentEditorADPCMForm::setConfiguration(std::weak_ptr<Configuration> co
 	ui->sampleEditor->setConfiguration(config);
 }
 
+void InstrumentEditorADPCMForm::updateConfigurationForDisplay()
+{
+	ui->arpEditor->onNoteNamesUpdated();
+}
+
 void InstrumentEditorADPCMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;

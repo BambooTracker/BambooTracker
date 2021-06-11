@@ -50,6 +50,7 @@ public:
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
 	void setConfiguration(std::weak_ptr<Configuration> config);
+	void updateConfigurationForDisplay();
 	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 signals:

@@ -231,6 +231,11 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 		settings.setValue("frameRate", configLocked->getWaveViewFrameRate());
 		settings.endGroup();
 
+		// Note names
+		settings.beginGroup("NoteNames");
+		settings.setValue("notationSystem", static_cast<int>(configLocked->getNotationSystem()));
+		settings.endGroup();
+
 		// Keys
 		settings.beginGroup("Keys");
 		for (const auto& pair : configLocked->getShortcuts()) {
@@ -390,6 +395,12 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		// Wave view
 		settings.beginGroup("WaveView");
 		configLocked->setWaveViewFrameRate(settings.value("frameRate", configLocked->getWaveViewFrameRate()).toInt());
+		settings.endGroup();
+
+		// Note names
+		settings.beginGroup("NoteNames");
+		configLocked->setNotationSystem(
+					static_cast<NoteNotationSystem>(settings.value("notationSystem", static_cast<int>(configLocked->getNotationSystem())).toInt()));
 		settings.endGroup();
 
 		// Keys

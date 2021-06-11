@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,29 +23,51 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef ARPEGGIO_MACRO_EDITOR_HPP
-#define ARPEGGIO_MACRO_EDITOR_HPP
+#include "note_name_manager.hpp"
+#include <unordered_map>
+#include "configuration.hpp"
+#include "enum_hash.hpp"
 
-#include "visualized_instrument_macro_editor.hpp"
-#include <QString>
-#include "instrument.hpp"
-
-class ArpeggioMacroEditor final : public VisualizedInstrumentMacroEditor
+namespace
 {
-	Q_OBJECT
-
-public:
-	ArpeggioMacroEditor(QWidget *parent = nullptr);
-
-protected:
-	QString convertSequenceDataUnitToMML(Column col) override;
-	bool interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column) override;
-
-public slots:
-	void onNoteNamesUpdated();
-
-private:
-	void updateLabels() override;
+const std::unordered_map<NoteNotationSystem, QStringList> NAMES = {
+	{
+		NoteNotationSystem::ENGLISH,
+		{
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
+		}
+	},
+	{
+		NoteNotationSystem::GERMAN,
+		{
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "B", "H"
+		}
+	}
 };
+}
 
-#endif // ARPEGGIO_MACRO_EDITOR_HPP
+std::unique_ptr<NoteNameManager> NoteNameManager::instance_;
+
+NoteNameManager& NoteNameManager::getManager()
+{
+	if (instance_)
+		return *instance_;
+
+	NoteNameManager *out = new NoteNameManager;
+	instance_.reset(out);
+	return *out;
+}
+
+NoteNameManager::NoteNameManager() : list_(&NAMES.at(NoteNotationSystem::ENGLISH)) {}
+
+NoteNameManager::~NoteNameManager() = default;
+
+void NoteNameManager::setNotationSystem(NoteNotationSystem system)
+{
+	list_ = &NAMES.at(system);
+}
+
+QString NoteNameManager::getNoteString(int noteNum)
+{
+	return QString("%1%2").arg(list_->at(noteNum % 12), -2, QChar('-')).arg(noteNum / 12);
+}

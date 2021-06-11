@@ -203,6 +203,9 @@ Configuration::Configuration()
 	// Wave view
 	waveViewFps_ = 30;
 
+	// Note names
+	notationSys_ = NoteNotationSystem::ENGLISH;
+
 	// Keys
 	shortcuts_ = {
 		{ ShortcutAction::KeyOff, u8"-" },

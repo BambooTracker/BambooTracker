@@ -700,6 +700,8 @@ void InstrumentEditorFMForm::updateConfigurationForDisplay()
 	ui->op2Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
 	ui->op3Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
 	ui->op4Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
+
+	ui->arpEditor->onNoteNamesUpdated();
 }
 
 void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)

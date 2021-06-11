@@ -72,7 +72,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent = nullptr);
+        MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool configLoaded, QWidget *parent = nullptr);
 	~MainWindow() override;
 
 	void assignADPCMSamples();
