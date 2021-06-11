@@ -493,6 +493,11 @@ void InstrumentEditorSSGForm::setConfiguration(std::weak_ptr<Configuration> conf
 	config_ = config;
 }
 
+void InstrumentEditorSSGForm::updateConfigurationForDisplay()
+{
+	ui->arpEditor->onNoteNamesUpdated();
+}
+
 void InstrumentEditorSSGForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	ui->waveEditor->setColorPalette(palette);

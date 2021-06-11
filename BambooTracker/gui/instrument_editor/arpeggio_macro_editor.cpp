@@ -89,6 +89,12 @@ bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vecto
 	}
 }
 
+void ArpeggioMacroEditor::onNoteNamesUpdated()
+{
+	updateLabels();
+	printMML();
+}
+
 void ArpeggioMacroEditor::updateLabels()
 {
 	if (type_ == SequenceType::FixedSequence) {

@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 {
 	try {
 		std::shared_ptr<Configuration> config = std::make_shared<Configuration>();
-		io::loadConfiguration(config);
+		bool hasSuccessed = io::loadConfiguration(config);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 		QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
 		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
 
-		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath));
+		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath, hasSuccessed));
 		w->show();
 		int ret = a->exec();
 

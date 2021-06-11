@@ -69,6 +69,7 @@ private:
 	/***** General *****/
 private slots:
 	void on_generalSettingsListWidget_itemSelectionChanged();
+	void on_noteNameComboBox_currentIndexChanged(int index);
 
 	/***** Mixer *****/
 private slots:
@@ -102,6 +103,7 @@ private:
 
 	void addShortcutItem(QString action, std::string shortcut);
 	std::string getShortcutString(int row) const;
+	void updateNoteNames();
 
 	/***** Appearance *****/
 private slots:

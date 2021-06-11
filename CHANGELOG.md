@@ -8,6 +8,7 @@
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
 - [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
 - Panning settings in the drumkit editor
+- [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed
@@ -38,6 +39,7 @@
 [@Speedvicio]: https://github.com/Speedvicio
 [@RaijinXBlade]: https://github.com/RaijinXBlade
 [@ToughkidDev]: https://github.com/ToughkidDev
+[@wildmatsu]: https://github.com/wildmatsu
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
@@ -67,6 +69,7 @@
 [#367]: https://github.com/rerrahkr/BambooTracker/issues/367
 [#346]: https://github.com/rerrahkr/BambooTracker/pull/346
 [#314]: https://github.com/rerrahkr/BambooTracker/issues/314
+[#345]: https://github.com/rerrahkr/BambooTracker/issues/345
 
 ## v0.4.6 (2021-02-11)
 ### Added

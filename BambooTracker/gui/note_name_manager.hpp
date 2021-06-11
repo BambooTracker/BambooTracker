@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,29 +23,32 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef ARPEGGIO_MACRO_EDITOR_HPP
-#define ARPEGGIO_MACRO_EDITOR_HPP
+#ifndef NOTE_NAME_MANAGER_HPP
+#define NOTE_NAME_MANAGER_HPP
 
-#include "visualized_instrument_macro_editor.hpp"
+#include <memory>
 #include <QString>
-#include "instrument.hpp"
+#include <QStringList>
 
-class ArpeggioMacroEditor final : public VisualizedInstrumentMacroEditor
+enum class NoteNotationSystem : int;
+
+class NoteNameManager final
 {
-	Q_OBJECT
-
 public:
-	ArpeggioMacroEditor(QWidget *parent = nullptr);
+	static NoteNameManager& getManager();
+	~NoteNameManager();
 
-protected:
-	QString convertSequenceDataUnitToMML(Column col) override;
-	bool interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column) override;
+	void setNotationSystem(NoteNotationSystem system);
 
-public slots:
-	void onNoteNamesUpdated();
+	QString getNoteName(int n) const { return list_->at(n); }
+	QString getNoteString(int noteNum);
 
 private:
-	void updateLabels() override;
+	static std::unique_ptr<NoteNameManager> instance_;
+
+	NoteNameManager();
+	const QStringList* list_;
+
 };
 
-#endif // ARPEGGIO_MACRO_EDITOR_HPP
+#endif // NOTE_NAME_MANAGER_HPP
