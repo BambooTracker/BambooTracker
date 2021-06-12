@@ -54,6 +54,7 @@
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
+#include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
 #include "utils.hpp"
 
@@ -925,26 +926,9 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^3");
 			break;
 		default:	// Convert tone name
-		{
-			QString toneStr;
-			switch (noteNum % 12) {
-			case 0:		toneStr = "C-";	break;
-			case 1:		toneStr = "C#";	break;
-			case 2:		toneStr = "D-";	break;
-			case 3:		toneStr = "D#";	break;
-			case 4:		toneStr = "E-";	break;
-			case 5:		toneStr = "F-";	break;
-			case 6:		toneStr = "F#";	break;
-			case 7:		toneStr = "G-";	break;
-			case 8:		toneStr = "G#";	break;
-			case 9:		toneStr = "A-";	break;
-			case 10:	toneStr = "A#";	break;
-			case 11:	toneStr = "B-";	break;
-			}
 			textPainter.setPen(palette_->ptnNoteColor);
-			textPainter.drawText(offset, baseY, toneStr + QString::number(noteNum / 12));
+			textPainter.drawText(offset, baseY, NoteNameManager::getManager().getNoteString(noteNum));
 			break;
-		}
 		}
 	}
 	offset += toneNameWidth_ +  widthSpaceDbl_;

@@ -328,6 +328,7 @@ void InstrumentEditorADPCMForm::setConfiguration(std::weak_ptr<Configuration> co
 
 void InstrumentEditorADPCMForm::updateConfigurationForDisplay()
 {
+	ui->sampleEditor->onNoteNamesUpdated();
 	ui->arpEditor->onNoteNamesUpdated();
 }
 

@@ -51,6 +51,7 @@
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
+#include "gui/note_name_manager.hpp"
 #include "utils.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
@@ -68,6 +69,10 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	drawMode_(DrawMode::Disabled)
 {
 	ui->setupUi(this);
+
+	for (int i = 0; i < 12; ++i) {
+		ui->rootKeyComboBox->addItem(NoteNameManager::getManager().getNoteName(i));
+	}
 
 	auto rkfunc = [&](int dummy) {
 		Q_UNUSED(dummy)
@@ -517,6 +522,13 @@ void ADPCMSampleEditor::onSampleMemoryUpdated(size_t start, size_t stop)
 	addrStop_ = stop;
 	updateSampleMemoryBar();
 	ui->memoryWidget->update();
+}
+
+void ADPCMSampleEditor::onNoteNamesUpdated()
+{
+	for (int i = 0; i < 12; ++i) {
+		ui->rootKeyComboBox->setItemText(i, NoteNameManager::getManager().getNoteName(i));
+	}
 }
 
 void ADPCMSampleEditor::on_sampleNumSpinBox_valueChanged(int arg1)
