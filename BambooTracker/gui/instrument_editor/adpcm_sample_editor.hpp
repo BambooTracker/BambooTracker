@@ -69,6 +69,7 @@ signals:
 public slots:
 	void onSampleNumberChanged();
 	void onSampleMemoryUpdated(size_t start, size_t stop);
+	void onNoteNamesUpdated();
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* ev) override;

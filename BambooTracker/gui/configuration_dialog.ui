@@ -1324,7 +1324,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -1386,7 +1386,7 @@ color: rgb(0, 0, 0);</string>
                  <enum>QFrame::Plain</enum>
                 </property>
                 <property name="text">
-                 <string>C</string>
+                 <string notr="true">C</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1418,7 +1418,7 @@ color: rgb(255, 255, 255);</string>
                  <enum>QFrame::NoFrame</enum>
                 </property>
                 <property name="text">
-                 <string>C#</string>
+                 <string notr="true">C#</string>
                 </property>
                 <property name="scaledContents">
                  <bool>false</bool>
@@ -1453,7 +1453,7 @@ color: rgb(0, 0, 0);</string>
                  <enum>QFrame::NoFrame</enum>
                 </property>
                 <property name="text">
-                 <string>D</string>
+                 <string notr="true">D</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1479,7 +1479,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>D#</string>
+                 <string notr="true">D#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1505,7 +1505,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>E</string>
+                 <string notr="true">E</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1531,7 +1531,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>F</string>
+                 <string notr="true">F</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1557,7 +1557,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>F#</string>
+                 <string notr="true">F#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1584,7 +1584,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>G</string>
+                 <string notr="true">G</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1610,7 +1610,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>G#</string>
+                 <string notr="true">G#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1636,7 +1636,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>A</string>
+                 <string notr="true">A</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1662,7 +1662,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>A#</string>
+                 <string notr="true">A#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1688,7 +1688,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>B</string>
+                 <string notr="true">B</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1730,7 +1730,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>C</string>
+                 <string notr="true">C</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1756,7 +1756,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>C#</string>
+                 <string notr="true">C#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1782,7 +1782,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>D</string>
+                 <string notr="true">D</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2055,7 +2055,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>C#</string>
+                 <string notr="true">C#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2081,7 +2081,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>F</string>
+                 <string notr="true">F</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2146,7 +2146,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>D</string>
+                 <string notr="true">D</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2198,7 +2198,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>G#</string>
+                 <string notr="true">G#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2282,7 +2282,7 @@ color: rgb(0, 0, 0);</string>
                  <enum>QFrame::NoFrame</enum>
                 </property>
                 <property name="text">
-                 <string>D</string>
+                 <string notr="true">D</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2309,7 +2309,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>G</string>
+                 <string notr="true">G</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2361,7 +2361,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>D#</string>
+                 <string notr="true">D#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2387,7 +2387,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>A</string>
+                 <string notr="true">A</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2413,7 +2413,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>C</string>
+                 <string notr="true">C</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2439,7 +2439,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>E</string>
+                 <string notr="true">E</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2481,7 +2481,7 @@ color: rgb(255, 255, 255);</string>
                  <enum>QFrame::NoFrame</enum>
                 </property>
                 <property name="text">
-                 <string>C#</string>
+                 <string notr="true">C#</string>
                 </property>
                 <property name="scaledContents">
                  <bool>false</bool>
@@ -2510,7 +2510,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>A#</string>
+                 <string notr="true">A#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2536,7 +2536,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
-                 <string>B</string>
+                 <string notr="true">B</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2587,7 +2587,7 @@ color: rgb(0, 0, 0);
                  <enum>QFrame::Plain</enum>
                 </property>
                 <property name="text">
-                 <string>C</string>
+                 <string notr="true">C</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2616,7 +2616,7 @@ color: rgb(0, 0, 0);
 color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
-                 <string>F#</string>
+                 <string notr="true">F#</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignHCenter</set>

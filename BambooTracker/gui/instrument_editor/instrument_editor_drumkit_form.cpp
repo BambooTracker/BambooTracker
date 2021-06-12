@@ -30,6 +30,7 @@
 #include "note.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
+#include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
 #include "gui/slider_style.hpp"
 
@@ -55,10 +56,10 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 	ui->setupUi(this);
 
 	ui->keyTreeWidget->header()->setDefaultSectionSize(40);	// Rearrange header widths
-	const static QString tone[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-" };
+	NoteNameManager& nnm = NoteNameManager::getManager();
 	for (int i = 0; i < Note::NOTE_NUMBER_RANGE; ++i) {
 		ui->keyTreeWidget->addTopLevelItem(
-					new QTreeWidgetItem({ tone[i % 12] + QString::number(i / 12), "-", "-", "-" }));
+					new QTreeWidgetItem({ nnm.getNoteString(i), "-", "-" }));
 	}
 
 	//========== Sample ==========//
