@@ -102,7 +102,7 @@ QString PanMacroEditor::convertSequenceDataUnitToMML(Column col)
 
 bool PanMacroEditor::interpretDataInMML(QString& text, int& cnt, std::vector<Column>& column)
 {
-	auto c = text.leftRef(1);
+	auto c = text.left(1);
 	for (int i = 0; i < 4; ++i) {
 		if (c == MML_DISP[i]) {
 			column.push_back({ i, -1, "" });
