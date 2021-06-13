@@ -34,7 +34,7 @@ const std::unordered_map<KeySignature::Type, QStringList> NAMES_EN = {
 	{
 		KeySignature::C,
 		{
-			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"
+			"C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"
 		}
 	},
 	{
@@ -124,13 +124,13 @@ const std::unordered_map<KeySignature::Type, QStringList> NAMES_EN = {
 	{
 		KeySignature::A,
 		{
-			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Ab", "B"
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Bb", "B"
 		}
 	},
 	{
 		KeySignature::AS,
 		{
-			"B#", "C#", "Cx", "D#", "Dx", "E#", "F#", "G", "G#", "Gx", "A#", "B"
+			"B#", "C#", "Cx", "D#", "Dx", "E#", "F#", "Fx", "G#", "Gx", "A#", "B"
 		}
 	},
 	{
@@ -163,7 +163,7 @@ const std::unordered_map<KeySignature::Type, QStringList> NAMES_DE = {
 	{
 		KeySignature::C,
 		{
-			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "B", "H"
+			"C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "B", "H"
 		}
 	},
 	{
@@ -253,13 +253,13 @@ const std::unordered_map<KeySignature::Type, QStringList> NAMES_DE = {
 	{
 		KeySignature::A,
 		{
-			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Ab", "H"
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "B", "H"
 		}
 	},
 	{
 		KeySignature::AS,
 		{
-			"H#", "C#", "Cx", "D#", "Dx", "E#", "F#", "G", "G#", "Gx", "A#", "H"
+			"H#", "C#", "Cx", "D#", "Dx", "E#", "F#", "Fx", "G#", "Gx", "A#", "H"
 		}
 	},
 	{
