@@ -926,9 +926,12 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^3");
 			break;
 		default:	// Convert tone name
+		{
 			textPainter.setPen(palette_->ptnNoteColor);
-			textPainter.drawText(offset, baseY, NoteNameManager::getManager().getNoteString(noteNum));
+			KeySignature::Type key = bt_->searchKeySignatureAt(curSongNum_, orderNum, stepNum);
+			textPainter.drawText(offset, baseY, NoteNameManager::getManager().getNoteString(noteNum, key));
 			break;
+		}
 		}
 	}
 	offset += toneNameWidth_ +  widthSpaceDbl_;

@@ -541,8 +541,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 
 	/* Bookmark */
 	bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
-	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested,
-					 this, [&](int order, int step) {
+	auto posJumpFunc = [&](int order, int step) {
 		if (bt_->isPlaySong()) return;
 		int song = bt_->getCurrentSongNumber();
 		if (static_cast<int>(bt_->getOrderSize(song)) <= order) return;
@@ -552,8 +551,17 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		ui->orderList->updatePositionByPositionJump();
 		ui->patternEditor->updatepositionByPositionJump();
 		activateWindow();
-	});
+	};
+	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested, this, posJumpFunc);
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
+
+	/* Key signature */
+	ksManForm_ = std::make_unique<KeySignatureManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
+	QObject::connect(ksManForm_.get(), &KeySignatureManagerForm::positionJumpRequested, this, posJumpFunc);
+	QObject::connect(ksManForm_.get(), &KeySignatureManagerForm::modified, this, [&] {
+		ui->patternEditor->onPatternDataGlobalChanged();
+		setModifiedTrue();
+	});
 
 	// Shortcuts
 	auto linkShortcut = [&](QAction* ptr) {
@@ -1132,6 +1140,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (effListDiag_) effListDiag_->close();
 	if (shortcutsDiag_) shortcutsDiag_->close();
 	bmManForm_->close();
+	ksManForm_->close();
 	if (commentDiag_) commentDiag_->close();
 
 	event->accept();
@@ -2205,6 +2214,7 @@ void MainWindow::loadSong()
 	statusPlayPos_->setText(config_.lock()->getShowRowNumberInHex() ? "00/00" : "000/000");
 
 	bmManForm_->onCurrentSongNumberChanged();
+	ksManForm_->onCurrentSongNumberChanged();
 
 	// Update track visibility
 	std::vector<int> visTracks;
@@ -2366,6 +2376,7 @@ void MainWindow::changeConfiguration()
 	setShortcuts();
 	updateInstrumentListColors();
 	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
+	ksManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
 	visualTimer_->stop();
 	visualTimer_->start(static_cast<int>(std::round(1000. / config_.lock()->getWaveViewFrameRate())));
@@ -3869,4 +3880,10 @@ void MainWindow::on_action_Estimate_Song_Length_triggered()
 	box.setText(tr("Approximate song length: %1m%2s")
 				.arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0')));
 	box.exec();
+}
+
+void MainWindow::on_action_Key_Signature_Manager_triggered()
+{
+	if (ksManForm_->isVisible()) ksManForm_->activateWindow();
+	else ksManForm_->show();
 }

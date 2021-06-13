@@ -75,6 +75,7 @@ SOURCES += \
     gui/instrument_editor/pan_macro_editor.cpp \
     gui/instrument_editor/sample_length_dialog.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
+    gui/key_signature_manager_form.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     gui/note_name_manager.cpp \
     gui/swap_tracks_dialog.cpp \
@@ -254,6 +255,7 @@ HEADERS += \
     gui/instrument_editor/sample_length_dialog.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/jam_layout.hpp \
+    gui/key_signature_manager_form.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
     chip/mame/2608intf.h \
@@ -415,6 +417,7 @@ FORMS += \
     gui/instrument_editor/instrument_editor_adpcm_form.ui \
     gui/instrument_editor/instrument_editor_drumkit_form.ui \
     gui/instrument_editor/sample_length_dialog.ui \
+    gui/key_signature_manager_form.ui \
     gui/keyboard_shortcut_list_dialog.ui \
     gui/mainwindow.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \

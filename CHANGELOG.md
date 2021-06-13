@@ -9,6 +9,7 @@
 - [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
 - Panning settings in the drumkit editor
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
+ - [#345] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
 - [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed

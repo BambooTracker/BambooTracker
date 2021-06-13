@@ -1,5 +1,5 @@
 # BambooTracker Bank File (.btb) Format Specification
-v1.3.0 - 2021-xx-xx
+v1.3.0 - 2021-06-13
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -296,7 +296,7 @@ When unit data is set to use hardware envelope, unit subdata is set one of the 2
 ## History
 | Version | Date       | Detail                                                                                          |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------- |
-| 1.3.0   | 2021-xx-xx | Added FM/ADPCM panning sequence, drumkit panning, and removed unused subdata of ADPCM envelope. |
+| 1.3.0   | 2021-06-13 | Added FM/ADPCM panning sequence, drumkit panning, and removed unused subdata of ADPCM envelope. |
 | 1.2.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                                                 |
 | 1.1.0   | 2020-02-25 | Added ADPCM instrument.                                                                         |
 | 1.0.2   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.                                      |

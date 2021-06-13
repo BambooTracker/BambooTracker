@@ -51,6 +51,39 @@ struct Bookmark
 	Bookmark(const std::string& argname, int argorder, int argstep);
 };
 
+struct KeySignature
+{
+	enum Type : int
+	{
+		C	= 0,
+		CS	= 1,
+		DF	= 2,
+		D	= 3,
+		DS	= 4,
+		EF	= 5,
+		E	= 6,
+		FF	= 7,
+		ES	= 8,
+		F	= 9,
+		FS	= 10,
+		GF	= 11,
+		G	= 12,
+		GS	= 13,
+		AF	= 14,
+		A	= 15,
+		AS	= 16,
+		BF	= 17,
+		B	= 18,
+		CF	= 19,
+		BS	= 20,
+		FISRT = C,
+		LAST = BS
+	} type;
+	int order, step;
+
+	KeySignature(Type type, int scorder, int scstep);
+};
+
 class Song
 {
 public:
@@ -108,6 +141,15 @@ public:
 	Bookmark getNextBookmark(int order, int step) const;
 	size_t getBookmarkSize() const;
 
+	// Key signature
+	void addKeySignature(KeySignature::Type key, int order, int step);
+	void changeKeySignature(int i, KeySignature::Type key, int order, int step);
+	void removeKeySignature(int i);
+	void clearKeySignature();
+	KeySignature getKeySignature(int i) const;
+	size_t getKeySignatureSize() const;
+	KeySignature::Type searchKeySignatureAt(int order, int step) const;
+
 	static size_t getFMChannelCount(SongType type)
 	{
 		switch (type) {
@@ -129,6 +171,7 @@ private:
 
 	std::vector<Track> tracks_;
 	std::vector<Bookmark> bms_;
+	std::vector<KeySignature> sigs_;
 
 	std::vector<Bookmark> getSortedBookmarkList() const;
 };

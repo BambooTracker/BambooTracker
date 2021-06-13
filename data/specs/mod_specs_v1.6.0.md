@@ -1,5 +1,5 @@
 # BambooTracker Module File (.btm) Format Specification
-v1.6.0 - 2021-xx-xx
+v1.6.0 - 2021-06-13
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -405,7 +405,47 @@ After bookmark count, bookmark data is stored in order.
 | uint8            | bookmark order position | The order number of bookmark position. |
 | uint8            | bookmark step position  | The step number of bookmark position.  |
 
-After bookmarks, song block includes some track subblock.
+There is Key signature subsection after bookmarks.
+
+| Type  | Field               | Description                   |
+| ----- | ------------------- | ----------------------------- |
+| uint8 | Key signature count | Number of key signature data. |
+
+After key signature count, key signature data is stored in order.
+
+| Type  | Field                        | Description                                 |
+| ----- | ---------------------------- | ------------------------------------------- |
+| uint8 | Signature value              | Key signature. See table below for details. |
+| uint8 | Key signature order position | The order number of key signature position. |
+| uint8 | Key signature step position  | The step number of key signature position.  |
+
+Signature value is defined as:
+
+| Value | Key signature (major/minor) |
+| ----- | --------------------------- |
+| 0     | C                           |
+| 1     | C#                          |
+| 2     | Db                          |
+| 3     | D                           |
+| 4     | D#                          |
+| 5     | Eb                          |
+| 6     | E                           |
+| 7     | Fb                          |
+| 8     | E#                          |
+| 9     | F                           |
+| 10    | F#                          |
+| 11    | Gb                          |
+| 12    | G                           |
+| 13    | G#                          |
+| 14    | Ab                          |
+| 15    | A                           |
+| 16    | A#                          |
+| 17    | Bb                          |
+| 18    | B                           |
+| 19    | Cb                          |
+| 20    | B#                          |
+
+After key signatures, song block includes some track subblock.
 
 | Type      | Field               | Description                                                                               |
 | --------- | ------------------- | ----------------------------------------------------------------------------------------- |
@@ -469,20 +509,20 @@ Key event details:
 ---
 
 ## History
-| Version | Date       | Detail                                                                                                            |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
-| 1.6.0   | 2021-xx-xx | Added track visibility, FM/ADPCM panning sequence, drumkit panning, and removed unused subdata of ADPCM envelope. |
-| 1.5.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                                                                   |
-| 1.4.1   | 2020-03-01 | Added bookmark section.                                                                                           |
-| 1.4.0   | 2020-02-25 | Added ADPCM instrument.                                                                                           |
-| 1.3.2   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.                                                        |
-| 1.3.1   | 2019-11-09 | Reversed SSG noise pitch order.                                                                                   |
-| 1.3.0   | 2019-10-21 | Add mixer settings.                                                                                               |
-| 1.2.2   | 2019-06-07 | Revised to fix unit data skipping bug of FM operator sequence.                                                    |
-| 1.2.1   | 2019-05-20 | Added display width of effect columns in tracks.                                                                  |
-| 1.2.0   | 2019-04-10 | Added and changed for SSG tone/hard or square-mask ratio settings.                                                |
-| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode.                                                                             |
-| 1.0.3   | 2019-03-18 | Added 2nd step hilight.                                                                                           |
-| 1.0.2   | 2018-12-29 | Revised for the change of FM octave range.                                                                        |
-| 1.0.1   | 2018-12-10 | Added instrument sequence type.                                                                                   |
-| 1.0.0   | 2018-11-23 | Initial release.                                                                                                  |
+| Version | Date       | Detail                                                                                                                           |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 1.6.0   | 2021-06-13 | Added track visibility, key signature, FM/ADPCM panning sequence, drumkit panning, and removed unused subdata of ADPCM envelope. |
+| 1.5.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                                                                                  |
+| 1.4.1   | 2020-03-01 | Added bookmark section.                                                                                                          |
+| 1.4.0   | 2020-02-25 | Added ADPCM instrument.                                                                                                          |
+| 1.3.2   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.                                                                       |
+| 1.3.1   | 2019-11-09 | Reversed SSG noise pitch order.                                                                                                  |
+| 1.3.0   | 2019-10-21 | Add mixer settings.                                                                                                              |
+| 1.2.2   | 2019-06-07 | Revised to fix unit data skipping bug of FM operator sequence.                                                                   |
+| 1.2.1   | 2019-05-20 | Added display width of effect columns in tracks.                                                                                 |
+| 1.2.0   | 2019-04-10 | Added and changed for SSG tone/hard or square-mask ratio settings.                                                               |
+| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode.                                                                                            |
+| 1.0.3   | 2019-03-18 | Added 2nd step hilight.                                                                                                          |
+| 1.0.2   | 2018-12-29 | Revised for the change of FM octave range.                                                                                       |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type.                                                                                                  |
+| 1.0.0   | 2018-11-23 | Initial release.                                                                                                                 |

@@ -449,6 +449,14 @@ public:
 	Bookmark getPreviousBookmark(int songNum, int order, int step);
 	Bookmark getNextBookmark(int songNum, int order, int step);
 	size_t getBookmarkSize(int songNum) const;
+	/*----- Key signature -----*/
+	void addKeySignature(int songNum, KeySignature::Type key, int order, int step);
+	void changeKeySignature(int songNum, int i, KeySignature::Type key, int order, int step);
+	void removeKeySignature(int songNum, int i);
+	void clearKeySignature(int songNum);
+	KeySignature getKeySignature(int songNum, int i) const;
+	size_t getKeySignatureSize(int songNum) const;
+	KeySignature::Type searchKeySignatureAt(int songNum, int order, int step) const;
 	/*----- Track -----*/
 	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);
 	size_t getEffectDisplayWidth(int songNum, int trackNum) const;

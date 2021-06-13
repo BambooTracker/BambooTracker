@@ -724,6 +724,7 @@
     <addaction name="separator"/>
     <addaction name="actionGroove_Settings"/>
     <addaction name="action_Bookmark_Manager"/>
+    <addaction name="action_Key_Signature_Manager"/>
     <addaction name="separator"/>
     <addaction name="menuCleanup"/>
    </widget>
@@ -1663,6 +1664,11 @@
   <action name="action_Estimate_Song_Length">
    <property name="text">
     <string>&amp;Estimate Song Length...</string>
+   </property>
+  </action>
+  <action name="action_Key_Signature_Manager">
+   <property name="text">
+    <string>&amp;Key Signature Manager...</string>
    </property>
   </action>
  </widget>

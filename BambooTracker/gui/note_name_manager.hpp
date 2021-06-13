@@ -29,6 +29,7 @@
 #include <memory>
 #include <QString>
 #include <QStringList>
+#include "song.hpp"
 
 enum class NoteNotationSystem : int;
 
@@ -40,14 +41,16 @@ public:
 
 	void setNotationSystem(NoteNotationSystem system);
 
-	QString getNoteName(int n) const { return list_->at(n); }
-	QString getNoteString(int noteNum);
+	QString getNoteName(int n, KeySignature::Type key = KeySignature::E) const;
+	QString getNoteString(int noteNum, KeySignature::Type key = KeySignature::E) const;
+
+	QString getKeyName(KeySignature::Type key) const;
 
 private:
 	static std::unique_ptr<NoteNameManager> instance_;
 
 	NoteNameManager();
-	const QStringList* list_;
+	const std::unordered_map<KeySignature::Type, QStringList>* list_;
 
 };
 

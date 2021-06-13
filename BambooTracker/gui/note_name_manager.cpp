@@ -30,19 +30,292 @@
 
 namespace
 {
-const std::unordered_map<NoteNotationSystem, QStringList> NAMES = {
+const std::unordered_map<KeySignature::Type, QStringList> NAMES_EN = {
 	{
-		NoteNotationSystem::ENGLISH,
+		KeySignature::C,
+		{
+			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"
+		}
+	},
+	{
+		KeySignature::CS,
+		{
+			"B#", "C#", "D", "D#", "E", "E#", "F#", "Fx", "G#", "A", "A#", "B"
+		}
+	},
+	{
+		KeySignature::DF,
+		{
+			"C", "Db", "EB", "Eb", "Fb", "F", "Gb", "G", "Ab", "BB", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::D,
+		{
+			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"
+		}
+	},
+	{
+		KeySignature::DS,
+		{
+			"B#", "C#", "Cx", "D#", "E", "E#", "F#", "Fx", "G#", "Gx", "A#", "B"
+		}
+	},
+	{
+		KeySignature::EF,
+		{
+			"C", "Db", "D", "Eb", "Fb", "F", "Gb", "G", "Ab", "A", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::E,
 		{
 			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
 		}
 	},
 	{
-		NoteNotationSystem::GERMAN,
+		KeySignature::FF,
 		{
-			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "B", "H"
+			"DB", "Db", "EB", "Eb", "Fb", "GB", "Gb", "AB", "Ab", "BB", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::ES,
+		{
+			"B#", "C#", "Cx", "D#", "Dx", "E#", "F#", "Fx", "G#", "Gx", "A#", "Ax"
+		}
+	},
+	{
+		KeySignature::F,
+		{
+			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
+		}
+	},
+	{
+		KeySignature::FS,
+		{
+			"B#", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "B"
+		}
+	},
+	{
+		KeySignature::GF,
+		{
+			"C", "Db", "EB", "Eb", "Fb", "F", "Gb", "AB", "Ab", "BB", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::G,
+		{
+			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"
+		}
+	},
+	{
+		KeySignature::GS,
+		{
+			"B#", "C#", "Cx", "D#", "E", "E#", "F#", "Fx", "G#", "A", "A#", "B"
+		}
+	},
+	{
+		KeySignature::AF,
+		{
+			"C", "Db", "D", "Eb", "Fb", "F", "Gb", "G", "Ab", "BB", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::A,
+		{
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Ab", "B"
+		}
+	},
+	{
+		KeySignature::AS,
+		{
+			"B#", "C#", "Cx", "D#", "Dx", "E#", "F#", "G", "G#", "Gx", "A#", "B"
+		}
+	},
+	{
+		KeySignature::BF,
+		{
+			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::B,
+		{
+			"C", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "B"
+		}
+	},
+	{
+		KeySignature::CF,
+		{
+			"DB", "Db", "EB", "Eb", "Fb", "F", "Gb", "AB", "Ab", "BB", "Bb", "Cb"
+		}
+	},
+	{
+		KeySignature::BS,
+		{
+			"B#", "C#", "Cx", "D#", "Dx", "E#", "Ex", "Fx", "G#", "Gx", "A#", "Ax"
 		}
 	}
+};
+
+const std::unordered_map<KeySignature::Type, QStringList> NAMES_DE = {
+	{
+		KeySignature::C,
+		{
+			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "B", "H"
+		}
+	},
+	{
+		KeySignature::CS,
+		{
+			"H#", "C#", "D", "D#", "E", "E#", "F#", "Fx", "G#", "A", "A#", "H"
+		}
+	},
+	{
+		KeySignature::DF,
+		{
+			"C", "Db", "EB", "Eb", "Fb", "F", "Gb", "G", "Ab", "HB", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::D,
+		{
+			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "B", "H"
+		}
+	},
+	{
+		KeySignature::DS,
+		{
+			"H#", "C#", "Cx", "D#", "E", "E#", "F#", "Fx", "G#", "Gx", "A#", "H"
+		}
+	},
+	{
+		KeySignature::EF,
+		{
+			"C", "Db", "D", "Eb", "Fb", "F", "Gb", "G", "Ab", "A", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::E,
+		{
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"
+		}
+	},
+	{
+		KeySignature::FF,
+		{
+			"DB", "Db", "EB", "Eb", "Fb", "GB", "Gb", "AB", "Ab", "HB", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::ES,
+		{
+			"H#", "C#", "Cx", "D#", "Dx", "E#", "F#", "Fx", "G#", "Gx", "A#", "Ax"
+		}
+	},
+	{
+		KeySignature::F,
+		{
+			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "B", "H"
+		}
+	},
+	{
+		KeySignature::FS,
+		{
+			"H#", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "H"
+		}
+	},
+	{
+		KeySignature::GF,
+		{
+			"C", "Db", "EB", "Eb", "Fb", "F", "Gb", "AB", "Ab", "HB", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::G,
+		{
+			"C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "B", "H"
+		}
+	},
+	{
+		KeySignature::GS,
+		{
+			"H#", "C#", "Cx", "D#", "E", "E#", "F#", "Fx", "G#", "A", "A#", "H"
+		}
+	},
+	{
+		KeySignature::AF,
+		{
+			"C", "Db", "D", "Eb", "Fb", "F", "Gb", "G", "Ab", "HB", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::A,
+		{
+			"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Ab", "H"
+		}
+	},
+	{
+		KeySignature::AS,
+		{
+			"H#", "C#", "Cx", "D#", "Dx", "E#", "F#", "G", "G#", "Gx", "A#", "H"
+		}
+	},
+	{
+		KeySignature::BF,
+		{
+			"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::B,
+		{
+			"C", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "H"
+		}
+	},
+	{
+		KeySignature::CF,
+		{
+			"DB", "Db", "EB", "Eb", "Fb", "F", "Gb", "AB", "Ab", "HB", "B", "Cb"
+		}
+	},
+	{
+		KeySignature::BS,
+		{
+			"H#", "C#", "Cx", "D#", "Dx", "E#", "Ex", "Fx", "G#", "Gx", "A#", "Ax"
+		}
+	}
+};
+
+std::unordered_map<NoteNotationSystem,
+std::unordered_map<KeySignature::Type, QStringList>> NAMES = {
+	{ NoteNotationSystem::ENGLISH, NAMES_EN },
+	{ NoteNotationSystem::GERMAN, NAMES_DE }
+};
+
+std::unordered_map<KeySignature::Type, int> KEYS = {
+	{ KeySignature::C, 0 },
+	{ KeySignature::BS, 0 },
+	{ KeySignature::CS, 1 },
+	{ KeySignature::DF, 1 },
+	{ KeySignature::D, 2 },
+	{ KeySignature::DS, 3 },
+	{ KeySignature::EF, 3 },
+	{ KeySignature::E, 4 },
+	{ KeySignature::FF, 4 },
+	{ KeySignature::ES, 5 },
+	{ KeySignature::F, 5 },
+	{ KeySignature::FS, 6 },
+	{ KeySignature::GF, 6 },
+	{ KeySignature::G, 7 },
+	{ KeySignature::GS, 8 },
+	{ KeySignature::AF, 8 },
+	{ KeySignature::A, 9 },
+	{ KeySignature::AS, 10 },
+	{ KeySignature::BF, 10 },
+	{ KeySignature::B, 11 },
+	{ KeySignature::CF, 11 }
 };
 }
 
@@ -67,7 +340,17 @@ void NoteNameManager::setNotationSystem(NoteNotationSystem system)
 	list_ = &NAMES.at(system);
 }
 
-QString NoteNameManager::getNoteString(int noteNum)
+QString NoteNameManager::getNoteName(int n, KeySignature::Type key) const
 {
-	return QString("%1%2").arg(list_->at(noteNum % 12), -2, QChar('-')).arg(noteNum / 12);
+	return list_->at(key).at(n);
+}
+
+QString NoteNameManager::getNoteString(int noteNum, KeySignature::Type key) const
+{
+	return QString("%1%2").arg(list_->at(key).at(noteNum % 12), -2, QChar('-')).arg(noteNum / 12);
+}
+
+QString NoteNameManager::getKeyName(KeySignature::Type key) const
+{
+	return list_->at(key).at(KEYS.at(key));
 }

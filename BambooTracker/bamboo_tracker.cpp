@@ -2375,6 +2375,42 @@ size_t BambooTracker::getBookmarkSize(int songNum) const
 	return mod_->getSong(songNum).getBookmarkSize();
 }
 
+/*----- Key signature -----*/
+void BambooTracker::addKeySignature(int songNum, KeySignature::Type key, int order, int step)
+{
+	mod_->getSong(songNum).addKeySignature(key, order, step);
+}
+
+void BambooTracker::changeKeySignature(int songNum, int i, KeySignature::Type key, int order, int step)
+{
+	mod_->getSong(songNum).changeKeySignature(i, key, order, step);
+}
+
+void BambooTracker::removeKeySignature(int songNum, int i)
+{
+	mod_->getSong(songNum).removeKeySignature(i);
+}
+
+void BambooTracker::clearKeySignature(int songNum)
+{
+	mod_->getSong(songNum).clearKeySignature();
+}
+
+KeySignature BambooTracker::getKeySignature(int songNum, int i) const
+{
+	return mod_->getSong(songNum).getKeySignature(i);
+}
+
+size_t BambooTracker::getKeySignatureSize(int songNum) const
+{
+	return mod_->getSong(songNum).getKeySignatureSize();
+}
+
+KeySignature::Type BambooTracker::searchKeySignatureAt(int songNum, int order, int step) const
+{
+	return mod_->getSong(songNum).searchKeySignatureAt(order, step);
+}
+
 /*----- Track -----*/
 void BambooTracker::setEffectDisplayWidth(int songNum, int trackNum, size_t w)
 {

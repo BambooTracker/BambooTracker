@@ -1607,6 +1607,17 @@ size_t loadSongSection(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
 			}
 		}
 
+		// Bookmark
+		if (Version::toBCD(1, 6, 0) <= version) {
+			int sgnSize = ctr.readUint8(scsr++);
+			for (int i = 0; i < sgnSize; ++i) {
+				auto type = static_cast<KeySignature::Type>(ctr.readUint8(scsr++));
+				int order = ctr.readUint8(scsr++);
+				int step = ctr.readUint8(scsr++);
+				song.addKeySignature(type, order, step);
+			}
+		}
+
 		while (scsr < songCsr) {
 			// Track
 			uint8_t trackIdx = ctr.readUint8(scsr++);
@@ -2673,6 +2684,16 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendString(bm.name);
 			ctr.appendUint8(static_cast<uint8_t>(bm.order));
 			ctr.appendUint8(static_cast<uint8_t>(bm.step));
+		}
+
+		// Key signature
+		size_t sgnSize = sng.getKeySignatureSize();
+		ctr.appendUint8(static_cast<uint8_t>(sgnSize));
+		for (size_t i = 0; i < sgnSize; ++i) {
+			KeySignature signature = sng.getKeySignature(static_cast<int>(i));
+			ctr.appendUint8(static_cast<uint8_t>(signature.type));
+			ctr.appendUint8(static_cast<uint8_t>(signature.order));
+			ctr.appendUint8(static_cast<uint8_t>(signature.step));
 		}
 
 		// Track
