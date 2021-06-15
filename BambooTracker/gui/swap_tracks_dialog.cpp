@@ -35,7 +35,7 @@ SwapTracksDialog::SwapTracksDialog(const SongStyle& style, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	for (const auto& attrib : style.trackAttribs) {
 		QString text = gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource);
