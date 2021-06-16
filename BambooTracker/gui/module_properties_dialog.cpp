@@ -44,7 +44,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	int tickFreq = static_cast<int>(core.lock()->getModuleTickFrequency());
 	ui->customTickFreqSpinBox->setValue(tickFreq);

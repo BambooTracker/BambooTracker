@@ -29,7 +29,7 @@ env:
   MINGW_BITNESS: 32
   MINGW_CHOCOBASE: /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw32
   MINGW_INSTALLBASE: ${{ github.workspace }}/mingw32/
-  QT_VERSION: 5.15.1
+  QT_VERSION: 5.15.2
   QT_TOOLCHAIN: win32_mingw81
   QT_MODULES: qtbase qttools qttranslations
   QT_INSTALLBASE: ${{ github.workspace }}/Qt/

@@ -34,7 +34,7 @@ FMEnvelopeSetEditDialog::FMEnvelopeSetEditDialog(std::vector<FMEnvelopeTextType>
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	for (size_t i = 0; i < set.size(); ++i) {
 		insertRow(static_cast<int>(i), set.at(i));

@@ -32,7 +32,7 @@ GridSettingsDialog::GridSettingsDialog(int interval, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	ui->intrSpinBox->setValue(interval);
 }
