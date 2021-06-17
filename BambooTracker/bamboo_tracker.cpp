@@ -1634,6 +1634,7 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, Export
 					if (checkFunc()) {	// Update lambda function
 						stopPlaySong();
 						isFollowPlay_ = tmpFollow;
+						opnaCtrl_->setRate(tmpRate);
 						return false;
 					}
 
@@ -1709,6 +1710,7 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 			if (checkFunc()) {	// Update lambda function
 				stopPlaySong();
 				isFollowPlay_ = tmpFollow;
+				opnaCtrl_->setRate(tmpRate);
 				return false;
 			}
 
@@ -1772,6 +1774,7 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 			if (checkFunc()) {	// Update lambda function
 				stopPlaySong();
 				isFollowPlay_ = tmpFollow;
+				opnaCtrl_->setRate(tmpRate);
 				return false;
 			}
 

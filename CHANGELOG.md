@@ -7,7 +7,7 @@
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
-- [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
+- [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
@@ -28,7 +28,8 @@
 - [#358] - Fix AR3 parsing from text (thanks [@freq-mod])
 - Update octave status display when changing octave spinbox
 - [#360], [#361] - Cancel renaming an instrument before removing it (thanks [@OPNA2608], [@RaijinXBlade])
-- [#346] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
+- Restore the sample rate when the export process is canceled
+- [#368] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 
@@ -65,6 +66,7 @@
 [#368]: https://github.com/rerrahkr/BambooTracker/pull/368
 [#367]: https://github.com/rerrahkr/BambooTracker/issues/367
 [#345]: https://github.com/rerrahkr/BambooTracker/issues/345
+[#373]: https://github.com/rerrahkr/BambooTracker/pull/373
 
 ## v0.4.6 (2021-02-11)
 ### Added
