@@ -2131,11 +2131,13 @@ void PlaybackManager::retrieveChannelStates()
 						break;
 					case EffectType::SpeedTempoChange:
 						if (!(speedStates & 0x4)) {
-							if (eff.value < 0x20 && !(speedStates & 0x1)) {	// Speed change
-								speedStates |= 0x1;
-								if (isPrevPos) effSpeedChange(eff.value);
+							if (eff.value < 0x20) {				// Speed change
+								if (!(speedStates & 0x1)) {
+									speedStates |= 0x1;
+									if (isPrevPos) effSpeedChange(eff.value);
+								}
 							}
-							else if (!(speedStates & 0x2)) {			// Tempo change
+							else if (!(speedStates & 0x2)) {	// Tempo change
 								speedStates |= 0x2;
 								if (isPrevPos) effTempoChange(eff.value);
 							}

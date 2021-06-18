@@ -6,7 +6,7 @@
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
-- [#365] - WAV export per channel (thanks [@Toonlink8101 ])
+- [#365] - WAV export per channel (thanks [@Toonlink8101])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
 
@@ -30,6 +30,7 @@
 - Update octave status display when changing octave spinbox
 - [#360], [#361] - Cancel renaming an instrument before removing it (thanks [@OPNA2608], [@RaijinXBlade])
 - Restore the sample rate when the export process is canceled
+- Fix incorrect speed/tempo retrieving in the ADPCM track
 - [#368] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
