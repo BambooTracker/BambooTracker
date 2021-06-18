@@ -3369,58 +3369,124 @@ void MainWindow::on_actionWAV_triggered()
 					   );
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
+	QString exDir = QFileInfo(path).dir().path();
 
 	int max = static_cast<int>(bt_->getTotalStepCount(
 								   bt_->getCurrentSongNumber(), static_cast<size_t>(diag.getLoopCount()))) + 3;
-	QProgressDialog progress(tr("Export to WAV"), tr("Cancel"), 0, max);
-	progress.setValue(0);
+	QProgressDialog progress("", tr("Cancel"), 0, max);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
 							& ~Qt::WindowCloseButtonHint);
-	progress.show();
+	auto bar = [&progress] {
+		QApplication::processEvents();
+		progress.setValue(progress.value() + 1);
+		return progress.wasCanceled();
+	};
+
+	int chCnt = diag.isSeparatable() ? 16 : 0;
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
 	stream_->stop();
 
-	try {
-		auto bar = [&progress]() -> bool {
-				   QApplication::processEvents();
-				   progress.setValue(progress.value() + 1);
-				   return progress.wasCanceled();
-	};
+	// Record current mute states
+	const auto& style = bt_->getSongStyle(bt_->getCurrentSongNumber());
+	const auto& attribs = style.trackAttribs;
+	std::vector<bool>muteStates(attribs.size());
+	std::transform(attribs.begin(), attribs.end(), muteStates.begin(),
+				   [&](const TrackAttribute& attrib) { return bt_->isMute(attrib.number); });
 
-		QByteArray bytes;
-		{
-			const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
-			const uint16_t nCh = 2;
-			const int loopCnt = diag.getLoopCount();
-			io::WavContainer container(rate, nCh, 16);
-			if (!bt_->exportToWav(container, loopCnt, bar))
-				goto AFTER_WAV_WRITE;	// Jump if cancelled
-			bytes.reserve(container.size());
-			std::move(container.begin(), container.end(), std::back_inserter(bytes));
+	for (int i = -1; i < chCnt; ++i) {
+		QString text, name;
+		if (i == -1) text = tr("Export to WAV");	// Mixed all
+		else {
+			if (i < 6) name = gui_utils::getTrackName(SongType::Standard, SoundSource::FM, i);
+			else if (i < 9) name = gui_utils::getTrackName(SongType::Standard, SoundSource::SSG, i - 6);
+			else if (i < 15) name = gui_utils::getTrackName(SongType::Standard, SoundSource::RHYTHM, i - 9);
+			else name = gui_utils::getTrackName(SongType::Standard, SoundSource::ADPCM, 0);
+			text = tr("Export %1 to WAV").arg(name);
+		}
+		progress.setLabelText(text);
+		progress.setValue(0);
+		progress.show();
+
+		// Update mute states
+		if (!i) {
+			for (const TrackAttribute& attrib : attribs)
+				bt_->setTrackMuteState(attrib.number, attrib.number);
+		}
+		else if (i > 0) {
+			if (style.type == SongType::FM3chExpanded) {
+				if (i == 3) {
+					bt_->setTrackMuteState(2, true);
+					bt_->setTrackMuteState(3, true);
+					bt_->setTrackMuteState(4, true);
+					bt_->setTrackMuteState(5, true);
+				}
+				else if (i < 3) {
+					bt_->setTrackMuteState(i - 1, true);
+				}
+				else {
+					bt_->setTrackMuteState(i + 2, true);
+				}
+				if (i == 2) {
+					bt_->setTrackMuteState(2, false);
+					bt_->setTrackMuteState(3, false);
+					bt_->setTrackMuteState(4, false);
+					bt_->setTrackMuteState(5, false);
+				}
+				else if (i < 2) {
+					bt_->setTrackMuteState(i, false);
+				}
+				else {
+					bt_->setTrackMuteState(i + 3, false);
+				}
+			}
+			else {
+				bt_->setTrackMuteState(i - 1, true);
+				bt_->setTrackMuteState(i, false);
+			}
 		}
 
-		QFile fp(path);
-		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
-			goto AFTER_WAV_WRITE;	// Jump to post process
+		try {
+			QByteArray bytes;
+			{
+				const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
+				const uint16_t nCh = 2;
+				const int loopCnt = diag.getLoopCount();
+				io::WavContainer container(rate, nCh, 16);
+				if (!bt_->exportToWav(container, loopCnt, bar))
+					break;	// Jump if cancelled
+				bytes.reserve(container.size());
+				std::move(container.begin(), container.end(), std::back_inserter(bytes));
+			}
+
+			if (i > -1) path = QString("%1/%2 - %3.wav").arg(exDir).arg(i + 1, 2, 10, QChar('0')).arg(name);
+			QFile fp(path);
+			if (!fp.open(QIODevice::WriteOnly)) {
+				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
+				break;	// Jump to post process
+			}
+			fp.write(bytes);
+			fp.close();
+			bar();
+
+			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 		}
-		fp.write(bytes);
-		fp.close();
-		bar();
-
-		config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
-	}
-	catch (io::FileIOError& e) {
-		FileIOErrorMessageBox(path, false, e, this).exec();
-	}
-	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
+		catch (io::FileIOError& e) {
+			FileIOErrorMessageBox(path, false, e, this).exec();
+			break;
+		}
+		catch (std::exception& e) {
+			FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
+			break;
+		}
 	}
 
-AFTER_WAV_WRITE:
+	// Restore states
+	for (size_t i = 0 ; i < attribs.size(); ++i) {
+		bt_->setTrackMuteState(attribs[i].number, muteStates[i]);
+	}
 	stream_->start();
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -42,6 +42,7 @@ public:
 
 	int getSampleRate() const;
 	int getLoopCount() const;
+	bool isSeparatable() const;
 
 private:
 	Ui::WaveExportSettingsDialog *ui;

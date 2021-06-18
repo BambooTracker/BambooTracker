@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -52,4 +52,9 @@ int WaveExportSettingsDialog::getSampleRate() const
 int WaveExportSettingsDialog::getLoopCount() const
 {
 	return ui->loopSpinBox->value();
+}
+
+bool WaveExportSettingsDialog::isSeparatable() const
+{
+	return ui->separateCheckBox->isChecked();
 }

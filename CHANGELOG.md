@@ -6,6 +6,7 @@
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
+- [#365] - WAV export per channel (thanks [@Toonlink8101 ])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
 
@@ -67,6 +68,7 @@
 [#367]: https://github.com/rerrahkr/BambooTracker/issues/367
 [#345]: https://github.com/rerrahkr/BambooTracker/issues/345
 [#373]: https://github.com/rerrahkr/BambooTracker/pull/373
+[#365]: https://github.com/rerrahkr/BambooTracker/issues/365
 
 ## v0.4.6 (2021-02-11)
 ### Added
