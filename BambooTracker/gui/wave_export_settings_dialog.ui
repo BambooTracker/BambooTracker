@@ -6,21 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>215</width>
-    <height>132</height>
+    <width>239</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>WAV export settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="1">
-    <widget class="QComboBox" name="sampleRateComboBox"/>
-   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="loopLabel">
      <property name="text">
       <string>Loop</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="sampleRateComboBox"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="loopSpinBox">
+     <property name="minimum">
+      <number>1</number>
      </property>
     </widget>
    </item>
@@ -41,18 +48,36 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="loopSpinBox">
-     <property name="minimum">
-      <number>1</number>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QCheckBox" name="separateCheckBox">
-     <property name="text">
-      <string>Separate channel export</string>
+    <widget class="QGroupBox" name="tracksGroupBox">
+     <property name="title">
+      <string>Separate track export</string>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
+       <widget class="QPushButton" name="reversePushButton">
+        <property name="text">
+         <string>Reverse</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="allPushButton">
+        <property name="text">
+         <string>Check All</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QListWidget" name="tracksListWidget"/>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -60,7 +85,10 @@
  <tabstops>
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>loopSpinBox</tabstop>
-  <tabstop>separateCheckBox</tabstop>
+  <tabstop>tracksGroupBox</tabstop>
+  <tabstop>tracksListWidget</tabstop>
+  <tabstop>reversePushButton</tabstop>
+  <tabstop>allPushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

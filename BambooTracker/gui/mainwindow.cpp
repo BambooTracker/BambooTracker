@@ -3355,7 +3355,18 @@ void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 
 void MainWindow::on_actionWAV_triggered()
 {
-	WaveExportSettingsDialog diag;
+	// Record current mute states
+	const auto& style = bt_->getSongStyle(bt_->getCurrentSongNumber());
+	const auto& attribs = style.trackAttribs;
+	std::vector<bool> muteStates(attribs.size());
+	std::vector<int> unmuteTracks;
+	for (size_t i = 0; i < attribs.size(); ++i) {
+		muteStates[i] = bt_->isMute(attribs[i].number);
+		if (!muteStates[i]) unmuteTracks.push_back(static_cast<int>(i));
+	}
+
+	unmuteTracks = gui_utils::adaptVisibleTrackList(unmuteTracks, style.type, SongType::Standard);
+	WaveExportSettingsDialog diag(unmuteTracks);
 	if (diag.exec() != QDialog::Accepted) return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
@@ -3383,26 +3394,21 @@ void MainWindow::on_actionWAV_triggered()
 		return progress.wasCanceled();
 	};
 
-	int chCnt = diag.isSeparatable() ? 16 : 0;
+	unmuteTracks = diag.getSoloExportTracks();
+	unmuteTracks.insert(unmuteTracks.begin(), -1);
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
 	stream_->stop();
 
-	// Record current mute states
-	const auto& style = bt_->getSongStyle(bt_->getCurrentSongNumber());
-	const auto& attribs = style.trackAttribs;
-	std::vector<bool>muteStates(attribs.size());
-	std::transform(attribs.begin(), attribs.end(), muteStates.begin(),
-				   [&](const TrackAttribute& attrib) { return bt_->isMute(attrib.number); });
-
-	for (int i = -1; i < chCnt; ++i) {
+	for (size_t i = 0; i < unmuteTracks.size(); ++i) {
+		int curTrack = unmuteTracks[i];
 		QString text, name;
-		if (i == -1) text = tr("Export to WAV");	// Mixed all
+		if (curTrack == -1) text = tr("Export to WAV");	// Mixed all
 		else {
-			if (i < 6) name = gui_utils::getTrackName(SongType::Standard, SoundSource::FM, i);
-			else if (i < 9) name = gui_utils::getTrackName(SongType::Standard, SoundSource::SSG, i - 6);
-			else if (i < 15) name = gui_utils::getTrackName(SongType::Standard, SoundSource::RHYTHM, i - 9);
+			if (curTrack < 6) name = gui_utils::getTrackName(SongType::Standard, SoundSource::FM, curTrack);
+			else if (curTrack < 9) name = gui_utils::getTrackName(SongType::Standard, SoundSource::SSG, curTrack - 6);
+			else if (curTrack < 15) name = gui_utils::getTrackName(SongType::Standard, SoundSource::RHYTHM, curTrack - 9);
 			else name = gui_utils::getTrackName(SongType::Standard, SoundSource::ADPCM, 0);
 			text = tr("Export %1 to WAV").arg(name);
 		}
@@ -3411,40 +3417,41 @@ void MainWindow::on_actionWAV_triggered()
 		progress.show();
 
 		// Update mute states
-		if (!i) {
+		if (i == 1) {
 			for (const TrackAttribute& attrib : attribs)
-				bt_->setTrackMuteState(attrib.number, attrib.number);
+				bt_->setTrackMuteState(attrib.number, attrib.number != unmuteTracks[i]);
 		}
-		else if (i > 0) {
+		else if (i > 1) {
+			int prevTrack = unmuteTracks[i - 1];
 			if (style.type == SongType::FM3chExpanded) {
-				if (i == 3) {
+				if (prevTrack == 2) {
 					bt_->setTrackMuteState(2, true);
 					bt_->setTrackMuteState(3, true);
 					bt_->setTrackMuteState(4, true);
 					bt_->setTrackMuteState(5, true);
 				}
-				else if (i < 3) {
-					bt_->setTrackMuteState(i - 1, true);
+				else if (prevTrack < 2) {
+					bt_->setTrackMuteState(prevTrack, true);
 				}
 				else {
-					bt_->setTrackMuteState(i + 2, true);
+					bt_->setTrackMuteState(prevTrack + 3, true);
 				}
-				if (i == 2) {
+				if (curTrack == 2) {
 					bt_->setTrackMuteState(2, false);
 					bt_->setTrackMuteState(3, false);
 					bt_->setTrackMuteState(4, false);
 					bt_->setTrackMuteState(5, false);
 				}
-				else if (i < 2) {
-					bt_->setTrackMuteState(i, false);
+				else if (curTrack < 2) {
+					bt_->setTrackMuteState(curTrack, false);
 				}
 				else {
-					bt_->setTrackMuteState(i + 3, false);
+					bt_->setTrackMuteState(curTrack + 3, false);
 				}
 			}
 			else {
-				bt_->setTrackMuteState(i - 1, true);
-				bt_->setTrackMuteState(i, false);
+				bt_->setTrackMuteState(prevTrack, true);
+				bt_->setTrackMuteState(curTrack, false);
 			}
 		}
 
@@ -3461,7 +3468,7 @@ void MainWindow::on_actionWAV_triggered()
 				std::move(container.begin(), container.end(), std::back_inserter(bytes));
 			}
 
-			if (i > -1) path = QString("%1/%2 - %3.wav").arg(exDir).arg(i + 1, 2, 10, QChar('0')).arg(name);
+			if (curTrack > -1) path = QString("%1/%2 - %3.wav").arg(exDir).arg(curTrack + 1, 2, 10, QChar('0')).arg(name);
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
 				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);

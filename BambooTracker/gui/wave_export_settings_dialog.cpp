@@ -25,8 +25,12 @@
 
 #include "wave_export_settings_dialog.hpp"
 #include "ui_wave_export_settings_dialog.h"
+#include <algorithm>
+#include <QListWidgetItem>
+#include "gui/gui_utils.hpp"
+#include "song.hpp"
 
-WaveExportSettingsDialog::WaveExportSettingsDialog(QWidget *parent) :
+WaveExportSettingsDialog::WaveExportSettingsDialog(const std::vector<int> defUnmutes, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::WaveExportSettingsDialog)
 {
@@ -37,6 +41,24 @@ WaveExportSettingsDialog::WaveExportSettingsDialog(QWidget *parent) :
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("55466Hz", 55466);
+
+	struct Pair
+	{
+		SoundSource src;
+		int count;
+	};
+	static const QList<Pair> SRC_NUMS = {
+		{ SoundSource::FM, 6 }, { SoundSource::SSG, 3 }, { SoundSource::RHYTHM, 6 }, { SoundSource::ADPCM, 1 }
+	};
+
+	int tmpT = 0;
+	for (const auto& pair : SRC_NUMS) {
+		for (int i = 0; i < pair.count; ++i, ++tmpT) {
+			auto item = new QListWidgetItem(gui_utils::getTrackName(SongType::Standard, pair.src, i), ui->tracksListWidget);
+			item->setCheckState(std::any_of(defUnmutes.begin(), defUnmutes.end(), [tmpT](const int t) { return t == tmpT; })
+								? Qt::Checked : Qt::Unchecked);
+		}
+	}
 }
 
 WaveExportSettingsDialog::~WaveExportSettingsDialog()
@@ -54,7 +76,30 @@ int WaveExportSettingsDialog::getLoopCount() const
 	return ui->loopSpinBox->value();
 }
 
-bool WaveExportSettingsDialog::isSeparatable() const
+std::vector<int> WaveExportSettingsDialog::getSoloExportTracks() const
 {
-	return ui->separateCheckBox->isChecked();
+	if (!ui->tracksGroupBox->isChecked()) return {};
+
+	std::vector<int> tracks;
+	for (int i = 0; i < ui->tracksListWidget->count(); ++i) {
+		if (ui->tracksListWidget->item(i)->checkState() == Qt::Checked)
+			tracks.push_back(i);
+	}
+	return tracks;
+}
+
+void WaveExportSettingsDialog::on_reversePushButton_clicked()
+{
+	for (int i = 0; i < ui->tracksListWidget->count(); ++i) {
+		auto item = ui->tracksListWidget->item(i);
+		item->setCheckState((item->checkState() == Qt::Checked) ? Qt::Unchecked : Qt::Checked);
+	}
+}
+
+void WaveExportSettingsDialog::on_allPushButton_clicked()
+{
+	for (int i = 0; i < ui->tracksListWidget->count(); ++i) {
+		auto item = ui->tracksListWidget->item(i);
+		item->setCheckState(Qt::Checked);
+	}
 }
