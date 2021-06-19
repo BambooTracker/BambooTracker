@@ -38,7 +38,7 @@
 #include "module.hpp"
 #include "command/command_manager.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
-#include "chip/scci/scci.hpp"
+#include "chip/scci/scci_wrapper.hpp"
 #include "io/binary_container.hpp"
 #include "io/export_io.hpp"
 #include "io/wav_container.hpp"
@@ -333,7 +333,7 @@ public:
 					 const io::S98Tag& tag, int rate, ExportCancellCallback checkFunc);
 
 	// Real chip interface
-	void useSCCI(scci::SoundInterfaceManager* manager);
+	void setScci(ScciGeneratorFunc* f = nullptr);
 	void setC86ctl(C86ctlGeneratorFunc* f = nullptr);
 	RealChipInterface getRealChipinterface() const;
 

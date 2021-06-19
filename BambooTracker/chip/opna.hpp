@@ -29,11 +29,8 @@
 #include <memory>
 #include "resampler.hpp"
 
-namespace scci
-{
-class SoundInterfaceManager;
-class SoundChip;
-}
+class Scci;
+class ScciGeneratorFunc;
 
 class C86ctl;
 class C86ctlGeneratorFunc;
@@ -66,10 +63,10 @@ public:
 	void setVolumeSSG(double dB);
 	size_t getDRAMSize() const noexcept;
 	void mix(int16_t* stream, size_t nSamples) override;
-	void useSCCI(scci::SoundInterfaceManager* manager);
-	bool isUsedSCCI() const noexcept;
-	void setC86ctl(C86ctlGeneratorFunc *f);
-	bool isUsedC86CTL() const noexcept;
+	void setScci(ScciGeneratorFunc* f);
+	bool isUsedScci() const noexcept;
+	void setC86ctl(C86ctlGeneratorFunc* f);
+	bool isUsedC86ctl() const noexcept;
 
 private:
 	static size_t count_;
@@ -77,11 +74,7 @@ private:
 	intf2608* intf_;
 	size_t dramSize_;
 
-	// For SCCI
-	scci::SoundInterfaceManager* scciManager_;
-	scci::SoundChip* scciChip_;
-
-	// For C86CTL
+	std::unique_ptr<Scci> scci_;
 	std::unique_ptr<C86ctl> c86ctl_;
 };
 }

@@ -27,8 +27,7 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
-#include "scci/SCCIDefines.hpp"
-#include "scci/scci.hpp"
+#include "scci/scci_wrapper.hpp"
 #include "c86ctl/c86ctl_wrapper.hpp"
 #include "register_write_logger.hpp"
 
@@ -61,8 +60,7 @@ OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dra
 		   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
 		   logger),
 	  dramSize_(dramSize),
-	  scciManager_(nullptr),
-	  scciChip_(nullptr),
+	  scci_(new Scci),
 	  c86ctl_(new C86ctl)
 {
 	switch (emu) {
@@ -104,7 +102,7 @@ OPNA::~OPNA()
 
 	--count_;
 
-	useSCCI(nullptr);
+	setScci(nullptr);
 	setC86ctl(nullptr);
 }
 
@@ -114,7 +112,7 @@ void OPNA::reset()
 
 	intf_->device_reset(id_);
 
-	if (scciChip_) scciChip_->init();
+	scci_->initialize();
 	c86ctl_->resetChip();
 }
 
@@ -137,7 +135,7 @@ void OPNA::setRegister(uint32_t offset, uint8_t value)
 		}
 	}
 
-	if (scciChip_) scciChip_->setRegister(offset, value);
+	scci_->setRegister(offset, value);
 	c86ctl_->out(offset, value);
 }
 
@@ -209,31 +207,14 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	}
 }
 
-void OPNA::useSCCI(scci::SoundInterfaceManager* manager)
+void OPNA::setScci(ScciGeneratorFunc* f)
 {
-	if (manager) {
-		scciManager_ = manager;
-		scciManager_->initializeInstance();
-		scciManager_->reset();
-		scciChip_ = scciManager_->getSoundChip(scci::SC_TYPE_YM2608, scci::SC_CLOCK_7987200);
-		if (!scciChip_) {
-			scciManager_->releaseInstance();
-			scciManager_ = nullptr;
-		}
-	}
-	else {
-		if (!scciChip_) return;
-		scciManager_->releaseSoundChip(scciChip_);
-		scciChip_ = nullptr;
-
-		scciManager_->releaseInstance();
-		scciManager_ = nullptr;
-	}
+	scci_->createInstance(f);
 }
 
-bool OPNA::isUsedSCCI() const noexcept
+bool OPNA::isUsedScci() const noexcept
 {
-	return (scciManager_ != nullptr);
+	return scci_->isUsed();
 }
 
 void OPNA::setC86ctl(C86ctlGeneratorFunc* f)
@@ -241,7 +222,7 @@ void OPNA::setC86ctl(C86ctlGeneratorFunc* f)
 	c86ctl_->createInstance(f);
 }
 
-bool OPNA::isUsedC86CTL() const noexcept
+bool OPNA::isUsedC86ctl() const noexcept
 {
 	return c86ctl_->isUsed();
 }

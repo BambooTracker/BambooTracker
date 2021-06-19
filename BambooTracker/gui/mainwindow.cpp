@@ -72,7 +72,7 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
-#include "chip/scci/SCCIDefines.hpp"
+#include "chip/scci/scci_wrapper.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
@@ -753,7 +753,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	}
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
-		bt_->useSCCI(nullptr);
+		bt_->setScci();
 		bt_->setC86ctl();
 	}
 	else {
@@ -2334,7 +2334,7 @@ void MainWindow::changeConfiguration()
 	RealChipInterface intf = config_.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
 		tickTimerForRealChip_.reset();
-		bt_->useSCCI(nullptr);
+		bt_->setScci();
 		bt_->setC86ctl();
 		QString streamErr;
 		streamState = stream_->initialize(
@@ -2411,16 +2411,15 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 		bt_->setC86ctl();
 		scciDll_->load();
 		if (scciDll_->isLoaded()) {
-			auto getManager = reinterpret_cast<scci::SCCIFUNC>(
-								  scciDll_->resolve("getSoundInterfaceManager"));
-			bt_->useSCCI(getManager ? getManager() : nullptr);
+
+			bt_->setScci(new ScciGeneratorFunc(scciDll_->resolve("getSoundInterfaceManager")));
 		}
 		else {
-			bt_->useSCCI(nullptr);
+			bt_->setScci();
 		}
 		break;
 	case RealChipInterface::C86CTL:
-		bt_->useSCCI(nullptr);
+		bt_->setScci();
 		c86ctlDll_->load();
 		if (c86ctlDll_->isLoaded()) {
 			bt_->setC86ctl(new C86ctlGeneratorFunc(c86ctlDll_->resolve("CreateInstance")));
