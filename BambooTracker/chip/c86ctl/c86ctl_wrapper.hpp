@@ -1,59 +1,68 @@
+/*
+ * Copyright (C) 2020-2021 Rerrah
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 #pragma once
 
 #include <cstdint>
 
+#ifdef _WIN32
 namespace c86ctl
 {
 struct IRealChipBase;
 struct IRealChip2;
 struct IGimic2;
 }
+#endif
 
-class C86ctlRealChip;
-class C86ctlGimic;
-
-class C86ctlBase
+struct C86ctlGeneratorFunc
 {
-public:
-	explicit C86ctlBase(void (*func)());
-	bool isEmpty() const noexcept;
-
-	void initialize();
-	void deinitialize();
-	int getNumberOfChip();
-	C86ctlRealChip* getChipInterface(int id);
+	using FuncPtr = void (*)();
+	C86ctlGeneratorFunc(FuncPtr fp) : fp_(fp) {}
+	FuncPtr operator()() const { return fp_; }
 
 private:
-	c86ctl::IRealChipBase* base_;
+	FuncPtr fp_;
 };
 
-class C86ctlRealChip
+class C86ctl
 {
 public:
-	explicit C86ctlRealChip(c86ctl::IRealChip2* rc);
-	~C86ctlRealChip();
+	C86ctl();
+	~C86ctl();
+	bool createInstance(C86ctlGeneratorFunc *f);
+	bool isUsed() const;
 
 	void resetChip();
 	void out(uint32_t addr, uint8_t data);
 
-	C86ctlGimic* queryInterface();
+	void setSSGVolume(double dB);
 
-#ifdef _WIN32
 private:
+#ifdef _WIN32
+	c86ctl::IRealChipBase* base_;
 	c86ctl::IRealChip2* rc_;
-#endif
-};
-
-class C86ctlGimic
-{
-public:
-	explicit C86ctlGimic(c86ctl::IGimic2* gm);
-	~C86ctlGimic();
-
-	void setSSGVolume(uint8_t vol);
-
-#ifdef _WIN32
-private:
 	c86ctl::IGimic2* gm_;
 #endif
 };

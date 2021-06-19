@@ -1813,9 +1813,9 @@ void BambooTracker::useSCCI(scci::SoundInterfaceManager* manager)
 	opnaCtrl_->useSCCI(manager);
 }
 
-void BambooTracker::useC86CTL(C86ctlBase* base)
+void BambooTracker::setC86ctl(C86ctlGeneratorFunc *f)
 {
-	opnaCtrl_->useC86CTL(base);
+	opnaCtrl_->setC86ctl(f);
 }
 
 RealChipInterface BambooTracker::getRealChipinterface() const

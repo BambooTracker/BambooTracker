@@ -35,9 +35,8 @@ class SoundInterfaceManager;
 class SoundChip;
 }
 
-class C86ctlBase;
-class C86ctlRealChip;
-class C86ctlGimic;
+class C86ctl;
+class C86ctlGeneratorFunc;
 
 namespace chip
 {
@@ -69,7 +68,7 @@ public:
 	void mix(int16_t* stream, size_t nSamples) override;
 	void useSCCI(scci::SoundInterfaceManager* manager);
 	bool isUsedSCCI() const noexcept;
-	void useC86CTL(C86ctlBase* base);
+	void setC86ctl(C86ctlGeneratorFunc *f);
 	bool isUsedC86CTL() const noexcept;
 
 private:
@@ -83,8 +82,6 @@ private:
 	scci::SoundChip* scciChip_;
 
 	// For C86CTL
-	std::unique_ptr<C86ctlBase> c86ctlBase_;
-	std::unique_ptr<C86ctlRealChip> c86ctlRC_;
-	std::unique_ptr<C86ctlGimic> c86ctlGm_;
+	std::unique_ptr<C86ctl> c86ctl_;
 };
 }

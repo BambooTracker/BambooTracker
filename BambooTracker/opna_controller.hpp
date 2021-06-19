@@ -60,7 +60,7 @@ public:
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);
 	bool isUsedSCCI() const;
-	void useC86CTL(C86ctlBase* base);
+	void setC86ctl(C86ctlGeneratorFunc* f);
 	bool isUsedC86CTL() const;
 
 	// Stream samples

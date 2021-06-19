@@ -168,9 +168,9 @@ bool OPNAController::isUsedSCCI() const
 	return opna_->isUsedSCCI();
 }
 
-void OPNAController::useC86CTL(C86ctlBase* base)
+void OPNAController::setC86ctl(C86ctlGeneratorFunc* f)
 {
-	opna_->useC86CTL(base);
+	opna_->setC86ctl(f);
 }
 
 bool OPNAController::isUsedC86CTL() const

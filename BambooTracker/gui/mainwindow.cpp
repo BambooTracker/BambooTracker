@@ -754,7 +754,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
 		bt_->useSCCI(nullptr);
-		bt_->useC86CTL(nullptr);
+		bt_->setC86ctl();
 	}
 	else {
 		tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
@@ -2335,7 +2335,7 @@ void MainWindow::changeConfiguration()
 	if (intf == RealChipInterface::NONE) {
 		tickTimerForRealChip_.reset();
 		bt_->useSCCI(nullptr);
-		bt_->useC86CTL(nullptr);
+		bt_->setC86ctl();
 		QString streamErr;
 		streamState = stream_->initialize(
 						  config_.lock()->getSampleRate(),
@@ -2408,7 +2408,7 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 
 	switch (intf) {
 	case RealChipInterface::SCCI:
-		bt_->useC86CTL(nullptr);
+		bt_->setC86ctl();
 		scciDll_->load();
 		if (scciDll_->isLoaded()) {
 			auto getManager = reinterpret_cast<scci::SCCIFUNC>(
@@ -2423,10 +2423,10 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 		bt_->useSCCI(nullptr);
 		c86ctlDll_->load();
 		if (c86ctlDll_->isLoaded()) {
-			bt_->useC86CTL(new C86ctlBase(c86ctlDll_->resolve("CreateInstance")));
+			bt_->setC86ctl(new C86ctlGeneratorFunc(c86ctlDll_->resolve("CreateInstance")));
 		}
 		else {
-			bt_->useC86CTL(nullptr);
+			bt_->setC86ctl();
 		}
 		break;
 	default:

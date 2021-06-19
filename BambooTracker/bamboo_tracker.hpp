@@ -334,7 +334,7 @@ public:
 
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);
-	void useC86CTL(C86ctlBase* base);
+	void setC86ctl(C86ctlGeneratorFunc* f = nullptr);
 	RealChipInterface getRealChipinterface() const;
 
 	// Stream events
