@@ -26,31 +26,22 @@
 #include "c86ctl_wrapper.hpp"
 #include <cmath>
 
-#ifdef _WIN32
 #include "c86ctl.h"
-#endif
 
-C86ctl::C86ctl()
-{
-#ifdef _C86CTL_H
-	base_ = nullptr;
-	rc_ = nullptr;
-	gm_ = nullptr;
-#endif
-}
+C86ctl::C86ctl() : base_(nullptr), rc_(nullptr), gm_(nullptr) {}
 
 C86ctl::~C86ctl()
 {
-#ifdef _C86CTL_H
 	if (gm_) gm_->Release();
 	if (rc_) rc_->Release();
-	if (base_) base_->Release();
-#endif
+	if (base_) {
+		base_->deinitialize();
+		base_->Release();
+	}
 }
 
-bool C86ctl::createInstance(C86ctlGeneratorFunc* f)
+bool C86ctl::createInstance(RealChipInterfaceGeneratorFunc* f)
 {
-#ifdef _C86CTL_H
 	// Create instance
 	auto tmpFunc = f ? reinterpret_cast<void*>((*f)()) : nullptr;	// Avoid MSVC C4191
 	if (f) delete f;
@@ -102,48 +93,30 @@ bool C86ctl::createInstance(C86ctlGeneratorFunc* f)
 	base_->deinitialize();
 	base_->Release();
 	base_ = nullptr;
-#else
-	if (f) delete f;
-#endif
 	return false;
 }
 
-bool C86ctl::isUsed() const
+bool C86ctl::hasConnected() const
 {
-#ifdef _C86CTL_H
 	return (base_ != nullptr);
-#else
-	return false;
-#endif
 }
 
-void C86ctl::resetChip()
+void C86ctl::reset()
 {
-#ifdef _C86CTL_H
 	if (rc_) rc_->reset();
-#endif
 }
 
-void C86ctl::out(uint32_t addr, uint8_t data)
+void C86ctl::setRegister(uint32_t addr, uint8_t data)
 {
-#ifdef _C86CTL_H
 	if (rc_) rc_->out(addr, data);
-#else
-	(void)addr;
-	(void)data;
-#endif
 }
 
 void C86ctl::setSSGVolume(double dB)
 {
-#ifdef _C86CTL_H
 	if (gm_) {
 		// NOTE: estimate SSG volume roughly
 		uint8_t vol = static_cast<uint8_t>(std::round((dB < -3.0) ? (2.5 * dB + 45.5)
 																  : (7. * dB + 59.)));
 		gm_->setSSGVolume(vol);
 	}
-#else
-	(void)dB;
-#endif
 }

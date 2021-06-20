@@ -312,14 +312,16 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	}
 	on_audioApiComboBox_currentIndexChanged(ui->audioApiComboBox->currentText());
 
-	ui->realChipComboBox->addItem(tr("None"), static_cast<int>(RealChipInterface::NONE));
-	ui->realChipComboBox->addItem("SCCI", static_cast<int>(RealChipInterface::SCCI));
-	ui->realChipComboBox->addItem("C86CTL", static_cast<int>(RealChipInterface::C86CTL));
+	ui->realChipComboBox->addItem(tr("None"), static_cast<int>(RealChipInterfaceType::NONE));
+#ifdef USE_REAL_CHIP
+	ui->realChipComboBox->addItem("SCCI", static_cast<int>(RealChipInterfaceType::SCCI));
+	ui->realChipComboBox->addItem("C86CTL", static_cast<int>(RealChipInterfaceType::C86CTL));
+#endif
 	switch (configLocked->getRealChipInterface()) {
 	default:	// Fall through
-	case RealChipInterface::NONE:	ui->realChipComboBox->setCurrentIndex(0);	break;
-	case RealChipInterface::SCCI:	ui->realChipComboBox->setCurrentIndex(1);	break;
-	case RealChipInterface::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
+	case RealChipInterfaceType::NONE:	ui->realChipComboBox->setCurrentIndex(0);	break;
+	case RealChipInterfaceType::SCCI:	ui->realChipComboBox->setCurrentIndex(1);	break;
+	case RealChipInterfaceType::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
 	}
 
 	{
@@ -465,7 +467,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	// Sound //
 	configLocked->setSoundDevice(ui->audioDeviceComboBox->currentText().toUtf8().toStdString());
 	configLocked->setSoundAPI(ui->audioApiComboBox->currentText().toUtf8().toStdString());
-	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
+	configLocked->setRealChipInterface(static_cast<RealChipInterfaceType>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
 	configLocked->setMidiEnabled(ui->midiInputGroupBox->isChecked());
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());

@@ -27,9 +27,12 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
+#include "register_write_logger.hpp"
+
+#ifdef USE_REAL_CHIP
 #include "scci/scci_wrapper.hpp"
 #include "c86ctl/c86ctl_wrapper.hpp"
-#include "register_write_logger.hpp"
+#endif
 
 extern "C"
 {
@@ -60,8 +63,7 @@ OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dra
 		   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
 		   logger),
 	  dramSize_(dramSize),
-	  scci_(new Scci),
-	  c86ctl_(new C86ctl)
+	  rcIntf_(std::make_unique<SimpleRealChipInterface>())
 {
 	switch (emu) {
 	default:
@@ -101,9 +103,6 @@ OPNA::~OPNA()
 	intf_->device_stop(id_);
 
 	--count_;
-
-	setScci(nullptr);
-	setC86ctl(nullptr);
 }
 
 void OPNA::reset()
@@ -112,8 +111,7 @@ void OPNA::reset()
 
 	intf_->device_reset(id_);
 
-	scci_->initialize();
-	c86ctl_->resetChip();
+	rcIntf_->reset();
 }
 
 void OPNA::setRegister(uint32_t offset, uint8_t value)
@@ -135,8 +133,7 @@ void OPNA::setRegister(uint32_t offset, uint8_t value)
 		}
 	}
 
-	scci_->setRegister(offset, value);
-	c86ctl_->out(offset, value);
+	rcIntf_->setRegister(offset, value);
 }
 
 uint8_t OPNA::getRegister(uint32_t offset) const
@@ -163,7 +160,7 @@ void OPNA::setVolumeSSG(double dB)
 	std::lock_guard<std::mutex> lg(mutex_);
 	volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
 
-	c86ctl_->setSSGVolume(dB);
+	rcIntf_->setSSGVolume(dB);
 }
 
 size_t OPNA::getDRAMSize() const noexcept
@@ -207,23 +204,37 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	}
 }
 
-void OPNA::setScci(ScciGeneratorFunc* f)
+void OPNA::connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f)
 {
-	scci_->createInstance(f);
+	switch (type) {
+	default:	// Fall through
+	case RealChipInterfaceType::NONE:
+		if (rcIntf_->getType() != RealChipInterfaceType::NONE)
+			rcIntf_ = std::make_unique<SimpleRealChipInterface>();
+		rcIntf_->createInstance(f);
+		break;
+#ifdef USE_REAL_CHIP
+	case RealChipInterfaceType::SCCI:
+		if (rcIntf_->getType() != RealChipInterfaceType::SCCI)
+			rcIntf_ = std::make_unique<Scci>();
+		rcIntf_->createInstance(f);
+		break;
+	case RealChipInterfaceType::C86CTL:
+		if (rcIntf_->getType() != RealChipInterfaceType::C86CTL)
+			rcIntf_ = std::make_unique<C86ctl>();
+		rcIntf_->createInstance(f);
+		break;
+#endif
+	}
 }
 
-bool OPNA::isUsedScci() const noexcept
+RealChipInterfaceType OPNA::getRealChipInterfaceType() const
 {
-	return scci_->isUsed();
+	return rcIntf_->getType();
 }
 
-void OPNA::setC86ctl(C86ctlGeneratorFunc* f)
+bool OPNA::hasConnectedToRealChip() const
 {
-	c86ctl_->createInstance(f);
-}
-
-bool OPNA::isUsedC86ctl() const noexcept
-{
-	return c86ctl_->isUsed();
+	return rcIntf_->hasConnected();
 }
 }

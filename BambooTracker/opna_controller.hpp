@@ -58,10 +58,9 @@ public:
 	void updateRegisterStates();
 
 	// Real chip interface
-	void setScci(ScciGeneratorFunc* f);
-	bool isUsedScci() const;
-	void setC86ctl(C86ctlGeneratorFunc* f);
-	bool isUsedC86ctl() const;
+	void connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f);
+	RealChipInterfaceType getRealChipInterfaceType() const;
+	bool hasConnectedToRealChip() const;
 
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);

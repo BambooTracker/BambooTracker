@@ -26,43 +26,31 @@
 #pragma once
 
 #include <cstdint>
+#include "../real_chip_interface.hpp"
 
-#ifdef _WIN32
 namespace c86ctl
 {
 struct IRealChipBase;
 struct IRealChip2;
 struct IGimic2;
 }
-#endif
 
-struct C86ctlGeneratorFunc
-{
-	using FuncPtr = void (*)();
-	C86ctlGeneratorFunc(FuncPtr fp) : fp_(fp) {}
-	FuncPtr operator()() const { return fp_; }
-
-private:
-	FuncPtr fp_;
-};
-
-class C86ctl
+class C86ctl final : public SimpleRealChipInterface
 {
 public:
 	C86ctl();
-	~C86ctl();
-	bool createInstance(C86ctlGeneratorFunc *f);
-	bool isUsed() const;
+	~C86ctl() override;
+	bool createInstance(RealChipInterfaceGeneratorFunc* f) override;
+	RealChipInterfaceType getType() const override { return RealChipInterfaceType::C86CTL; }
+	bool hasConnected() const override;
 
-	void resetChip();
-	void out(uint32_t addr, uint8_t data);
+	void reset() override;
+	void setRegister(uint32_t addr, uint8_t data) override;
 
-	void setSSGVolume(double dB);
+	void setSSGVolume(double dB) override;
 
 private:
-#ifdef _WIN32
 	c86ctl::IRealChipBase* base_;
 	c86ctl::IRealChip2* rc_;
 	c86ctl::IGimic2* gm_;
-#endif
 };

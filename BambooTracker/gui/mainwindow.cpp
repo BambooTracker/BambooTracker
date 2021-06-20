@@ -109,8 +109,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	bt_(std::make_shared<BambooTracker>(config)),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	fileHistory_(std::make_shared<FileHistory>()),
-	scciDll_(std::make_unique<QLibrary>("scci")),
-	c86ctlDll_(std::make_unique<QLibrary>("c86ctl")),
+	scciDll_(std::make_shared<QLibrary>("scci")),
+	c86ctlDll_(std::make_shared<QLibrary>("c86ctl")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	renamingInstItem_(nullptr),
 	renamingInstEdit_(nullptr),
@@ -751,12 +751,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 			showStreamFailedDialog(streamErr);
 		}
 	}
-	RealChipInterface intf = config.lock()->getRealChipInterface();
-	if (intf == RealChipInterface::NONE) {
-		bt_->setScci();
-		bt_->setC86ctl();
-	}
-	else {
+	RealChipInterfaceType intf = config.lock()->getRealChipInterface();
+	if (intf != RealChipInterfaceType::NONE) {
 		tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
 		tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
@@ -2331,11 +2327,10 @@ void MainWindow::changeConfiguration()
 {
 	// Real chip interface
 	bool streamState = false;
-	RealChipInterface intf = config_.lock()->getRealChipInterface();
-	if (intf == RealChipInterface::NONE) {
+	RealChipInterfaceType intf = config_.lock()->getRealChipInterface();
+	if (intf == RealChipInterfaceType::NONE) {
 		tickTimerForRealChip_.reset();
-		bt_->setScci();
-		bt_->setC86ctl();
+		bt_->connectToRealChip(RealChipInterfaceType::NONE);
 		QString streamErr;
 		streamState = stream_->initialize(
 						  config_.lock()->getSampleRate(),
@@ -2395,9 +2390,9 @@ void MainWindow::changeConfiguration()
 	update();
 }
 
-void MainWindow::setRealChipInterface(RealChipInterface intf)
+void MainWindow::setRealChipInterface(RealChipInterfaceType intf)
 {
-	if (intf == bt_->getRealChipinterface()) return;
+	if (intf == bt_->getRealChipInterfaceType()) return;
 
 	if (isWindowModified()
 			&& QMessageBox::warning(this, tr("Warning"),
@@ -2406,31 +2401,22 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 		on_actionSave_As_triggered();
 	}
 
-	switch (intf) {
-	case RealChipInterface::SCCI:
-		bt_->setC86ctl();
-		scciDll_->load();
-		if (scciDll_->isLoaded()) {
+	struct Pair
+	{
+		std::weak_ptr<QLibrary> lib;
+		const char* symbol;
+	};
+	static std::unordered_map<RealChipInterfaceType, Pair> RCI_DIC = {
+		{ RealChipInterfaceType::SCCI, { scciDll_, "getSoundInterfaceManager" } },
+		{ RealChipInterfaceType::C86CTL, { c86ctlDll_, "CreateInstance" } }
+	};
 
-			bt_->setScci(new ScciGeneratorFunc(scciDll_->resolve("getSoundInterfaceManager")));
-		}
-		else {
-			bt_->setScci();
-		}
-		break;
-	case RealChipInterface::C86CTL:
-		bt_->setScci();
-		c86ctlDll_->load();
-		if (c86ctlDll_->isLoaded()) {
-			bt_->setC86ctl(new C86ctlGeneratorFunc(c86ctlDll_->resolve("CreateInstance")));
-		}
-		else {
-			bt_->setC86ctl();
-		}
-		break;
-	default:
-		break;
-	}
+	auto& dll = RCI_DIC.at(intf).lib;
+	dll.lock()->load();
+	if (dll.lock()->isLoaded())
+		bt_->connectToRealChip(intf, new RealChipInterfaceGeneratorFunc(dll.lock()->resolve(RCI_DIC[intf].symbol)));
+	else
+		bt_->connectToRealChip(RealChipInterfaceType::NONE);
 
 	bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();

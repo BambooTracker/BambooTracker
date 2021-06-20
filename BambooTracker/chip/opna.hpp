@@ -28,12 +28,7 @@
 #include "chip.hpp"
 #include <memory>
 #include "resampler.hpp"
-
-class Scci;
-class ScciGeneratorFunc;
-
-class C86ctl;
-class C86ctlGeneratorFunc;
+#include "real_chip_interface.hpp"
 
 namespace chip
 {
@@ -63,10 +58,10 @@ public:
 	void setVolumeSSG(double dB);
 	size_t getDRAMSize() const noexcept;
 	void mix(int16_t* stream, size_t nSamples) override;
-	void setScci(ScciGeneratorFunc* f);
-	bool isUsedScci() const noexcept;
-	void setC86ctl(C86ctlGeneratorFunc* f);
-	bool isUsedC86ctl() const noexcept;
+
+	void connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f);
+	RealChipInterfaceType getRealChipInterfaceType() const;
+	bool hasConnectedToRealChip() const;
 
 private:
 	static size_t count_;
@@ -74,7 +69,6 @@ private:
 	intf2608* intf_;
 	size_t dramSize_;
 
-	std::unique_ptr<Scci> scci_;
-	std::unique_ptr<C86ctl> c86ctl_;
+	std::unique_ptr<SimpleRealChipInterface> rcIntf_;
 };
 }

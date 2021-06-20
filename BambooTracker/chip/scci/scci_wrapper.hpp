@@ -26,39 +26,27 @@
 #pragma once
 
 #include <cstdint>
+#include "../real_chip_interface.hpp"
 
-#ifdef _WIN32
 namespace scci
 {
 class SoundInterfaceManager;
 class SoundChip;
 }
-#endif
 
-struct ScciGeneratorFunc
-{
-	using FuncPtr = void (*)();
-	ScciGeneratorFunc(FuncPtr fp) : fp_(fp) {}
-	FuncPtr operator()() const { return fp_; }
-
-private:
-	FuncPtr fp_;
-};
-
-class Scci
+class Scci final : public SimpleRealChipInterface
 {
 public:
 	Scci();
-	~Scci();
-	bool createInstance(ScciGeneratorFunc *f);
-	bool isUsed() const;
+	~Scci() override;
+	bool createInstance(RealChipInterfaceGeneratorFunc* f) override;
+	RealChipInterfaceType getType() const override { return RealChipInterfaceType::SCCI; }
+	bool hasConnected() const override;
 
-	void initialize();
-	void setRegister(uint32_t dAddr, uint32_t dData);
+	void reset() override;
+	void setRegister(uint32_t addr, uint8_t data) override;
 
 private:
-#ifdef _WIN32
-	scci::SoundInterfaceManager* scciManager_;
-	scci::SoundChip* scciChip_;
-#endif
+	scci::SoundInterfaceManager* man_;
+	scci::SoundChip* chip_;
 };

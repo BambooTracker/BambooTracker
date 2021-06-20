@@ -23,57 +23,50 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "scci_wrapper.hpp"
-#include "scci.hpp"
-#include "SCCIDefines.hpp"
+#pragma once
 
-Scci::Scci() : man_(nullptr), chip_(nullptr) {}
+#include <cstdint>
 
-Scci::~Scci()
+struct RealChipInterfaceGeneratorFunc
 {
-	if (chip_) man_->releaseSoundChip(chip_);
-	if (man_) man_->releaseInstance();
-}
+	using FuncPtr = void (*)();
+	RealChipInterfaceGeneratorFunc(FuncPtr fp) : fp_(fp) {}
+	FuncPtr operator()() const { return fp_; }
 
-bool Scci::createInstance(RealChipInterfaceGeneratorFunc* f)
+private:
+	FuncPtr fp_;
+};
+
+enum class RealChipInterfaceType : int
 {
-	auto getManager = f ? reinterpret_cast<scci::SCCIFUNC>((*f)()) : nullptr;
-	if (f) delete f;
-	auto man = getManager ? getManager() : nullptr;
-	if (man) {
-		man_ = man;
-		man_->initializeInstance();
-		man_->reset();
-		chip_ = man_->getSoundChip(scci::SC_TYPE_YM2608, scci::SC_CLOCK_7987200);
-		if (!chip_) {
-			man_->releaseInstance();
-			man_ = nullptr;
-			return false;
-		}
+	NONE = 0,
+	SCCI = 1,
+	C86CTL = 2
+};
+
+class SimpleRealChipInterface
+{
+public:
+	virtual ~SimpleRealChipInterface() = default;
+
+	virtual bool createInstance(RealChipInterfaceGeneratorFunc* f)
+	{
+		if (f) delete f;
 		return true;
 	}
-	else {
-		if (!chip_) return false;
-		man_->releaseSoundChip(chip_);
-		chip_ = nullptr;
 
-		man_->releaseInstance();
-		man_ = nullptr;
-		return false;
+	virtual RealChipInterfaceType getType() const { return RealChipInterfaceType::NONE; }
+	virtual bool hasConnected() const { return false; }
+	virtual void reset() {}
+
+	virtual void setRegister(uint32_t addr, uint8_t data)
+	{
+		(void)addr;
+		(void)data;
 	}
-}
 
-bool Scci::hasConnected() const
-{
-	return (man_ != nullptr);
-}
-
-void Scci::reset()
-{
-	if (chip_) chip_->init();
-}
-
-void Scci::setRegister(uint32_t addr, uint8_t data)
-{
-	if (chip_) chip_->setRegister(addr, data);
-}
+	virtual void setSSGVolume(double dB)
+	{
+		(void)dB;
+	}
+};
