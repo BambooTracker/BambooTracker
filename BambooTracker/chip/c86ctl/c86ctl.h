@@ -7,8 +7,6 @@
 	honet.kk(at)gmail.com
  */
 
-#ifdef _WIN32
-
 #ifndef _C86CTL_H
 #define _C86CTL_H
 
@@ -129,8 +127,6 @@ UCHAR WINAPI c86ctl_in( UINT addr );				/* DEPRECATED */
 #ifdef __cplusplus
 }
 }
-#endif
-
 #endif
 
 #endif

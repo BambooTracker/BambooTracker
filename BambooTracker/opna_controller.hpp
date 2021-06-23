@@ -58,10 +58,9 @@ public:
 	void updateRegisterStates();
 
 	// Real chip interface
-	void useSCCI(scci::SoundInterfaceManager* manager);
-	bool isUsedSCCI() const;
-	void useC86CTL(C86ctlBase* base);
-	bool isUsedC86CTL() const;
+	void connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f);
+	RealChipInterfaceType getRealChipInterfaceType() const;
+	bool hasConnectedToRealChip() const;
 
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);

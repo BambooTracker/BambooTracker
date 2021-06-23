@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,34 +23,57 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "scci_wrapper.hpp"
+#include "scci.hpp"
+#include "SCCIDefines.hpp"
 
-#include <cstdint>
-#include "../real_chip_interface.hpp"
+Scci::Scci() : man_(nullptr), chip_(nullptr) {}
 
-namespace c86ctl
+Scci::~Scci()
 {
-struct IRealChipBase;
-struct IRealChip2;
-struct IGimic2;
+	if (chip_) man_->releaseSoundChip(chip_);
+	if (man_) man_->releaseInstance();
 }
 
-class C86ctl final : public SimpleRealChipInterface
+bool Scci::createInstance(RealChipInterfaceGeneratorFunc* f)
 {
-public:
-	C86ctl();
-	~C86ctl() override;
-	bool createInstance(RealChipInterfaceGeneratorFunc* f) override;
-	RealChipInterfaceType getType() const override { return RealChipInterfaceType::C86CTL; }
-	bool hasConnected() const override;
+	auto getManager = f ? reinterpret_cast<scci::SCCIFUNC>((*f)()) : nullptr;
+	if (f) delete f;
+	auto man = getManager ? getManager() : nullptr;
+	if (man) {
+		man_ = man;
+		man_->initializeInstance();
+		man_->reset();
+		chip_ = man_->getSoundChip(scci::SC_TYPE_YM2608, scci::SC_CLOCK_7987200);
+		if (!chip_) {
+			man_->releaseInstance();
+			man_ = nullptr;
+			return false;
+		}
+		return true;
+	}
+	else {
+		if (!chip_) return false;
+		man_->releaseSoundChip(chip_);
+		chip_ = nullptr;
 
-	void reset() override;
-	void setRegister(uint32_t addr, uint8_t data) override;
+		man_->releaseInstance();
+		man_ = nullptr;
+		return false;
+	}
+}
 
-	void setSSGVolume(double dB) override;
+bool Scci::hasConnected() const
+{
+	return (man_ != nullptr);
+}
 
-private:
-	c86ctl::IRealChipBase* base_;
-	c86ctl::IRealChip2* rc_;
-	c86ctl::IGimic2* gm_;
-};
+void Scci::reset()
+{
+	if (chip_) chip_->init();
+}
+
+void Scci::setRegister(uint32_t addr, uint8_t data)
+{
+	if (chip_) chip_->setRegister(addr, data);
+}

@@ -37,8 +37,7 @@
 #include "instrument.hpp"
 #include "module.hpp"
 #include "command/command_manager.hpp"
-#include "chip/c86ctl/c86ctl_wrapper.hpp"
-#include "chip/scci/scci.hpp"
+#include "chip/real_chip_interface.hpp"
 #include "io/binary_container.hpp"
 #include "io/export_io.hpp"
 #include "io/wav_container.hpp"
@@ -47,7 +46,6 @@
 
 class Configuration;
 enum class EffectDisplayControl;
-enum class RealChipInterface;
 class AbstractBank;
 class OPNAController;
 class PlaybackManager;
@@ -333,9 +331,9 @@ public:
 					 const io::S98Tag& tag, int rate, ExportCancellCallback checkFunc);
 
 	// Real chip interface
-	void useSCCI(scci::SoundInterfaceManager* manager);
-	void useC86CTL(C86ctlBase* base);
-	RealChipInterface getRealChipinterface() const;
+	void connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f = nullptr);
+	RealChipInterfaceType getRealChipInterfaceType() const;
+	bool hasConnectedToRealChip() const;
 
 	// Stream events
 	/// 0<: Tick

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,29 +28,25 @@
 #include <cstdint>
 #include "../real_chip_interface.hpp"
 
-namespace c86ctl
+namespace scci
 {
-struct IRealChipBase;
-struct IRealChip2;
-struct IGimic2;
+class SoundInterfaceManager;
+class SoundChip;
 }
 
-class C86ctl final : public SimpleRealChipInterface
+class Scci final : public SimpleRealChipInterface
 {
 public:
-	C86ctl();
-	~C86ctl() override;
+	Scci();
+	~Scci() override;
 	bool createInstance(RealChipInterfaceGeneratorFunc* f) override;
-	RealChipInterfaceType getType() const override { return RealChipInterfaceType::C86CTL; }
+	RealChipInterfaceType getType() const override { return RealChipInterfaceType::SCCI; }
 	bool hasConnected() const override;
 
 	void reset() override;
 	void setRegister(uint32_t addr, uint8_t data) override;
 
-	void setSSGVolume(double dB) override;
-
 private:
-	c86ctl::IRealChipBase* base_;
-	c86ctl::IRealChip2* rc_;
-	c86ctl::IGimic2* gm_;
+	scci::SoundInterfaceManager* man_;
+	scci::SoundChip* chip_;
 };

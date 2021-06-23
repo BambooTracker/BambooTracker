@@ -1,126 +1,122 @@
+/*
+ * Copyright (C) 2020-2021 Rerrah
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 #include "c86ctl_wrapper.hpp"
+#include <cmath>
+
 #include "c86ctl.h"
 
-C86ctlBase::C86ctlBase(void (*func)())
-	: base_(nullptr)
-{
-#ifdef _C86CTL_H
-	auto tmpFunc = reinterpret_cast<void*>(func);	// Avoid MSVC C4191
-	if (auto createInstance = reinterpret_cast<HRESULT(WINAPI*)(REFIID, void**)>(tmpFunc))
-		createInstance(c86ctl::IID_IRealChipBase, reinterpret_cast<void**>(&base_));
-#else
-	(void)func;
-#endif
-}
+C86ctl::C86ctl() : base_(nullptr), rc_(nullptr), gm_(nullptr) {}
 
-bool C86ctlBase::isEmpty() const noexcept
+C86ctl::~C86ctl()
 {
-	return (base_ == nullptr);
-}
-
-void C86ctlBase::initialize()
-{
-#ifdef _C86CTL_H
-	if (base_) base_->initialize();
-#endif
-}
-
-void C86ctlBase::deinitialize()
-{
-#ifdef _C86CTL_H
-	if (base_) base_->deinitialize();
-#endif
-}
-
-int C86ctlBase::getNumberOfChip()
-{
-#ifdef _C86CTL_H
-	if (base_) return base_->getNumberOfChip();
-#endif
-	return 0;
-}
-
-C86ctlRealChip* C86ctlBase::getChipInterface(int id)
-{
-	c86ctl::IRealChip2* rc = nullptr;
-#ifdef _C86CTL_H
-	if (base_) base_->getChipInterface(id, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
-#else
-	(void)id;
-#endif
-	return (rc ? new C86ctlRealChip(rc) : nullptr);
-}
-
-C86ctlRealChip::C86ctlRealChip(c86ctl::IRealChip2* rc)
-{
-#ifdef _C86CTL_H
-	rc_ = rc;
-#else
-	(void)rc;
-#endif
-}
-
-C86ctlRealChip::~C86ctlRealChip()
-{
-#ifdef _C86CTL_H
-	rc_->Release();
-#endif
-}
-
-void C86ctlRealChip::resetChip()
-{
-#ifdef _C86CTL_H
-	rc_->reset();
-#endif
-}
-
-void C86ctlRealChip::out(uint32_t addr, uint8_t data)
-{
-#ifdef _C86CTL_H
-	rc_->out(addr, data);
-#else
-	(void)addr;
-	(void)data;
-#endif
-}
-
-C86ctlGimic* C86ctlRealChip::queryInterface()
-{
-#ifdef _C86CTL_H
-	c86ctl::IGimic2* gm = nullptr;
-	if (rc_->QueryInterface(c86ctl::IID_IGimic2, reinterpret_cast<void**>(&gm)) == S_OK) {
-		c86ctl::ChipType type;
-		gm->getModuleType(&type);
-		if (type == c86ctl::CHIP_OPNA) {
-			return new C86ctlGimic(gm);
-		}
-		gm->Release();
+	if (gm_) gm_->Release();
+	if (rc_) rc_->Release();
+	if (base_) {
+		base_->deinitialize();
+		base_->Release();
 	}
-#endif
-	return nullptr;
 }
 
-C86ctlGimic::C86ctlGimic(c86ctl::IGimic2* gm)
+bool C86ctl::createInstance(RealChipInterfaceGeneratorFunc* f)
 {
-#ifdef _C86CTL_H
-	gm_ = gm;
-#else
-	(void)gm;
-#endif
+	// Create instance
+	auto tmpFunc = f ? reinterpret_cast<void*>((*f)()) : nullptr;	// Avoid MSVC C4191
+	if (f) delete f;
+
+	if (auto createInstance = reinterpret_cast<HRESULT(WINAPI*)(REFIID, void**)>(tmpFunc)) {
+		c86ctl::IRealChipBase* base = nullptr;
+		createInstance(c86ctl::IID_IRealChipBase, reinterpret_cast<void**>(&base));
+		if (base_) {
+			base_->Release();
+			base_ = nullptr;
+			if (!base) return false;
+		}
+		base_ = base;
+		base_->initialize();
+		int nChip = base_->getNumberOfChip();
+		for (int i = 0; i < nChip; ++i) {
+			c86ctl::IRealChip2* rc = nullptr;
+			base_->getChipInterface(i, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
+			if (rc) {
+				if (rc_) rc_->Release();
+				rc_ = rc;
+				rc_->reset();
+
+				c86ctl::IGimic2* gm = nullptr;
+				if (rc_->QueryInterface(c86ctl::IID_IGimic2, reinterpret_cast<void**>(&gm)) == S_OK) {
+					c86ctl::ChipType type;
+					gm->getModuleType(&type);
+					if (type == c86ctl::CHIP_OPNA) {
+						if (gm_) gm_->Release();
+						gm_ = gm;
+						return true;
+					}
+					gm->Release();
+				}
+				rc_->Release();
+				rc_ = nullptr;
+			}
+		}
+	}
+	else {	// Clear interfaces
+		if (!base_) return false;
+		rc_->reset();
+		gm_->Release();
+		gm_ = nullptr;
+		rc_->Release();
+		rc_ = nullptr;
+	}
+
+	base_->deinitialize();
+	base_->Release();
+	base_ = nullptr;
+	return false;
 }
 
-C86ctlGimic::~C86ctlGimic()
+bool C86ctl::hasConnected() const
 {
-#ifdef _C86CTL_H
-	gm_->Release();
-#endif
+	return (base_ != nullptr);
 }
 
-void C86ctlGimic::setSSGVolume(uint8_t vol)
+void C86ctl::reset()
 {
-#ifdef _C86CTL_H
-	gm_->setSSGVolume(vol);
-#else
-	(void)vol;
-#endif
+	if (rc_) rc_->reset();
+}
+
+void C86ctl::setRegister(uint32_t addr, uint8_t data)
+{
+	if (rc_) rc_->out(addr, data);
+}
+
+void C86ctl::setSSGVolume(double dB)
+{
+	if (gm_) {
+		// NOTE: estimate SSG volume roughly
+		uint8_t vol = static_cast<uint8_t>(std::round((dB < -3.0) ? (2.5 * dB + 45.5)
+																  : (7. * dB + 59.)));
+		gm_->setSSGVolume(vol);
+	}
 }

@@ -46,7 +46,6 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
-    chip/c86ctl/c86ctl_wrapper.cpp \
     chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
@@ -216,11 +215,8 @@ SOURCES += \
 HEADERS += \
     bamboo_tracker_defs.hpp \
     chip/codec/ymb_codec.hpp \
-    chip/c86ctl/c86ctl.h \
-    chip/c86ctl/c86ctl_wrapper.hpp \
+    chip/real_chip_interface.hpp \
     chip/register_write_logger.hpp \
-    chip/scci/SCCIDefines.hpp \
-    chip/scci/scci.hpp \
     command/command_id.hpp \
     command/instrument/swap_instruments_command.hpp \
     command/pattern/change_values_in_pattern_command.hpp \
@@ -472,4 +468,20 @@ else {
   LIBS += -L$$OUT_PWD/../submodules/RtMidi
   CONFIG(debug, debug|release):LIBS += -lrtmidid
   else:CONFIG(release, debug|release):LIBS += -lrtmidi
+}
+
+win32:CONFIG += real_chip
+real_chip {
+  DEFINES += USE_REAL_CHIP
+
+  SOURCES += \
+    chip/c86ctl/c86ctl_wrapper.cpp \
+    chip/scci/scci_wrapper.cpp
+
+  HEADERS += \
+    chip/c86ctl/c86ctl.h \
+    chip/c86ctl/c86ctl_wrapper.hpp \
+    chip/scci/SCCIDefines.hpp \
+    chip/scci/scci.hpp \
+    chip/scci/scci_wrapper.hpp
 }

@@ -1808,21 +1808,19 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 }
 
 /********** Real chip interface **********/
-void BambooTracker::useSCCI(scci::SoundInterfaceManager* manager)
+void BambooTracker::connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f)
 {
-	opnaCtrl_->useSCCI(manager);
+	opnaCtrl_->connectToRealChip(type, f);
 }
 
-void BambooTracker::useC86CTL(C86ctlBase* base)
+RealChipInterfaceType BambooTracker::getRealChipInterfaceType() const
 {
-	opnaCtrl_->useC86CTL(base);
+	return opnaCtrl_->getRealChipInterfaceType();
 }
 
-RealChipInterface BambooTracker::getRealChipinterface() const
+bool BambooTracker::hasConnectedToRealChip() const
 {
-	if (opnaCtrl_->isUsedSCCI()) return RealChipInterface::SCCI;
-	else if (opnaCtrl_->isUsedC86CTL()) return RealChipInterface::C86CTL;
-	else return RealChipInterface::NONE;
+	return opnaCtrl_->hasConnectedToRealChip();
 }
 
 /********** Stream events **********/

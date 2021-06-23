@@ -432,7 +432,7 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		settings.beginGroup("Sound");
 		configLocked->setSoundAPI(settings.value("soundAPI", QString::fromStdString(configLocked->getSoundAPI())).toString().toUtf8().toStdString());
 		configLocked->setSoundDevice(settings.value("soundDevice", QString::fromStdString(configLocked->getSoundDevice())).toString().toUtf8().toStdString());
-		configLocked->setRealChipInterface(static_cast<RealChipInterface>(
+		configLocked->setRealChipInterface(static_cast<RealChipInterfaceType>(
 											   settings.value("realChipInterface", static_cast<int>(configLocked->getRealChipInterface())).toInt()));
 		configLocked->setEmulator(settings.value("emulator", configLocked->getEmulator()).toInt());
 		QVariant sampleRateWorkaround;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,31 +26,47 @@
 #pragma once
 
 #include <cstdint>
-#include "../real_chip_interface.hpp"
 
-namespace c86ctl
+struct RealChipInterfaceGeneratorFunc
 {
-struct IRealChipBase;
-struct IRealChip2;
-struct IGimic2;
-}
-
-class C86ctl final : public SimpleRealChipInterface
-{
-public:
-	C86ctl();
-	~C86ctl() override;
-	bool createInstance(RealChipInterfaceGeneratorFunc* f) override;
-	RealChipInterfaceType getType() const override { return RealChipInterfaceType::C86CTL; }
-	bool hasConnected() const override;
-
-	void reset() override;
-	void setRegister(uint32_t addr, uint8_t data) override;
-
-	void setSSGVolume(double dB) override;
+	using FuncPtr = void (*)();
+	RealChipInterfaceGeneratorFunc(FuncPtr fp) : fp_(fp) {}
+	FuncPtr operator()() const { return fp_; }
 
 private:
-	c86ctl::IRealChipBase* base_;
-	c86ctl::IRealChip2* rc_;
-	c86ctl::IGimic2* gm_;
+	FuncPtr fp_;
+};
+
+enum class RealChipInterfaceType : int
+{
+	NONE = 0,
+	SCCI = 1,
+	C86CTL = 2
+};
+
+class SimpleRealChipInterface
+{
+public:
+	virtual ~SimpleRealChipInterface() = default;
+
+	virtual bool createInstance(RealChipInterfaceGeneratorFunc* f)
+	{
+		if (f) delete f;
+		return true;
+	}
+
+	virtual RealChipInterfaceType getType() const { return RealChipInterfaceType::NONE; }
+	virtual bool hasConnected() const { return false; }
+	virtual void reset() {}
+
+	virtual void setRegister(uint32_t addr, uint8_t data)
+	{
+		(void)addr;
+		(void)data;
+	}
+
+	virtual void setSSGVolume(double dB)
+	{
+		(void)dB;
+	}
 };

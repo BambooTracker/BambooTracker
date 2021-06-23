@@ -27,10 +27,12 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
-#include "scci/SCCIDefines.hpp"
-#include "scci/scci.hpp"
-#include "c86ctl/c86ctl_wrapper.hpp"
 #include "register_write_logger.hpp"
+
+#ifdef USE_REAL_CHIP
+#include "scci/scci_wrapper.hpp"
+#include "c86ctl/c86ctl_wrapper.hpp"
+#endif
 
 extern "C"
 {
@@ -61,11 +63,7 @@ OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dra
 		   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
 		   logger),
 	  dramSize_(dramSize),
-	  scciManager_(nullptr),
-	  scciChip_(nullptr),
-	  c86ctlBase_(nullptr),
-	  c86ctlRC_(nullptr),
-	  c86ctlGm_(nullptr)
+	  rcIntf_(std::make_unique<SimpleRealChipInterface>())
 {
 	switch (emu) {
 	default:
@@ -105,9 +103,6 @@ OPNA::~OPNA()
 	intf_->device_stop(id_);
 
 	--count_;
-
-	useSCCI(nullptr);
-	useC86CTL(nullptr);
 }
 
 void OPNA::reset()
@@ -116,8 +111,7 @@ void OPNA::reset()
 
 	intf_->device_reset(id_);
 
-	if (scciChip_) scciChip_->init();
-	if (c86ctlRC_) c86ctlRC_->resetChip();
+	rcIntf_->reset();
 }
 
 void OPNA::setRegister(uint32_t offset, uint8_t value)
@@ -139,8 +133,7 @@ void OPNA::setRegister(uint32_t offset, uint8_t value)
 		}
 	}
 
-	if (scciChip_) scciChip_->setRegister(offset, value);
-	if (c86ctlRC_) c86ctlRC_->out(offset, value);
+	rcIntf_->setRegister(offset, value);
 }
 
 uint8_t OPNA::getRegister(uint32_t offset) const
@@ -167,12 +160,7 @@ void OPNA::setVolumeSSG(double dB)
 	std::lock_guard<std::mutex> lg(mutex_);
 	volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
 
-	if (c86ctlGm_) {
-		// NOTE: estimate SSG volume roughly
-		uint8_t vol = static_cast<uint8_t>(std::round((dB < -3.0) ? (2.5 * dB + 45.5)
-																  : (7. * dB + 59.)));
-		c86ctlGm_->setSSGVolume(vol);
-	}
+	rcIntf_->setSSGVolume(dB);
 }
 
 size_t OPNA::getDRAMSize() const noexcept
@@ -216,65 +204,37 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	}
 }
 
-void OPNA::useSCCI(scci::SoundInterfaceManager* manager)
+void OPNA::connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f)
 {
-	if (manager) {
-		scciManager_ = manager;
-		scciManager_->initializeInstance();
-		scciManager_->reset();
-		scciChip_ = scciManager_->getSoundChip(scci::SC_TYPE_YM2608, scci::SC_CLOCK_7987200);
-		if (!scciChip_) {
-			scciManager_->releaseInstance();
-			scciManager_ = nullptr;
-		}
-	}
-	else {
-		if (!scciChip_) return;
-		scciManager_->releaseSoundChip(scciChip_);
-		scciChip_ = nullptr;
-
-		scciManager_->releaseInstance();
-		scciManager_ = nullptr;
+	switch (type) {
+	default:	// Fall through
+	case RealChipInterfaceType::NONE:
+		if (rcIntf_->getType() != RealChipInterfaceType::NONE)
+			rcIntf_ = std::make_unique<SimpleRealChipInterface>();
+		rcIntf_->createInstance(f);
+		break;
+#ifdef USE_REAL_CHIP
+	case RealChipInterfaceType::SCCI:
+		if (rcIntf_->getType() != RealChipInterfaceType::SCCI)
+			rcIntf_ = std::make_unique<Scci>();
+		rcIntf_->createInstance(f);
+		break;
+	case RealChipInterfaceType::C86CTL:
+		if (rcIntf_->getType() != RealChipInterfaceType::C86CTL)
+			rcIntf_ = std::make_unique<C86ctl>();
+		rcIntf_->createInstance(f);
+		break;
+#endif
 	}
 }
 
-bool OPNA::isUsedSCCI() const noexcept
+RealChipInterfaceType OPNA::getRealChipInterfaceType() const
 {
-	return (scciManager_ != nullptr);
+	return rcIntf_->getType();
 }
 
-void OPNA::useC86CTL(C86ctlBase* base)
+bool OPNA::hasConnectedToRealChip() const
 {
-	if (!base || base->isEmpty()) {
-		if (!c86ctlBase_) return;
-		c86ctlRC_->resetChip();
-		c86ctlGm_.reset();
-		c86ctlRC_.reset();
-		c86ctlBase_->deinitialize();
-	}
-	else {
-		c86ctlBase_.reset(base);
-		c86ctlBase_->initialize();
-		int nChip = c86ctlBase_->getNumberOfChip();
-		for (int i = 0; i < nChip; ++i) {
-			C86ctlRealChip* rc = c86ctlBase_->getChipInterface(i);
-			if (rc) {
-				c86ctlRC_.reset(rc);
-				c86ctlRC_->resetChip();
-				if (C86ctlGimic* gm = c86ctlRC_->queryInterface()) {
-					c86ctlGm_.reset(gm);
-					return;
-				}
-				c86ctlRC_.reset();
-			}
-		}
-		base->deinitialize();
-	}
-	c86ctlBase_.reset();
-}
-
-bool OPNA::isUsedC86CTL() const noexcept
-{
-	return (c86ctlBase_ != nullptr);
+	return rcIntf_->hasConnected();
 }
 }

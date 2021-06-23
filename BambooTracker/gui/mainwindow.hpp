@@ -106,7 +106,7 @@ private:
 	std::shared_ptr<QUndoStack> comStack_;
 	std::shared_ptr<FileHistory> fileHistory_;
 
-	std::unique_ptr<QLibrary> scciDll_, c86ctlDll_;
+	std::shared_ptr<QLibrary> scciDll_, c86ctlDll_;
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
@@ -155,7 +155,7 @@ private:
 
 	// Configuration change
 	void changeConfiguration();
-	void setRealChipInterface(RealChipInterface intf);
+	void setRealChipInterface(RealChipInterfaceType intf);
 	void setMidiConfiguration();
 	void updateFonts();
 

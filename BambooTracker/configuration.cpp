@@ -25,6 +25,7 @@
 
 #include "configuration.hpp"
 #include "jamming.hpp"
+#include "chip/real_chip_interface.hpp"
 
 namespace
 {
@@ -283,7 +284,7 @@ Configuration::Configuration()
 	// Sound //
 	sndAPI_ = u8"";
 	sndDevice_ = u8"";
-	realChip_ = RealChipInterface::NONE;
+	realChip_ = RealChipInterfaceType::NONE;
 	emulator_ = 1;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;

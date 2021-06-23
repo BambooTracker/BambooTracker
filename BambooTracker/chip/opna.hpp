@@ -28,16 +28,7 @@
 #include "chip.hpp"
 #include <memory>
 #include "resampler.hpp"
-
-namespace scci
-{
-class SoundInterfaceManager;
-class SoundChip;
-}
-
-class C86ctlBase;
-class C86ctlRealChip;
-class C86ctlGimic;
+#include "real_chip_interface.hpp"
 
 namespace chip
 {
@@ -67,10 +58,10 @@ public:
 	void setVolumeSSG(double dB);
 	size_t getDRAMSize() const noexcept;
 	void mix(int16_t* stream, size_t nSamples) override;
-	void useSCCI(scci::SoundInterfaceManager* manager);
-	bool isUsedSCCI() const noexcept;
-	void useC86CTL(C86ctlBase* base);
-	bool isUsedC86CTL() const noexcept;
+
+	void connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f);
+	RealChipInterfaceType getRealChipInterfaceType() const;
+	bool hasConnectedToRealChip() const;
 
 private:
 	static size_t count_;
@@ -78,13 +69,6 @@ private:
 	intf2608* intf_;
 	size_t dramSize_;
 
-	// For SCCI
-	scci::SoundInterfaceManager* scciManager_;
-	scci::SoundChip* scciChip_;
-
-	// For C86CTL
-	std::unique_ptr<C86ctlBase> c86ctlBase_;
-	std::unique_ptr<C86ctlRealChip> c86ctlRC_;
-	std::unique_ptr<C86ctlGimic> c86ctlGm_;
+	std::unique_ptr<SimpleRealChipInterface> rcIntf_;
 };
 }
