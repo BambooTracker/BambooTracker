@@ -18,6 +18,7 @@
 - [#366] - Load multiple instrument files at a time (thanks [@OPNA2608])
 - [#367] - Offer wildcard and "all supported formats" extensions in file dialogues (thanks [@OPNA2608])
 - Change item widths in the status bar
+- [#374] - Exclude C86CTL and SCCI headers in the compilation on macOS and Linux ([#357]; thanks [@fpesari], [@OPNA2608], [@freq-mod])
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
@@ -32,6 +33,7 @@
 - Restore the sample rate when the export process is canceled
 - Fix incorrect speed/tempo retrieving in the ADPCM track
 - [#368] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
+- [#376] - Skip `0Fxx` tempo change effect that have the same value as the previously set one (thanks [@nyanpasu64])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 
@@ -40,6 +42,7 @@
 [@RaijinXBlade]: https://github.com/RaijinXBlade
 [@ToughkidDev]: https://github.com/ToughkidDev
 [@wildmatsu]: https://github.com/wildmatsu
+[@fpesari]: https://github.com/fpesari
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
@@ -70,6 +73,9 @@
 [#345]: https://github.com/rerrahkr/BambooTracker/issues/345
 [#373]: https://github.com/rerrahkr/BambooTracker/pull/373
 [#365]: https://github.com/rerrahkr/BambooTracker/issues/365
+[#357]: https://github.com/rerrahkr/BambooTracker/issues/357
+[#374]: https://github.com/rerrahkr/BambooTracker/pull/374
+[#376]: https://github.com/rerrahkr/BambooTracker/issues/376
 
 ## v0.4.6 (2021-02-11)
 ### Added

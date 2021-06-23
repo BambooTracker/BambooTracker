@@ -1343,8 +1343,11 @@ void PlaybackManager::effSpeedChange(int speed)
 
 void PlaybackManager::effTempoChange(int tempo)
 {
-	tickCounter_.lock()->setTempo(tempo);
-	tickCounter_.lock()->setGrooveState(GrooveState::Invalid);
+	auto tc = tickCounter_.lock();
+	if (tc->getGrooveEnabled() || tc->getTempo() != tempo) {
+		tc->setTempo(tempo);
+		tc->setGrooveState(GrooveState::Invalid);
+	}
 }
 
 void PlaybackManager::effGrooveChange(int num)
