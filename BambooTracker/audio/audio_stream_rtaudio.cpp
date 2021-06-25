@@ -61,6 +61,7 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 	RtAudio::StreamOptions opts;
 	opts.flags = RTAUDIO_SCHEDULE_REALTIME;
 	opts.streamName = AUDIO_OUT_CLIENT_NAME;
+	opts.numberOfBuffers = 2;
 
 	auto callback =
 			+[](void* outputBuffer, void*, unsigned int nFrames,
