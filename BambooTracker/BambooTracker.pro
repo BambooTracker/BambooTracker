@@ -71,12 +71,13 @@ SOURCES += \
     gui/instrument_editor/instrument_editor_adpcm_form.cpp \
     gui/instrument_editor/instrument_editor_drumkit_form.cpp \
     gui/instrument_editor/instrument_editor_utils.cpp \
+    gui/instrument_editor/pan_macro_editor.cpp \
     gui/instrument_editor/sample_length_dialog.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
+    gui/key_signature_manager_form.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     gui/note_name_manager.cpp \
     gui/swap_tracks_dialog.cpp \
-    gui/track_visibility_memory_handler.cpp \
     gui/transpose_song_dialog.cpp \
     instrument/sample_adpcm.cpp \
     instrument/sequence_property.cpp \
@@ -246,9 +247,11 @@ HEADERS += \
     gui/instrument_editor/instrument_editor_adpcm_form.hpp \
     gui/instrument_editor/instrument_editor_drumkit_form.hpp \
     gui/instrument_editor/instrument_editor_utils.hpp \
+    gui/instrument_editor/pan_macro_editor.hpp \
     gui/instrument_editor/sample_length_dialog.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/jam_layout.hpp \
+    gui/key_signature_manager_form.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
     chip/mame/2608intf.h \
@@ -265,7 +268,6 @@ HEADERS += \
     bamboo_tracker.hpp \
     gui/note_name_manager.hpp \
     gui/swap_tracks_dialog.hpp \
-    gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
     instrument/instrument_property_defs.hpp \
     instrument/sample_adpcm.hpp \
@@ -411,6 +413,7 @@ FORMS += \
     gui/instrument_editor/instrument_editor_adpcm_form.ui \
     gui/instrument_editor/instrument_editor_drumkit_form.ui \
     gui/instrument_editor/sample_length_dialog.ui \
+    gui/key_signature_manager_form.ui \
     gui/keyboard_shortcut_list_dialog.ui \
     gui/mainwindow.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \

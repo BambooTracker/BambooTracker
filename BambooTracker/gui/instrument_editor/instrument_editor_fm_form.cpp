@@ -619,6 +619,72 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->ptOpComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onPitchOperatorChanged);
 
+	//========== Pan ==========//
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
+					 this, [&](int row, int) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->addPanFMSequenceData(ui->panNumSpinBox->value(), row);
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::sequenceDataRemoved,
+					 this, [&] {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->removePanFMSequenceData(ui->panNumSpinBox->value());
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::sequenceDataChanged,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setPanFMSequenceData(ui->panNumSpinBox->value(), col, row);
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::loopAdded,
+					 this, [&](InstrumentSequenceLoop loop) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->addPanFMLoop(ui->panNumSpinBox->value(), loop);
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::loopRemoved,
+					 this, [&](int begin, int end) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->removePanFMLoop(ui->panNumSpinBox->value(), begin, end);
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::loopCleared,
+					 this, [&] {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->clearPanFMLoops(ui->panNumSpinBox->value());
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::loopChanged,
+					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->changePanFMLoop(ui->panNumSpinBox->value(), prevBegin, prevEnd, loop);
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
+					 this, [&](InstrumentSequenceRelease release) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setPanFMRelease(ui->panNumSpinBox->value(), release);
+			emit panParameterChanged(ui->panNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
 	//========== Others ==========//
 	QObject::connect(ui->envResetCheckBox, &QCheckBox::stateChanged,
 					 this, [&](int state) {
@@ -716,6 +782,7 @@ void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palet
 	ui->opSeqEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
+	ui->panEditor->setColorPalette(palette);
 }
 
 void InstrumentEditorFMForm::updateInstrumentParameters()
@@ -730,6 +797,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 	setInstrumentOperatorSequenceParameters();
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
+	setInstrumentPanParameters();
 
 	setInstrumentEnvelopeResetParameters();
 }
@@ -1375,14 +1443,14 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
 QString InstrumentEditorFMForm::toLFOString() const
 {
 	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8")
-			   .arg(ui->lfoFreqSlider->value())
-			   .arg(ui->pmsSlider->value())
-			   .arg(ui->amsSlider->value())
-			   .arg(ui->lfoStartSpinBox->value())
-			   .arg(ui->amOp1CheckBox->isChecked() ? 1 : 0)
-			   .arg(ui->amOp2CheckBox->isChecked() ? 1 : 0)
-			   .arg(ui->amOp3CheckBox->isChecked() ? 1 : 0)
-			   .arg(ui->amOp4CheckBox->isChecked() ? 1 : 0);
+			.arg(ui->lfoFreqSlider->value())
+			.arg(ui->pmsSlider->value())
+			.arg(ui->amsSlider->value())
+			.arg(ui->lfoStartSpinBox->value())
+			.arg(ui->amOp1CheckBox->isChecked() ? 1 : 0)
+			.arg(ui->amOp2CheckBox->isChecked() ? 1 : 0)
+			.arg(ui->amOp3CheckBox->isChecked() ? 1 : 0)
+			.arg(ui->amOp4CheckBox->isChecked() ? 1 : 0);
 	return str;
 }
 
@@ -1761,9 +1829,9 @@ void InstrumentEditorFMForm::onPitchNumberChanged()
 	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorFMForm::onPitchParameterChanged(int tnNum)
+void InstrumentEditorFMForm::onPitchParameterChanged(int ptNum)
 {
-	if (ui->ptNumSpinBox->value() == tnNum) {
+	if (ui->ptNumSpinBox->value() == ptNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
 		setInstrumentPitchParameters();
 	}
@@ -1812,6 +1880,73 @@ void InstrumentEditorFMForm::on_ptNumSpinBox_valueChanged(int arg1)
 	}
 
 	onPitchNumberChanged();
+}
+
+//--- Pan
+void InstrumentEditorFMForm::setInstrumentPanParameters()
+{
+	Ui::EventGuard ev(isIgnoreEvent_);
+
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
+
+	ui->panNumSpinBox->setValue(instFM->getPanNumber());
+	ui->panEditor->clearData();
+	for (auto& unit : instFM->getPanSequence()) {
+		ui->panEditor->addSequenceData(unit.data);
+	}
+	for (auto& loop : instFM->getPanLoopRoot().getAllLoops()) {
+		ui->panEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
+	}
+	ui->panEditor->setRelease(instFM->getPanRelease());
+
+	if (instFM->getPanEnabled()) {
+		ui->panEditGroupBox->setChecked(true);
+		onPanNumberChanged();
+	}
+	else {
+		ui->panEditGroupBox->setChecked(false);
+	}
+}
+
+/********** Slots **********/
+void InstrumentEditorFMForm::onPanNumberChanged()
+{
+	// Change users view
+	std::multiset<int> users = bt_.lock()->getPanFMUsers(ui->panNumSpinBox->value());
+	ui->panUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
+}
+
+void InstrumentEditorFMForm::onPanParameterChanged(int panNum)
+{
+	if (ui->panNumSpinBox->value() == panNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentPanParameters();
+	}
+}
+
+void InstrumentEditorFMForm::on_panEditGroupBox_toggled(bool arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentFMPanEnabled(instNum_, arg1);
+		setInstrumentPanParameters();
+		emit panNumberChanged();
+		emit modified();
+	}
+
+	onPanNumberChanged();
+}
+
+void InstrumentEditorFMForm::on_panNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentFMPan(instNum_, arg1);
+		setInstrumentPanParameters();
+		emit panNumberChanged();
+		emit modified();
+	}
+
+	onPanNumberChanged();
 }
 
 //========== Others ==========//

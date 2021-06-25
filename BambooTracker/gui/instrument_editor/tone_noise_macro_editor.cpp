@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,7 +40,7 @@ ToneNoiseMacroEditor::ToneNoiseMacroEditor(QWidget *parent)
 	autoFitLabelWidth();
 }
 
-ToneNoiseMacroEditor::~ToneNoiseMacroEditor() {}
+ToneNoiseMacroEditor::~ToneNoiseMacroEditor() = default;
 
 void ToneNoiseMacroEditor::drawField()
 {
@@ -106,22 +106,15 @@ void ToneNoiseMacroEditor::drawField()
 	}
 
 	// Sequence
-	painter.setPen(palette_->instSeqCellTextColor);
 	for (size_t i = 0; i < cols_.size(); ++i) {
 		int v = cols_[i].row;
 		int x = labWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + static_cast<int>(i), 0);
 		if (!v || (32 < v && v < 65)) {	// Tone
 			painter.fillRect(x, ty, colWidths_[i], rowHeights_[static_cast<size_t>(thi)], palette_->tnToneCellColor);
-			painter.drawText(x + 2,
-							 ty + rowHeights_[static_cast<size_t>(thi)] + textOffset,
-					cols_[i].text);
 		}
 		if (0 < v && v < 65) {
 			// Noise
 			painter.fillRect(x, ny, colWidths_[i], rowHeights_[static_cast<size_t>(nhi)], palette_->tnNoiseCellColor);
-			painter.drawText(x + 2,
-							 ny + rowHeights_[static_cast<size_t>(nhi)] + textOffset,
-					cols_[i].text);
 
 			// Noise period
 			int r = (v - 1) % 32 + 2;
@@ -129,9 +122,6 @@ void ToneNoiseMacroEditor::drawField()
 				int hi = upperRow_ - r;
 				int y = std::accumulate(rowHeights_.begin(), rowHeights_.begin() + hi, 0);
 				painter.fillRect(x, y, colWidths_[i], rowHeights_[static_cast<size_t>(hi)], palette_->instSeqCellColor);
-				painter.drawText(x + 2,
-								 y + rowHeights_[static_cast<size_t>(hi)] + textOffset,
-						cols_[i].text);
 			}
 		}
 	}
@@ -209,7 +199,7 @@ bool ToneNoiseMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vect
 		return true;
 	}
 
-	// Noise
+	// Tone
 	m = QRegularExpression(R"(^(\d+)?t)").match(text);
 	if (m.hasMatch()) {
 		column.push_back({ 0, -1, "" });

@@ -513,8 +513,114 @@
           <attribute name="title">
            <string>Arpeggio/Pitch</string>
           </attribute>
-          <layout class="QGridLayout" name="gridLayout_5" rowstretch="5,5">
-           <item row="1" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout_5" stretch="5,5">
+           <item>
+            <widget class="QGroupBox" name="arpGroupBox">
+             <property name="title">
+              <string>Arpeggio</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="0">
+               <widget class="QLabel" name="arpOpLabel">
+                <property name="text">
+                 <string>Operator:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QGroupBox" name="arpEditGroupBox">
+                <property name="title">
+                 <string>Sequence</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_9">
+                 <item row="0" column="4">
+                  <widget class="QLabel" name="arpTypeLabel">
+                   <property name="text">
+                    <string>Type:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="arpUsersLabel">
+                   <property name="text">
+                    <string>Users:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QSpinBox" name="arpNumSpinBox">
+                   <property name="keyboardTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="prefix">
+                    <string notr="true">#</string>
+                   </property>
+                   <property name="maximum">
+                    <number>127</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="5">
+                  <widget class="QComboBox" name="arpTypeComboBox"/>
+                 </item>
+                 <item row="1" column="0" colspan="7">
+                  <widget class="ArpeggioMacroEditor" name="arpEditor" native="true"/>
+                 </item>
+                 <item row="0" column="3">
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="arpUsersLineEdit">
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="arpOpComboBox"/>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <widget class="QGroupBox" name="ptGroupBox">
              <property name="title">
               <string>Pitch</string>
@@ -526,9 +632,6 @@
                  <string>Operator:</string>
                 </property>
                </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="ptOpComboBox"/>
               </item>
               <item row="0" column="2">
                <spacer name="horizontalSpacer_3">
@@ -542,6 +645,9 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="ptOpComboBox"/>
               </item>
               <item row="1" column="0" colspan="3">
                <widget class="QGroupBox" name="ptEditGroupBox">
@@ -620,111 +726,89 @@
              </layout>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="arpGroupBox">
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_4">
+          <attribute name="title">
+           <string>Panning</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_6" stretch="5,5">
+           <item>
+            <widget class="QGroupBox" name="panEditGroupBox">
              <property name="title">
-              <string>Arpeggio</string>
+              <string>Panning</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_13">
-              <item row="0" column="1">
-               <widget class="QComboBox" name="arpOpComboBox"/>
-              </item>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="0">
-               <widget class="QLabel" name="arpOpLabel">
+               <widget class="QSpinBox" name="panNumSpinBox">
+                <property name="keyboardTracking">
+                 <bool>false</bool>
+                </property>
+                <property name="prefix">
+                 <string notr="true">#</string>
+                </property>
+                <property name="maximum">
+                 <number>127</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="panUsersLabel">
                 <property name="text">
-                 <string>Operator:</string>
+                 <string>Users:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
               <item row="0" column="2">
-               <spacer name="horizontalSpacer_2">
+               <widget class="QLineEdit" name="panUsersLineEdit">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
+                  <width>185</width>
                   <height>20</height>
                  </size>
                 </property>
                </spacer>
               </item>
-              <item row="1" column="0" colspan="3">
-               <widget class="QGroupBox" name="arpEditGroupBox">
-                <property name="title">
-                 <string>Sequence</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_9">
-                 <item row="0" column="4">
-                  <widget class="QLabel" name="arpTypeLabel">
-                   <property name="text">
-                    <string>Type:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="arpUsersLabel">
-                   <property name="text">
-                    <string>Users:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QSpinBox" name="arpNumSpinBox">
-                   <property name="keyboardTracking">
-                    <bool>false</bool>
-                   </property>
-                   <property name="prefix">
-                    <string notr="true">#</string>
-                   </property>
-                   <property name="maximum">
-                    <number>127</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="5">
-                  <widget class="QComboBox" name="arpTypeComboBox"/>
-                 </item>
-                 <item row="1" column="0" colspan="7">
-                  <widget class="ArpeggioMacroEditor" name="arpEditor" native="true"/>
-                 </item>
-                 <item row="0" column="3">
-                  <spacer name="horizontalSpacer_4">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QLineEdit" name="arpUsersLineEdit">
-                   <property name="focusPolicy">
-                    <enum>Qt::NoFocus</enum>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
+              <item row="1" column="0" colspan="4">
+               <widget class="PanMacroEditor" name="panEditor" native="true"/>
               </item>
              </layout>
             </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -767,6 +851,12 @@
    <header>gui/labeled_horizontal_slider.hpp</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>PanMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/pan_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
@@ -796,6 +886,8 @@
   <tabstop>ptEditGroupBox</tabstop>
   <tabstop>ptNumSpinBox</tabstop>
   <tabstop>ptTypeComboBox</tabstop>
+  <tabstop>panEditGroupBox</tabstop>
+  <tabstop>panNumSpinBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>

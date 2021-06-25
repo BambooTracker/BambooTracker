@@ -83,7 +83,6 @@
 #include "gui/transpose_song_dialog.hpp"
 #include "gui/swap_tracks_dialog.hpp"
 #include "gui/hide_tracks_dialog.hpp"
-#include "gui/track_visibility_memory_handler.hpp"
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
@@ -542,8 +541,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 
 	/* Bookmark */
 	bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
-	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested,
-					 this, [&](int order, int step) {
+	auto posJumpFunc = [&](int order, int step) {
 		if (bt_->isPlaySong()) return;
 		int song = bt_->getCurrentSongNumber();
 		if (static_cast<int>(bt_->getOrderSize(song)) <= order) return;
@@ -553,8 +551,17 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		ui->orderList->updatePositionByPositionJump();
 		ui->patternEditor->updatepositionByPositionJump();
 		activateWindow();
-	});
+	};
+	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested, this, posJumpFunc);
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
+
+	/* Key signature */
+	ksManForm_ = std::make_unique<KeySignatureManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
+	QObject::connect(ksManForm_.get(), &KeySignatureManagerForm::positionJumpRequested, this, posJumpFunc);
+	QObject::connect(ksManForm_.get(), &KeySignatureManagerForm::modified, this, [&] {
+		ui->patternEditor->onPatternDataGlobalChanged();
+		setModifiedTrue();
+	});
 
 	// Shortcuts
 	auto linkShortcut = [&](QAction* ptr) {
@@ -775,22 +782,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		if (!tickTimerForRealChip_) stream_->start();
 	}
 	else {
-		openModule(filePath);	// If use emulation, stream stars
+		openModule(filePath);	// If use emulation, stream starts
 	}
-
-	/* Track visibility */
-	SongType memSongType;
-	std::vector<int> visTracks;
-	if (config.lock()->getRestoreTrackVisibility()
-			&& io::loadTrackVisibilityMemory(memSongType, visTracks)) {
-		SongType songType = bt_->getSongStyle(bt_->getCurrentSongNumber()).type;
-		visTracks = gui_utils::adaptVisibleTrackList(visTracks, songType, songType);
-	}
-	else {
-		visTracks.resize(bt_->getSongStyle(0).trackAttribs.size());
-		std::iota(visTracks.begin(), visTracks.end(), 0);
-	}
-	setTrackVisibility(visTracks);
 }
 
 MainWindow::~MainWindow()
@@ -1139,13 +1132,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	instForms_->closeAll();
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
-	io::saveTrackVisibilityMemory(
-				bt_->getSongStyle(bt_->getCurrentSongNumber()).type,
-				ui->patternEditor->getVisibleTracks());
 
 	if (effListDiag_) effListDiag_->close();
 	if (shortcutsDiag_) shortcutsDiag_->close();
 	bmManForm_->close();
+	ksManForm_->close();
 	if (commentDiag_) commentDiag_->close();
 
 	event->accept();
@@ -1231,20 +1222,6 @@ void MainWindow::setShortcuts()
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
-}
-
-void MainWindow::setTrackVisibility(const std::vector<int>& visTracks)
-{
-	ui->orderList->setVisibleTracks(visTracks);
-	setOrderListGroupMaximumWidth();
-	ui->patternEditor->setVisibleTracks(visTracks);
-	if (config_.lock()->getMuteHiddenTracks()) {
-		int all = static_cast<int>(bt_->getSongStyle(bt_->getCurrentSongNumber()).trackAttribs.size());
-		for (int i = 0; i < all; ++i) {
-			if (std::none_of(visTracks.begin(), visTracks.end(), [i](const int& n) { return i == n; }))
-				bt_->setTrackMuteState(i, true);
-		}
-	}
 }
 
 void MainWindow::updateInstrumentListColors()
@@ -2233,6 +2210,17 @@ void MainWindow::loadSong()
 	statusPlayPos_->setText(config_.lock()->getShowRowNumberInHex() ? "00/00" : "000/000");
 
 	bmManForm_->onCurrentSongNumberChanged();
+	ksManForm_->onCurrentSongNumberChanged();
+
+	// Update track visibility
+	std::vector<int> visTracks;
+	int all = static_cast<int>(bt_->getSongStyle(curSong).trackAttribs.size());
+	for (int i = 0; i < all; ++i) {
+		if (bt_->isVisibleTrack(curSong, i)) visTracks.push_back(i);
+	}
+	ui->orderList->setVisibleTracks(visTracks);
+	setOrderListGroupMaximumWidth();
+	ui->patternEditor->setVisibleTracks(visTracks);
 }
 
 void MainWindow::assignADPCMSamples()
@@ -2383,6 +2371,7 @@ void MainWindow::changeConfiguration()
 	setShortcuts();
 	updateInstrumentListColors();
 	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
+	ksManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
 	visualTimer_->stop();
 	visualTimer_->start(static_cast<int>(std::round(1000. / config_.lock()->getWaveViewFrameRate())));
@@ -3917,7 +3906,26 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()),
 						  ui->patternEditor->getVisibleTracks());
 	if (diag.exec() == QDialog::Accepted) {
-		setTrackVisibility(diag.getVisibleTracks());
+		std::vector<int> visTracks = diag.getVisibleTracks();
+		ui->orderList->setVisibleTracks(visTracks);
+		setOrderListGroupMaximumWidth();
+		ui->patternEditor->setVisibleTracks(visTracks);
+
+		int song = bt_->getCurrentSongNumber();
+		int all = static_cast<int>(bt_->getSongStyle(song).trackAttribs.size());
+		for (int i = 0; i < all; ++i) {
+			if (std::any_of(visTracks.begin(), visTracks.end(), [i](int n) { return i == n; })) {
+				bt_->setTrackVisibility(song, i, true);
+			}
+			else {
+				bt_->setTrackVisibility(song, i, false);
+				if (config_.lock()->getMuteHiddenTracks()) {
+					bt_->setTrackMuteState(i, true);
+				}
+			}
+		}
+
+		setModifiedTrue();
 	}
 }
 
@@ -3930,4 +3938,10 @@ void MainWindow::on_action_Estimate_Song_Length_triggered()
 	box.setText(tr("Approximate song length: %1m%2s")
 				.arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0')));
 	box.exec();
+}
+
+void MainWindow::on_action_Key_Signature_Manager_triggered()
+{
+	if (ksManForm_->isVisible()) ksManForm_->activateWindow();
+	else ksManForm_->show();
 }

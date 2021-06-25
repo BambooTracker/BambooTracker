@@ -86,6 +86,12 @@ inline auto makePitchSharedPtr(int n)
 			PitchUnit>>(n, SequenceType::AbsoluteSequence, PitchUnit(SEQ_PITCH_CENTER), PitchUnit());
 }
 
+inline auto makePanSharedPtr(int n)
+{
+	return std::make_shared<InstrumentSequenceProperty<
+			PanUnit>>(n, SequenceType::AbsoluteSequence, PanUnit(PanType::CENTER), PanUnit());
+}
+
 inline auto makeWaveformSSGSharedPtr(int n)
 {
 	return std::make_shared<InstrumentSequenceProperty<
@@ -215,6 +221,10 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, const s
 			fm->setPitchNumber(type, ptNum);
 			fm->setPitchEnabled(type, false);
 		}
+		int panNum = findFirstAssignablePanFM();
+		if (panNum == -1) panNum = static_cast<int>(panFM_.size()) - 1;
+		fm->setPanNumber(panNum);
+		fm->setPanEnabled(false);
 		insts_.at(static_cast<size_t>(instNum)).reset(fm);
 		break;
 	}
@@ -263,6 +273,10 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, const s
 		if (ptNum == -1) ptNum = static_cast<int>(ptADPCM_.size()) - 1;
 		adpcm->setPitchNumber(ptNum);
 		adpcm->setPitchEnabled(false);
+		int panNum = findFirstAssignablePanADPCM();
+		if (panNum == -1) panNum = static_cast<int>(panADPCM_.size()) - 1;
+		adpcm->setPanNumber(panNum);
+		adpcm->setPanEnabled(false);
 		insts_.at(static_cast<size_t>(instNum)).reset(adpcm);
 		break;
 	}
@@ -299,6 +313,8 @@ void InstrumentsManager::addInstrument(AbstractInstrument* newInstPtr)
 			if (fm->getPitchEnabled(t))
 				ptFM_.at(static_cast<size_t>(fm->getPitchNumber(t)))->registerUserInstrument(num);
 		}
+		if (fm->getPanEnabled())
+			panFM_.at(static_cast<size_t>(fm->getPanNumber()))->registerUserInstrument(num);
 		break;
 	}
 	case InstrumentType::SSG:
@@ -326,6 +342,8 @@ void InstrumentsManager::addInstrument(AbstractInstrument* newInstPtr)
 			arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->registerUserInstrument(num);
 		if (adpcm->getPitchEnabled())
 			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->registerUserInstrument(num);
+		if (adpcm->getPanEnabled())
+			panADPCM_.at(static_cast<size_t>(adpcm->getPanNumber()))->registerUserInstrument(num);
 		break;
 	}
 	case InstrumentType::Drumkit:
@@ -362,6 +380,8 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 			if (fm->getPitchEnabled(t))
 				ptFM_.at(static_cast<size_t>(fm->getPitchNumber(t)))->deregisterUserInstrument(instNum);
 		}
+		if (fm->getPanEnabled())
+			panFM_.at(static_cast<size_t>(fm->getPanNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
 	case InstrumentType::SSG:
@@ -389,6 +409,8 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 			arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->deregisterUserInstrument(instNum);
 		if (adpcm->getPitchEnabled())
 			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->deregisterUserInstrument(instNum);
+		if (adpcm->getPanEnabled())
+			panADPCM_.at(static_cast<size_t>(adpcm->getPanNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
 	case InstrumentType::Drumkit:
@@ -470,6 +492,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		for (const int& key : refKit->getAssignedKeys()) {
 			setInstrumentDrumkitSamples(cloneInstNum, key, refKit->getSampleNumber(key));
 			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+			setInstrumentDrumkitPan(cloneInstNum, key, refKit->getPan(key));
 		}
 		break;
 	}
@@ -533,6 +556,13 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 				cloneFm->setPitchNumber(opType, ptCloneMap[srcNum]);
 				ptFM_[static_cast<size_t>(ptCloneMap[srcNum])]->registerUserInstrument(cloneInstNum);
 			}
+		}
+
+		if (refFm->getPanEnabled()) {
+			cloneFm->setPanEnabled(true);
+			int panNum = cloneProperty(panFM_, refFm->getPanNumber());
+			cloneFm->setPanNumber(panNum);
+			panFM_[static_cast<size_t>(panNum)]->registerUserInstrument(cloneInstNum);
 		}
 
 		for (auto t : FM_OP_TYPES)
@@ -603,6 +633,12 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			cloneAdpcm->setPitchNumber(ptNum);
 			ptADPCM_[static_cast<size_t>(ptNum)]->registerUserInstrument(cloneInstNum);
 		}
+		if (refAdpcm->getPanEnabled()) {
+			cloneAdpcm->setPanEnabled(true);
+			int panNum = cloneProperty(panADPCM_, refAdpcm->getPanNumber());
+			cloneAdpcm->setPanNumber(panNum);
+			panADPCM_[static_cast<size_t>(panNum)]->registerUserInstrument(cloneInstNum);
+		}
 		break;
 	}
 	case InstrumentType::Drumkit:
@@ -617,6 +653,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			sampADPCM_[static_cast<size_t>(sampCloneMap[srcNum])]->registerUserInstrument(cloneInstNum);
 
 			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+			setInstrumentDrumkitPan(cloneInstNum, key, refKit->getPan(key));
 		}
 		break;
 	}
@@ -658,6 +695,7 @@ void InstrumentsManager::clearAll()
 		for (auto& p : opSeqFM_) p.second[i] = makeOperatorSequenceFMSharedPtr(i);
 		arpFM_[i] = makeArpeggioSharedPtr(i);
 		ptFM_[i] = makePitchSharedPtr(i);
+		panFM_[i] = makePanSharedPtr(i);
 
 		wfSSG_[i] = makeWaveformSSGSharedPtr(i);
 		tnSSG_[i] = makeToneNoiseSSGSharedPtr(i);
@@ -669,6 +707,7 @@ void InstrumentsManager::clearAll()
 		envADPCM_[i] = makeEnvelopeADPCMSharedPtr(i);
 		arpADPCM_[i] = makeArpeggioSharedPtr(i);
 		ptADPCM_[i] = makePitchSharedPtr(i);
+		panADPCM_[i] = makePanSharedPtr(i);
 	}
 }
 
@@ -709,6 +748,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			arpFM_[i] = makeArpeggioSharedPtr(i);
 		if (!ptFM_[i]->isUserInstrument())
 			ptFM_[i] = makePitchSharedPtr(i);
+		if (!panFM_[i]->isUserInstrument())
+			panFM_[i] = makePanSharedPtr(i);
 
 		if (!wfSSG_[i]->isUserInstrument())
 			wfSSG_[i] = makeWaveformSSGSharedPtr(i);
@@ -729,6 +770,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			arpADPCM_[i] = makeArpeggioSharedPtr(i);
 		if (!ptADPCM_[i]->isUserInstrument())
 			ptADPCM_[i] = makePitchSharedPtr(i);
+		if (!panADPCM_[i]->isUserInstrument())
+			panADPCM_[i] = makePanSharedPtr(i);
 	}
 }
 
@@ -1201,11 +1244,6 @@ std::multiset<int> InstrumentsManager::getPitchFMUsers(int ptNum) const
 	return ptFM_.at(static_cast<size_t>(ptNum))->getUserInstruments();
 }
 
-void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled)
-{
-	std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(instNum)))->setEnvelopeResetEnabled(op, enabled);
-}
-
 std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 {
 	return utils::findIndicesIf(ptFM_, IsUsedOrEdited<decltype(ptFM_)>());
@@ -1214,6 +1252,116 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 int InstrumentsManager::findFirstAssignablePitchFM() const
 {
 	return findFirstAssignableProperty(ptFM_, regardingUnedited_);
+}
+
+void InstrumentsManager::setInstrumentFMPanEnabled(int instNum, bool enabled)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(instNum)));
+	fm->setPanEnabled(enabled);
+	if (enabled)
+		panFM_.at(static_cast<size_t>(fm->getPanNumber()))->registerUserInstrument(instNum);
+	else
+		panFM_.at(static_cast<size_t>(fm->getPanNumber()))->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentFMPanEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(instNum)))->getPanEnabled();
+}
+
+void InstrumentsManager::setInstrumentFMPan(int instNum, int panNum)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(instNum)));
+	if (fm->getPanEnabled()) {
+		panFM_.at(static_cast<size_t>(fm->getPanNumber()))->deregisterUserInstrument(instNum);
+		panFM_.at(static_cast<size_t>(panNum))->registerUserInstrument(instNum);
+	}
+	fm->setPanNumber(panNum);
+}
+
+int InstrumentsManager::getInstrumentFMPan(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(instNum)))->getPanNumber();
+}
+
+void InstrumentsManager::addPanFMSequenceData(int panNum, int data)
+{
+	panFM_.at(static_cast<size_t>(panNum))->addSequenceUnit(PanUnit(data));
+}
+
+void InstrumentsManager::removePanFMSequenceData(int panNum)
+{
+	panFM_.at(static_cast<size_t>(panNum))->removeSequenceUnit();
+}
+
+void InstrumentsManager::setPanFMSequenceData(int panNum, int cnt, int data)
+{
+	panFM_.at(static_cast<size_t>(panNum))->setSequenceUnit(cnt, PanUnit(data));
+}
+
+std::vector<PanUnit> InstrumentsManager::getPanFMSequence(int panNum)
+{
+	return panFM_.at(static_cast<size_t>(panNum))->getSequence();
+}
+
+void InstrumentsManager::addPanFMLoop(int panNum, const InstrumentSequenceLoop& loop)
+{
+	panFM_.at(static_cast<size_t>(panNum))->addLoop(loop);
+}
+
+void InstrumentsManager::removePanFMLoop(int panNum, int begin, int end)
+{
+	panFM_.at(static_cast<size_t>(panNum))->removeLoop(begin, end);
+}
+
+void InstrumentsManager::changePanFMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	panFM_.at(static_cast<size_t>(panNum))->changeLoop(prevBegin, prevEnd, loop);
+}
+
+void InstrumentsManager::clearPanFMLoops(int panNum)
+{
+	panFM_.at(static_cast<size_t>(panNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getPanFMLoopRoot(int panNum) const
+{
+	return panFM_.at(static_cast<size_t>(panNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setPanFMRelease(int panNum, const InstrumentSequenceRelease& release)
+{
+	panFM_.at(static_cast<size_t>(panNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getPanFMRelease(int panNum) const
+{
+	return panFM_.at(static_cast<size_t>(panNum))->getRelease();
+}
+
+PanIter InstrumentsManager::getPanFMIterator(int panNum) const
+{
+	return panFM_.at(static_cast<size_t>(panNum))->getIterator();
+}
+
+std::multiset<int> InstrumentsManager::getPanFMUsers(int panNum) const
+{
+	return panFM_.at(static_cast<size_t>(panNum))->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getPanFMEntriedIndices() const
+{
+	return utils::findIndicesIf(panFM_, IsUsedOrEdited<decltype(panFM_)>());
+}
+
+int InstrumentsManager::findFirstAssignablePanFM() const
+{
+	return findFirstAssignableProperty(panFM_, regardingUnedited_);
+}
+
+void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled)
+{
+	std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(instNum)))->setEnvelopeResetEnabled(op, enabled);
 }
 
 bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
@@ -1248,6 +1396,9 @@ bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<AbstractInstrument> a
 		if (aFm->getEnvelopeResetEnabled(type) != bFm->getEnvelopeResetEnabled(type))
 			return false;
 	}
+	if (aFm->getPanEnabled()
+			&& *panFM_[aFm->getPanNumber()] != *panFM_[bFm->getPanNumber()])
+		return false;
 	return true;
 }
 
@@ -2278,6 +2429,111 @@ int InstrumentsManager::findFirstAssignablePitchADPCM() const
 	return findFirstAssignableProperty(ptADPCM_, regardingUnedited_);
 }
 
+void InstrumentsManager::setInstrumentADPCMPanEnabled(int instNum, bool enabled)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	adpcm->setPanEnabled(enabled);
+	if (enabled)
+		panADPCM_.at(static_cast<size_t>(adpcm->getPanNumber()))->registerUserInstrument(instNum);
+	else
+		panADPCM_.at(static_cast<size_t>(adpcm->getPanNumber()))->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentADPCMPanEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)))->getPanEnabled();
+}
+
+void InstrumentsManager::setInstrumentADPCMPan(int instNum, int panNum)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	if (adpcm->getPanEnabled()) {
+		panADPCM_.at(static_cast<size_t>(adpcm->getPanNumber()))->deregisterUserInstrument(instNum);
+		panADPCM_.at(static_cast<size_t>(panNum))->registerUserInstrument(instNum);
+	}
+	adpcm->setPanNumber(panNum);
+}
+
+int InstrumentsManager::getInstrumentADPCMPan(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)))->getPanNumber();
+}
+
+void InstrumentsManager::addPanADPCMSequenceData(int panNum, int data)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->addSequenceUnit(PanUnit(data));
+}
+
+void InstrumentsManager::removePanADPCMSequenceData(int panNum)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->removeSequenceUnit();
+}
+
+void InstrumentsManager::setPanADPCMSequenceData(int panNum, int cnt, int data)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->setSequenceUnit(cnt, PanUnit(data));
+}
+
+std::vector<PanUnit> InstrumentsManager::getPanADPCMSequence(int panNum)
+{
+	return panADPCM_.at(static_cast<size_t>(panNum))->getSequence();
+}
+
+void InstrumentsManager::addPanADPCMLoop(int panNum, const InstrumentSequenceLoop& loop)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->addLoop(loop);
+}
+
+void InstrumentsManager::removePanADPCMLoop(int panNum, int begin, int end)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->removeLoop(begin, end);
+}
+
+void InstrumentsManager::changePanADPCMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->changeLoop(prevBegin, prevEnd, loop);
+}
+
+void InstrumentsManager::clearPanADPCMLoops(int panNum)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getPanADPCMLoopRoot(int panNum) const
+{
+	return panADPCM_.at(static_cast<size_t>(panNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setPanADPCMRelease(int panNum, const InstrumentSequenceRelease& release)
+{
+	panADPCM_.at(static_cast<size_t>(panNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getPanADPCMRelease(int panNum) const
+{
+	return panADPCM_.at(static_cast<size_t>(panNum))->getRelease();
+}
+
+PanIter InstrumentsManager::getPanADPCMIterator(int panNum) const
+{
+	return panADPCM_.at(static_cast<size_t>(panNum))->getIterator();
+}
+
+std::multiset<int> InstrumentsManager::getPanADPCMUsers(int panNum) const
+{
+	return panADPCM_.at(static_cast<size_t>(panNum))->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getPanADPCMEntriedIndices() const
+{
+	return utils::findIndicesIf(panADPCM_, IsUsedOrEdited<decltype(panADPCM_)>());
+}
+
+int InstrumentsManager::findFirstAssignablePanADPCM() const
+{
+	return findFirstAssignableProperty(panADPCM_, regardingUnedited_);
+}
+
 bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
 {
 	auto aAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(a);
@@ -2299,6 +2555,9 @@ bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument
 		return false;
 	if (aAdpcm->getPitchEnabled()
 			&& *ptADPCM_[aAdpcm->getPitchNumber()] != *ptADPCM_[bAdpcm->getPitchNumber()])
+		return false;
+	if (aAdpcm->getPanEnabled()
+			&& *panADPCM_[aAdpcm->getPanNumber()] != *panADPCM_[bAdpcm->getPanNumber()])
 		return false;
 	return true;
 }
@@ -2341,6 +2600,11 @@ void InstrumentsManager::setInstrumentDrumkitPitch(int instNum, int key, int pit
 	std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->setPitch(key, pitch);
 }
 
+void InstrumentsManager::setInstrumentDrumkitPan(int instNum, int key, int pan)
+{
+	std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->setPan(key, pan);
+}
+
 bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
 {
 	auto aKit = std::dynamic_pointer_cast<InstrumentDrumkit>(a);
@@ -2357,6 +2621,8 @@ bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrume
 		if (*sampADPCM_[aKit->getSampleNumber(key)] != *sampADPCM_[bKit->getSampleNumber(key)])
 			return false;
 		if (aKit->getPitch(key) != bKit->getPitch(key))
+			return false;
+		if (aKit->getPan(key) != bKit->getPan(key))
 			return false;
 	}
 

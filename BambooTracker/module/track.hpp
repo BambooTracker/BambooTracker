@@ -51,7 +51,7 @@ public:
 	Track(int number, SoundSource source, int channelInSource, int defPattenSize);
 
 	void setAttribute(int number, SoundSource source, int channelInSource) noexcept;
-	inline TrackAttribute getAttribute() const noexcept { return attrib_; }
+	TrackAttribute getAttribute() const noexcept { return attrib_; }
 	OrderInfo getOrderInfo(int order) const;
 	size_t getOrderSize() const;
 	bool canAddNewOrder() const;
@@ -69,8 +69,11 @@ public:
 
 	void changeDefaultPatternSize(size_t size);
 
-	inline void setEffectDisplayWidth(size_t w) noexcept { effetDisplayWidth_ = w; }
-	inline size_t getEffectDisplayWidth() const noexcept { return effetDisplayWidth_; }
+	void setEffectDisplayWidth(size_t w) noexcept { effetDisplayWidth_ = w; }
+	size_t getEffectDisplayWidth() const noexcept { return effetDisplayWidth_; }
+
+	void setVisibility(bool visible) noexcept { visibility_ = visible; }
+	bool isVisible() const noexcept { return visibility_; }
 
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map);
@@ -83,4 +86,5 @@ private:
 	std::vector<int> order_;
 	std::vector<Pattern> patterns_;
 	size_t effetDisplayWidth_;
+	bool visibility_;
 };

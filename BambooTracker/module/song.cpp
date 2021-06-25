@@ -35,6 +35,11 @@ Bookmark::Bookmark(const std::string& argname, int argorder, int argstep)
 {
 }
 
+KeySignature::KeySignature(Type type, int scorder, int scstep)
+	: type(type), order(scorder), step(scstep)
+{
+}
+
 Song::Song(int number, SongType songType, const std::string& title, bool isUsedTempo,
 		   int tempo, int groove, int speed, size_t defaultPatternSize)
 	: num_(number),
@@ -44,7 +49,8 @@ Song::Song(int number, SongType songType, const std::string& title, bool isUsedT
 	  tempo_(tempo),
 	  groove_(groove),
 	  speed_(speed),
-	  defPtnSize_(defaultPatternSize)
+	  defPtnSize_(defaultPatternSize),
+	  sigs_{ KeySignature(KeySignature::E, 0, 0) }
 {
 	switch (songType) {
 	case SongType::Standard:
@@ -126,19 +132,26 @@ void Song::changeType(SongType type)
 
 	switch (type_) {
 	case SongType::Standard:	// Previous type: FM3chExpanded
+	{
+		const bool vis3ch = tracks_[2].isVisible() || tracks_[3].isVisible()
+				|| tracks_[4].isVisible() || tracks_[5].isVisible();
 		// Remove FM3-OP2,3,4 (track 3,4,5)
 		tracks_.erase(tracks_.begin() + 3, tracks_.begin() + 6);
 		for (size_t i = 3; i < tracks_.size(); ++i) {
 			const auto attrib = tracks_[i].getAttribute();
 			tracks_[i].setAttribute(static_cast<int>(i), attrib.source, attrib.channelInSource);
 		}
+		tracks_[3].setVisibility(vis3ch);
 		break;
+	}
 	case SongType::FM3chExpanded:	// Previous type: Standard
+		const bool vis3ch = tracks_[2].isVisible();
 		// Expand FM3 track
 		for (int i = 3; i < 6; ++i) {
 			Track src = tracks_[2];
 			src.setAttribute(i, SoundSource::FM, i + 3);
 			tracks_.insert(tracks_.begin() + i, std::move(src));
+			tracks_[static_cast<size_t>(i)].setVisibility(vis3ch);
 		}
 		for (size_t i = 6; i < tracks_.size(); ++i) {
 			const auto attrib = tracks_[i].getAttribute();
@@ -330,4 +343,59 @@ Bookmark Song::getNextBookmark(int order, int step) const
 size_t Song::getBookmarkSize() const
 {
 	return bms_.size();
+}
+
+void Song::addKeySignature(KeySignature::Type key, int order, int step)
+{
+	size_t i = 0;
+	for (; i < sigs_.size(); ++i) {
+		auto& ref = sigs_[i];
+		if (ref.order < order) continue;
+		else if (order < ref.order) break;
+		else {
+			if (ref.step < step) continue;
+			else if (step < ref.step) break;
+			else {	// Replace key
+				ref.type = key;
+				return;
+			}
+		}
+	}
+	sigs_.insert(sigs_.begin() + static_cast<decltype(sigs_)::difference_type>(i),
+				 KeySignature(key, order, step));
+}
+
+void Song::changeKeySignature(int i, KeySignature::Type key, int order, int step)
+{
+	sigs_.erase(sigs_.begin() + i);
+	addKeySignature(key, order, step);
+}
+
+void Song::removeKeySignature(int i)
+{
+	sigs_.erase(sigs_.begin() + i);
+}
+
+void Song::clearKeySignature()
+{
+	sigs_ = { KeySignature(KeySignature::E, 0, 0) };
+}
+
+KeySignature Song::getKeySignature(int i) const
+{
+	return sigs_.at(static_cast<size_t>(i));
+}
+
+size_t Song::getKeySignatureSize() const
+{
+	return sigs_.size();
+}
+
+KeySignature::Type Song::searchKeySignatureAt(int order, int step) const
+{
+	return std::lower_bound(sigs_.crbegin(), sigs_.crend(), KeySignature(KeySignature::E, order, step),
+					 [](const KeySignature& i, const KeySignature& v) {
+		if (i.order == v.order) return (i.step > v.step);
+		else return (i.order > v.order);
+	})->type;
 }

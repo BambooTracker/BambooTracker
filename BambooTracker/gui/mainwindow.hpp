@@ -62,6 +62,7 @@
 #include "gui/bookmark_manager_form.hpp"
 #include "gui/instrument_selection_dialog.hpp"
 #include "gui/comment_edit_dialog.hpp"
+#include "gui/key_signature_manager_form.hpp"
 
 namespace Ui {
 	class MainWindow;
@@ -203,13 +204,11 @@ private:
 	std::unique_ptr<KeyboardShortcutListDialog> shortcutsDiag_;
 	std::unique_ptr<BookmarkManagerForm> bmManForm_;
 	std::unique_ptr<CommentEditDialog> commentDiag_;
+	std::unique_ptr<KeySignatureManagerForm> ksManForm_;
 
 	// Bank import
 	std::atomic_bool bankJamMidiCtrl_;
 	std::unique_ptr<InstrumentSelectionDialog> importBankDiag_;
-
-	// Track visibility
-	void setTrackVisibility(const std::vector<int>& visTracks);
 
 	// Meta methods
 	int tickEventMethod_;
@@ -360,6 +359,7 @@ private slots:
 	void on_action_Insert_triggered();
 	void on_action_Hide_Tracks_triggered();
 	void on_action_Estimate_Song_Length_triggered();
+	void on_action_Key_Signature_Manager_triggered();
 };
 
 #endif // MAINWINDOW_HPP

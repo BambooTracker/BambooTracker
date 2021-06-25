@@ -52,3 +52,5 @@ Version table between tracker, module specification and instrument specification
 |---------+        |            |       |
 |  0.4.6  |        |            |       |
 |---------+--------+------------+-------|
+|  0.4.7  |  1.6.0 |   1.5.0    | 1.3.0 |
+|---------+--------+------------+-------|

@@ -144,6 +144,18 @@ public:
 	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::multiset<int> getPitchFMUsers(int ptNum) const;
 
+	void addPanFMSequenceData(int panNum, int data);
+	void removePanFMSequenceData(int panNum);
+	void setPanFMSequenceData(int panNum, int cnt, int data);
+	void addPanFMLoop(int panNum, const InstrumentSequenceLoop& loop);
+	void removePanFMLoop(int panNum, int begin, int end);
+	void changePanFMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPanFMLoops(int panNum);
+	void setPanFMRelease(int panNum, const InstrumentSequenceRelease& release);
+	void setInstrumentFMPan(int instNum, int panNum);
+	void setInstrumentFMPanEnabled(int instNum, bool enabled);
+	std::multiset<int> getPanFMUsers(int panNum) const;
+
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 	//--- SSG
@@ -267,10 +279,23 @@ public:
 	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
 	std::multiset<int> getPitchADPCMUsers(int ptNum) const;
 
+	void addPanADPCMSequenceData(int panNum, int data);
+	void removePanADPCMSequenceData(int panNum);
+	void setPanADPCMSequenceData(int panNum, int cnt, int data);
+	void addPanADPCMLoop(int panNum, const InstrumentSequenceLoop& loop);
+	void removePanADPCMLoop(int panNum, int begin, int end);
+	void changePanADPCMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPanADPCMLoops(int panNum);
+	void setPanADPCMRelease(int panNum, const InstrumentSequenceRelease& release);
+	void setInstrumentADPCMPan(int instNum, int panNum);
+	void setInstrumentADPCMPanEnabled(int instNum, bool enabled);
+	std::multiset<int> getPanADPCMUsers(int panNum) const;
+
 	//--- Drumkit
 	void setInstrumentDrumkitSample(int instNum, int key, int sampNum);
 	void setInstrumentDrumkitSampleEnabled(int instNum, int key, bool enabled);
 	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
+	void setInstrumentDrumkitPan(int instNum, int key, int pan);
 
 	// Song edit
 	void setCurrentSongNumber(int num);
@@ -422,9 +447,19 @@ public:
 	Bookmark getPreviousBookmark(int songNum, int order, int step);
 	Bookmark getNextBookmark(int songNum, int order, int step);
 	size_t getBookmarkSize(int songNum) const;
+	/*----- Key signature -----*/
+	void addKeySignature(int songNum, KeySignature::Type key, int order, int step);
+	void changeKeySignature(int songNum, int i, KeySignature::Type key, int order, int step);
+	void removeKeySignature(int songNum, int i);
+	void clearKeySignature(int songNum);
+	KeySignature getKeySignature(int songNum, int i) const;
+	size_t getKeySignatureSize(int songNum) const;
+	KeySignature::Type searchKeySignatureAt(int songNum, int order, int step) const;
 	/*----- Track -----*/
 	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);
 	size_t getEffectDisplayWidth(int songNum, int trackNum) const;
+	void setTrackVisibility(int songNum, int trackNum, bool visible);
+	bool isVisibleTrack(int songNum, int trackNum);
 	/*----- Order -----*/
 	std::vector<OrderInfo> getOrderData(int songNum, int orderNum) const;
 	void setOrderPatternDigit(int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry);

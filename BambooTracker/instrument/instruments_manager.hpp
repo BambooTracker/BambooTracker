@@ -164,6 +164,26 @@ public:
 	std::vector<int> getPitchFMEntriedIndices() const;
 	int findFirstAssignablePitchFM() const;
 
+	void setInstrumentFMPanEnabled(int instNum, bool enabled);
+	bool getInstrumentFMPanEnabled(int instNum) const;
+	void setInstrumentFMPan(int instNum, int panNum);
+	int getInstrumentFMPan(int instNum);
+	void addPanFMSequenceData(int panNum, int data);
+	void removePanFMSequenceData(int panNum);
+	void setPanFMSequenceData(int panNum, int cnt, int data);
+	std::vector<PanUnit> getPanFMSequence(int panNum);
+	void addPanFMLoop(int panNum, const InstrumentSequenceLoop& loop);
+	void removePanFMLoop(int panNum, int begin, int end);
+	void changePanFMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPanFMLoops(int panNum);
+	InstrumentSequenceLoopRoot getPanFMLoopRoot(int panNum) const;
+	void setPanFMRelease(int panNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getPanFMRelease(int panNum) const;
+	PanIter getPanFMIterator(int panNum) const;
+	std::multiset<int> getPanFMUsers(int panNum) const;
+	std::vector<int> getPanFMEntriedIndices() const;
+	int findFirstAssignablePanFM() const;
+
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 private:
@@ -172,6 +192,7 @@ private:
 	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<InstrumentSequenceProperty<FMOperatorSequenceUnit>>, 128>> opSeqFM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpFM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptFM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<PanUnit>>, 128> panFM_;
 
 	bool equalPropertiesFM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 
@@ -378,11 +399,32 @@ public:
 	std::vector<int> getPitchADPCMEntriedIndices() const;
 	int findFirstAssignablePitchADPCM() const;
 
+	void setInstrumentADPCMPanEnabled(int instNum, bool enabled);
+	bool getInstrumentADPCMPanEnabled(int instNum) const;
+	void setInstrumentADPCMPan(int instNum, int panNum);
+	int getInstrumentADPCMPan(int instNum);
+	void addPanADPCMSequenceData(int panNum, int data);
+	void removePanADPCMSequenceData(int panNum);
+	void setPanADPCMSequenceData(int panNum, int cnt, int data);
+	std::vector<PanUnit> getPanADPCMSequence(int panNum);
+	void addPanADPCMLoop(int panNum, const InstrumentSequenceLoop& loop);
+	void removePanADPCMLoop(int panNum, int begin, int end);
+	void changePanADPCMLoop(int panNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPanADPCMLoops(int panNum);
+	InstrumentSequenceLoopRoot getPanADPCMLoopRoot(int panNum) const;
+	void setPanADPCMRelease(int panNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getPanADPCMRelease(int panNum) const;
+	PanIter getPanADPCMIterator(int panNum) const;
+	std::multiset<int> getPanADPCMUsers(int panNum) const;
+	std::vector<int> getPanADPCMEntriedIndices() const;
+	int findFirstAssignablePanADPCM() const;
+
 private:
 	std::array<std::shared_ptr<SampleADPCM>, 128> sampADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ADPCMEnvelopeUnit>>, 128> envADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptADPCM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<PanUnit>>, 128> panADPCM_;
 
 	bool equalPropertiesADPCM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 
@@ -394,6 +436,7 @@ public:
 	int getInstrumentDrumkitSamples(int instNum, int key);
 
 	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
+	void setInstrumentDrumkitPan(int instNum, int key, int pan);
 
 private:
 	bool equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;

@@ -6,6 +6,9 @@
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
+- [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
+- Panning settings in the drumkit editor
+ - [#345] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
 - [#365] - WAV export per channel (thanks [@Toonlink8101])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
@@ -14,6 +17,7 @@
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
 - [#348] - Update RtAudio & RtMidi library (thanks [@OPNA2608])
 - [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
+- Save track visibility for each song
 - Change delay effects to be executed even on the 0th count
 - [#366] - Load multiple instrument files at a time (thanks [@OPNA2608])
 - [#367] - Offer wildcard and "all supported formats" extensions in file dialogues (thanks [@OPNA2608])
@@ -70,6 +74,8 @@
 [#366]: https://github.com/rerrahkr/BambooTracker/issues/366
 [#368]: https://github.com/rerrahkr/BambooTracker/pull/368
 [#367]: https://github.com/rerrahkr/BambooTracker/issues/367
+[#346]: https://github.com/rerrahkr/BambooTracker/pull/346
+[#314]: https://github.com/rerrahkr/BambooTracker/issues/314
 [#345]: https://github.com/rerrahkr/BambooTracker/issues/345
 [#373]: https://github.com/rerrahkr/BambooTracker/pull/373
 [#365]: https://github.com/rerrahkr/BambooTracker/issues/365

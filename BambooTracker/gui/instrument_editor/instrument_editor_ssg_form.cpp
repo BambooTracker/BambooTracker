@@ -955,9 +955,9 @@ void InstrumentEditorSSGForm::onPitchNumberChanged()
 	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorSSGForm::onPitchParameterChanged(int tnNum)
+void InstrumentEditorSSGForm::onPitchParameterChanged(int ptNum)
 {
-	if (ui->ptNumSpinBox->value() == tnNum) {
+	if (ui->ptNumSpinBox->value() == ptNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
 		setInstrumentPitchParameters();
 	}

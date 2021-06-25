@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -128,7 +128,7 @@ signals:
 
 public slots:
 	void onPitchNumberChanged();
-	void onPitchParameterChanged(int arpNum);
+	void onPitchParameterChanged(int ptNum);
 
 private:
 	void setInstrumentPitchParameters();
@@ -137,6 +137,22 @@ private slots:
 	void onPitchTypeChanged(int index);
 	void on_ptEditGroupBox_toggled(bool arg1);
 	void on_ptNumSpinBox_valueChanged(int arg1);
+
+	//========== Pan ==========//
+signals:
+	void panNumberChanged();
+	void panParameterChanged(int panNum, int fromInstNum);
+
+public slots:
+	void onPanNumberChanged();
+	void onPanParameterChanged(int arpNum);
+
+private:
+	void setInstrumentPanParameters();
+
+private slots:
+	void on_panEditGroupBox_toggled(bool arg1);
+	void on_panNumSpinBox_valueChanged(int arg1);
 };
 
 #endif // INSTRUMENT_EDITOR_ADPCM_FORM_HPP

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,17 +23,26 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TRACK_VISIBILITY_MEMORY_HANDLER_HPP
-#define TRACK_VISIBILITY_MEMORY_HANDLER_HPP
+#ifndef PAN_MACRO_EDITOR_HPP
+#define PAN_MACRO_EDITOR_HPP
 
-#include <vector>
+#include "visualized_instrument_macro_editor.hpp"
 
-enum class SongType;
-
-namespace io
+class PanMacroEditor final : public VisualizedInstrumentMacroEditor
 {
-bool saveTrackVisibilityMemory(const SongType type, const std::vector<int>& visTracks);
-bool loadTrackVisibilityMemory(SongType& type, std::vector<int>& visTracks);
-}
+	Q_OBJECT
 
-#endif // TRACK_VISIBILITY_MEMORY_HANDLER_HPP
+public:
+	explicit PanMacroEditor(QWidget* parent = nullptr);
+	~PanMacroEditor() override;
+
+protected:
+	void drawField() override;
+
+	int detectRowNumberForMouseEvent(int col, int internalRow) const override;
+	int maxInMML() const override;
+	QString convertSequenceDataUnitToMML(Column col) override;
+	bool interpretDataInMML(QString& text, int& cnt, std::vector<Column>& column) override;
+};
+
+#endif // PAN_MACRO_EDITOR_HPP

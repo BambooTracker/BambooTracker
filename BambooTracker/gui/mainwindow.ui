@@ -563,7 +563,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -702,6 +702,8 @@
     <addaction name="action_Transpose_Song"/>
     <addaction name="action_Swap_Tracks"/>
     <addaction name="separator"/>
+    <addaction name="action_Hide_Tracks"/>
+    <addaction name="separator"/>
     <addaction name="action_Estimate_Song_Length"/>
    </widget>
    <widget class="QMenu" name="menuModule">
@@ -722,6 +724,7 @@
     <addaction name="separator"/>
     <addaction name="actionGroove_Settings"/>
     <addaction name="action_Bookmark_Manager"/>
+    <addaction name="action_Key_Signature_Manager"/>
     <addaction name="separator"/>
     <addaction name="menuCleanup"/>
    </widget>
@@ -782,8 +785,6 @@
     <addaction name="action_Wave_View"/>
     <addaction name="separator"/>
     <addaction name="actionFollow_Mode"/>
-    <addaction name="separator"/>
-    <addaction name="action_Hide_Tracks"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -854,7 +855,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/new</normaloff>:/icon/new</iconset>
    </property>
    <property name="text">
@@ -869,7 +870,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/open</normaloff>:/icon/open</iconset>
    </property>
    <property name="text">
@@ -884,7 +885,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/save</normaloff>:/icon/save</iconset>
    </property>
    <property name="text">
@@ -912,7 +913,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/undo</normaloff>:/icon/undo</iconset>
    </property>
    <property name="text">
@@ -927,7 +928,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/redo</normaloff>:/icon/redo</iconset>
    </property>
    <property name="text">
@@ -939,7 +940,7 @@
   </action>
   <action name="actionCut">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/cut</normaloff>:/icon/cut</iconset>
    </property>
    <property name="text">
@@ -951,7 +952,7 @@
   </action>
   <action name="actionCopy">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/copy</normaloff>:/icon/copy</iconset>
    </property>
    <property name="text">
@@ -963,7 +964,7 @@
   </action>
   <action name="actionPaste">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/paste</normaloff>:/icon/paste</iconset>
    </property>
    <property name="text">
@@ -1047,7 +1048,7 @@
   </action>
   <action name="actionInsert_Order">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/insert_order</normaloff>:/icon/insert_order</iconset>
    </property>
    <property name="text">
@@ -1056,7 +1057,7 @@
   </action>
   <action name="actionRemove_Order">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/remove_order</normaloff>:/icon/remove_order</iconset>
    </property>
    <property name="text">
@@ -1065,7 +1066,7 @@
   </action>
   <action name="actionModule_Properties">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/property</normaloff>:/icon/property</iconset>
    </property>
    <property name="text">
@@ -1077,7 +1078,7 @@
   </action>
   <action name="actionNew_Instrument">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/add_inst</normaloff>:/icon/add_inst</iconset>
    </property>
    <property name="text">
@@ -1089,7 +1090,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/remove_inst</normaloff>:/icon/remove_inst</iconset>
    </property>
    <property name="text">
@@ -1101,7 +1102,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/clone_inst</normaloff>:/icon/clone_inst</iconset>
    </property>
    <property name="text">
@@ -1121,7 +1122,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/load_inst</normaloff>:/icon/load_inst</iconset>
    </property>
    <property name="text">
@@ -1133,7 +1134,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/save_inst</normaloff>:/icon/save_inst</iconset>
    </property>
    <property name="text">
@@ -1145,7 +1146,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/edit_inst</normaloff>:/icon/edit_inst</iconset>
    </property>
    <property name="text">
@@ -1157,7 +1158,7 @@
   </action>
   <action name="actionPlay">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/play</normaloff>:/icon/play</iconset>
    </property>
    <property name="text">
@@ -1166,7 +1167,7 @@
   </action>
   <action name="actionPlay_Pattern">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/play_pattern</normaloff>:/icon/play_pattern</iconset>
    </property>
    <property name="text">
@@ -1194,7 +1195,7 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/stop</normaloff>:/icon/stop</iconset>
    </property>
    <property name="text">
@@ -1209,7 +1210,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/record</normaloff>:/icon/record</iconset>
    </property>
    <property name="text">
@@ -1269,7 +1270,7 @@
   </action>
   <action name="actionConfiguration">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/config</normaloff>:/icon/config</iconset>
    </property>
    <property name="text">
@@ -1278,7 +1279,7 @@
   </action>
   <action name="actionDuplicate_Order">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/duplicate_order</normaloff>:/icon/duplicate_order</iconset>
    </property>
    <property name="text">
@@ -1290,7 +1291,7 @@
   </action>
   <action name="actionMove_Order_Up">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/order_up</normaloff>:/icon/order_up</iconset>
    </property>
    <property name="text">
@@ -1299,7 +1300,7 @@
   </action>
   <action name="actionMove_Order_Down">
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/order_down</normaloff>:/icon/order_down</iconset>
    </property>
    <property name="text">
@@ -1459,7 +1460,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../bamboo_tracker.qrc">
+    <iconset resource="../resources/icon/icon.qrc">
      <normaloff>:/icon/rename_inst</normaloff>:/icon/rename_inst</iconset>
    </property>
    <property name="text">
@@ -1665,6 +1666,11 @@
     <string>&amp;Estimate Song Length...</string>
    </property>
   </action>
+  <action name="action_Key_Signature_Manager">
+   <property name="text">
+    <string>&amp;Key Signature Manager...</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1707,7 +1713,7 @@
   <tabstop>instrumentList</tabstop>
  </tabstops>
  <resources>
-  <include location="../bamboo_tracker.qrc"/>
+  <include location="../resources/icon/icon.qrc"/>
  </resources>
  <connections/>
 </ui>
