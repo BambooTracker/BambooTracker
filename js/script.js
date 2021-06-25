@@ -21,7 +21,7 @@ else {
 }
 
 // Fetch data from Github API
-fetch("https://api.github.com/repos/rerrahkr/BambooTracker/releases/latest", {
+fetch("https://api.github.com/repos/BambooTracker/BambooTracker/releases/latest", {
   method: "GET"
 })
 .then(resp => resp.ok ? resp.json() : new Promise.reject())
