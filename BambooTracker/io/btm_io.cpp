@@ -282,7 +282,7 @@ size_t loadOperatorSequence(FMEnvelopeParameter param, size_t instMemCsr,
 	{
 		uint16_t pos = ctr.readUint16(csr);
 		csr += 2;
-		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+		// Release point check (prevents a bug; see BambooTracker/BambooTracker issue #11)
 		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 		else instManLocked->setOperatorSequenceFMRelease(param, idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 		break;
@@ -708,7 +708,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setArpeggioFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setArpeggioFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -730,7 +730,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
-							// https://github.com/rerrahkr/BambooTracker/issues/170
+							// https://github.com/BambooTracker/BambooTracker/issues/170
 							instManLocked->setArpeggioFMType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
@@ -784,7 +784,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setPitchFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setPitchFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -803,7 +803,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
-							// https://github.com/rerrahkr/BambooTracker/issues/170
+							// https://github.com/BambooTracker/BambooTracker/issues/170
 							instManLocked->setPitchFMType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
@@ -856,7 +856,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setPanFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setPanFMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -934,7 +934,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -996,7 +996,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setToneNoiseSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -1058,7 +1058,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					instManLocked->setEnvelopeSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 				case 0x01:	// Fixed
 				{
 					uint16_t pos = ctr.readUint16(csr);
@@ -1134,7 +1134,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setArpeggioSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setArpeggioSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -1156,7 +1156,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
-							// https://github.com/rerrahkr/BambooTracker/issues/170
+							// https://github.com/BambooTracker/BambooTracker/issues/170
 							instManLocked->setArpeggioSSGType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
@@ -1210,7 +1210,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setPitchSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setPitchSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -1229,7 +1229,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
-							// https://github.com/rerrahkr/BambooTracker/issues/170
+							// https://github.com/BambooTracker/BambooTracker/issues/170
 							instManLocked->setPitchSSGType(idx, SequenceType::AbsoluteSequence);
 							break;
 						}
@@ -1301,7 +1301,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					instManLocked->setEnvelopeADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 				case 0x01:	// Fixed
 				{
 					uint16_t pos = ctr.readUint16(csr);
@@ -1374,7 +1374,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setArpeggioADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -1439,7 +1439,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setPitchADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setPitchADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
@@ -1501,7 +1501,7 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
 					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
+					// https://github.com/BambooTracker/BambooTracker/issues/11
 					if (pos < seqLen) instManLocked->setPanADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
 					else instManLocked->setPanADPCMRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;

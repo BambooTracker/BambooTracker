@@ -8,7 +8,7 @@
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
 - [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
 - Panning settings in the drumkit editor
- - [#345] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
+ - [#345], [#372] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
 - [#365] - WAV export per channel (thanks [@Toonlink8101])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
@@ -23,6 +23,8 @@
 - [#367] - Offer wildcard and "all supported formats" extensions in file dialogues (thanks [@OPNA2608])
 - Change item widths in the status bar
 - [#374] - Exclude C86CTL and SCCI headers in the compilation on macOS and Linux ([#357]; thanks [@fpesari], [@OPNA2608], [@freq-mod])
+- [#371] - Change the number of buffers in RtAudio ([#363]; thanks [@nyanpasu64], [@freq-mod], [@OPNA2608])
+- Move the repository to GitHub Organization
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
@@ -48,40 +50,43 @@
 [@wildmatsu]: https://github.com/wildmatsu
 [@fpesari]: https://github.com/fpesari
 
-[#328]: https://github.com/rerrahkr/BambooTracker/issues/328
-[#255]: https://github.com/rerrahkr/BambooTracker/issues/255
-[#336]: https://github.com/rerrahkr/BambooTracker/pull/336
-[#339]: https://github.com/rerrahkr/BambooTracker/issues/339
-[#340]: https://github.com/rerrahkr/BambooTracker/issues/340
-[#341]: https://github.com/rerrahkr/BambooTracker/issues/341
-[#333]: https://github.com/rerrahkr/BambooTracker/issues/333
-[#344]: https://github.com/rerrahkr/BambooTracker/pull/344
-[#332]: https://github.com/rerrahkr/BambooTracker/pull/332
-[#298]: https://github.com/rerrahkr/BambooTracker/issues/298
-[#348]: https://github.com/rerrahkr/BambooTracker/pull/348
-[#342]: https://github.com/rerrahkr/BambooTracker/pull/342
-[#338]: https://github.com/rerrahkr/BambooTracker/issues/338
-[#353]: https://github.com/rerrahkr/BambooTracker/pull/353
-[#352]: https://github.com/rerrahkr/BambooTracker/issues/352
-[#358]: https://github.com/rerrahkr/BambooTracker/issues/358
-[#301]: https://github.com/rerrahkr/BambooTracker/issues/301
-[#249]: https://github.com/rerrahkr/BambooTracker/issues/249
-[#334]: https://github.com/rerrahkr/BambooTracker/pull/334
-[#360]: https://github.com/rerrahkr/BambooTracker/issues/360
-[#361]: https://github.com/rerrahkr/BambooTracker/issues/361
-[#354]: https://github.com/rerrahkr/BambooTracker/pull/354
-[#335]: https://github.com/rerrahkr/BambooTracker/issues/335
-[#366]: https://github.com/rerrahkr/BambooTracker/issues/366
-[#368]: https://github.com/rerrahkr/BambooTracker/pull/368
-[#367]: https://github.com/rerrahkr/BambooTracker/issues/367
-[#346]: https://github.com/rerrahkr/BambooTracker/pull/346
-[#314]: https://github.com/rerrahkr/BambooTracker/issues/314
-[#345]: https://github.com/rerrahkr/BambooTracker/issues/345
-[#373]: https://github.com/rerrahkr/BambooTracker/pull/373
-[#365]: https://github.com/rerrahkr/BambooTracker/issues/365
-[#357]: https://github.com/rerrahkr/BambooTracker/issues/357
-[#374]: https://github.com/rerrahkr/BambooTracker/pull/374
-[#376]: https://github.com/rerrahkr/BambooTracker/issues/376
+[#328]: https://github.com/BambooTracker/BambooTracker/issues/328
+[#255]: https://github.com/BambooTracker/BambooTracker/issues/255
+[#336]: https://github.com/BambooTracker/BambooTracker/pull/336
+[#339]: https://github.com/BambooTracker/BambooTracker/issues/339
+[#340]: https://github.com/BambooTracker/BambooTracker/issues/340
+[#341]: https://github.com/BambooTracker/BambooTracker/issues/341
+[#333]: https://github.com/BambooTracker/BambooTracker/issues/333
+[#344]: https://github.com/BambooTracker/BambooTracker/pull/344
+[#332]: https://github.com/BambooTracker/BambooTracker/pull/332
+[#298]: https://github.com/BambooTracker/BambooTracker/issues/298
+[#348]: https://github.com/BambooTracker/BambooTracker/pull/348
+[#342]: https://github.com/BambooTracker/BambooTracker/pull/342
+[#338]: https://github.com/BambooTracker/BambooTracker/issues/338
+[#353]: https://github.com/BambooTracker/BambooTracker/pull/353
+[#352]: https://github.com/BambooTracker/BambooTracker/issues/352
+[#358]: https://github.com/BambooTracker/BambooTracker/issues/358
+[#301]: https://github.com/BambooTracker/BambooTracker/issues/301
+[#249]: https://github.com/BambooTracker/BambooTracker/issues/249
+[#334]: https://github.com/BambooTracker/BambooTracker/pull/334
+[#360]: https://github.com/BambooTracker/BambooTracker/issues/360
+[#361]: https://github.com/BambooTracker/BambooTracker/issues/361
+[#354]: https://github.com/BambooTracker/BambooTracker/pull/354
+[#335]: https://github.com/BambooTracker/BambooTracker/issues/335
+[#366]: https://github.com/BambooTracker/BambooTracker/issues/366
+[#368]: https://github.com/BambooTracker/BambooTracker/pull/368
+[#367]: https://github.com/BambooTracker/BambooTracker/issues/367
+[#346]: https://github.com/BambooTracker/BambooTracker/pull/346
+[#314]: https://github.com/BambooTracker/BambooTracker/issues/314
+[#345]: https://github.com/BambooTracker/BambooTracker/issues/345
+[#373]: https://github.com/BambooTracker/BambooTracker/pull/373
+[#365]: https://github.com/BambooTracker/BambooTracker/issues/365
+[#357]: https://github.com/BambooTracker/BambooTracker/issues/357
+[#374]: https://github.com/BambooTracker/BambooTracker/pull/374
+[#376]: https://github.com/BambooTracker/BambooTracker/issues/376
+[#371]: https://github.com/BambooTracker/BambooTracker/pull/371
+[#363]: https://github.com/BambooTracker/BambooTracker/issues/363
+[#372]: https://github.com/BambooTracker/BambooTracker/pull/372
 
 ## v0.4.6 (2021-02-11)
 ### Added
@@ -117,32 +122,32 @@
 
 [@EnfauKerus]: https://github.com/EnfauKerus
 
-[#285]: https://github.com/rerrahkr/BambooTracker/pull/285
-[#284]: https://github.com/rerrahkr/BambooTracker/issues/284
-[#288]: https://github.com/rerrahkr/BambooTracker/pull/288
-[#289]: https://github.com/rerrahkr/BambooTracker/pull/289
-[#290]: https://github.com/rerrahkr/BambooTracker/pull/290
-[#291]: https://github.com/rerrahkr/BambooTracker/pull/291
-[#286]: https://github.com/rerrahkr/BambooTracker/pull/286
-[#295]: https://github.com/rerrahkr/BambooTracker/issues/295
-[#299]: https://github.com/rerrahkr/BambooTracker/issues/299
-[#296]: https://github.com/rerrahkr/BambooTracker/issues/296
-[#263]: https://github.com/rerrahkr/BambooTracker/issues/263
-[#288]: https://github.com/rerrahkr/BambooTracker/pull/288
-[#294]: https://github.com/rerrahkr/BambooTracker/pull/294
-[#303]: https://github.com/rerrahkr/BambooTracker/issues/303
-[#307]: https://github.com/rerrahkr/BambooTracker/pull/307
-[#308]: https://github.com/rerrahkr/BambooTracker/issues/308
-[#311]: https://github.com/rerrahkr/BambooTracker/issues/311
-[#312]: https://github.com/rerrahkr/BambooTracker/pull/312
-[#316]: https://github.com/rerrahkr/BambooTracker/issues/316
-[#304]: https://github.com/rerrahkr/BambooTracker/issues/304
-[#313]: https://github.com/rerrahkr/BambooTracker/issues/313
-[#320]: https://github.com/rerrahkr/BambooTracker/issues/320
-[#323]: https://github.com/rerrahkr/BambooTracker/issues/323
-[#306]: https://github.com/rerrahkr/BambooTracker/pull/306
-[#297]: https://github.com/rerrahkr/BambooTracker/issues/297
-[#324]: https://github.com/rerrahkr/BambooTracker/pull/324
+[#285]: https://github.com/BambooTracker/BambooTracker/pull/285
+[#284]: https://github.com/BambooTracker/BambooTracker/issues/284
+[#288]: https://github.com/BambooTracker/BambooTracker/pull/288
+[#289]: https://github.com/BambooTracker/BambooTracker/pull/289
+[#290]: https://github.com/BambooTracker/BambooTracker/pull/290
+[#291]: https://github.com/BambooTracker/BambooTracker/pull/291
+[#286]: https://github.com/BambooTracker/BambooTracker/pull/286
+[#295]: https://github.com/BambooTracker/BambooTracker/issues/295
+[#299]: https://github.com/BambooTracker/BambooTracker/issues/299
+[#296]: https://github.com/BambooTracker/BambooTracker/issues/296
+[#263]: https://github.com/BambooTracker/BambooTracker/issues/263
+[#288]: https://github.com/BambooTracker/BambooTracker/pull/288
+[#294]: https://github.com/BambooTracker/BambooTracker/pull/294
+[#303]: https://github.com/BambooTracker/BambooTracker/issues/303
+[#307]: https://github.com/BambooTracker/BambooTracker/pull/307
+[#308]: https://github.com/BambooTracker/BambooTracker/issues/308
+[#311]: https://github.com/BambooTracker/BambooTracker/issues/311
+[#312]: https://github.com/BambooTracker/BambooTracker/pull/312
+[#316]: https://github.com/BambooTracker/BambooTracker/issues/316
+[#304]: https://github.com/BambooTracker/BambooTracker/issues/304
+[#313]: https://github.com/BambooTracker/BambooTracker/issues/313
+[#320]: https://github.com/BambooTracker/BambooTracker/issues/320
+[#323]: https://github.com/BambooTracker/BambooTracker/issues/323
+[#306]: https://github.com/BambooTracker/BambooTracker/pull/306
+[#297]: https://github.com/BambooTracker/BambooTracker/issues/297
+[#324]: https://github.com/BambooTracker/BambooTracker/pull/324
 
 ## v0.4.5 (2020-11-05)
 ### Added
@@ -181,28 +186,28 @@
 [@Genatari]: https://github.com/Genatari
 [@Toonlink8101]: https://github.com/Toonlink8101
 
-[#256]: https://github.com/rerrahkr/BambooTracker/issues/256
-[#259]: https://github.com/rerrahkr/BambooTracker/issues/259
-[#258]: https://github.com/rerrahkr/BambooTracker/issues/258
-[#260]: https://github.com/rerrahkr/BambooTracker/issues/260
-[#261]: https://github.com/rerrahkr/BambooTracker/issues/261
-[#238]: https://github.com/rerrahkr/BambooTracker/pull/238
-[#266]: https://github.com/rerrahkr/BambooTracker/issues/266
-[#267]: https://github.com/rerrahkr/BambooTracker/issues/267
-[#269]: https://github.com/rerrahkr/BambooTracker/issues/269
-[#270]: https://github.com/rerrahkr/BambooTracker/issues/270
-[#272]: https://github.com/rerrahkr/BambooTracker/issues/272
-[#274]: https://github.com/rerrahkr/BambooTracker/pull/274
-[#268]: https://github.com/rerrahkr/BambooTracker/pull/268
-[#273]: https://github.com/rerrahkr/BambooTracker/pull/273
-[#276]: https://github.com/rerrahkr/BambooTracker/issues/276
-[#277]: https://github.com/rerrahkr/BambooTracker/pull/277
-[#278]: https://github.com/rerrahkr/BambooTracker/issues/278
-[#279]: https://github.com/rerrahkr/BambooTracker/issues/279
-[#280]: https://github.com/rerrahkr/BambooTracker/pull/280
-[#281]: https://github.com/rerrahkr/BambooTracker/pull/281
-[#282]: https://github.com/rerrahkr/BambooTracker/issues/282
-[#283]: https://github.com/rerrahkr/BambooTracker/pull/283
+[#256]: https://github.com/BambooTracker/BambooTracker/issues/256
+[#259]: https://github.com/BambooTracker/BambooTracker/issues/259
+[#258]: https://github.com/BambooTracker/BambooTracker/issues/258
+[#260]: https://github.com/BambooTracker/BambooTracker/issues/260
+[#261]: https://github.com/BambooTracker/BambooTracker/issues/261
+[#238]: https://github.com/BambooTracker/BambooTracker/pull/238
+[#266]: https://github.com/BambooTracker/BambooTracker/issues/266
+[#267]: https://github.com/BambooTracker/BambooTracker/issues/267
+[#269]: https://github.com/BambooTracker/BambooTracker/issues/269
+[#270]: https://github.com/BambooTracker/BambooTracker/issues/270
+[#272]: https://github.com/BambooTracker/BambooTracker/issues/272
+[#274]: https://github.com/BambooTracker/BambooTracker/pull/274
+[#268]: https://github.com/BambooTracker/BambooTracker/pull/268
+[#273]: https://github.com/BambooTracker/BambooTracker/pull/273
+[#276]: https://github.com/BambooTracker/BambooTracker/issues/276
+[#277]: https://github.com/BambooTracker/BambooTracker/pull/277
+[#278]: https://github.com/BambooTracker/BambooTracker/issues/278
+[#279]: https://github.com/BambooTracker/BambooTracker/issues/279
+[#280]: https://github.com/BambooTracker/BambooTracker/pull/280
+[#281]: https://github.com/BambooTracker/BambooTracker/pull/281
+[#282]: https://github.com/BambooTracker/BambooTracker/issues/282
+[#283]: https://github.com/BambooTracker/BambooTracker/pull/283
 
 ## v0.4.4 (2020-08-22)
 ### Added
@@ -237,25 +242,25 @@
 [@superctr]: https://github.com/superctr
 [@Drillimation]: https://github.com/Drillimation
 
-[#229]: https://github.com/rerrahkr/BambooTracker/issues/229
-[#228]: https://github.com/rerrahkr/BambooTracker/issues/228
-[#233]: https://github.com/rerrahkr/BambooTracker/pull/233
-[#231]: https://github.com/rerrahkr/BambooTracker/issues/231
-[#234]: https://github.com/rerrahkr/BambooTracker/issues/234
-[#232]: https://github.com/rerrahkr/BambooTracker/issues/232
-[#230]: https://github.com/rerrahkr/BambooTracker/pull/230
-[#235]: https://github.com/rerrahkr/BambooTracker/issues/235
-[#236]: https://github.com/rerrahkr/BambooTracker/pull/236
-[#239]: https://github.com/rerrahkr/BambooTracker/pull/239
-[#241]: https://github.com/rerrahkr/BambooTracker/pull/241
-[#242]: https://github.com/rerrahkr/BambooTracker/issues/242
-[#243]: https://github.com/rerrahkr/BambooTracker/pull/243
-[#237]: https://github.com/rerrahkr/BambooTracker/pull/237
-[#248]: https://github.com/rerrahkr/BambooTracker/issues/248
-[#250]: https://github.com/rerrahkr/BambooTracker/pull/250/files
-[#251]: https://github.com/rerrahkr/BambooTracker/issues/251
-[#253]: https://github.com/rerrahkr/BambooTracker/pull/253
-[#252]: https://github.com/rerrahkr/BambooTracker/issues/252
+[#229]: https://github.com/BambooTracker/BambooTracker/issues/229
+[#228]: https://github.com/BambooTracker/BambooTracker/issues/228
+[#233]: https://github.com/BambooTracker/BambooTracker/pull/233
+[#231]: https://github.com/BambooTracker/BambooTracker/issues/231
+[#234]: https://github.com/BambooTracker/BambooTracker/issues/234
+[#232]: https://github.com/BambooTracker/BambooTracker/issues/232
+[#230]: https://github.com/BambooTracker/BambooTracker/pull/230
+[#235]: https://github.com/BambooTracker/BambooTracker/issues/235
+[#236]: https://github.com/BambooTracker/BambooTracker/pull/236
+[#239]: https://github.com/BambooTracker/BambooTracker/pull/239
+[#241]: https://github.com/BambooTracker/BambooTracker/pull/241
+[#242]: https://github.com/BambooTracker/BambooTracker/issues/242
+[#243]: https://github.com/BambooTracker/BambooTracker/pull/243
+[#237]: https://github.com/BambooTracker/BambooTracker/pull/237
+[#248]: https://github.com/BambooTracker/BambooTracker/issues/248
+[#250]: https://github.com/BambooTracker/BambooTracker/pull/250/files
+[#251]: https://github.com/BambooTracker/BambooTracker/issues/251
+[#253]: https://github.com/BambooTracker/BambooTracker/pull/253
+[#252]: https://github.com/BambooTracker/BambooTracker/issues/252
 
 ## 0.4.3 (2020-06-28)
 ### Added
@@ -282,18 +287,18 @@
 - [#225] - Modify some code (thanks [@nyanpasu64])
 - Modify appearance slightly
 
-[#213]: https://github.com/rerrahkr/BambooTracker/issues/213
-[#214]: https://github.com/rerrahkr/BambooTracker/issues/214
-[#217]: https://github.com/rerrahkr/BambooTracker/pull/217
-[#216]: https://github.com/rerrahkr/BambooTracker/issues/216
-[#218]: https://github.com/rerrahkr/BambooTracker/issues/218
-[#210]: https://github.com/rerrahkr/BambooTracker/issues/210
-[#220]: https://github.com/rerrahkr/BambooTracker/issues/220
-[#221]: https://github.com/rerrahkr/BambooTracker/pull/221
-[#219]: https://github.com/rerrahkr/BambooTracker/issues/219
-[#225]: https://github.com/rerrahkr/BambooTracker/issues/225
-[#200]: https://github.com/rerrahkr/BambooTracker/pull/200
-[#227]: https://github.com/rerrahkr/BambooTracker/pull/227
+[#213]: https://github.com/BambooTracker/BambooTracker/issues/213
+[#214]: https://github.com/BambooTracker/BambooTracker/issues/214
+[#217]: https://github.com/BambooTracker/BambooTracker/pull/217
+[#216]: https://github.com/BambooTracker/BambooTracker/issues/216
+[#218]: https://github.com/BambooTracker/BambooTracker/issues/218
+[#210]: https://github.com/BambooTracker/BambooTracker/issues/210
+[#220]: https://github.com/BambooTracker/BambooTracker/issues/220
+[#221]: https://github.com/BambooTracker/BambooTracker/pull/221
+[#219]: https://github.com/BambooTracker/BambooTracker/issues/219
+[#225]: https://github.com/BambooTracker/BambooTracker/issues/225
+[#200]: https://github.com/BambooTracker/BambooTracker/pull/200
+[#227]: https://github.com/BambooTracker/BambooTracker/pull/227
 
 ## v0.4.2 (2020-05-10)
 ### Added
@@ -324,11 +329,11 @@
 [@HeavyViper]: https://twitter.com/HeavyViper
 [@Mijinkono02]: https://twitter.com/Mijinkono02
 
-[#209]: https://github.com/rerrahkr/BambooTracker/issues/209
-[#208]: https://github.com/rerrahkr/BambooTracker/issues/208
-[#207]: https://github.com/rerrahkr/BambooTracker/issues/207
-[#211]: https://github.com/rerrahkr/BambooTracker/issues/211
-[#144]: https://github.com/rerrahkr/BambooTracker/issues/144
+[#209]: https://github.com/BambooTracker/BambooTracker/issues/209
+[#208]: https://github.com/BambooTracker/BambooTracker/issues/208
+[#207]: https://github.com/BambooTracker/BambooTracker/issues/207
+[#211]: https://github.com/BambooTracker/BambooTracker/issues/211
+[#144]: https://github.com/BambooTracker/BambooTracker/issues/144
 
 ## v0.4.1 (2020-04-20)
 ### Added
@@ -358,14 +363,14 @@
 [@Mikejmoffitt]: https://github.com/Mikejmoffitt
 [Takeshi Abo]: https://twitter.com/valsound
 
-[#197]: https://github.com/rerrahkr/BambooTracker/pull/197
-[#199]: https://github.com/rerrahkr/BambooTracker/issues/199
-[#198]: https://github.com/rerrahkr/BambooTracker/issues/198
-[#201]: https://github.com/rerrahkr/BambooTracker/issues/201
-[#204]: https://github.com/rerrahkr/BambooTracker/pull/204
-[#205]: https://github.com/rerrahkr/BambooTracker/pull/205
-[#203]: https://github.com/rerrahkr/BambooTracker/issues/203
-[#206]: https://github.com/rerrahkr/BambooTracker/issues/206
+[#197]: https://github.com/BambooTracker/BambooTracker/pull/197
+[#199]: https://github.com/BambooTracker/BambooTracker/issues/199
+[#198]: https://github.com/BambooTracker/BambooTracker/issues/198
+[#201]: https://github.com/BambooTracker/BambooTracker/issues/201
+[#204]: https://github.com/BambooTracker/BambooTracker/pull/204
+[#205]: https://github.com/BambooTracker/BambooTracker/pull/205
+[#203]: https://github.com/BambooTracker/BambooTracker/issues/203
+[#206]: https://github.com/BambooTracker/BambooTracker/issues/206
 
 ## v0.4.0 (2020-03-27)
 ### Added
@@ -410,19 +415,19 @@
 [@nyanpasu64]: https://github.com/nyanpasu64
 [@YoshiLightStar]: https://github.com/YoshiLightStar
 
-[#182]: https://github.com/rerrahkr/BambooTracker/issues/182
-[#183]: https://github.com/rerrahkr/BambooTracker/pull/183
-[#184]: https://github.com/rerrahkr/BambooTracker/issues/184
-[#185]: https://github.com/rerrahkr/BambooTracker/issues/185
-[#186]: https://github.com/rerrahkr/BambooTracker/issues/186
-[#187]: https://github.com/rerrahkr/BambooTracker/issues/187
-[#189]: https://github.com/rerrahkr/BambooTracker/issues/189
-[#190]: https://github.com/rerrahkr/BambooTracker/issues/190
-[#191]: https://github.com/rerrahkr/BambooTracker/issues/191
-[#177]: https://github.com/rerrahkr/BambooTracker/issues/177
-[#192]: https://github.com/rerrahkr/BambooTracker/issues/192
-[#193]: https://github.com/rerrahkr/BambooTracker/issues/193
-[#194]: https://github.com/rerrahkr/BambooTracker/issues/194
+[#182]: https://github.com/BambooTracker/BambooTracker/issues/182
+[#183]: https://github.com/BambooTracker/BambooTracker/pull/183
+[#184]: https://github.com/BambooTracker/BambooTracker/issues/184
+[#185]: https://github.com/BambooTracker/BambooTracker/issues/185
+[#186]: https://github.com/BambooTracker/BambooTracker/issues/186
+[#187]: https://github.com/BambooTracker/BambooTracker/issues/187
+[#189]: https://github.com/BambooTracker/BambooTracker/issues/189
+[#190]: https://github.com/BambooTracker/BambooTracker/issues/190
+[#191]: https://github.com/BambooTracker/BambooTracker/issues/191
+[#177]: https://github.com/BambooTracker/BambooTracker/issues/177
+[#192]: https://github.com/BambooTracker/BambooTracker/issues/192
+[#193]: https://github.com/BambooTracker/BambooTracker/issues/193
+[#194]: https://github.com/BambooTracker/BambooTracker/issues/194
 
 ## v0.3.5 (2020-02-15)
 ### Added
@@ -439,7 +444,7 @@
 
 [@ponzu0147]: https://twitter.com/ponzu0147
 
-[#181]: https://github.com/rerrahkr/BambooTracker/issues/181
+[#181]: https://github.com/BambooTracker/BambooTracker/issues/181
 
 ## v0.3.4 (2020-01-29)
 ### Added
@@ -467,13 +472,13 @@
 [@Midi-In]: https://github.com/Midi-In
 [@Ikalou]: https://github.com/Ikalou
 
-[#172]: https://github.com/rerrahkr/BambooTracker/issues/172
-[#173]: https://github.com/rerrahkr/BambooTracker/pull/173
-[#175]: https://github.com/rerrahkr/BambooTracker/issues/175
-[#176]: https://github.com/rerrahkr/BambooTracker/issues/176
-[#179]: https://github.com/rerrahkr/BambooTracker/issues/179
-[#178]: https://github.com/rerrahkr/BambooTracker/issues/178
-[#180]: https://github.com/rerrahkr/BambooTracker/issues/180
+[#172]: https://github.com/BambooTracker/BambooTracker/issues/172
+[#173]: https://github.com/BambooTracker/BambooTracker/pull/173
+[#175]: https://github.com/BambooTracker/BambooTracker/issues/175
+[#176]: https://github.com/BambooTracker/BambooTracker/issues/176
+[#179]: https://github.com/BambooTracker/BambooTracker/issues/179
+[#178]: https://github.com/BambooTracker/BambooTracker/issues/178
+[#180]: https://github.com/BambooTracker/BambooTracker/issues/180
 
 ## v0.3.3 (2019-12-17)
 ### Fixed
@@ -484,8 +489,8 @@
 
 [@Ravancloak]: https://github.com/Ravancloak
 
-[#170]: https://github.com/rerrahkr/BambooTracker/issues/170
-[#171]: https://github.com/rerrahkr/BambooTracker/issues/171
+[#170]: https://github.com/BambooTracker/BambooTracker/issues/170
+[#171]: https://github.com/BambooTracker/BambooTracker/issues/171
 
 ## v0.3.2 (2019-12-13)
 ### Changed
@@ -503,8 +508,8 @@
 
 [@YuzuMSX]: https://github.com/YuzuMSX
 
-[#168]: https://github.com/rerrahkr/BambooTracker/issues/168
-[#169]: https://github.com/rerrahkr/BambooTracker/issues/169
+[#168]: https://github.com/BambooTracker/BambooTracker/issues/168
+[#169]: https://github.com/BambooTracker/BambooTracker/issues/169
 
 ## v0.3.1 (2019-11-30)
 ### Added
@@ -539,14 +544,14 @@
 - [#166] - Fix uninitialized variables (thanks [@OPNA2608])
 - [#167] - Fix the instrument list to disable the icons when it is empty (thanks [@OPNA2608])
 
-[#161]: https://github.com/rerrahkr/BambooTracker/issues/161
-[#162]: https://github.com/rerrahkr/BambooTracker/issues/162
-[#163]: https://github.com/rerrahkr/BambooTracker/issues/163
-[#150]: https://github.com/rerrahkr/BambooTracker/issues/150
-[#118]: https://github.com/rerrahkr/BambooTracker/issues/118
-[#165]: https://github.com/rerrahkr/BambooTracker/issues/165
-[#166]: https://github.com/rerrahkr/BambooTracker/issues/166
-[#167]: https://github.com/rerrahkr/BambooTracker/issues/167
+[#161]: https://github.com/BambooTracker/BambooTracker/issues/161
+[#162]: https://github.com/BambooTracker/BambooTracker/issues/162
+[#163]: https://github.com/BambooTracker/BambooTracker/issues/163
+[#150]: https://github.com/BambooTracker/BambooTracker/issues/150
+[#118]: https://github.com/BambooTracker/BambooTracker/issues/118
+[#165]: https://github.com/BambooTracker/BambooTracker/issues/165
+[#166]: https://github.com/BambooTracker/BambooTracker/issues/166
+[#167]: https://github.com/BambooTracker/BambooTracker/issues/167
 
 ## v0.3.0 (2019-10-25)
 ### Added
@@ -591,15 +596,15 @@
 - Restore FM RR parameters in key-on without instrument set after envelope reset
 - [#159] - Fix corruption happened by toggling track during playback (thanks [@papiezak])
 
-[#152]: https://github.com/rerrahkr/BambooTracker/pull/152
-[#153]: https://github.com/rerrahkr/BambooTracker/issues/153
-[#154]: https://github.com/rerrahkr/BambooTracker/issues/154
-[#156]: https://github.com/rerrahkr/BambooTracker/issues/156
-[#132]: https://github.com/rerrahkr/BambooTracker/issues/132
-[#72]: https://github.com/rerrahkr/BambooTracker/issues/72
-[#158]: https://github.com/rerrahkr/BambooTracker/issues/158
-[#159]: https://github.com/rerrahkr/BambooTracker/issues/159
-[#145]: https://github.com/rerrahkr/BambooTracker/issues/145
+[#152]: https://github.com/BambooTracker/BambooTracker/pull/152
+[#153]: https://github.com/BambooTracker/BambooTracker/issues/153
+[#154]: https://github.com/BambooTracker/BambooTracker/issues/154
+[#156]: https://github.com/BambooTracker/BambooTracker/issues/156
+[#132]: https://github.com/BambooTracker/BambooTracker/issues/132
+[#72]: https://github.com/BambooTracker/BambooTracker/issues/72
+[#158]: https://github.com/BambooTracker/BambooTracker/issues/158
+[#159]: https://github.com/BambooTracker/BambooTracker/issues/159
+[#145]: https://github.com/BambooTracker/BambooTracker/issues/145
 
 [@ValleyBell]: https://github.com/ValleyBell
 
@@ -619,10 +624,10 @@
 
 [@CommodoreKulor]: https://github.com/CommodoreKulor
 
-[#147]: https://github.com/rerrahkr/BambooTracker/pull/147
-[#148]: https://github.com/rerrahkr/BambooTracker/pull/148
-[#149]: https://github.com/rerrahkr/BambooTracker/issues/149
-[#151]: https://github.com/rerrahkr/BambooTracker/issues/151
+[#147]: https://github.com/BambooTracker/BambooTracker/pull/147
+[#148]: https://github.com/BambooTracker/BambooTracker/pull/148
+[#149]: https://github.com/BambooTracker/BambooTracker/issues/149
+[#151]: https://github.com/BambooTracker/BambooTracker/issues/151
 
 ## v0.2.3 (2019-08-31)
 ### Added
@@ -636,9 +641,9 @@
 - [#143] - Fix the corruption of note delay effect without note on (thanks [@ImATrackMan])
 - [#146] - Fix the replay corruption after song-end effect (thanks [@papiezak])
 
-[#143]: https://github.com/rerrahkr/BambooTracker/issues/143
-[#136]: https://github.com/rerrahkr/BambooTracker/issues/136
-[#146]: https://github.com/rerrahkr/BambooTracker/issues/146
+[#143]: https://github.com/BambooTracker/BambooTracker/issues/143
+[#136]: https://github.com/BambooTracker/BambooTracker/issues/136
+[#146]: https://github.com/BambooTracker/BambooTracker/issues/146
 
 ## v0.2.2 (2019-06-25)
 ### Added
@@ -658,12 +663,12 @@
 - Fix note slide effect to enable to execute when speed is 0
 - Fix default save and export name when the name of module file contains multiple dots
 
-[#137]: https://github.com/rerrahkr/BambooTracker/issues/137
-[#140]: https://github.com/rerrahkr/BambooTracker/issues/140
-[#139]: https://github.com/rerrahkr/BambooTracker/pull/139
-[#141]: https://github.com/rerrahkr/BambooTracker/pull/141
-[#138]: https://github.com/rerrahkr/BambooTracker/issues/138
-[#142]: https://github.com/rerrahkr/BambooTracker/pull/142
+[#137]: https://github.com/BambooTracker/BambooTracker/issues/137
+[#140]: https://github.com/BambooTracker/BambooTracker/issues/140
+[#139]: https://github.com/BambooTracker/BambooTracker/pull/139
+[#141]: https://github.com/BambooTracker/BambooTracker/pull/141
+[#138]: https://github.com/BambooTracker/BambooTracker/issues/138
+[#142]: https://github.com/BambooTracker/BambooTracker/pull/142
 
 [@SMB7]: https://github.com/SMB7
 
@@ -688,20 +693,20 @@
 - [#135] - Delete unit data saving of FM operator sequence (thanks [@elohimf], [@jpcima], [@OPNA2608])
 - [#131] - Fix incorrect bit set for FM 3ch expanded mode (thanks [@nukeykt], [@jpcima])
 
-[#122]: https://github.com/rerrahkr/BambooTracker/issues/122
-[#123]: https://github.com/rerrahkr/BambooTracker/pull/123
-[#125]: https://github.com/rerrahkr/BambooTracker/pull/125
-[#124]: https://github.com/rerrahkr/BambooTracker/pull/124
-[#96]: https://github.com/rerrahkr/BambooTracker/issues/96
-[#126]: https://github.com/rerrahkr/BambooTracker/issues/126
-[#127]: https://github.com/rerrahkr/BambooTracker/issues/127
-[#128]: https://github.com/rerrahkr/BambooTracker/issues/128
-[#129]: https://github.com/rerrahkr/BambooTracker/issues/129
-[#130]: https://github.com/rerrahkr/BambooTracker/issues/130
-[#133]: https://github.com/rerrahkr/BambooTracker/pull/133
-[#135]: https://github.com/rerrahkr/BambooTracker/issues/135
-[#131]: https://github.com/rerrahkr/BambooTracker/issues/131
-[#134]: https://github.com/rerrahkr/BambooTracker/issues/134
+[#122]: https://github.com/BambooTracker/BambooTracker/issues/122
+[#123]: https://github.com/BambooTracker/BambooTracker/pull/123
+[#125]: https://github.com/BambooTracker/BambooTracker/pull/125
+[#124]: https://github.com/BambooTracker/BambooTracker/pull/124
+[#96]: https://github.com/BambooTracker/BambooTracker/issues/96
+[#126]: https://github.com/BambooTracker/BambooTracker/issues/126
+[#127]: https://github.com/BambooTracker/BambooTracker/issues/127
+[#128]: https://github.com/BambooTracker/BambooTracker/issues/128
+[#129]: https://github.com/BambooTracker/BambooTracker/issues/129
+[#130]: https://github.com/BambooTracker/BambooTracker/issues/130
+[#133]: https://github.com/BambooTracker/BambooTracker/pull/133
+[#135]: https://github.com/BambooTracker/BambooTracker/issues/135
+[#131]: https://github.com/BambooTracker/BambooTracker/issues/131
+[#134]: https://github.com/BambooTracker/BambooTracker/issues/134
 
 [@N-SPC700]: https://github.com/N-SPC700
 [Dippy]: https://www.youtube.com/channel/UCw2xCNQhuwpnfnf1-wfRefQ
@@ -773,49 +778,49 @@
 - [#3] - Remove square-mask frequency selection by note+pitch
 - Delete module properties dialog open button in module settings groupbox
 
-[#80]: https://github.com/rerrahkr/BambooTracker/pull/80
-[#81]: https://github.com/rerrahkr/BambooTracker/issues/81
-[#76]: https://github.com/rerrahkr/BambooTracker/pull/76
-[#32]: https://github.com/rerrahkr/BambooTracker/issues/32
-[#79]: https://github.com/rerrahkr/BambooTracker/issues/79
-[#62]: https://github.com/rerrahkr/BambooTracker/issues/62
-[#82]: https://github.com/rerrahkr/BambooTracker/issues/82
-[#3]: https://github.com/rerrahkr/BambooTracker/issues/3
-[#84]: https://github.com/rerrahkr/BambooTracker/issues/84
-[#85]: https://github.com/rerrahkr/BambooTracker/pull/85
-[#83]: https://github.com/rerrahkr/BambooTracker/issues/83
-[#86]: https://github.com/rerrahkr/BambooTracker/issues/86
-[#88]: https://github.com/rerrahkr/BambooTracker/issues/88
-[#87]: https://github.com/rerrahkr/BambooTracker/issues/87
-[#91]: https://github.com/rerrahkr/BambooTracker/issues/91
-[#92]: https://github.com/rerrahkr/BambooTracker/issues/92
-[#89]: https://github.com/rerrahkr/BambooTracker/pull/89
-[#95]: https://github.com/rerrahkr/BambooTracker/pull/95
-[#90]: https://github.com/rerrahkr/BambooTracker/pull/90
-[#94]: https://github.com/rerrahkr/BambooTracker/pull/94
-[#93]: https://github.com/rerrahkr/BambooTracker/issues/93
-[#97]: https://github.com/rerrahkr/BambooTracker/pull/97
-[#101]: https://github.com/rerrahkr/BambooTracker/issues/101
-[#100]: https://github.com/rerrahkr/BambooTracker/issues/100
-[#103]: https://github.com/rerrahkr/BambooTracker/pull/103
-[#104]: https://github.com/rerrahkr/BambooTracker/pull/104
-[#105]: https://github.com/rerrahkr/BambooTracker/pull/105
-[#99]: https://github.com/rerrahkr/BambooTracker/pull/99
-[#98]: https://github.com/rerrahkr/BambooTracker/issues/98
-[#106]: https://github.com/rerrahkr/BambooTracker/pull/106
-[#107]: https://github.com/rerrahkr/BambooTracker/pull/107
-[#108]: https://github.com/rerrahkr/BambooTracker/pull/108
-[#109]: https://github.com/rerrahkr/BambooTracker/pull/109
-[#111]: https://github.com/rerrahkr/BambooTracker/pull/111
-[#110]: https://github.com/rerrahkr/BambooTracker/pull/110
-[#114]: https://github.com/rerrahkr/BambooTracker/pull/114
-[#113]: https://github.com/rerrahkr/BambooTracker/issues/113
-[#115]: https://github.com/rerrahkr/BambooTracker/issues/115
-[#116]: https://github.com/rerrahkr/BambooTracker/pull/116
-[#117]: https://github.com/rerrahkr/BambooTracker/pull/117
-[#119]: https://github.com/rerrahkr/BambooTracker/issues/119
-[#112]: https://github.com/rerrahkr/BambooTracker/issues/112
-[#121]: https://github.com/rerrahkr/BambooTracker/pull/121
+[#80]: https://github.com/BambooTracker/BambooTracker/pull/80
+[#81]: https://github.com/BambooTracker/BambooTracker/issues/81
+[#76]: https://github.com/BambooTracker/BambooTracker/pull/76
+[#32]: https://github.com/BambooTracker/BambooTracker/issues/32
+[#79]: https://github.com/BambooTracker/BambooTracker/issues/79
+[#62]: https://github.com/BambooTracker/BambooTracker/issues/62
+[#82]: https://github.com/BambooTracker/BambooTracker/issues/82
+[#3]: https://github.com/BambooTracker/BambooTracker/issues/3
+[#84]: https://github.com/BambooTracker/BambooTracker/issues/84
+[#85]: https://github.com/BambooTracker/BambooTracker/pull/85
+[#83]: https://github.com/BambooTracker/BambooTracker/issues/83
+[#86]: https://github.com/BambooTracker/BambooTracker/issues/86
+[#88]: https://github.com/BambooTracker/BambooTracker/issues/88
+[#87]: https://github.com/BambooTracker/BambooTracker/issues/87
+[#91]: https://github.com/BambooTracker/BambooTracker/issues/91
+[#92]: https://github.com/BambooTracker/BambooTracker/issues/92
+[#89]: https://github.com/BambooTracker/BambooTracker/pull/89
+[#95]: https://github.com/BambooTracker/BambooTracker/pull/95
+[#90]: https://github.com/BambooTracker/BambooTracker/pull/90
+[#94]: https://github.com/BambooTracker/BambooTracker/pull/94
+[#93]: https://github.com/BambooTracker/BambooTracker/issues/93
+[#97]: https://github.com/BambooTracker/BambooTracker/pull/97
+[#101]: https://github.com/BambooTracker/BambooTracker/issues/101
+[#100]: https://github.com/BambooTracker/BambooTracker/issues/100
+[#103]: https://github.com/BambooTracker/BambooTracker/pull/103
+[#104]: https://github.com/BambooTracker/BambooTracker/pull/104
+[#105]: https://github.com/BambooTracker/BambooTracker/pull/105
+[#99]: https://github.com/BambooTracker/BambooTracker/pull/99
+[#98]: https://github.com/BambooTracker/BambooTracker/issues/98
+[#106]: https://github.com/BambooTracker/BambooTracker/pull/106
+[#107]: https://github.com/BambooTracker/BambooTracker/pull/107
+[#108]: https://github.com/BambooTracker/BambooTracker/pull/108
+[#109]: https://github.com/BambooTracker/BambooTracker/pull/109
+[#111]: https://github.com/BambooTracker/BambooTracker/pull/111
+[#110]: https://github.com/BambooTracker/BambooTracker/pull/110
+[#114]: https://github.com/BambooTracker/BambooTracker/pull/114
+[#113]: https://github.com/BambooTracker/BambooTracker/issues/113
+[#115]: https://github.com/BambooTracker/BambooTracker/issues/115
+[#116]: https://github.com/BambooTracker/BambooTracker/pull/116
+[#117]: https://github.com/BambooTracker/BambooTracker/pull/117
+[#119]: https://github.com/BambooTracker/BambooTracker/issues/119
+[#112]: https://github.com/BambooTracker/BambooTracker/issues/112
+[#121]: https://github.com/BambooTracker/BambooTracker/pull/121
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
@@ -850,21 +855,21 @@
 - Fix to restore FM RR on unmuting
 - [#78] - Fix unused functions and parameters warnings (thanks [@jpcima])
 
-[#61]: https://github.com/rerrahkr/BambooTracker/pull/61
-[#63]: https://github.com/rerrahkr/BambooTracker/pull/63
-[#64]: https://github.com/rerrahkr/BambooTracker/pull/64
-[#66]: https://github.com/rerrahkr/BambooTracker/issues/66
-[#67]: https://github.com/rerrahkr/BambooTracker/issues/67
-[#68]: https://github.com/rerrahkr/BambooTracker/issues/68
-[#69]: https://github.com/rerrahkr/BambooTracker/issues/69
-[#65]: https://github.com/rerrahkr/BambooTracker/issues/65
-[#71]: https://github.com/rerrahkr/BambooTracker/issues/71
-[#73]: https://github.com/rerrahkr/BambooTracker/issues/73
-[#70]: https://github.com/rerrahkr/BambooTracker/issues/70
-[#11]: https://github.com/rerrahkr/BambooTracker/issues/11
-[#75]: https://github.com/rerrahkr/BambooTracker/issues/75
-[#78]: https://github.com/rerrahkr/BambooTracker/pull/78
-[#53]: https://github.com/rerrahkr/BambooTracker/issues/53
+[#61]: https://github.com/BambooTracker/BambooTracker/pull/61
+[#63]: https://github.com/BambooTracker/BambooTracker/pull/63
+[#64]: https://github.com/BambooTracker/BambooTracker/pull/64
+[#66]: https://github.com/BambooTracker/BambooTracker/issues/66
+[#67]: https://github.com/BambooTracker/BambooTracker/issues/67
+[#68]: https://github.com/BambooTracker/BambooTracker/issues/68
+[#69]: https://github.com/BambooTracker/BambooTracker/issues/69
+[#65]: https://github.com/BambooTracker/BambooTracker/issues/65
+[#71]: https://github.com/BambooTracker/BambooTracker/issues/71
+[#73]: https://github.com/BambooTracker/BambooTracker/issues/73
+[#70]: https://github.com/BambooTracker/BambooTracker/issues/70
+[#11]: https://github.com/BambooTracker/BambooTracker/issues/11
+[#75]: https://github.com/BambooTracker/BambooTracker/issues/75
+[#78]: https://github.com/BambooTracker/BambooTracker/pull/78
+[#53]: https://github.com/BambooTracker/BambooTracker/issues/53
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 [@scarletbullgon]: https://github.com/scarletbullgon
@@ -897,17 +902,17 @@
 - Fix to skip instrument redefinition
 - Fix FM TL3 calculation in instrument definition event
 
-[#48]: https://github.com/rerrahkr/BambooTracker/issues/48
-[#51]: https://github.com/rerrahkr/BambooTracker/issues/51
-[#52]: https://github.com/rerrahkr/BambooTracker/pull/52
-[#54]: https://github.com/rerrahkr/BambooTracker/pull/54
-[#55]: https://github.com/rerrahkr/BambooTracker/issues/55
-[#56]: https://github.com/rerrahkr/BambooTracker/pull/56
-[#57]: https://github.com/rerrahkr/BambooTracker/issues/57
-[#44]: https://github.com/rerrahkr/BambooTracker/issues/44
-[#59]: https://github.com/rerrahkr/BambooTracker/issues/59
-[#58]: https://github.com/rerrahkr/BambooTracker/issues/58
-[#60]: https://github.com/rerrahkr/BambooTracker/issues/60
+[#48]: https://github.com/BambooTracker/BambooTracker/issues/48
+[#51]: https://github.com/BambooTracker/BambooTracker/issues/51
+[#52]: https://github.com/BambooTracker/BambooTracker/pull/52
+[#54]: https://github.com/BambooTracker/BambooTracker/pull/54
+[#55]: https://github.com/BambooTracker/BambooTracker/issues/55
+[#56]: https://github.com/BambooTracker/BambooTracker/pull/56
+[#57]: https://github.com/BambooTracker/BambooTracker/issues/57
+[#44]: https://github.com/BambooTracker/BambooTracker/issues/44
+[#59]: https://github.com/BambooTracker/BambooTracker/issues/59
+[#58]: https://github.com/BambooTracker/BambooTracker/issues/58
+[#60]: https://github.com/BambooTracker/BambooTracker/issues/60
 
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1
@@ -939,23 +944,23 @@
 - [#45] - Update README Linux build instructions, Fix typo in config dialogue (thanks [@OPNA2608])
 - Rewrite about dialog
 
-[#27]: https://github.com/rerrahkr/BambooTracker/issues/27
-[#28]: https://github.com/rerrahkr/BambooTracker/issues/28
-[#29]: https://github.com/rerrahkr/BambooTracker/pull/29
-[#30]: https://github.com/rerrahkr/BambooTracker/pull/30
-[#33]: https://github.com/rerrahkr/BambooTracker/pull/33
-[#36]: https://github.com/rerrahkr/BambooTracker/pull/36
-[#31]: https://github.com/rerrahkr/BambooTracker/pull/31
-[#17]: https://github.com/rerrahkr/BambooTracker/issues/17
-[#37]: https://github.com/rerrahkr/BambooTracker/pull/37
-[#38]: https://github.com/rerrahkr/BambooTracker/pull/38
-[#39]: https://github.com/rerrahkr/BambooTracker/pull/39
-[#41]: https://github.com/rerrahkr/BambooTracker/pull/41
-[#13]: https://github.com/rerrahkr/BambooTracker/issues/13
-[#40]: https://github.com/rerrahkr/BambooTracker/issues/40
-[#45]: https://github.com/rerrahkr/BambooTracker/pull/45
-[#46]: https://github.com/rerrahkr/BambooTracker/issues/46
-[#47]: https://github.com/rerrahkr/BambooTracker/pull/47
+[#27]: https://github.com/BambooTracker/BambooTracker/issues/27
+[#28]: https://github.com/BambooTracker/BambooTracker/issues/28
+[#29]: https://github.com/BambooTracker/BambooTracker/pull/29
+[#30]: https://github.com/BambooTracker/BambooTracker/pull/30
+[#33]: https://github.com/BambooTracker/BambooTracker/pull/33
+[#36]: https://github.com/BambooTracker/BambooTracker/pull/36
+[#31]: https://github.com/BambooTracker/BambooTracker/pull/31
+[#17]: https://github.com/BambooTracker/BambooTracker/issues/17
+[#37]: https://github.com/BambooTracker/BambooTracker/pull/37
+[#38]: https://github.com/BambooTracker/BambooTracker/pull/38
+[#39]: https://github.com/BambooTracker/BambooTracker/pull/39
+[#41]: https://github.com/BambooTracker/BambooTracker/pull/41
+[#13]: https://github.com/BambooTracker/BambooTracker/issues/13
+[#40]: https://github.com/BambooTracker/BambooTracker/issues/40
+[#45]: https://github.com/BambooTracker/BambooTracker/pull/45
+[#46]: https://github.com/BambooTracker/BambooTracker/issues/46
+[#47]: https://github.com/BambooTracker/BambooTracker/pull/47
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko
@@ -982,11 +987,11 @@
 - [#26] - Fix mute actions in pattern editor (thanks [@jimbo1qaz])
 - [#26] - Fix pattern and order context menu shortcuts (thanks [@jimbo1qaz])
 
-[#25]: https://github.com/rerrahkr/BambooTracker/issues/25
-[#14]: https://github.com/rerrahkr/BambooTracker/issues/14
-[#18]: https://github.com/rerrahkr/BambooTracker/issues/18
-[#24]: https://github.com/rerrahkr/BambooTracker/issues/24
-[#26]: https://github.com/rerrahkr/BambooTracker/issues/26
+[#25]: https://github.com/BambooTracker/BambooTracker/issues/25
+[#14]: https://github.com/BambooTracker/BambooTracker/issues/14
+[#18]: https://github.com/BambooTracker/BambooTracker/issues/18
+[#24]: https://github.com/BambooTracker/BambooTracker/issues/24
+[#26]: https://github.com/BambooTracker/BambooTracker/issues/26
 
 [@papiezak]: https://github.com/papiezak
 
@@ -1010,16 +1015,16 @@
 - [#12] - Fix insert/clone order selection when clicking above or below orders (thanks [@jimbo1qaz])
 - Fix clone order to assign first free patterns
 
-[#10]: https://github.com/rerrahkr/BambooTracker/pull/10
-[#11]: https://github.com/rerrahkr/BambooTracker/pull/16
-[#20]: https://github.com/rerrahkr/BambooTracker/pull/20
-[#21]: https://github.com/rerrahkr/BambooTracker/issues/21
-[#1]: https://github.com/rerrahkr/BambooTracker/issues/1
-[#2]: https://github.com/rerrahkr/BambooTracker/issues/2
-[#6]: https://github.com/rerrahkr/BambooTracker/issues/6
-[#23]: https://github.com/rerrahkr/BambooTracker/issues/23
-[#22]: https://github.com/rerrahkr/BambooTracker/pull/22
-[#12]: https://github.com/rerrahkr/BambooTracker/issues/12
+[#10]: https://github.com/BambooTracker/BambooTracker/pull/10
+[#11]: https://github.com/BambooTracker/BambooTracker/pull/16
+[#20]: https://github.com/BambooTracker/BambooTracker/pull/20
+[#21]: https://github.com/BambooTracker/BambooTracker/issues/21
+[#1]: https://github.com/BambooTracker/BambooTracker/issues/1
+[#2]: https://github.com/BambooTracker/BambooTracker/issues/2
+[#6]: https://github.com/BambooTracker/BambooTracker/issues/6
+[#23]: https://github.com/BambooTracker/BambooTracker/issues/23
+[#22]: https://github.com/BambooTracker/BambooTracker/pull/22
+[#12]: https://github.com/BambooTracker/BambooTracker/issues/12
 
 [@maakmusic]: https://twitter.com/maakmusic
 [@Pigu-A]: https://github.com/Pigu-A
@@ -1037,11 +1042,11 @@
 - [#4] - Fix wrong offset jump when opening file with operator sequence (thanks [@9001], [@nabetaqz])
 - [#9] - Check if saved soundOutput exists ([#7]; thanks [@OPNA2608], [@marysiamzawka])
 
-[#5]: https://github.com/rerrahkr/BambooTracker/issues/5
-[#4]: https://github.com/rerrahkr/BambooTracker/issues/4
-[#9]: https://github.com/rerrahkr/BambooTracker/pull/9
-[#7]: https://github.com/rerrahkr/BambooTracker/issues/7
-[#8]: https://github.com/rerrahkr/BambooTracker/issues/8
+[#5]: https://github.com/BambooTracker/BambooTracker/issues/5
+[#4]: https://github.com/BambooTracker/BambooTracker/issues/4
+[#9]: https://github.com/BambooTracker/BambooTracker/pull/9
+[#7]: https://github.com/BambooTracker/BambooTracker/issues/7
+[#8]: https://github.com/BambooTracker/BambooTracker/issues/8
 
 [@Xyz39808]: https://github.com/Xyz39808
 [@9001]: https://github.com/9001

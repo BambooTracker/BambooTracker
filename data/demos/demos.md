@@ -3,7 +3,7 @@
 - [HeavyViper] - sword with no scabbard
 - [ImATrackMan] - Battleship.btm
 - [maak] - breeze 2608.btm, Rude Buster.btm
-- Rerrah - Lotus.btm
+- [Rerrah] - Lotus.btm
 - [RigidatoMS] - Is This What You Desired.btm
 - [SuperJet Spade] - No Time To Waste.btm, Underwater Ruins.btm
 - [TastySnax12] - Wild Battle (RSE).btm
@@ -11,7 +11,7 @@
 
 ## Sample instruments
 - [papiezak] - 2 banks (32 instruments)
-- Rerrah - 3 banks (54 instruments)
+- [Rerrah] - 3 banks (54 instruments)
 - [Takeshi Abo] - 12 banks (255 instruments from [VAL-SOUND](http://valsound.fc2web.com))
 
 Thanks all for samples!
@@ -25,3 +25,4 @@ Thanks all for samples!
 [Takeshi Abo]: https://twitter.com/valsound
 [TastySnax12]: https://twitter.com/TastySnax12
 [HeavyViper]: https://twitter.com/HeavyViper
+[Rerrah]: https://github.com/rerrahkr

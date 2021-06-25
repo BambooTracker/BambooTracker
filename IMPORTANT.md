@@ -2,6 +2,7 @@
 The following changes affect module playback critically.
 In some cases, you need to modify modules.
 
+- In BambooTracker v0.5.0, the number of buffer in RtAudio is changed to 2. This may change the latency.
 - In BambooTracker v0.3.6, hard envelope settings of SSG is fixed when note off.
 - From BambooTracker v0.3.6, the effects is executed from left to right. In previous versions there was a read order ambiguity.
 - In BambooTracker v0.3.5, pitch calculation of AutoEnv and square mask is fixed. When you used hardware envelope and square mask in a module created in an earlier version, you may need to modify its frequency.

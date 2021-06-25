@@ -2371,7 +2371,7 @@ void PatternEditorPanel::setEditableStep(int n)
 
 void PatternEditorPanel::onSongLoaded()
 {
-	// NOTE: Temporary fix for https://github.com/rerrahkr/BambooTracker/issues/276
+	// NOTE: Temporary fix for https://github.com/BambooTracker/BambooTracker/issues/276
 	isInitedFirstMod_.store(true);
 
 	// Initialize cursor position

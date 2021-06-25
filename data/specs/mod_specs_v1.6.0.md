@@ -11,7 +11,7 @@ v1.6.0 - 2021-06-13
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
 | string (16 bytes) | File identifier | Format string, must be `BambooTrackerMod`.                                |
 | uint32            | EOF offset      | Relative offset to end of file. i.e. File length - 18.                    |
-| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.3.0 is stored as `0x00010300`. |
+| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.6.0 is stored as `0x00010600`. |
 
 
 ## Module Section
