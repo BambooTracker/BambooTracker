@@ -34,7 +34,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	ui(new Ui::EffectListDialog)
 {
 	ui->setupUi(this);
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	ui->tableWidget->setColumnWidth(0, 50);
 	ui->tableWidget->setColumnWidth(1, 100);

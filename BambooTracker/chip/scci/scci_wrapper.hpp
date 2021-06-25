@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,38 +23,30 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "swap_tracks_dialog.hpp"
-#include "ui_swap_tracks_dialog.h"
-#include "song.hpp"
-#include <QString>
-#include "gui/gui_utils.hpp"
+#pragma once
 
-SwapTracksDialog::SwapTracksDialog(const SongStyle& style, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::SwapTracksDialog)
+#include <cstdint>
+#include "../real_chip_interface.hpp"
+
+namespace scci
 {
-	ui->setupUi(this);
-
-	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
-	for (const auto& attrib : style.trackAttribs) {
-		QString text = gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource);
-		ui->track1ComboBox->addItem(text, attrib.number);
-		ui->track2ComboBox->addItem(text, attrib.number);
-	}
+class SoundInterfaceManager;
+class SoundChip;
 }
 
-SwapTracksDialog::~SwapTracksDialog()
+class Scci final : public SimpleRealChipInterface
 {
-	delete ui;
-}
+public:
+	Scci();
+	~Scci() override;
+	bool createInstance(RealChipInterfaceGeneratorFunc* f) override;
+	RealChipInterfaceType getType() const override { return RealChipInterfaceType::SCCI; }
+	bool hasConnected() const override;
 
-int SwapTracksDialog::getTrack1() const
-{
-	return ui->track1ComboBox->currentData().toInt();
-}
+	void reset() override;
+	void setRegister(uint32_t addr, uint8_t data) override;
 
-int SwapTracksDialog::getTrack2() const
-{
-	return ui->track2ComboBox->currentData().toInt();
-}
+private:
+	scci::SoundInterfaceManager* man_;
+	scci::SoundChip* chip_;
+};

@@ -32,7 +32,7 @@ SampleLengthDialog::SampleLengthDialog(int len, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	ui->spinBox->setValue(len);
 }

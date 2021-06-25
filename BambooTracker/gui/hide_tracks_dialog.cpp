@@ -36,7 +36,7 @@ HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	for (const auto& attrib : style.trackAttribs) {
 		auto item = new QListWidgetItem(gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource), ui->listWidget);

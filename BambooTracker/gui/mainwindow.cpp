@@ -72,7 +72,7 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
-#include "chip/scci/SCCIDefines.hpp"
+#include "chip/scci/scci_wrapper.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
@@ -108,8 +108,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	bt_(std::make_shared<BambooTracker>(config)),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	fileHistory_(std::make_shared<FileHistory>()),
-	scciDll_(std::make_unique<QLibrary>("scci")),
-	c86ctlDll_(std::make_unique<QLibrary>("c86ctl")),
+	scciDll_(std::make_shared<QLibrary>("scci")),
+	c86ctlDll_(std::make_shared<QLibrary>("c86ctl")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	renamingInstItem_(nullptr),
 	renamingInstEdit_(nullptr),
@@ -758,12 +758,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 			showStreamFailedDialog(streamErr);
 		}
 	}
-	RealChipInterface intf = config.lock()->getRealChipInterface();
-	if (intf == RealChipInterface::NONE) {
-		bt_->useSCCI(nullptr);
-		bt_->useC86CTL(nullptr);
-	}
-	else {
+	RealChipInterfaceType intf = config.lock()->getRealChipInterface();
+	if (intf != RealChipInterfaceType::NONE) {
 		tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
 		tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
@@ -2319,11 +2315,10 @@ void MainWindow::changeConfiguration()
 {
 	// Real chip interface
 	bool streamState = false;
-	RealChipInterface intf = config_.lock()->getRealChipInterface();
-	if (intf == RealChipInterface::NONE) {
+	RealChipInterfaceType intf = config_.lock()->getRealChipInterface();
+	if (intf == RealChipInterfaceType::NONE) {
 		tickTimerForRealChip_.reset();
-		bt_->useSCCI(nullptr);
-		bt_->useC86CTL(nullptr);
+		bt_->connectToRealChip(RealChipInterfaceType::NONE);
 		QString streamErr;
 		streamState = stream_->initialize(
 						  config_.lock()->getSampleRate(),
@@ -2384,9 +2379,9 @@ void MainWindow::changeConfiguration()
 	update();
 }
 
-void MainWindow::setRealChipInterface(RealChipInterface intf)
+void MainWindow::setRealChipInterface(RealChipInterfaceType intf)
 {
-	if (intf == bt_->getRealChipinterface()) return;
+	if (intf == bt_->getRealChipInterfaceType()) return;
 
 	if (isWindowModified()
 			&& QMessageBox::warning(this, tr("Warning"),
@@ -2395,32 +2390,22 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 		on_actionSave_As_triggered();
 	}
 
-	switch (intf) {
-	case RealChipInterface::SCCI:
-		bt_->useC86CTL(nullptr);
-		scciDll_->load();
-		if (scciDll_->isLoaded()) {
-			auto getManager = reinterpret_cast<scci::SCCIFUNC>(
-								  scciDll_->resolve("getSoundInterfaceManager"));
-			bt_->useSCCI(getManager ? getManager() : nullptr);
-		}
-		else {
-			bt_->useSCCI(nullptr);
-		}
-		break;
-	case RealChipInterface::C86CTL:
-		bt_->useSCCI(nullptr);
-		c86ctlDll_->load();
-		if (c86ctlDll_->isLoaded()) {
-			bt_->useC86CTL(new C86ctlBase(c86ctlDll_->resolve("CreateInstance")));
-		}
-		else {
-			bt_->useC86CTL(nullptr);
-		}
-		break;
-	default:
-		break;
-	}
+	struct Pair
+	{
+		std::weak_ptr<QLibrary> lib;
+		const char* symbol;
+	};
+	static std::unordered_map<RealChipInterfaceType, Pair> RCI_DIC = {
+		{ RealChipInterfaceType::SCCI, { scciDll_, "getSoundInterfaceManager" } },
+		{ RealChipInterfaceType::C86CTL, { c86ctlDll_, "CreateInstance" } }
+	};
+
+	auto& dll = RCI_DIC.at(intf).lib;
+	dll.lock()->load();
+	if (dll.lock()->isLoaded())
+		bt_->connectToRealChip(intf, new RealChipInterfaceGeneratorFunc(dll.lock()->resolve(RCI_DIC[intf].symbol)));
+	else
+		bt_->connectToRealChip(RealChipInterfaceType::NONE);
 
 	bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();
@@ -3344,7 +3329,18 @@ void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 
 void MainWindow::on_actionWAV_triggered()
 {
-	WaveExportSettingsDialog diag;
+	// Record current mute states
+	const auto& style = bt_->getSongStyle(bt_->getCurrentSongNumber());
+	const auto& attribs = style.trackAttribs;
+	std::vector<bool> muteStates(attribs.size());
+	std::vector<int> unmuteTracks;
+	for (size_t i = 0; i < attribs.size(); ++i) {
+		muteStates[i] = bt_->isMute(attribs[i].number);
+		if (!muteStates[i]) unmuteTracks.push_back(static_cast<int>(i));
+	}
+
+	unmuteTracks = gui_utils::adaptVisibleTrackList(unmuteTracks, style.type, SongType::Standard);
+	WaveExportSettingsDialog diag(unmuteTracks);
 	if (diag.exec() != QDialog::Accepted) return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
@@ -3358,58 +3354,120 @@ void MainWindow::on_actionWAV_triggered()
 					   );
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
+	QString exDir = QFileInfo(path).dir().path();
 
 	int max = static_cast<int>(bt_->getTotalStepCount(
 								   bt_->getCurrentSongNumber(), static_cast<size_t>(diag.getLoopCount()))) + 3;
-	QProgressDialog progress(tr("Export to WAV"), tr("Cancel"), 0, max);
-	progress.setValue(0);
+	QProgressDialog progress("", tr("Cancel"), 0, max);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
 							& ~Qt::WindowCloseButtonHint);
-	progress.show();
+	auto bar = [&progress] {
+		QApplication::processEvents();
+		progress.setValue(progress.value() + 1);
+		return progress.wasCanceled();
+	};
+
+	unmuteTracks = diag.getSoloExportTracks();
+	unmuteTracks.insert(unmuteTracks.begin(), -1);
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
 	stream_->stop();
 
-	try {
-		auto bar = [&progress]() -> bool {
-				   QApplication::processEvents();
-				   progress.setValue(progress.value() + 1);
-				   return progress.wasCanceled();
-	};
+	for (size_t i = 0; i < unmuteTracks.size(); ++i) {
+		int curTrack = unmuteTracks[i];
+		QString text, name;
+		if (curTrack == -1) text = tr("Export to WAV");	// Mixed all
+		else {
+			if (curTrack < 6) name = gui_utils::getTrackName(SongType::Standard, SoundSource::FM, curTrack);
+			else if (curTrack < 9) name = gui_utils::getTrackName(SongType::Standard, SoundSource::SSG, curTrack - 6);
+			else if (curTrack < 15) name = gui_utils::getTrackName(SongType::Standard, SoundSource::RHYTHM, curTrack - 9);
+			else name = gui_utils::getTrackName(SongType::Standard, SoundSource::ADPCM, 0);
+			text = tr("Export %1 to WAV").arg(name);
+		}
+		progress.setLabelText(text);
+		progress.setValue(0);
+		progress.show();
 
-		QByteArray bytes;
-		{
-			const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
-			const uint16_t nCh = 2;
-			const int loopCnt = diag.getLoopCount();
-			io::WavContainer container(rate, nCh, 16);
-			if (!bt_->exportToWav(container, loopCnt, bar))
-				goto AFTER_WAV_WRITE;	// Jump if cancelled
-			bytes.reserve(container.size());
-			std::move(container.begin(), container.end(), std::back_inserter(bytes));
+		// Update mute states
+		if (i == 1) {
+			for (const TrackAttribute& attrib : attribs)
+				bt_->setTrackMuteState(attrib.number, attrib.number != unmuteTracks[i]);
+		}
+		else if (i > 1) {
+			int prevTrack = unmuteTracks[i - 1];
+			if (style.type == SongType::FM3chExpanded) {
+				if (prevTrack == 2) {
+					bt_->setTrackMuteState(2, true);
+					bt_->setTrackMuteState(3, true);
+					bt_->setTrackMuteState(4, true);
+					bt_->setTrackMuteState(5, true);
+				}
+				else if (prevTrack < 2) {
+					bt_->setTrackMuteState(prevTrack, true);
+				}
+				else {
+					bt_->setTrackMuteState(prevTrack + 3, true);
+				}
+				if (curTrack == 2) {
+					bt_->setTrackMuteState(2, false);
+					bt_->setTrackMuteState(3, false);
+					bt_->setTrackMuteState(4, false);
+					bt_->setTrackMuteState(5, false);
+				}
+				else if (curTrack < 2) {
+					bt_->setTrackMuteState(curTrack, false);
+				}
+				else {
+					bt_->setTrackMuteState(curTrack + 3, false);
+				}
+			}
+			else {
+				bt_->setTrackMuteState(prevTrack, true);
+				bt_->setTrackMuteState(curTrack, false);
+			}
 		}
 
-		QFile fp(path);
-		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
-			goto AFTER_WAV_WRITE;	// Jump to post process
+		try {
+			QByteArray bytes;
+			{
+				const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
+				const uint16_t nCh = 2;
+				const int loopCnt = diag.getLoopCount();
+				io::WavContainer container(rate, nCh, 16);
+				if (!bt_->exportToWav(container, loopCnt, bar))
+					break;	// Jump if cancelled
+				bytes.reserve(container.size());
+				std::move(container.begin(), container.end(), std::back_inserter(bytes));
+			}
+
+			if (curTrack > -1) path = QString("%1/%2 - %3.wav").arg(exDir).arg(curTrack + 1, 2, 10, QChar('0')).arg(name);
+			QFile fp(path);
+			if (!fp.open(QIODevice::WriteOnly)) {
+				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
+				break;	// Jump to post process
+			}
+			fp.write(bytes);
+			fp.close();
+			bar();
+
+			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 		}
-		fp.write(bytes);
-		fp.close();
-		bar();
-
-		config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
-	}
-	catch (io::FileIOError& e) {
-		FileIOErrorMessageBox(path, false, e, this).exec();
-	}
-	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
+		catch (io::FileIOError& e) {
+			FileIOErrorMessageBox(path, false, e, this).exec();
+			break;
+		}
+		catch (std::exception& e) {
+			FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
+			break;
+		}
 	}
 
-AFTER_WAV_WRITE:
+	// Restore states
+	for (size_t i = 0 ; i < attribs.size(); ++i) {
+		bt_->setTrackMuteState(attribs[i].number, muteStates[i]);
+	}
 	stream_->start();
 }
 

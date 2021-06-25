@@ -33,6 +33,7 @@
 #include "enum_hash.hpp"
 
 enum class JamKey : int;
+enum class RealChipInterfaceType : int;
 
 enum class FMEnvelopeTextType : int
 {
@@ -47,13 +48,6 @@ struct FMEnvelopeText
 {
 	std::string name;
 	std::vector<FMEnvelopeTextType> texts;
-};
-
-enum class RealChipInterface : int
-{
-	NONE = 0,
-	SCCI = 1,
-	C86CTL = 2
 };
 
 enum class NoteNotationSystem : int
@@ -292,8 +286,8 @@ public:
 	std::string getSoundAPI() const { return sndAPI_; }
 	void setSoundDevice(const std::string& device) { sndDevice_ = device; }
 	std::string getSoundDevice() const { return sndDevice_; }
-	void setRealChipInterface(RealChipInterface type) { realChip_ = type; }
-	RealChipInterface getRealChipInterface() const { return realChip_; }
+	void setRealChipInterface(RealChipInterfaceType type) { realChip_ = type; }
+	RealChipInterfaceType getRealChipInterface() const { return realChip_; }
 	void setEmulator(int emulator) { emulator_ = emulator; }
 	int getEmulator() const { return emulator_; }
 	void setSampleRate(uint32_t rate) { sampleRate_ = rate; }
@@ -302,7 +296,7 @@ public:
 	size_t getBufferLength() const { return bufferLength_; }
 private:
 	std::string sndAPI_, sndDevice_;
-	RealChipInterface realChip_;
+	RealChipInterfaceType realChip_;
 	int emulator_;
 	uint32_t sampleRate_;
 	size_t bufferLength_;

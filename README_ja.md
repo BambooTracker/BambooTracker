@@ -300,10 +300,12 @@ Qmakeのオプション (フラグ/スイッチ):
   - use_jack: 明示的にJACK 1/2<sup>13</sup>に対応してコンパイルします。
   - system_rtaudio: RtAudioのコンパイルをスキップし、代わりにシステムのインストールされているRtAudioにリンクします。
   - system_rtmidi: RtMidiのコンパイルをスキップし、代わりにシステムのインストールされているRtMidiにリンクします。
+  - real_chip: SCCIとC86CTLに対応したコンパイルを行います<sup>4</sup>。(Windowsではデフォルトで有効)
 
 <sup>1</sup>: LinuxとBSDでのみ動作します。  
 <sup>2</sup>: FreeBSDでは自動検出されます(?)が、RtAudioでは機能しない可能性があります。  
-<sup>3</sup>: APIは技術的にはWindowsでサポートされていますが、Rtライブラリではコンパイルが困難なようです。
+<sup>3</sup>: APIは技術的にはWindowsでサポートされていますが、Rtライブラリではコンパイルが困難なようです。  
+<sup>4</sup>: OSI認証ライセンスを使用しないコードをビルドします。これらはWindowsにのみ対応しています。
 
 例:
 ```bash

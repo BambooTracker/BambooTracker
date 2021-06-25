@@ -8,9 +8,10 @@
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
 - [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
 - Panning settings in the drumkit editor
-- [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
  - [#345] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
-- [#332] - Qt6 support ([#298]; thanks [@OPNA2608])
+- [#365] - WAV export per channel (thanks [@Toonlink8101])
+- [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
+- [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
 
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
@@ -20,7 +21,8 @@
 - Change delay effects to be executed even on the 0th count
 - [#366] - Load multiple instrument files at a time (thanks [@OPNA2608])
 - [#367] - Offer wildcard and "all supported formats" extensions in file dialogues (thanks [@OPNA2608])
-- Modify item widths in the status bar
+- Change item widths in the status bar
+- [#374] - Exclude C86CTL and SCCI headers in the compilation on macOS and Linux ([#357]; thanks [@fpesari], [@OPNA2608], [@freq-mod])
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
@@ -32,7 +34,10 @@
 - [#358] - Fix AR3 parsing from text (thanks [@freq-mod])
 - Update octave status display when changing octave spinbox
 - [#360], [#361] - Cancel renaming an instrument before removing it (thanks [@OPNA2608], [@RaijinXBlade])
-- [#346] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
+- Restore the sample rate when the export process is canceled
+- Fix incorrect speed/tempo retrieving in the ADPCM track
+- [#368] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
+- [#376] - Skip `0Fxx` tempo change effect that have the same value as the previously set one (thanks [@nyanpasu64])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 
@@ -41,6 +46,7 @@
 [@RaijinXBlade]: https://github.com/RaijinXBlade
 [@ToughkidDev]: https://github.com/ToughkidDev
 [@wildmatsu]: https://github.com/wildmatsu
+[@fpesari]: https://github.com/fpesari
 
 [#328]: https://github.com/rerrahkr/BambooTracker/issues/328
 [#255]: https://github.com/rerrahkr/BambooTracker/issues/255
@@ -71,6 +77,11 @@
 [#346]: https://github.com/rerrahkr/BambooTracker/pull/346
 [#314]: https://github.com/rerrahkr/BambooTracker/issues/314
 [#345]: https://github.com/rerrahkr/BambooTracker/issues/345
+[#373]: https://github.com/rerrahkr/BambooTracker/pull/373
+[#365]: https://github.com/rerrahkr/BambooTracker/issues/365
+[#357]: https://github.com/rerrahkr/BambooTracker/issues/357
+[#374]: https://github.com/rerrahkr/BambooTracker/pull/374
+[#376]: https://github.com/rerrahkr/BambooTracker/issues/376
 
 ## v0.4.6 (2021-02-11)
 ### Added

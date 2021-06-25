@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,6 +27,7 @@
 #define WAVE_EXPORT_SETTINGS_DIALOG_HPP
 
 #include <QDialog>
+#include <vector>
 
 namespace Ui {
 	class WaveExportSettingsDialog;
@@ -37,11 +38,16 @@ class WaveExportSettingsDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit WaveExportSettingsDialog(QWidget *parent = nullptr);
-	~WaveExportSettingsDialog();
+	explicit WaveExportSettingsDialog(const std::vector<int> defUnmutes, QWidget *parent = nullptr);
+	~WaveExportSettingsDialog() override;
 
 	int getSampleRate() const;
 	int getLoopCount() const;
+	std::vector<int> getSoloExportTracks() const;
+
+private slots:
+	void on_reversePushButton_clicked();
+	void on_allPushButton_clicked();
 
 private:
 	Ui::WaveExportSettingsDialog *ui;

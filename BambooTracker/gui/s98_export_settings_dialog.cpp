@@ -33,7 +33,7 @@ S98ExportSettingsDialog::S98ExportSettingsDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	for (QRadioButton *button : {
 		 ui->ym2608RadioButton, ui->ym2612RadioButton, ui->ym2203RadioButton, ui->noneFmRadioButton,

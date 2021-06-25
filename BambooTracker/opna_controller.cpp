@@ -158,24 +158,19 @@ void OPNAController::updateRegisterStates()
 }
 
 /********** Real chip interface **********/
-void OPNAController::useSCCI(scci::SoundInterfaceManager* manager)
+void OPNAController::connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f)
 {
-	opna_->useSCCI(manager);
+	opna_->connectToRealChip(type, f);
 }
 
-bool OPNAController::isUsedSCCI() const
+RealChipInterfaceType OPNAController::getRealChipInterfaceType() const
 {
-	return opna_->isUsedSCCI();
+	return opna_->getRealChipInterfaceType();
 }
 
-void OPNAController::useC86CTL(C86ctlBase* base)
+bool OPNAController::hasConnectedToRealChip() const
 {
-	opna_->useC86CTL(base);
-}
-
-bool OPNAController::isUsedC86CTL() const
-{
-	return opna_->isUsedC86CTL();
+	return opna_->hasConnectedToRealChip();
 }
 
 /********** Stream samples **********/

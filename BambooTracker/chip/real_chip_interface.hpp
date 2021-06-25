@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,38 +23,50 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "swap_tracks_dialog.hpp"
-#include "ui_swap_tracks_dialog.h"
-#include "song.hpp"
-#include <QString>
-#include "gui/gui_utils.hpp"
+#pragma once
 
-SwapTracksDialog::SwapTracksDialog(const SongStyle& style, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::SwapTracksDialog)
+#include <cstdint>
+
+struct RealChipInterfaceGeneratorFunc
 {
-	ui->setupUi(this);
+	using FuncPtr = void (*)();
+	RealChipInterfaceGeneratorFunc(FuncPtr fp) : fp_(fp) {}
+	FuncPtr operator()() const { return fp_; }
 
-	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+private:
+	FuncPtr fp_;
+};
 
-	for (const auto& attrib : style.trackAttribs) {
-		QString text = gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource);
-		ui->track1ComboBox->addItem(text, attrib.number);
-		ui->track2ComboBox->addItem(text, attrib.number);
+enum class RealChipInterfaceType : int
+{
+	NONE = 0,
+	SCCI = 1,
+	C86CTL = 2
+};
+
+class SimpleRealChipInterface
+{
+public:
+	virtual ~SimpleRealChipInterface() = default;
+
+	virtual bool createInstance(RealChipInterfaceGeneratorFunc* f)
+	{
+		if (f) delete f;
+		return true;
 	}
-}
 
-SwapTracksDialog::~SwapTracksDialog()
-{
-	delete ui;
-}
+	virtual RealChipInterfaceType getType() const { return RealChipInterfaceType::NONE; }
+	virtual bool hasConnected() const { return false; }
+	virtual void reset() {}
 
-int SwapTracksDialog::getTrack1() const
-{
-	return ui->track1ComboBox->currentData().toInt();
-}
+	virtual void setRegister(uint32_t addr, uint8_t data)
+	{
+		(void)addr;
+		(void)data;
+	}
 
-int SwapTracksDialog::getTrack2() const
-{
-	return ui->track2ComboBox->currentData().toInt();
-}
+	virtual void setSSGVolume(double dB)
+	{
+		(void)dB;
+	}
+};

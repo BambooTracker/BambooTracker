@@ -35,7 +35,7 @@ InstrumentSelectionDialog::InstrumentSelectionDialog(const AbstractBank &bank, c
 	: QDialog(parent), bank_(bank), config_(config), ui_(new Ui::InstrumentSelectionDialog)
 {
 	ui_->setupUi(this);
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	ui_->label->setText(text);
 	setupContents();
 

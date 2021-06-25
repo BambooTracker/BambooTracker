@@ -36,7 +36,7 @@ GoToDialog::GoToDialog(std::weak_ptr<BambooTracker> bt, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 
 	ui->orderSpinBox->setMaximum(bt.lock()->getOrderSize(song_) - 1);

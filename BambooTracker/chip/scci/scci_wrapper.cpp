@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,38 +23,57 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "swap_tracks_dialog.hpp"
-#include "ui_swap_tracks_dialog.h"
-#include "song.hpp"
-#include <QString>
-#include "gui/gui_utils.hpp"
+#include "scci_wrapper.hpp"
+#include "scci.hpp"
+#include "SCCIDefines.hpp"
 
-SwapTracksDialog::SwapTracksDialog(const SongStyle& style, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::SwapTracksDialog)
+Scci::Scci() : man_(nullptr), chip_(nullptr) {}
+
+Scci::~Scci()
 {
-	ui->setupUi(this);
+	if (chip_) man_->releaseSoundChip(chip_);
+	if (man_) man_->releaseInstance();
+}
 
-	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+bool Scci::createInstance(RealChipInterfaceGeneratorFunc* f)
+{
+	auto getManager = f ? reinterpret_cast<scci::SCCIFUNC>((*f)()) : nullptr;
+	if (f) delete f;
+	auto man = getManager ? getManager() : nullptr;
+	if (man) {
+		man_ = man;
+		man_->initializeInstance();
+		man_->reset();
+		chip_ = man_->getSoundChip(scci::SC_TYPE_YM2608, scci::SC_CLOCK_7987200);
+		if (!chip_) {
+			man_->releaseInstance();
+			man_ = nullptr;
+			return false;
+		}
+		return true;
+	}
+	else {
+		if (!chip_) return false;
+		man_->releaseSoundChip(chip_);
+		chip_ = nullptr;
 
-	for (const auto& attrib : style.trackAttribs) {
-		QString text = gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource);
-		ui->track1ComboBox->addItem(text, attrib.number);
-		ui->track2ComboBox->addItem(text, attrib.number);
+		man_->releaseInstance();
+		man_ = nullptr;
+		return false;
 	}
 }
 
-SwapTracksDialog::~SwapTracksDialog()
+bool Scci::hasConnected() const
 {
-	delete ui;
+	return (man_ != nullptr);
 }
 
-int SwapTracksDialog::getTrack1() const
+void Scci::reset()
 {
-	return ui->track1ComboBox->currentData().toInt();
+	if (chip_) chip_->init();
 }
 
-int SwapTracksDialog::getTrack2() const
+void Scci::setRegister(uint32_t addr, uint8_t data)
 {
-	return ui->track2ComboBox->currentData().toInt();
+	if (chip_) chip_->setRegister(addr, data);
 }

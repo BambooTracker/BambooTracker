@@ -31,7 +31,7 @@ KeyboardShortcutListDialog::KeyboardShortcutListDialog(QWidget *parent) :
 	ui(new Ui::KeyboardShortcutListDialog)
 {
 	ui->setupUi(this);
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 }
 
 KeyboardShortcutListDialog::~KeyboardShortcutListDialog()

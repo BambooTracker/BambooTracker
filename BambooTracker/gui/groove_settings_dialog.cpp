@@ -39,7 +39,7 @@ GrooveSettingsDialog::GrooveSettingsDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	ui->grooveListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 }
 

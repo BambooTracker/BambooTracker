@@ -33,7 +33,7 @@ TransposeSongDialog::TransposeSongDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 	for (int i = 0; i < 128; ++i) {
 		auto item = new QListWidgetItem(QString("%1").arg(i, 2, 16, QChar('0')).toUpper());

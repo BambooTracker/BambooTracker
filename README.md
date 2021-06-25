@@ -299,10 +299,12 @@ Qmake options (flags/switches):
   - use_jack: Compile with explicit support for JACK 1/2<sup>13</sup>.
   - system_rtaudio: Skips RtAudio compilation and links against the system's RtAudio installation instead.
   - system_rtmidi: Skips RtMidi compilation and links against the system's RtMidi installation instead.
+  - real_chip: Compile with support for SCCI and C86CTL interfaces to a real OPNA chip<sup>4</sup>. (Default on Windows)
 
 <sup>1</sup>: Only works on Linux and BSD.  
 <sup>2</sup>: Shipped & auto-detected(?) on FreeBSD but possibly not functional in RtAudio.  
-<sup>3</sup>: API technically supported on Windows but unlikely to compile in Rt library.
+<sup>3</sup>: API technically supported on Windows but unlikely to compile in Rt library.  
+<sup>4</sup>: Builds code that doesn't use an OSI-certified license. Only supported on Windows.
 
 Example:
 ```bash
