@@ -553,7 +553,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					if (inst->getType() == InstrumentType::Drumkit) {
 						kitSampMap[adpcmSampIdx] = kitSampFileMap.at(kitSampCnt++);
 					}
-					instPropCsr += ctr.readUint16(instPropCsr);
+					instPropCsr += ctr.readUint32(instPropCsr);
 					++adpcmSampIdx; // Increment for search appropriate kit sample
 					break;
 				}

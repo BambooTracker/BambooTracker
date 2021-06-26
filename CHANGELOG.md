@@ -40,6 +40,7 @@
 - Fix incorrect speed/tempo retrieving in the ADPCM track
 - [#368] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
 - [#376] - Skip `0Fxx` tempo change effect that have the same value as the previously set one (thanks [@nyanpasu64])
+- [#377] - Fixed error in loading .bti containing ADPCM samples larger than 65458B (thanks [@freq-mod])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 
@@ -87,6 +88,7 @@
 [#371]: https://github.com/BambooTracker/BambooTracker/pull/371
 [#363]: https://github.com/BambooTracker/BambooTracker/issues/363
 [#372]: https://github.com/BambooTracker/BambooTracker/pull/372
+[#377]: https://github.com/BambooTracker/BambooTracker/issues/377
 
 ## v0.4.6 (2021-02-11)
 ### Added
