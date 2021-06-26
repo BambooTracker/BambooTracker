@@ -32,19 +32,19 @@
 class Version
 {
 public:
-	static uint32_t ofApplicationInBCD();
+	static constexpr uint32_t ofApplicationInBCD();
 	static std::string ofApplicationInString();
 
-	static uint32_t ofModuleFileInBCD();
+	static constexpr uint32_t ofModuleFileInBCD();
 	static std::string ofModuleFileInString();
 
-	static uint32_t ofInstrumentFileInBCD();
+	static constexpr uint32_t ofInstrumentFileInBCD();
 	static std::string ofInstrumentFileInString();
 
-	static uint32_t ofBankFileInBCD();
+	static constexpr uint32_t ofBankFileInBCD();
 	static std::string ofBankFileInString();
 
-	static uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
+	static constexpr uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
 	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
 
 private:
@@ -68,13 +68,13 @@ private:
 	static constexpr unsigned int bankFileMinor		= 3;
 	static constexpr unsigned int bankFileRevision	= 0;
 
-	Version() = default;
+	constexpr Version() = default;
 
-	static uint8_t uitobcd(const uint8_t v);
+	static constexpr uint8_t uitobcd(uint8_t v);
 };
 
 //===============================================
-inline uint32_t Version::ofApplicationInBCD()
+inline constexpr uint32_t Version::ofApplicationInBCD()
 {
 	return toBCD(appMajor, appMinor, appRevision);
 }
@@ -84,7 +84,7 @@ inline std::string Version::ofApplicationInString()
 	return toString(appMajor, appMinor, appRevision);
 }
 
-inline uint32_t Version::ofModuleFileInBCD()
+inline constexpr uint32_t Version::ofModuleFileInBCD()
 {
 	return toBCD(modFileMajor, modFileMinor, modFileRevision);
 }
@@ -94,7 +94,7 @@ inline std::string Version::ofModuleFileInString()
 	return toString(modFileMajor, modFileMinor, modFileRevision);
 }
 
-inline uint32_t Version::ofInstrumentFileInBCD()
+inline constexpr uint32_t Version::ofInstrumentFileInBCD()
 {
 	return toBCD(instFileMajor, instFileMinor, instFileRevision);
 }
@@ -104,7 +104,7 @@ inline std::string Version::ofInstrumentFileInString()
 	return toString(instFileMajor, instFileMinor, instFileRevision);
 }
 
-inline uint32_t Version::ofBankFileInBCD()
+inline constexpr uint32_t Version::ofBankFileInBCD()
 {
 	return toBCD(bankFileMajor, bankFileMinor, bankFileRevision);
 }
@@ -114,7 +114,7 @@ inline std::string Version::ofBankFileInString()
 	return toString(bankFileMajor, bankFileMinor, bankFileRevision);
 }
 
-inline uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
+inline constexpr uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
 {
 	uint32_t maj = uitobcd(static_cast<uint8_t>(major));
 	uint32_t min = uitobcd(static_cast<uint8_t>(minor));
@@ -127,9 +127,9 @@ inline std::string Version::toString(unsigned int major, unsigned int minor, uns
 	return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(revision);
 }
 
-inline uint8_t Version::uitobcd(const uint8_t v)
+inline constexpr uint8_t Version::uitobcd(uint8_t v)
 {
-	if (v > 99) throw std::out_of_range("Out of range.");
+	if (v > 99) throw std::out_of_range("[Version::uitobcd] Argument error: out of range");
 
 	uint8_t high = v / 10;
 	uint8_t low = v % 10;
