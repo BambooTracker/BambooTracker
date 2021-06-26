@@ -287,7 +287,7 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="207"/>
         <source>Fix jamming volume</source>
-        <translation>Ustaw stałą głośnosć trybu improwizacji.</translation>
+        <translation>Ustaw stałą głośnosć trybu improwizacji</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="215"/>
@@ -1376,12 +1376,12 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="680"/>
         <source>An unknown error occurred while loading the color scheme.</source>
-        <translation>Wystąpił nieoczekiwany błąd podczas ładowania układu kolorów</translation>
+        <translation>Wystąpił nieoczekiwany błąd podczas ładowania układu kolorów.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="686"/>
         <source>Save color scheme</source>
-        <translation>Zapisz układ kolorów.</translation>
+        <translation>Zapisz układ kolorów</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="699"/>
@@ -1429,7 +1429,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="38"/>
         <source>Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation>Zjazd poziomu głośności, x: góra(0-F), y: dół(0-F)</translation>
+        <translation>Zjazd poziomu głośności, x: w górę(0-F), y: w dół(0-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="39"/>
@@ -1474,7 +1474,8 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="47"/>
         <source>Retrigger, x: volume slide (0-7: up, 8-F: down), y: tick (1-F)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>i don&apos;t have bloody idea how to translate that, I&apos;m sorry</translatorcomment>
+        <translation>Wyzwól ponownie, x: zjazd poziomu głośności (0-7: w górę, 8-F: w dół), y: tick (1-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="48"/>
@@ -1499,17 +1500,17 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="52"/>
         <source>Note cut, xx: count (00-FF)</source>
-        <translation type="unfinished">Odcięcie nuty, xx: ilość(01-FF) {00-?}</translation>
+        <translation>Odcięcie nuty, xx: ilość(00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="53"/>
         <source>Transpose delay, x: count (0-7: up, 8-F: down), y: seminote (0-F)</source>
-        <translation type="unfinished">Opóźnienie transponowania, x: ilość(1-7: góra, 9-F: dół), y: pólton(0-F) {0-7:?} {8-?} {0-?}</translation>
+        <translation>Opóźnienie transponowania, x: ilość(0-7: góra, 8-F: dół), y: pólton(0-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="67"/>
         <source>Volume delay, x: count (0-F), yy: volume (00-FF)</source>
-        <translation type="unfinished">Opóżnienie głośności, x: ilość(1-F), yy: głośność (00-FF) {0-?} {00-?}</translation>
+        <translation>Opóżnienie głośności, x: ilość(0-F), yy: głośność (00-FF)</translation>
     </message>
     <message>
         <source>Note cut, xx: count (01-FF)</source>
@@ -1567,7 +1568,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="63"/>
         <source>Envelope reset, xx: count (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Resetuj obwiednię, xx: ilość (00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="64"/>
@@ -3250,7 +3251,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="531"/>
         <source>Welcome to BambooTracker v%1!</source>
-        <translation type="unfinished"></translation>
+        <translation>Witamy w programie BambooTracker v%1!</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1690"/>
@@ -3352,7 +3353,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="2236"/>
         <source>Insufficient memory size to load ADPCM samples. Please delete the unused samples.</source>
-        <translation type="unfinished"></translation>
+        <translation>Niewystarczająca ilość pamięci, by wczytać próbki ADPCM. Proszę usunąć nieużywane próbki.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2386"/>
@@ -3362,7 +3363,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="2979"/>
         <source>&lt;b&gt;YM2608 Music Tracker&lt;br&gt;Copyright (C) 2018-2021 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;YM2608 Music Tracker&lt;br&gt;Copyright (C) 2018-2021 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Biblioteki:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (część na licencji MIT)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;i (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ lub LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Zobacz również changelog, która wymienia współautorów.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.hpp" line="252"/>
@@ -4144,7 +4145,7 @@
         <location filename="../gui/vgm_export_settings_dialog.ui" line="71"/>
         <source>Name</source>
         <oldsource>Name:</oldsource>
-        <translation>Nazwa gry:</translation>
+        <translation>Nazwa gry</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="78"/>
@@ -4241,7 +4242,7 @@
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="379"/>
         <source>YM2610B OPNB</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2610B OPNB</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="386"/>
