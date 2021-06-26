@@ -129,7 +129,7 @@ inline std::string Version::toString(unsigned int major, unsigned int minor, uns
 
 inline constexpr uint8_t Version::uitobcd(uint8_t v)
 {
-	if (v > 99) throw std::out_of_range("[Version::uitobcd] Argument error: out of range");
+	/* if (v > 99) throw std::out_of_range("[Version::uitobcd] Argument error: out of range"); */
 
 	uint8_t high = v / 10;
 	uint8_t low = v % 10;
