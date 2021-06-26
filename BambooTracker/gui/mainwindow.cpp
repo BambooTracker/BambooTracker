@@ -1705,7 +1705,7 @@ void MainWindow::funcLoadInstrument(QString file)
 	}
 
 	try {
-		io::BinaryContainer contaner;
+		io::BinaryContainer container;
 		{
 			QFile fp(file);
 			if (!fp.open(QIODevice::ReadOnly)) {
@@ -1714,9 +1714,9 @@ void MainWindow::funcLoadInstrument(QString file)
 			}
 			QByteArray&& array = fp.readAll();
 			fp.close();
-			std::move(array.begin(), array.end(), std::back_inserter(contaner));
+			std::move(array.begin(), array.end(), std::back_inserter(container));
 		}
-		bt_->loadInstrument(contaner, file.toStdString(), n);
+		bt_->loadInstrument(container, file.toStdString(), n);
 
 		auto inst = bt_->getInstrument(n);
 		comStack_->push(new AddInstrumentQtCommand(
@@ -2955,29 +2955,53 @@ void MainWindow::on_actionKill_Sound_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QMessageBox box(QMessageBox::NoIcon,
-					tr("About"),
-					QString("<h2>BambooTracker v%1</h2>").arg(
-						QString::fromStdString(Version::ofApplicationInString()))
-					+ tr("<b>YM2608 Music Tracker<br>"
-						 "Copyright (C) 2018-2021 Rerrah</b><br>"
-						 "<hr>"
-						 "Libraries:<br>"
-						 "- C86CTL by (C) honet (BSD 3-Clause)<br>"
-						 "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
-						 "- MAME (MAME License)<br>"
-						 "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
-						 "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
-						 "- RtAudio by (C) Gary P. Scavone (RtAudio License)<br>"
-						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
-						 "- SCCI by (C) gasshi (SCCI License)<br>"
-						 "- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)<br>"
-						 "- Qt (GPL v2+ or LGPL v3)<br>"
-						 "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
-						 "<br>"
-						 "Also see changelog which lists contributors."),
-					QMessageBox::Ok,
-					this);
+	static const QString APP_NAME = "BambooTracker v" + QString::fromStdString(Version::ofApplicationInString());
+	static const QString APP_DESC = tr("YM2608 Music Tracker");
+	static constexpr char COPY[] = "Copyright (C) 2018-2021 Rerrah";
+	static const QString WEB = tr("Web:")
+			+ R"( <a href="https://bambootracker.github.io/BambooTracker/">https://bambootracker.github.io/BambooTracker/</a>)";
+
+	static const QString LICENSE = tr("This software is licensed under the GNU General Public Lisence v2.0.");
+	static const QString SOURCE = tr("Source is available at:");
+	static const QString REPO = R"(<a href="https://github.com/BambooTracker/BambooTracker">https://github.com/BambooTracker/BambooTracker</a>)";
+
+	static const QString LIB_HEAD = tr("Libraries:");
+	static const QString CONTRIBUTORS = tr("Also see changelog which lists contributors.");
+	static const QString ACKNOWLEGEMENT = tr("Thank you to everyone who reports bugs, makes suggestions, and contributes to this project!");
+
+	static const QStringList LIBS = {
+	#ifdef USE_REAL_CHIP
+		tr("C86CTL by (C) honet (BSD 3-Clause)"),
+	#endif
+		tr("libOPNMIDI by (C) Vitaly Novichkov (MIT License part)"),
+		tr("MAME (MAME License)"),
+		tr("Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1)"),
+		tr("RtAudio by (C) Gary P. Scavone (RtAudio License)"),
+		tr("RtMidi by (C) Gary P. Scavone (RtMidi License)"),
+	#ifdef USE_REAL_CHIP
+		tr("SCCI by (C) gasshi (SCCI License)"),
+	#endif
+		tr("Silk icons by (C) Mark James (CC BY 2.5 or 3.0)"),
+		tr("Qt (GPL v2+ or LGPL v3)"),
+		tr("VGMPlay by (C) Valley Bell (GPL v2)")
+	};
+
+	static const QString FORMATTED_TEXT =
+			"<h2>" + APP_NAME + "</h2>"
+			"<p><strong>" + APP_DESC + "</strong></p>"
+			"<p><b>" + COPY + "</b></p>"
+			"<p>" + WEB + "</p>"
+			"<p>" + LICENSE + "<br>"
+			+ SOURCE + "<br>" + REPO + "</p>"
+			"<hr>"
+			"<p>" + LIB_HEAD + "<ul>"
+			+ (QStringList { "" } + LIBS).join("<li>") + "</li>"
+			+ "</ul></p>"
+			"<p>" + CONTRIBUTORS + "<br>"
+			+ ACKNOWLEGEMENT +"</p>";
+
+	QMessageBox box(QMessageBox::NoIcon, tr("About"), FORMATTED_TEXT, QMessageBox::Ok, this);
+	box.setTextFormat(Qt::RichText);
 	box.setIconPixmap(QIcon(":/icon/app_icon").pixmap(QSize(44, 44)));
 	box.exec();
 }
