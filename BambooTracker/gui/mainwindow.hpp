@@ -200,16 +200,16 @@ private:
 	void setShortcuts();
 
 	// Dialogs
-	std::unique_ptr<EffectListDialog> effListDiag_;
-	std::unique_ptr<KeyboardShortcutListDialog> shortcutsDiag_;
+	std::unique_ptr<EffectListDialog> effListDialog_;
+	std::unique_ptr<KeyboardShortcutListDialog> shortcutsDialog_;
 	std::unique_ptr<BookmarkManagerForm> bmManForm_;
-	std::unique_ptr<CommentEditDialog> commentDiag_;
+	std::unique_ptr<CommentEditDialog> commentDialog_;
 	std::unique_ptr<KeySignatureManagerForm> ksManForm_;
-	std::unique_ptr<QMessageBox> welcomeDiag_;
+	std::unique_ptr<QMessageBox> welcomeDialog_;
 
 	// Bank import
 	std::atomic_bool bankJamMidiCtrl_;
-	std::unique_ptr<InstrumentSelectionDialog> importBankDiag_;
+	std::unique_ptr<InstrumentSelectionDialog> importBankDialog_;
 
 	// Meta methods
 	int tickEventMethod_;

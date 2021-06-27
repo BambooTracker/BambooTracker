@@ -622,10 +622,10 @@ void ConfigurationDialog::on_removeEnvelopeSetpushButton_clicked()
 void ConfigurationDialog::on_editEnvelopeSetPushButton_clicked()
 {
 	size_t row = static_cast<size_t>(ui->envelopeTypeListWidget->currentRow());
-	FMEnvelopeSetEditDialog diag(fmEnvelopeTexts_.at(row).texts);
-	diag.setWindowTitle(diag.windowTitle() + ": " + ui->envelopeSetNameLineEdit->text());
-	if (diag.exec() == QDialog::Accepted) {
-		fmEnvelopeTexts_.at(row).texts = diag.getSet();
+	FMEnvelopeSetEditDialog dialog(fmEnvelopeTexts_.at(row).texts, this);
+	dialog.setWindowTitle(dialog.windowTitle() + ": " + ui->envelopeSetNameLineEdit->text());
+	if (dialog.exec() == QDialog::Accepted) {
+		fmEnvelopeTexts_.at(row).texts = dialog.getSet();
 	}
 }
 
@@ -737,10 +737,10 @@ void ConfigurationDialog::on_colorEditPushButton_clicked()
 {
 	QTreeWidgetItem* item = ui->colorsTreeWidget->currentItem();
 	if (item == nullptr || item->parent() == nullptr) return;
-	QColorDialog diag(item->data(1, Qt::BackgroundRole).value<QColor>());
-	diag.setOption(QColorDialog::ShowAlphaChannel);
-	if (diag.exec() == QDialog::Accepted)
-		item->setData(1, Qt::BackgroundRole, diag.currentColor());
+	QColorDialog dialog(item->data(1, Qt::BackgroundRole).value<QColor>(), this);
+	dialog.setOption(QColorDialog::ShowAlphaChannel);
+	if (dialog.exec() == QDialog::Accepted)
+		item->setData(1, Qt::BackgroundRole, dialog.currentColor());
 }
 
 void ConfigurationDialog::on_colorLoadPushButton_clicked()

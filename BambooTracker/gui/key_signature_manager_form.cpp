@@ -35,8 +35,9 @@ KeySignatureManagerForm::KeySignatureManagerForm(std::weak_ptr<BambooTracker> co
 	  curSong_(core.lock()->getCurrentSongNumber())
 {
 	ui->setupUi(this);
-	setWindowFlags(windowFlags()
-				   & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint));
+	setWindowFlags((windowFlags()
+				   & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint))
+				   | Qt::WindowStaysOnTopHint);
 
 	for (int i = KeySignature::FISRT; i <= KeySignature::LAST; ++i) {
 		ui->keyComboBox->addItem(NoteNameManager::getManager().getKeyName(static_cast<KeySignature::Type>(i)), i);

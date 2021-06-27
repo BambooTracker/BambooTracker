@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,8 +38,9 @@ BookmarkManagerForm::BookmarkManagerForm(std::weak_ptr<BambooTracker> core, bool
 	curSong_(core.lock()->getCurrentSongNumber())
 {
 	ui->setupUi(this);
-	setWindowFlags(windowFlags()
-				   & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint));
+	setWindowFlags((windowFlags()
+				   & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint))
+				   | Qt::WindowStaysOnTopHint);
 
 	setNumberSettings(showHex);
 	initList();

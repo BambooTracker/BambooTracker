@@ -98,6 +98,17 @@ const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS
 };
 
 constexpr int STATUS_DISPLAY_TIMEOUT = 0;
+
+class ModuleSaveCheckDialog : public QMessageBox
+{
+public:
+	explicit ModuleSaveCheckDialog(const std::string& name, QWidget* parent = nullptr)
+		: QMessageBox(QMessageBox::Warning, "BambooTracker", "",
+					  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, parent)
+	{
+		setText(tr("Save changes to %1?").arg(name.empty() ? tr("Untitled") : gui_utils::utf8ToQString(name)));
+	}
+};
 }
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool isFirstLaunch, QWidget *parent) :
@@ -217,13 +228,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	QObject::connect(ui->menu_Recent_Files, &QMenu::triggered, this, [&](QAction* action) {
 		if (action != ui->actionClear) {
 			if (isWindowModified()) {
-				QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-				if (modTitle.isEmpty()) modTitle = tr("Untitled");
-				QMessageBox dialog(QMessageBox::Warning,
-								   "BambooTracker",
-								   tr("Save changes to %1?").arg(modTitle),
-								   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-				switch (dialog.exec()) {
+				switch (ModuleSaveCheckDialog(bt_->getModuleTitle(), this).exec()) {
 				case QMessageBox::Yes:
 					if (!on_actionSave_triggered()) return;
 					break;
@@ -697,10 +702,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 							"consider contributing to the project yourself. "
 							"Any help would be appreciated!") + "</li>" +
 				"</ul></p>";
-		welcomeDiag_ = std::make_unique<QMessageBox>(QMessageBox::NoIcon, tr("Welcome"), text, QMessageBox::Ok, this);
-		welcomeDiag_->setWindowModality(Qt::ApplicationModal);
-		welcomeDiag_->setWindowFlags(welcomeDiag_->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-		welcomeDiag_->setTextFormat(Qt::RichText);
+		welcomeDialog_ = std::make_unique<QMessageBox>(QMessageBox::NoIcon, tr("Welcome"), text, QMessageBox::Ok, this);
+		welcomeDialog_->setWindowModality(Qt::ApplicationModal);
+		welcomeDialog_->setWindowFlags(welcomeDialog_->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+		welcomeDialog_->setTextFormat(Qt::RichText);
 		if (isFirstLaunch) on_action_Welcome_triggered();
 	}
 
@@ -959,13 +964,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 		const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
 		if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
 			if (isWindowModified()) {
-				QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-				if (modTitle.isEmpty()) modTitle = tr("Untitled");
-				QMessageBox dialog(QMessageBox::Warning,
-								   "BambooTracker",
-								   tr("Save changes to %1?").arg(modTitle),
-								   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-				switch (dialog.exec()) {
+				switch (ModuleSaveCheckDialog(bt_->getModuleTitle(), this).exec()) {
 				case QMessageBox::Yes:
 					if (!on_actionSave_triggered()) return;
 					break;
@@ -1017,13 +1016,7 @@ void MainWindow::moveEvent(QMoveEvent* event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (isWindowModified()) {
-		QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-		if (modTitle.isEmpty()) modTitle = tr("Untitled");
-		QMessageBox dialog(QMessageBox::Warning,
-						   "BambooTracker",
-						   tr("Save changes to %1?").arg(modTitle),
-						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-		switch (dialog.exec()) {
+		switch (ModuleSaveCheckDialog(bt_->getModuleTitle(), this).exec()) {
 		case QMessageBox::Yes:
 			if (!on_actionSave_triggered()) {
 				event->ignore();
@@ -1164,11 +1157,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
 
-	if (effListDiag_) effListDiag_->close();
-	if (shortcutsDiag_) shortcutsDiag_->close();
 	bmManForm_->close();
 	ksManForm_->close();
-	if (commentDiag_) commentDiag_->close();
 
 	event->accept();
 }
@@ -1315,10 +1305,10 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 
 	octave_->setValue(k / 12);
 
-	if (importBankDiag_) {
+	if (importBankDialog_) {
 		if (bankJamMidiCtrl_.load()) return;
-		importBankDiag_->onJamKeyOffByMidi(k);
-		if (!release) importBankDiag_->onJamKeyOnByMidi(k);
+		importBankDialog_->onJamKeyOffByMidi(k);
+		if (!release) importBankDialog_->onJamKeyOnByMidi(k);
 		return;
 	}
 
@@ -1886,7 +1876,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 	size_t jamId = 128;	// Dummy
 	std::shared_ptr<AbstractInstrument> jamInst;
-	importBankDiag_ = std::make_unique<InstrumentSelectionDialog>(*bank, tr("Select instruments to load:"), config_, this);
+	importBankDialog_ = std::make_unique<InstrumentSelectionDialog>(*bank, tr("Select instruments to load:"), config_, this);
 	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	auto updateInst = [&] (size_t id) {
 		if (id != jamId) {
@@ -1904,36 +1894,36 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			bankJamMidiCtrl_.store(false);
 		}
 	};
-	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnEvent,
+	QObject::connect(importBankDialog_.get(), &InstrumentSelectionDialog::jamKeyOnEvent,
 					 this, [&](size_t id, JamKey key) {
 		updateInst(id);
 		bt_->jamKeyOnForced(key, jamInst->getSoundSource(),
 							!config_.lock()->getFixJammingVolume(), jamInst);
 	},
 	Qt::DirectConnection);
-	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnMidiEvent,
+	QObject::connect(importBankDialog_.get(), &InstrumentSelectionDialog::jamKeyOnMidiEvent,
 					 this, [&](size_t id, int key) {
 		updateInst(id);
 		bt_->jamKeyOnForced(key, jamInst->getSoundSource(),
 							!config_.lock()->getFixJammingVolume(), jamInst);
 	},
 	Qt::DirectConnection);
-	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOffEvent,
+	QObject::connect(importBankDialog_.get(), &InstrumentSelectionDialog::jamKeyOffEvent,
 					 this, [&](JamKey key) { bt_->jamKeyOffForced(key, jamInst->getSoundSource()); },
 	Qt::DirectConnection);
-	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOffMidiEvent,
+	QObject::connect(importBankDialog_.get(), &InstrumentSelectionDialog::jamKeyOffMidiEvent,
 					 this, [&](int key) { if (jamInst) bt_->jamKeyOffForced(key, jamInst->getSoundSource()); },
 	Qt::DirectConnection);
-	importBankDiag_->addActions({ &octUpSc_, &octDownSc_ });
+	importBankDialog_->addActions({ &octUpSc_, &octDownSc_ });
 
-	if (importBankDiag_->exec() != QDialog::Accepted) {
+	if (importBankDialog_->exec() != QDialog::Accepted) {
 		assignADPCMSamples();	// Restore
-		importBankDiag_.reset();
+		importBankDialog_.reset();
 		return;
 	}
 
-	const QVector<size_t> selection = importBankDiag_->currentInstrumentSelection();
-	importBankDiag_.reset();
+	const QVector<size_t> selection = importBankDialog_->currentInstrumentSelection();
+	importBankDialog_.reset();
 	if (selection.empty()) return;
 
 	try {
@@ -2133,7 +2123,7 @@ void MainWindow::loadModule()
 	statusMixer_->setText(text);
 
 	// Set comment
-	if (commentDiag_) commentDiag_->setComment(gui_utils::utf8ToQString(bt_->getModuleComment()));
+	if (commentDialog_) commentDialog_->setComment(gui_utils::utf8ToQString(bt_->getModuleComment()));
 
 	// Clear records
 	QApplication::clipboard()->clear();
@@ -2887,7 +2877,7 @@ void MainWindow::on_actionRemove_Order_triggered()
 
 void MainWindow::on_actionModule_Properties_triggered()
 {
-	ModulePropertiesDialog dialog(bt_, config_.lock()->getMixerVolumeFM(), config_.lock()->getMixerVolumeSSG());
+	ModulePropertiesDialog dialog(bt_, config_.lock()->getMixerVolumeFM(), config_.lock()->getMixerVolumeSSG(), this);
 	if (dialog.exec() == QDialog::Accepted
 			&& showUndoResetWarningDialog(tr("Do you want to change song properties?"))) {
 		int instRow = ui->instrumentList->currentRow();
@@ -3031,10 +3021,10 @@ void MainWindow::on_actionAbout_triggered()
 			"<p>" + CONTRIBUTORS + "<br>"
 			+ ACKNOWLEGEMENT +"</p>";
 
-	QMessageBox box(QMessageBox::NoIcon, tr("About"), FORMATTED_TEXT, QMessageBox::Ok, this);
-	box.setTextFormat(Qt::RichText);
-	box.setIconPixmap(QIcon(":/icon/app_icon").pixmap(QSize(44, 44)));
-	box.exec();
+	QMessageBox dialog(QMessageBox::NoIcon, tr("About"), FORMATTED_TEXT, QMessageBox::Ok, this);
+	dialog.setTextFormat(Qt::RichText);
+	dialog.setIconPixmap(QIcon(":/icon/app_icon").pixmap(QSize(44, 44)));
+	dialog.exec();
 }
 
 void MainWindow::on_actionFollow_Mode_triggered()
@@ -3051,12 +3041,12 @@ void MainWindow::on_actionGroove_Settings_triggered()
 	std::vector<std::vector<int>> seqs(bt_->getGrooveCount());
 	std::generate(seqs.begin(), seqs.end(), [&, i = 0]() mutable { return bt_->getGroove(i++); });
 
-	GrooveSettingsDialog diag;
-	diag.setGrooveSquences(seqs);
-	if (diag.exec() == QDialog::Accepted) {
+	GrooveSettingsDialog dialog(this);
+	dialog.setGrooveSquences(seqs);
+	if (dialog.exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
 		lockWidgets(false);
-		bt_->setGrooves(diag.getGrooveSequences());
+		bt_->setGrooves(dialog.getGrooveSequences());
 		ui->grooveSpinBox->setMaximum(static_cast<int>(bt_->getGrooveCount()) - 1);
 		setModifiedTrue();
 	}
@@ -3064,10 +3054,10 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog diag(config_.lock(), palette_, stream_);
-	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
+	ConfigurationDialog dialog(config_.lock(), palette_, stream_, this);
+	QObject::connect(&dialog, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
-	if (diag.exec() == QDialog::Accepted) {
+	if (dialog.exec() == QDialog::Accepted) {
 		changeConfiguration();
 		io::saveConfiguration(config_.lock());
 		ColorPaletteHandler::savePalette(palette_.get());
@@ -3112,13 +3102,7 @@ void MainWindow::on_actionClone_Order_triggered()
 void MainWindow::on_actionNew_triggered()
 {
 	if (isWindowModified()) {
-		QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-		if (modTitle.isEmpty()) modTitle = tr("Untitled");
-		QMessageBox dialog(QMessageBox::Warning,
-						   "BambooTracker",
-						   tr("Save changes to %1?").arg(modTitle),
-						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-		switch (dialog.exec()) {
+		switch (ModuleSaveCheckDialog(bt_->getModuleTitle(), this).exec()) {
 		case QMessageBox::Yes:
 			if (!on_actionSave_triggered()) return;
 			break;
@@ -3146,14 +3130,14 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionComments_triggered()
 {
-	if (commentDiag_) {
-		if (commentDiag_->isVisible()) commentDiag_->activateWindow();
-		else commentDiag_->show();
+	if (commentDialog_) {
+		if (commentDialog_->isVisible()) commentDialog_->activateWindow();
+		else commentDialog_->show();
 	}
 	else {
-		commentDiag_ = std::make_unique<CommentEditDialog>(gui_utils::utf8ToQString(bt_->getModuleComment()));
-		commentDiag_->show();
-		QObject::connect(commentDiag_.get(), &CommentEditDialog::commentChanged,
+		commentDialog_ = std::make_unique<CommentEditDialog>(gui_utils::utf8ToQString(bt_->getModuleComment()), this);
+		commentDialog_->show();
+		QObject::connect(commentDialog_.get(), &CommentEditDialog::commentChanged,
 						 this, [&](const QString text) {
 			bt_->setModuleComment(text.toUtf8().toStdString());
 			setModifiedTrue();
@@ -3260,13 +3244,7 @@ bool MainWindow::on_actionSave_As_triggered()
 void MainWindow::on_actionOpen_triggered()
 {
 	if (isWindowModified()) {
-		QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
-		if (modTitle.isEmpty()) modTitle = tr("Untitled");
-		QMessageBox dialog(QMessageBox::Warning,
-						   "BambooTracker",
-						   tr("Save changes to %1?").arg(modTitle),
-						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-		switch (dialog.exec()) {
+		switch (ModuleSaveCheckDialog(bt_->getModuleTitle(), this).exec()) {
 		case QMessageBox::Yes:
 			if (!on_actionSave_triggered()) return;
 			break;
@@ -3395,8 +3373,8 @@ void MainWindow::on_actionWAV_triggered()
 	}
 
 	unmuteTracks = gui_utils::adaptVisibleTrackList(unmuteTracks, style.type, SongType::Standard);
-	WaveExportSettingsDialog diag(unmuteTracks);
-	if (diag.exec() != QDialog::Accepted) return;
+	WaveExportSettingsDialog dialog(unmuteTracks, this);
+	if (dialog.exec() != QDialog::Accepted) return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3412,8 +3390,9 @@ void MainWindow::on_actionWAV_triggered()
 	QString exDir = QFileInfo(path).dir().path();
 
 	int max = static_cast<int>(bt_->getTotalStepCount(
-								   bt_->getCurrentSongNumber(), static_cast<size_t>(diag.getLoopCount()))) + 3;
-	QProgressDialog progress("", tr("Cancel"), 0, max);
+								   bt_->getCurrentSongNumber(), static_cast<size_t>(dialog.getLoopCount()))) + 3;
+	QProgressDialog progress("", tr("Cancel"), 0, max, this);
+	progress.setWindowModality(Qt::ApplicationModal);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
 							& ~Qt::WindowCloseButtonHint);
@@ -3423,7 +3402,7 @@ void MainWindow::on_actionWAV_triggered()
 		return progress.wasCanceled();
 	};
 
-	unmuteTracks = diag.getSoloExportTracks();
+	unmuteTracks = dialog.getSoloExportTracks();
 	unmuteTracks.insert(unmuteTracks.begin(), -1);
 
 	bt_->stopPlaySong();
@@ -3443,7 +3422,7 @@ void MainWindow::on_actionWAV_triggered()
 		}
 		progress.setLabelText(text);
 		progress.setValue(0);
-		progress.show();
+		progress.open();
 
 		// Update mute states
 		if (i == 1) {
@@ -3487,9 +3466,9 @@ void MainWindow::on_actionWAV_triggered()
 		try {
 			QByteArray bytes;
 			{
-				const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
+				const uint32_t rate = static_cast<uint32_t>(dialog.getSampleRate());
 				const uint16_t nCh = 2;
-				const int loopCnt = diag.getLoopCount();
+				const int loopCnt = dialog.getLoopCount();
 				io::WavContainer container(rate, nCh, 16);
 				if (!bt_->exportToWav(container, loopCnt, bar))
 					break;	// Jump if cancelled
@@ -3528,9 +3507,9 @@ void MainWindow::on_actionWAV_triggered()
 
 void MainWindow::on_actionVGM_triggered()
 {
-	VgmExportSettingsDialog diag;
-	if (diag.exec() != QDialog::Accepted) return;
-	io::GD3Tag tag = diag.getGD3Tag();
+	VgmExportSettingsDialog dialog(this);
+	if (dialog.exec() != QDialog::Accepted) return;
+	io::GD3Tag tag = dialog.getGD3Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3545,12 +3524,13 @@ void MainWindow::on_actionVGM_triggered()
 	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
 	int max = static_cast<int>(bt_->getTotalStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
-	QProgressDialog progress(tr("Export to VGM"), tr("Cancel"), 0, max);
+	QProgressDialog progress(tr("Export to VGM"), tr("Cancel"), 0, max, this);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
 							& ~Qt::WindowCloseButtonHint);
-	progress.show();
+	progress.setWindowModality(Qt::ApplicationModal);
+	progress.open();
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
@@ -3566,7 +3546,7 @@ void MainWindow::on_actionVGM_triggered()
 		QByteArray bytes;
 		{
 			io::BinaryContainer container;
-			if (!bt_->exportToVgm(container, diag.getExportTarget(), diag.enabledGD3(), tag, bar))
+			if (!bt_->exportToVgm(container, dialog.getExportTarget(), dialog.enabledGD3(), tag, bar))
 				goto AFTER_VGM_WRITE;	// Jump if cancelled
 			bytes.reserve(container.size());
 			std::move(container.begin(), container.end(), std::back_inserter(bytes));
@@ -3595,9 +3575,9 @@ AFTER_VGM_WRITE:
 
 void MainWindow::on_actionS98_triggered()
 {
-	S98ExportSettingsDialog diag;
-	if (diag.exec() != QDialog::Accepted) return;
-	io::S98Tag tag = diag.getS98Tag();
+	S98ExportSettingsDialog dialog(this);
+	if (dialog.exec() != QDialog::Accepted) return;
+	io::S98Tag tag = dialog.getS98Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3612,12 +3592,13 @@ void MainWindow::on_actionS98_triggered()
 	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
 	int max = static_cast<int>(bt_->getTotalStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
-	QProgressDialog progress(tr("Export to S98"), tr("Cancel"), 0, max);
+	QProgressDialog progress(tr("Export to S98"), tr("Cancel"), 0, max, this);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
 							& ~Qt::WindowCloseButtonHint);
-	progress.show();
+	progress.setWindowModality(Qt::ApplicationModal);
+	progress.open();
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
@@ -3633,8 +3614,8 @@ void MainWindow::on_actionS98_triggered()
 		QByteArray bytes;
 		{
 			io::BinaryContainer container;
-			if (!bt_->exportToS98(container, diag.getExportTarget(), diag.enabledTag(),
-								  tag, diag.getResolution(), bar))
+			if (!bt_->exportToS98(container, dialog.getExportTarget(), dialog.enabledTag(),
+								  tag, dialog.getResolution(), bar))
 				goto AFTER_S98_WRITE;	// Jump if cancelled
 			bytes.reserve(container.size());
 			std::move(container.begin(), container.end(), std::back_inserter(bytes));
@@ -3740,25 +3721,25 @@ void MainWindow::updateVisuals()
 
 void MainWindow::on_action_Effect_List_triggered()
 {
-	if (effListDiag_) {
-		if (effListDiag_->isVisible()) effListDiag_->activateWindow();
-		else effListDiag_->show();
+	if (effListDialog_) {
+		if (effListDialog_->isVisible()) effListDialog_->activateWindow();
+		else effListDialog_->show();
 	}
 	else {
-		effListDiag_ = std::make_unique<EffectListDialog>();
-		effListDiag_->show();
+		effListDialog_ = std::make_unique<EffectListDialog>(this);
+		effListDialog_->show();
 	}
 }
 
 void MainWindow::on_actionShortcuts_triggered()
 {
-	if (shortcutsDiag_) {
-		if (shortcutsDiag_->isVisible()) shortcutsDiag_->activateWindow();
-		else shortcutsDiag_->show();
+	if (shortcutsDialog_) {
+		if (shortcutsDialog_->isVisible()) shortcutsDialog_->activateWindow();
+		else shortcutsDialog_->show();
 	}
 	else {
-		shortcutsDiag_ = std::make_unique<KeyboardShortcutListDialog>();
-		shortcutsDiag_->show();
+		shortcutsDialog_ = std::make_unique<KeyboardShortcutListDialog>(this);
+		shortcutsDialog_->show();
 	}
 }
 
@@ -3858,12 +3839,12 @@ void MainWindow::on_actionPlay_From_Marker_triggered()
 
 void MainWindow::on_action_Go_To_triggered()
 {
-	GoToDialog diag(bt_);
-	if (diag.exec() == QDialog::Accepted) {
+	GoToDialog dialog(bt_, this);
+	if (dialog.exec() == QDialog::Accepted) {
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
-			bt_->setCurrentOrderNumber(diag.getOrder());
-			bt_->setCurrentStepNumber(diag.getStep());
-			bt_->setCurrentTrack(diag.getTrack());
+			bt_->setCurrentOrderNumber(dialog.getOrder());
+			bt_->setCurrentStepNumber(dialog.getStep());
+			bt_->setCurrentTrack(dialog.getTrack());
 			ui->orderList->updatePositionByPositionJump(true);
 			ui->patternEditor->updatepositionByPositionJump(true);
 		}
@@ -3913,14 +3894,14 @@ void MainWindow::on_action_Wave_View_triggered(bool checked)
 
 void MainWindow::on_action_Transpose_Song_triggered()
 {
-	TransposeSongDialog diag;
-	if (diag.exec() == QDialog::Accepted) {
+	TransposeSongDialog dialog(this);
+	if (dialog.exec() == QDialog::Accepted) {
 		if (showUndoResetWarningDialog(tr("Do you want to transpose a song?"))) {
 			bt_->stopPlaySong();
 			lockWidgets(false);
 
 			bt_->transposeSong(bt_->getCurrentSongNumber(),
-							   diag.getTransposeSeminotes(), diag.getExcludeInstruments());
+							   dialog.getTransposeSeminotes(), dialog.getExcludeInstruments());
 			ui->patternEditor->onPatternDataGlobalChanged();
 
 			bt_->clearCommandHistory();
@@ -3932,10 +3913,10 @@ void MainWindow::on_action_Transpose_Song_triggered()
 
 void MainWindow::on_action_Swap_Tracks_triggered()
 {
-	SwapTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()));
-	if (diag.exec() == QDialog::Accepted) {
-		int track1 = diag.getTrack1();
-		int track2 = diag.getTrack2();
+	SwapTracksDialog dialog(bt_->getSongStyle(bt_->getCurrentSongNumber()), this);
+	if (dialog.exec() == QDialog::Accepted) {
+		int track1 = dialog.getTrack1();
+		int track2 = dialog.getTrack2();
 		if ((track1 != track2) && showUndoResetWarningDialog(tr("Do you want to swap tracks?"))) {
 			bt_->stopPlaySong();
 			lockWidgets(false);
@@ -3958,10 +3939,10 @@ void MainWindow::on_action_Insert_triggered()
 
 void MainWindow::on_action_Hide_Tracks_triggered()
 {
-	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()),
-						  ui->patternEditor->getVisibleTracks());
-	if (diag.exec() == QDialog::Accepted) {
-		std::vector<int> visTracks = diag.getVisibleTracks();
+	HideTracksDialog dialog(bt_->getSongStyle(bt_->getCurrentSongNumber()),
+						  ui->patternEditor->getVisibleTracks(), this);
+	if (dialog.exec() == QDialog::Accepted) {
+		std::vector<int> visTracks = dialog.getVisibleTracks();
 		ui->orderList->setVisibleTracks(visTracks);
 		setOrderListGroupMaximumWidth();
 		ui->patternEditor->setVisibleTracks(visTracks);
@@ -3988,11 +3969,11 @@ void MainWindow::on_action_Estimate_Song_Length_triggered()
 {
 	double time = bt_->getApproximateSongLength(bt_->getCurrentSongNumber());
 	int seconds = static_cast<int>(std::round(time));
-	QMessageBox box;
-	box.setIcon(QMessageBox::Information);
-	box.setText(tr("Approximate song length: %1m%2s")
+	QMessageBox dialog;
+	dialog.setIcon(QMessageBox::Information);
+	dialog.setText(tr("Approximate song length: %1m%2s")
 				.arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0')));
-	box.exec();
+	dialog.exec();
 }
 
 void MainWindow::on_action_Key_Signature_Manager_triggered()
@@ -4003,5 +3984,5 @@ void MainWindow::on_action_Key_Signature_Manager_triggered()
 
 void MainWindow::on_action_Welcome_triggered()
 {
-	welcomeDiag_->open();
+	welcomeDialog_->open();
 }

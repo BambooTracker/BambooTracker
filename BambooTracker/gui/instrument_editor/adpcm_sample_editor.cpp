@@ -568,9 +568,9 @@ void ADPCMSampleEditor::on_rootRateSpinBox_valueChanged(int arg1)
 
 void ADPCMSampleEditor::on_action_Resize_triggered()
 {
-	SampleLengthDialog diag(sample_.size());
-	if (diag.exec() == QDialog::Accepted) {
-		sample_.resize(diag.getLength());
+	SampleLengthDialog dialog(sample_.size(), this);
+	if (dialog.exec() == QDialog::Accepted) {
+		sample_.resize(dialog.getLength());
 		sendEditedSample();
 
 		updateSampleView();
@@ -663,9 +663,9 @@ void ADPCMSampleEditor::on_action_Grid_View_triggered()
 
 void ADPCMSampleEditor::on_actionG_rid_Settings_triggered()
 {
-	GridSettingsDialog diag(gridIntr_);
-	if (diag.exec() == QDialog::Accepted) {
-		gridIntr_ = diag.getInterval();
+	GridSettingsDialog dialog(gridIntr_, this);
+	if (dialog.exec() == QDialog::Accepted) {
+		gridIntr_ = dialog.getInterval();
 		updateSampleView();
 		ui->sampleViewWidget->update();
 	}
