@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,9 +27,9 @@
 #include "ui_s98_export_settings_dialog.h"
 #include "io/export_io.hpp"
 
-S98ExportSettingsDialog::S98ExportSettingsDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::S98ExportSettingsDialog)
+S98ExportSettingsDialog::S98ExportSettingsDialog(QWidget *parent)
+	: QDialog(parent),
+	  ui(new Ui::S98ExportSettingsDialog)
 {
 	ui->setupUi(this);
 

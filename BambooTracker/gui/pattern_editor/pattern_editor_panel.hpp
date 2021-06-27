@@ -159,7 +159,7 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
 	void wheelEvent(QWheelEvent* event) override;
-	void leaveEvent(QEvent* event) override;
+	void leaveEvent(QEvent*) override;
 
 	// Midi
 private:

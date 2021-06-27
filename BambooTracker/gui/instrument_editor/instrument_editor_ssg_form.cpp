@@ -877,10 +877,8 @@ void InstrumentEditorSSGForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorSSGForm::onArpeggioTypeChanged(int index)
+void InstrumentEditorSSGForm::onArpeggioTypeChanged(int)
 {
-	Q_UNUSED(index)
-
 	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), type);
@@ -963,10 +961,8 @@ void InstrumentEditorSSGForm::onPitchParameterChanged(int ptNum)
 	}
 }
 
-void InstrumentEditorSSGForm::onPitchTypeChanged(int index)
+void InstrumentEditorSSGForm::onPitchTypeChanged(int)
 {
-	Q_UNUSED(index)
-
 	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), type);

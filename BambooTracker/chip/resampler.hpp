@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -59,9 +59,9 @@ protected:
 };
 
 
-class LinearResampler : public AbstractResampler
+class LinearResampler final : public AbstractResampler
 {
 public:
-	sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
+	sample** interpolate(sample** src, size_t nSamples, size_t) override;
 };
 }

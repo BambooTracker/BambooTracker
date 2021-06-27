@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -61,10 +61,8 @@ void AbstractResampler::setMaxDuration(size_t maxDuration) noexcept
 }
 
 /****************************************/
-sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
+sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t)
 {
-	(void)intrSize;
-
 	// Linear interplation
 	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		for (size_t n = 0; n < nSamples; ++n) {

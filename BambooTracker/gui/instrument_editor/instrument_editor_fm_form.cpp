@@ -838,18 +838,14 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
-void InstrumentEditorFMForm::showEvent(QShowEvent* event)
+void InstrumentEditorFMForm::showEvent(QShowEvent*)
 {
-	Q_UNUSED(event)
-
 	paintAlgorithmDiagram();
 	resizeAlgorithmDiagram();
 }
 
-void InstrumentEditorFMForm::resizeEvent(QResizeEvent* event)
+void InstrumentEditorFMForm::resizeEvent(QResizeEvent*)
 {
-	Q_UNUSED(event)
-
 	resizeAlgorithmDiagram();
 }
 
@@ -1651,10 +1647,8 @@ void InstrumentEditorFMForm::onOperatorSequenceParameterChanged(FMEnvelopeParame
 	}
 }
 
-void InstrumentEditorFMForm::onOperatorSequenceTypeChanged(int type)
+void InstrumentEditorFMForm::onOperatorSequenceTypeChanged(int)
 {
-	Q_UNUSED(type)
-
 	if (!isIgnoreEvent_) setInstrumentOperatorSequenceParameters();
 }
 
@@ -1737,17 +1731,13 @@ void InstrumentEditorFMForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorFMForm::onArpeggioOperatorChanged(int op)
+void InstrumentEditorFMForm::onArpeggioOperatorChanged(int)
 {
-	Q_UNUSED(op)
-
 	if (!isIgnoreEvent_) setInstrumentArpeggioParameters();
 }
 
-void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
+void InstrumentEditorFMForm::onArpeggioTypeChanged(int)
 {
-	Q_UNUSED(index)
-
 	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), type);
@@ -1837,17 +1827,13 @@ void InstrumentEditorFMForm::onPitchParameterChanged(int ptNum)
 	}
 }
 
-void InstrumentEditorFMForm::onPitchOperatorChanged(int op)
+void InstrumentEditorFMForm::onPitchOperatorChanged(int)
 {
-	Q_UNUSED(op)
-
 	if (!isIgnoreEvent_) setInstrumentPitchParameters();
 }
 
-void InstrumentEditorFMForm::onPitchTypeChanged(int index)
+void InstrumentEditorFMForm::onPitchTypeChanged(int)
 {
-	Q_UNUSED(index)
-
 	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), type);

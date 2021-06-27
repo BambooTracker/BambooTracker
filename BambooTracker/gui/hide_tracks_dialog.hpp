@@ -48,7 +48,6 @@ public:
 
 private slots:
 	void on_reversePushButton_clicked();
-
 	void on_checkAllPushButton_clicked();
 
 private:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,9 +30,9 @@
 #include "song.hpp"
 #include "gui/gui_utils.hpp"
 
-HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int>& tracks, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::HideTracksDialog)
+HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int>& tracks, QWidget *parent)
+	: QDialog(parent),
+	  ui(new Ui::HideTracksDialog)
 {
 	ui->setupUi(this);
 

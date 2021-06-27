@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -99,5 +99,13 @@ public:
 	QColor wavBackColor;
 	QColor wavDrawColor;
 };
+
+namespace io
+{
+bool savePalette(const ColorPalette* const palette);
+bool savePalette(const QString& file, const ColorPalette* const palette);
+bool loadPalette(ColorPalette* const palette);
+bool loadPalette(const QString& file, ColorPalette* const palette);
+}
 
 #endif // COLOR_PALETTE_HPP

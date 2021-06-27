@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -50,8 +50,6 @@ public:
 private:
 	QWidget* parent_;
 	QString text_, desc_;
-
-	static const std::unordered_map<io::FileType, QString> FILE_NAMES_;
 
 	void setText(const QString& file, bool isInput, io::FileType ftype);
 };

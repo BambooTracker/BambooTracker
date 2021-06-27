@@ -28,9 +28,9 @@
 #include <QTextCodec>
 #include "io/export_io.hpp"
 
-VgmExportSettingsDialog::VgmExportSettingsDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::VgmExportSettingsDialog)
+VgmExportSettingsDialog::VgmExportSettingsDialog(QWidget *parent)
+	: QDialog(parent),
+	  ui(new Ui::VgmExportSettingsDialog)
 {
 	ui->setupUi(this);
 

@@ -27,12 +27,17 @@
 #include "ui_module_properties_dialog.h"
 #include <vector>
 #include <utility>
+#include <unordered_map>
 #include "gui/gui_utils.hpp"
+#include "enum_hash.hpp"
 
-const std::unordered_map<SongType, QString> ModulePropertiesDialog::SONG_TYPE_TEXT_ = {
+namespace
+{
+const std::unordered_map<SongType, QString> SONG_TYPE_TEXT = {
 	{ SongType::Standard, QT_TR_NOOP("Standard") },
 	{ SongType::FM3chExpanded, QT_TR_NOOP("FM3ch expanded") }
 };
+}
 
 ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, double configFmMixer,
 											   double configSsgMixer, QWidget *parent)
@@ -71,8 +76,8 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 		insertSong(i, gui_utils::utf8ToQString(title), core.lock()->getSongStyle(i).type, i);
 	}
 
-	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT_.at(SongType::Standard), static_cast<int>(SongType::Standard));
-	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT_.at(SongType::FM3chExpanded), static_cast<int>(SongType::FM3chExpanded));
+	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT.at(SongType::Standard), static_cast<int>(SongType::Standard));
+	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT.at(SongType::FM3chExpanded), static_cast<int>(SongType::FM3chExpanded));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()
@@ -86,7 +91,7 @@ void ModulePropertiesDialog::insertSong(int row, QString title, SongType type, i
 	item->setText(0, QString::number(row));
 	item->setData(0, Qt::UserRole, prevNum);
 	item->setText(1, title);
-	item->setText(2, SONG_TYPE_TEXT_.at(type));
+	item->setText(2, SONG_TYPE_TEXT.at(type));
 	item->setData(2, Qt::UserRole, static_cast<int>(type));
 	ui->songTreeWidget->insertTopLevelItem(row, item);
 
@@ -257,7 +262,7 @@ void ModulePropertiesDialog::on_updateButton_clicked()
 	if (auto item = ui->songTreeWidget->currentItem()) {
 		item->setText(1, ui->sngTitleLineEdit->text());
 		auto typeInt = ui->sngTypeComboBox->currentData(Qt::UserRole).toInt();
-		item->setText(2, SONG_TYPE_TEXT_.at(static_cast<SongType>(typeInt)));
+		item->setText(2, SONG_TYPE_TEXT.at(static_cast<SongType>(typeInt)));
 		item->setData(2, Qt::UserRole, typeInt);
 	}
 }

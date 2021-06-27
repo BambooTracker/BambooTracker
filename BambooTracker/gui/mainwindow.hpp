@@ -80,7 +80,7 @@ public:
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
-	void showEvent(QShowEvent* event) override;
+	void showEvent(QShowEvent*) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
 	void dragEnterEvent(QDragEnterEvent* event) override;
@@ -255,7 +255,7 @@ private:
 
 private slots:
 	void on_instrumentList_customContextMenuRequested(const QPoint& pos);
-	void on_instrumentList_itemDoubleClicked(QListWidgetItem* item);
+	void on_instrumentList_itemDoubleClicked(QListWidgetItem*);
 	void on_instrumentList_itemSelectionChanged();
 	void on_grooveCheckBox_stateChanged(int arg1);
 	void on_actionExit_triggered();

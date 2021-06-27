@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,9 @@
 #include "file_io_error_message_box.hpp"
 #include <QMessageBox>
 
-const std::unordered_map<io::FileType, QString> FileIOErrorMessageBox::FILE_NAMES_ = {
+namespace
+{
+const std::unordered_map<io::FileType, QString> FILE_NAMES = {
 	{ io::FileType::Mod, QT_TR_NOOP("module") },
 	{ io::FileType::S98, QT_TR_NOOP("s98") },
 	{ io::FileType::VGM, QT_TR_NOOP("vgm") },
@@ -34,6 +36,7 @@ const std::unordered_map<io::FileType, QString> FileIOErrorMessageBox::FILE_NAME
 	{ io::FileType::Bank, QT_TR_NOOP("bank") },
 	{ io::FileType::Inst, QT_TR_NOOP("instrument") }
 };
+}
 
 FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, io::FileType ftype, const QString desc, QWidget* parent)
 	: parent_(parent), desc_(desc)
@@ -45,7 +48,7 @@ FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, 
 	: parent_(parent)
 {
 	const io::FileIOError *err = &e;
-	QString type = FILE_NAMES_.at(err->fileType());
+	QString type = FILE_NAMES.at(err->fileType());
 
 	if (dynamic_cast<const io::FileNotExistError*>(err)) {
 		desc_ = tr("Path does not exist.");

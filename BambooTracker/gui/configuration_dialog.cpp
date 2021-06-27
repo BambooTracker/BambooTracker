@@ -46,7 +46,6 @@
 #include "jamming.hpp"
 #include "gui/slider_style.hpp"
 #include "gui/fm_envelope_set_edit_dialog.hpp"
-#include "gui/color_palette_handler.hpp"
 #include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
 
@@ -661,9 +660,8 @@ void ConfigurationDialog::updateEnvelopeSetUi()
 }
 
 /***** Keys *****/
-void ConfigurationDialog::on_keyboardTypeComboBox_currentIndexChanged(int index)
+void ConfigurationDialog::on_keyboardTypeComboBox_currentIndexChanged(int)
 {
-	Q_UNUSED(index)
 	bool enableCustomLayoutInterface = ui->keyboardTypeComboBox->currentIndex() == 0;
 	ui->lowHighKeysTabWidget->setEnabled(enableCustomLayoutInterface);
 	ui->customLayoutResetButton->setEnabled(enableCustomLayoutInterface);
@@ -755,7 +753,7 @@ void ConfigurationDialog::on_colorLoadPushButton_clicked()
 	if (file.isNull()) return;
 
 	ColorPalette palette;
-	if (ColorPaletteHandler::loadPalette(file, &palette)) {
+	if (io::loadPalette(file, &palette)) {
 		updateColorTreeFrom(&palette);
 	}
 	else {
@@ -777,7 +775,7 @@ void ConfigurationDialog::on_colorSavePushButton_clicked()
 
 	ColorPalette palette;
 	setPaletteFromColorTree(&palette);
-	if (!ColorPaletteHandler::savePalette(file, &palette))
+	if (!io::savePalette(file, &palette))
 		QMessageBox::critical(this, tr("Error"), tr("Failed to save the color scheme."));
 }
 

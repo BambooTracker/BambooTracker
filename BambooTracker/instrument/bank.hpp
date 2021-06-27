@@ -110,7 +110,7 @@ public:
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
-	std::string getInstrumentName(size_t index) const override;
+	std::string getInstrumentName(size_t) const override;
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:
@@ -125,7 +125,7 @@ public:
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
-	std::string getInstrumentName(size_t index) const override;
+	std::string getInstrumentName(size_t) const override;
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:
@@ -140,7 +140,7 @@ public:
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
-	std::string getInstrumentName(size_t index) const override;
+	std::string getInstrumentName(size_t) const override;
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:
@@ -155,7 +155,7 @@ public:
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
-	std::string getInstrumentName(size_t index) const override;
+	std::string getInstrumentName(size_t) const override;
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:
@@ -172,7 +172,7 @@ public:
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
-	std::string getInstrumentName(size_t index) const override;
+	std::string getInstrumentName(size_t) const override;
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:

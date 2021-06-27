@@ -27,12 +27,10 @@
 #define MODULE_PROPERTIES_DIALOG_HPP
 
 #include <memory>
-#include <unordered_map>
 #include <QDialog>
 #include <QString>
 #include <QTreeWidgetItem>
 #include "bamboo_tracker.hpp"
-#include "enum_hash.hpp"
 
 namespace Ui {
 	class ModulePropertiesDialog;
@@ -66,8 +64,6 @@ private:
 
 	double fmMixer_, ssgMixer_;
 	double configFmMixer_, configSsgMixer_;
-
-	static const std::unordered_map<SongType, QString> SONG_TYPE_TEXT_;
 
 	void insertSong(int row, QString title, SongType type, int prevNum = -1);
 	void checkButtonsEnabled();

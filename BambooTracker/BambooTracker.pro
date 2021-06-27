@@ -53,7 +53,6 @@ SOURCES += \
     command/pattern/pattern_command_utils.cpp \
     command/pattern/transpose_note_in_pattern_command.cpp \
     gui/bookmark_manager_form.cpp \
-    gui/color_palette_handler.cpp \
     gui/command/instrument/instrument_command_qt_utils.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
     gui/command/order/order_list_common_qt_command.cpp \
@@ -207,7 +206,6 @@ SOURCES += \
     io/instrument_io.cpp \
     io/bank_io.cpp \
     gui/fm_envelope_set_edit_dialog.cpp \
-    gui/file_history_handler.cpp \
     gui/file_history.cpp \
     midi/midi.cpp \
     gui/q_application_wrapper.cpp \
@@ -227,7 +225,6 @@ HEADERS += \
     echo_buffer.hpp \
     enum_hash.hpp \
     gui/bookmark_manager_form.hpp \
-    gui/color_palette_handler.hpp \
     gui/command/instrument/instrument_command_qt_utils.hpp \
     gui/command/instrument/instrument_commands_qt.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
@@ -397,7 +394,6 @@ HEADERS += \
     io/instrument_io.hpp \
     io/bank_io.hpp \
     gui/fm_envelope_set_edit_dialog.hpp \
-    gui/file_history_handler.hpp \
     gui/file_history.hpp \
     midi/midi.hpp \
     gui/q_application_wrapper.hpp \

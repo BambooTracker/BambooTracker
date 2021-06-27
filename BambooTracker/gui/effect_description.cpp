@@ -24,10 +24,22 @@
  */
 
 #include "effect_description.hpp"
+#include <unordered_map>
+#include "enum_hash.hpp"
 
-EffectDescription::EffectDescription() {}
+namespace effect_desc
+{
+namespace
+{
+struct EffectDetail
+{
+	const QString format;
+	const char* desc;
 
-const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDescription::details_ = {
+	QString mergedString() const { return format + " - " + desc; }
+};
+
+const std::unordered_map<EffectType, EffectDetail> DETAILS = {
 	{ EffectType::Arpeggio, { "00xy", QT_TR_NOOP("Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)") } },
 	{ EffectType::PortamentoUp, { "01xx", QT_TR_NOOP("Portamento up, xx: depth (00-FF)") } },
 	{ EffectType::PortamentoDown, { "02xx", QT_TR_NOOP("Portamento down, xx: depth (00-FF)") } },
@@ -69,18 +81,20 @@ const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDesc
 	{ EffectType::TLControl, { "Txyy", QT_TR_NOOP("TL control, x: operator (1-4), yy: total level (00-7F)") } },
 	{ EffectType::NoEffect, { "", QT_TR_NOOP("Invalid effect") } }
 };
-
-QString EffectDescription::getEffectFormat(const EffectType type)
-{
-	return details_.at(type).format;
-}
-QString EffectDescription::getEffectDescription(const EffectType type)
-{
-	return tr(details_.at(type).desc);
 }
 
-QString EffectDescription::getEffectFormatAndDetailString(const EffectType type)
+QString getEffectFormat(const EffectType type)
 {
-	if (type == EffectType::NoEffect) return tr(details_.at(EffectType::NoEffect).desc);
-	else return details_.at(type).mergedString();
+	return DETAILS.at(type).format;
+}
+QString getEffectDescription(const EffectType type)
+{
+	return DETAILS.at(type).desc;
+}
+
+QString getEffectFormatAndDetailString(const EffectType type)
+{
+	if (type == EffectType::NoEffect) return DETAILS.at(EffectType::NoEffect).desc;
+	else return DETAILS.at(type).mergedString();
+}
 }

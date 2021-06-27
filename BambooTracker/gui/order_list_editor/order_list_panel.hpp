@@ -128,12 +128,12 @@ protected:
 	bool keyReleased(QKeyEvent* event);
 	void paintEvent(QPaintEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
-	void mousePressEvent(QMouseEvent* event) override;
+	void mousePressEvent(QMouseEvent*event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
 	void wheelEvent(QWheelEvent* event) override;
-	void leaveEvent(QEvent* event) override;
+	void leaveEvent(QEvent*) override;
 
 private:
 	QPixmap completePixmap_, textPixmap_, backPixmap_, headerPixmap_;

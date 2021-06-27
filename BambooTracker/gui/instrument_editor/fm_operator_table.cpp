@@ -215,16 +215,14 @@ bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
 	return false;
 }
 
-void FMOperatorTable::showEvent(QShowEvent* event)
+void FMOperatorTable::showEvent(QShowEvent*)
 {
-	Q_UNUSED(event)
 	resizeGraph();
 	repaintGraph();
 }
 
-void FMOperatorTable::resizeEvent(QResizeEvent* event)
+void FMOperatorTable::resizeEvent(QResizeEvent*)
 {
-	Q_UNUSED(event)
 	resizeGraph();
 	repaintGraph();
 }
@@ -430,9 +428,8 @@ void FMOperatorTable::repaintGraph()
 	ui->envFrame->repaint();
 }
 
-void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)
+void FMOperatorTable::on_ssgegCheckBox_stateChanged(int)
 {
-	Q_UNUSED(arg1)
 	if (ui->ssgegCheckBox->isChecked()) {
 		ui->ssgegSlider->setEnabled(true);
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, ui->ssgegSlider->value());

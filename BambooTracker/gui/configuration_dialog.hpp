@@ -95,7 +95,7 @@ private slots:
 
 	/***** Keys *****/
 private slots:
-	void on_keyboardTypeComboBox_currentIndexChanged(int index);
+	void on_keyboardTypeComboBox_currentIndexChanged(int);
 	void on_customLayoutResetButton_clicked();
 
 private:

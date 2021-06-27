@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef EFFECTDESCRIPTION_HPP
-#define EFFECTDESCRIPTION_HPP
+#ifndef EFFECT_DESCRIPTION_HPP
+#define EFFECT_DESCRIPTION_HPP
 
-#include <unordered_map>
-#include <QObject>
 #include <QString>
 #include "effect.hpp"
-#include "enum_hash.hpp"
 
-class EffectDescription : public QObject
+namespace effect_desc
 {
-	Q_OBJECT
+QString getEffectFormat(const EffectType type);
+QString getEffectDescription(const EffectType type);
+QString getEffectFormatAndDetailString(const EffectType type);
+}
 
-public:
-	static QString getEffectFormat(const EffectType type);
-	static QString getEffectDescription(const EffectType type);
-	static QString getEffectFormatAndDetailString(const EffectType type);
-
-private:
-	EffectDescription();
-
-	struct EffectDetail
-	{
-		const QString format;
-		const char* desc;
-
-		QString mergedString() const { return format + " - " + tr(desc); }
-	};
-
-	static const std::unordered_map<EffectType, EffectDetail> details_;
-};
-
-#endif // EFFECTDESCRIPTION_HPP
+#endif // EFFECT_DESCRIPTION_HPP

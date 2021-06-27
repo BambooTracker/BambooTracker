@@ -64,8 +64,8 @@ signals:
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
-	void showEvent(QShowEvent* event) override;
-	void resizeEvent(QResizeEvent* event) override;
+	void showEvent(QShowEvent*) override;
+	void resizeEvent(QResizeEvent*) override;
 
 private:
 	Ui::InstrumentEditorFMForm *ui;
@@ -142,7 +142,7 @@ private:
 	void setOperatorSequenceEditor();
 
 private slots:
-	void onOperatorSequenceTypeChanged(int type);
+	void onOperatorSequenceTypeChanged(int);
 	void on_opSeqEditGroupBox_toggled(bool arg1);
 	void on_opSeqNumSpinBox_valueChanged(int arg1);
 
@@ -162,8 +162,8 @@ private:
 	void setInstrumentArpeggioParameters();
 
 private slots:
-	void onArpeggioOperatorChanged(int op);
-	void onArpeggioTypeChanged(int index);
+	void onArpeggioOperatorChanged(int);
+	void onArpeggioTypeChanged(int);
 	void on_arpEditGroupBox_toggled(bool arg1);
 	void on_arpNumSpinBox_valueChanged(int arg1);
 
@@ -183,8 +183,8 @@ private:
 	void setInstrumentPitchParameters();
 
 private slots:
-	void onPitchOperatorChanged(int op);
-	void onPitchTypeChanged(int index);
+	void onPitchOperatorChanged(int);
+	void onPitchTypeChanged(int);
 	void on_ptEditGroupBox_toggled(bool arg1);
 	void on_ptNumSpinBox_valueChanged(int arg1);
 

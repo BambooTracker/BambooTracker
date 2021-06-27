@@ -1492,8 +1492,6 @@ void OrderListPanel::resizeEvent(QResizeEvent* event)
 
 void OrderListPanel::mousePressEvent(QMouseEvent* event)
 {
-	Q_UNUSED(event)
-
 	mousePressPos_ = hovPos_;
 	mouseReleasePos_ = { -1, -1 };
 
@@ -1648,9 +1646,8 @@ void OrderListPanel::wheelEvent(QWheelEvent *event)
 	moveCursorToDown(-degree / 15);
 }
 
-void OrderListPanel::leaveEvent(QEvent* event)
+void OrderListPanel::leaveEvent(QEvent*)
 {
-	Q_UNUSED(event)
 	// Clear mouse hover selection
 	hovPos_ = { -1, -1 };
 }

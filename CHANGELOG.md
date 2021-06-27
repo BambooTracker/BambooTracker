@@ -25,6 +25,7 @@
 - Change item widths in the status bar
 - [#374] - Exclude C86CTL and SCCI headers in the compilation on macOS and Linux ([#357]; thanks [@fpesari], [@OPNA2608], [@freq-mod])
 - [#371] - Change the number of buffers in RtAudio ([#363]; thanks [@nyanpasu64], [@freq-mod], [@OPNA2608])
+- Modify several dialog modalities
 - Move the repository to GitHub Organization
 
 ### Fixed

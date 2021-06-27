@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,21 +28,11 @@
 #include <QWheelEvent>
 #include "slider_style.hpp"
 
-LabeledVerticalSlider::LabeledVerticalSlider(QWidget *parent) :
-	QFrame(parent),
-	ui(new Ui::LabeledVerticalSlider)
-{
-	init("", "", "");
-}
+LabeledVerticalSlider::LabeledVerticalSlider(QWidget *parent) : LabeledVerticalSlider("", "", "", parent) {}
 
-LabeledVerticalSlider::LabeledVerticalSlider(QString text, QString prefix, QString suffix, QWidget *parent) :
-	QFrame(parent),
-	ui(new Ui::LabeledVerticalSlider)
-{
-	init(text, prefix, suffix);
-}
-
-void LabeledVerticalSlider::init(QString text, QString prefix, QString suffix)
+LabeledVerticalSlider::LabeledVerticalSlider(QString text, QString prefix, QString suffix, QWidget *parent)
+	: QFrame(parent),
+	  ui(new Ui::LabeledVerticalSlider)
 {
 	ui->setupUi(this);
 

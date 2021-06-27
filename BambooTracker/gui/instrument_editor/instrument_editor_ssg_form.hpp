@@ -139,7 +139,7 @@ private:
 	void setInstrumentArpeggioParameters();
 
 private slots:
-	void onArpeggioTypeChanged(int index);
+	void onArpeggioTypeChanged(int);
 	void on_arpEditGroupBox_toggled(bool arg1);
 	void on_arpNumSpinBox_valueChanged(int arg1);
 
@@ -156,7 +156,7 @@ private:
 	void setInstrumentPitchParameters();
 
 private slots:
-	void onPitchTypeChanged(int index);
+	void onPitchTypeChanged(int);
 	void on_ptEditGroupBox_toggled(bool arg1);
 	void on_ptNumSpinBox_valueChanged(int arg1);
 };

@@ -1666,7 +1666,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	std::string id = bt_->getStepEffectID(curSongNum_, visTracks_.at(editPos.trackVisIdx), editPos.order,
 										  editPos.step, (editPos.colInTrack - 3) / 2);
 	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curTrackNum)).source;
-	emit effectEntered(EffectDescription::getEffectFormatAndDetailString(effect_utils::validateEffectId(src, id)));
+	emit effectEntered(effect_desc::getEffectFormatAndDetailString(effect_utils::validateEffectId(src, id)));
 }
 
 bool PatternEditorPanel::enterEffectValue(int key)
@@ -2844,10 +2844,8 @@ void PatternEditorPanel::resizeEvent(QResizeEvent *event)
 	redrawAll();
 }
 
-void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
+void PatternEditorPanel::mousePressEvent(QMouseEvent* event)
 {
-	Q_UNUSED(event)
-
 	mousePressPos_ = hovPos_;
 	doubleClickPos_ = mousePressPos_;
 	mouseReleasePos_ = { -1, -1, -1, -1 };
@@ -3176,9 +3174,8 @@ void PatternEditorPanel::wheelEvent(QWheelEvent *event)
 	}
 }
 
-void PatternEditorPanel::leaveEvent(QEvent* event)
+void PatternEditorPanel::leaveEvent(QEvent*)
 {
-	Q_UNUSED(event)
 	// Clear mouse hover selection
 	hovPos_ = { -1, -1, -1, -1 };
 }

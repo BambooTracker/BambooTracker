@@ -89,7 +89,7 @@ void EffectListDialog::addRow(EffectType effect, std::unordered_set<SoundSource>
 {
 	int row = ui->tableWidget->rowCount();
 	ui->tableWidget->insertRow(row);
-	ui->tableWidget->setItem(row, 0, new QTableWidgetItem(EffectDescription::getEffectFormat(effect)));
+	ui->tableWidget->setItem(row, 0, new QTableWidgetItem(effect_desc::getEffectFormat(effect)));
 	ui->tableWidget->setRowHeight(row, ui->tableWidget->horizontalHeader()->height());
 	QString typeStr("");
 	if (types.count(SoundSource::FM)) typeStr += "FM";
@@ -97,5 +97,5 @@ void EffectListDialog::addRow(EffectType effect, std::unordered_set<SoundSource>
 	if (types.count(SoundSource::RHYTHM)) typeStr = typeStr + (typeStr.isEmpty() ? "" : ", ") + tr("Rhythm");
 	if (types.count(SoundSource::ADPCM)) typeStr = typeStr + (typeStr.isEmpty() ? "" : ", ") + "ADPCM";
 	ui->tableWidget->setItem(row, 1, new QTableWidgetItem(typeStr));
-	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(EffectDescription::getEffectDescription(effect)));
+	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(effect_desc::getEffectDescription(effect)));
 }

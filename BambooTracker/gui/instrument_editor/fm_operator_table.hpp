@@ -68,8 +68,8 @@ public:
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* event) override;
-	void showEvent(QShowEvent* event) override;
-	void resizeEvent(QResizeEvent* event) override;
+	void showEvent(QShowEvent*) override;
+	void resizeEvent(QResizeEvent*) override;
 
 signals:
 	void operatorValueChanged(Ui::FMOperatorParameter param, int value);
@@ -81,7 +81,7 @@ signals:
 	void pasteOperatorPressed(int num);
 
 private slots:
-	void on_ssgegCheckBox_stateChanged(int arg1);
+	void on_ssgegCheckBox_stateChanged(int);
 	void on_groupBox_toggled(bool arg1);
 	void on_groupBox_customContextMenuRequested(const QPoint &pos);
 

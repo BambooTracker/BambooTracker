@@ -25,16 +25,16 @@
 
 #include "file_history.hpp"
 #include <algorithm>
+#include <QSettings>
 #include "utils.hpp"
+#include "gui/gui_utils.hpp"
 
 namespace
 {
 const int HISTORY_SIZE = 8;
 }
 
-FileHistory::FileHistory() {}
-
-void FileHistory::addFile(QString path)
+void FileHistory::addFile(const QString& path)
 {
 	auto it = utils::find(list_, path);
 	if (it != list_.end()) list_.erase(it);
@@ -60,4 +60,47 @@ size_t FileHistory::size() const
 bool FileHistory::empty() const
 {
 	return list_.empty();
+}
+
+namespace io
+{
+namespace
+{
+// config path (*nix): ~/.config/<ORGANIZATION_>/<FILE_>.ini
+const QString FILE = "FileHistory";
+}
+
+bool saveFileHistory(std::weak_ptr<FileHistory> history)
+{
+	try {
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, io::ORGANIZATION_NAME, FILE);
+		settings.beginWriteArray("fileHistory");
+		int n = 0;
+		for (size_t i = 0; i < history.lock()->size(); ++i) {
+			settings.setArrayIndex(n++);
+			settings.setValue("path", history.lock()->at(i));
+		}
+		settings.endArray();
+		return true;
+	} catch (...) {
+		return false;
+	}
+}
+
+bool loadFileHistory(std::weak_ptr<FileHistory> history)
+{
+	try {
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, io::ORGANIZATION_NAME, FILE);
+		int size = settings.beginReadArray("fileHistory");
+		history.lock()->clearHistory();
+		for (int i = size - 1; 0 <= i; --i) {
+			settings.setArrayIndex(i);
+			history.lock()->addFile(settings.value("path").toString());
+		}
+		settings.endArray();
+		return true;
+	} catch (...) {
+		return false;
+	}
+}
 }

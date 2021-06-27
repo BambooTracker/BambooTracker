@@ -606,10 +606,8 @@ void InstrumentEditorADPCMForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorADPCMForm::onArpeggioTypeChanged(int index)
+void InstrumentEditorADPCMForm::onArpeggioTypeChanged(int)
 {
-	Q_UNUSED(index)
-
 	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setArpeggioADPCMType(ui->arpNumSpinBox->value(), type);
@@ -692,10 +690,8 @@ void InstrumentEditorADPCMForm::onPitchParameterChanged(int ptNum)
 	}
 }
 
-void InstrumentEditorADPCMForm::onPitchTypeChanged(int index)
+void InstrumentEditorADPCMForm::onPitchTypeChanged(int)
 {
-	Q_UNUSED(index)
-
 	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setPitchADPCMType(ui->ptNumSpinBox->value(), type);

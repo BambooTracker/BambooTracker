@@ -39,8 +39,7 @@ namespace io
 namespace
 {
 // config path (*nix): ~/.config/<organization>/<application>.ini
-const QString ORG_NAME = "BambooTracker";
-const QString APP_NAME = "BambooTracker";
+const QString APPLICATION = "BambooTracker";
 
 const std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP = {
 	{ Configuration::ShortcutAction::KeyOff, "keyOff" },
@@ -152,7 +151,7 @@ const std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP = {
 bool saveConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, APP_NAME);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, io::ORGANIZATION_NAME, APPLICATION);
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //
@@ -307,7 +306,7 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 bool loadConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
-		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ORG_NAME, APP_NAME);
+		QSettings settings(QSettings::IniFormat, QSettings::UserScope, io::ORGANIZATION_NAME, APPLICATION);
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //

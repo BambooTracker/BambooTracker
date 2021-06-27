@@ -190,9 +190,8 @@ std::string PpcBank::getInstrumentIdentifier(size_t index) const
 	return std::to_string(ids_.at(index));
 }
 
-std::string PpcBank::getInstrumentName(size_t index) const
+std::string PpcBank::getInstrumentName(size_t) const
 {
-	(void)index;
 	return "";
 }
 
@@ -217,9 +216,8 @@ std::string P86Bank::getInstrumentIdentifier(size_t index) const
 	return std::to_string(ids_.at(index));
 }
 
-std::string P86Bank::getInstrumentName(size_t index) const
+std::string P86Bank::getInstrumentName(size_t) const
 {
-	(void)index;
 	return "";
 }
 
@@ -244,9 +242,8 @@ std::string PpsBank::getInstrumentIdentifier(size_t index) const
 	return std::to_string(ids_.at(index));
 }
 
-std::string PpsBank::getInstrumentName(size_t index) const
+std::string PpsBank::getInstrumentName(size_t) const
 {
-	(void)index;
 	return "";
 }
 
@@ -271,9 +268,8 @@ std::string PviBank::getInstrumentIdentifier(size_t index) const
 	return std::to_string(ids_.at(index));
 }
 
-std::string PviBank::getInstrumentName(size_t index) const
+std::string PviBank::getInstrumentName(size_t) const
 {
-	(void)index;
 	return "";
 }
 
@@ -299,9 +295,8 @@ std::string PziBank::getInstrumentIdentifier(size_t index) const
 	return std::to_string(ids_.at(index));
 }
 
-std::string PziBank::getInstrumentName(size_t index) const
+std::string PziBank::getInstrumentName(size_t) const
 {
-	(void)index;
 	return "";
 }
 

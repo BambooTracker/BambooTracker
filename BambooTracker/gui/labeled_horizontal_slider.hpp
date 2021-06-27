@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -81,7 +81,6 @@ private:
 	int precision_;
 	bool isSigned_;
 
-	void init(QString text, QString prefix, QString suffix);
 	void updateValueLabel();
 };
 

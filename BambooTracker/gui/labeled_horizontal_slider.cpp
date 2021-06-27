@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,21 +28,11 @@
 #include <QWheelEvent>
 #include "slider_style.hpp"
 
-LabeledHorizontalSlider::LabeledHorizontalSlider(QWidget *parent) :
-	QFrame(parent),
-	ui(new Ui::LabeledHorizontalSlider)
-{
-	init("", "", "");
-}
+LabeledHorizontalSlider::LabeledHorizontalSlider(QWidget *parent) : LabeledHorizontalSlider("", "", "", parent) {}
 
-LabeledHorizontalSlider::LabeledHorizontalSlider(QString text, QString prefix, QString suffix, QWidget *parent) :
-	QFrame(parent),
-	ui(new Ui::LabeledHorizontalSlider)
-{
-	init(text, prefix, suffix);
-}
-
-void LabeledHorizontalSlider::init(QString text, QString prefix, QString suffix)
+LabeledHorizontalSlider::LabeledHorizontalSlider(QString text, QString prefix, QString suffix, QWidget *parent)
+	: QFrame(parent),
+	  ui(new Ui::LabeledHorizontalSlider)
 {
 	ui->setupUi(this);
 

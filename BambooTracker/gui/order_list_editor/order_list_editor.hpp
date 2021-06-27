@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -108,7 +108,7 @@ public slots:
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
-	void resizeEvent(QResizeEvent* event) override;
+	void resizeEvent(QResizeEvent*) override;
 
 private:
 	Ui::OrderListEditor *ui;

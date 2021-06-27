@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -208,8 +208,6 @@ std::vector<int> PatternEditor::getVisibleTracks() const
 
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
-	Q_UNUSED(watched)
-
 	if (watched == this) {
 		if (event->type() == QEvent::FocusIn) {
 			ui->panel->setFocus();
@@ -256,10 +254,8 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
-void PatternEditor::resizeEvent(QResizeEvent* event)
+void PatternEditor::resizeEvent(QResizeEvent*)
 {
-	Q_UNUSED(event)
-
 	// For view-based scroll
 	updateHorizontalSliderMaximum();
 }

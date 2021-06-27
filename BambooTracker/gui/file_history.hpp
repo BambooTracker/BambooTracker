@@ -27,14 +27,13 @@
 #define FILE_HISTORY_HPP
 
 #include <deque>
+#include <memory>
 #include <QString>
 
 class FileHistory
 {
 public:
-	FileHistory();
-
-	void addFile(QString path);
+	void addFile(const QString& path);
 	void clearHistory();
 	QString at(size_t i);
 	size_t size() const;
@@ -43,5 +42,11 @@ public:
 private:
 	std::deque<QString> list_;
 };
+
+namespace io
+{
+bool saveFileHistory(std::weak_ptr<FileHistory> history);
+bool loadFileHistory(std::weak_ptr<FileHistory> history);
+}
 
 #endif // FILE_HISTORY_HPP

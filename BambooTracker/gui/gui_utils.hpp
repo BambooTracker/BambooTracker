@@ -52,4 +52,9 @@ std::vector<int> adaptVisibleTrackList(const std::vector<int> list,
 									   const SongType prevType, const SongType curType);
 }
 
+namespace io
+{
+const QString ORGANIZATION_NAME = "BambooTracker";
+}
+
 #endif // GUI_UTILS_HPP

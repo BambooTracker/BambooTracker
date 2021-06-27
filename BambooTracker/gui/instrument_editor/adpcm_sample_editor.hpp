@@ -117,7 +117,7 @@ private slots:
 	void on_actionRe_verse_triggered();
 	void on_actionZoom_In_triggered();
 	void on_actionZoom_Out_triggered();
-	void on_horizontalScrollBar_valueChanged(int value);
+	void on_horizontalScrollBar_valueChanged(int);
 	void on_action_Import_triggered();
 	void on_action_Clear_triggered();
 	void on_action_Grid_View_triggered();

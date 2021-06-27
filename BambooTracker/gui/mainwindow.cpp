@@ -74,10 +74,8 @@
 #include "gui/jam_layout.hpp"
 #include "chip/scci/scci_wrapper.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
-#include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
 #include "audio/audio_stream_rtaudio.hpp"
-#include "color_palette_handler.hpp"
 #include "enum_hash.hpp"
 #include "gui/go_to_dialog.hpp"
 #include "gui/transpose_song_dialog.hpp"
@@ -204,7 +202,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
 	ui->patternEditor->setCore(bt_);
 	ui->orderList->setCore(bt_);
-	ColorPaletteHandler::loadPalette(palette_.get());
+	io::loadPalette(palette_.get());
 	ui->patternEditor->setColorPallete(palette_);
 	ui->orderList->setColorPallete(palette_);
 	updateInstrumentListColors();
@@ -219,7 +217,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	});
 
 	/* File history */
-	FileHistoryHandler::loadFileHistory(fileHistory_);
+	io::loadFileHistory(fileHistory_);
 	for (size_t i = 0; i < fileHistory_->size(); ++i) {
 		// Leave Before Qt5.7.0 style due to windows xp
 		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
@@ -895,10 +893,8 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 	return false;
 }
 
-void MainWindow::showEvent(QShowEvent* event)
+void MainWindow::showEvent(QShowEvent*)
 {
-	Q_UNUSED(event)
-
 	if (!hasShownOnce_)	{
 		int y = config_.lock()->getMainWindowVerticalSplit();
 		if (y == -1) {
@@ -1155,7 +1151,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	instForms_->closeAll();
 
-	FileHistoryHandler::saveFileHistory(fileHistory_);
+	io::saveFileHistory(fileHistory_);
 
 	bmManForm_->close();
 	ksManForm_->close();
@@ -2573,9 +2569,8 @@ void MainWindow::on_instrumentList_customContextMenuRequested(const QPoint &pos)
 	menu.exec(globalPos);
 }
 
-void MainWindow::on_instrumentList_itemDoubleClicked(QListWidgetItem *item)
+void MainWindow::on_instrumentList_itemDoubleClicked(QListWidgetItem *)
 {
-	Q_UNUSED(item)
 	openInstrumentEditor();
 }
 
@@ -3060,7 +3055,7 @@ void MainWindow::on_actionConfiguration_triggered()
 	if (dialog.exec() == QDialog::Accepted) {
 		changeConfiguration();
 		io::saveConfiguration(config_.lock());
-		ColorPaletteHandler::savePalette(palette_.get());
+		io::savePalette(palette_.get());
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,7 +34,7 @@ public:
 	virtual ~AbstractCommand() = default;
 	virtual void redo() = 0;
 	virtual void undo() = 0;
-	inline CommandId getID() const noexcept { return id_; };
+	inline CommandId getID() const noexcept { return id_; }
 	virtual bool mergeWith(const AbstractCommand* other)
 	{
 		(void)other;

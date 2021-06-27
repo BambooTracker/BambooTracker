@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -187,8 +187,6 @@ void OrderListEditor::setVisibleTracks(std::vector<int> tracks)
 
 bool OrderListEditor::eventFilter(QObject* watched, QEvent* event)
 {
-	Q_UNUSED(watched)
-
 	if (freezed_) return true;	// Ignore every events
 
 	if (watched == this) {
@@ -233,10 +231,8 @@ bool OrderListEditor::eventFilter(QObject* watched, QEvent* event)
 	return false;
 }
 
-void OrderListEditor::resizeEvent(QResizeEvent* event)
+void OrderListEditor::resizeEvent(QResizeEvent*)
 {
-	Q_UNUSED(event)
-
 	// For view-based scroll
 	updateHorizontalSliderMaximum();
 }

@@ -74,8 +74,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 		ui->rootKeyComboBox->addItem(NoteNameManager::getManager().getNoteName(i));
 	}
 
-	auto rkfunc = [&](int dummy) {
-		Q_UNUSED(dummy)
+	auto rkfunc = [&](int) {
 		if (!isIgnoreEvent_) {
 			int rk = ui->rootKeySpinBox->value() * 12 + ui->rootKeyComboBox->currentIndex();
 			bt_.lock()->setSampleADPCMRootKeyNumber(ui->sampleNumSpinBox->value(), rk);
@@ -614,9 +613,8 @@ void ADPCMSampleEditor::on_actionZoom_Out_triggered()
 	}
 }
 
-void ADPCMSampleEditor::on_horizontalScrollBar_valueChanged(int value)
+void ADPCMSampleEditor::on_horizontalScrollBar_valueChanged(int)
 {
-	Q_UNUSED(value)
 	updateSampleView();
 	ui->sampleViewWidget->update();
 }
