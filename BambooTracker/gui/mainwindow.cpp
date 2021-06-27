@@ -2961,7 +2961,7 @@ void MainWindow::on_actionAbout_triggered()
 	static const QString WEB = tr("Web:")
 			+ R"( <a href="https://bambootracker.github.io/BambooTracker/">https://bambootracker.github.io/BambooTracker/</a>)";
 
-	static const QString LICENSE = tr("This software is licensed under the GNU General Public Lisence v2.0.");
+	static const QString LICENSE = tr("This software is licensed under the GNU General Public License v2.0.");
 	static const QString SOURCE = tr("Source is available at:");
 	static const QString REPO = R"(<a href="https://github.com/BambooTracker/BambooTracker">https://github.com/BambooTracker/BambooTracker</a>)";
 
