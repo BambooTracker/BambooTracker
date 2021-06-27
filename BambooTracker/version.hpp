@@ -29,22 +29,26 @@
 #include <string>
 #include <stdexcept>
 
+// ***********
+// The use of constexpr function was avoided because old `g++ -std=c++1y` does not fully support C++14.
+// ***********
+
 class Version
 {
 public:
-	static constexpr uint32_t ofApplicationInBCD();
+	static /* constexpr */ uint32_t ofApplicationInBCD();
 	static std::string ofApplicationInString();
 
-	static constexpr uint32_t ofModuleFileInBCD();
+	static /* constexpr */ uint32_t ofModuleFileInBCD();
 	static std::string ofModuleFileInString();
 
-	static constexpr uint32_t ofInstrumentFileInBCD();
+	static /* constexpr */ uint32_t ofInstrumentFileInBCD();
 	static std::string ofInstrumentFileInString();
 
-	static constexpr uint32_t ofBankFileInBCD();
+	static /* constexpr */ uint32_t ofBankFileInBCD();
 	static std::string ofBankFileInString();
 
-	static constexpr uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
+	static /* constexpr */ uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
 	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
 
 private:
@@ -70,11 +74,11 @@ private:
 
 	constexpr Version() = default;
 
-	static constexpr uint8_t uitobcd(uint8_t v);
+	static /* constexpr */ uint8_t uitobcd(uint8_t v);
 };
 
 //===============================================
-inline constexpr uint32_t Version::ofApplicationInBCD()
+inline /* constexpr */ uint32_t Version::ofApplicationInBCD()
 {
 	return toBCD(appMajor, appMinor, appRevision);
 }
@@ -84,7 +88,7 @@ inline std::string Version::ofApplicationInString()
 	return toString(appMajor, appMinor, appRevision);
 }
 
-inline constexpr uint32_t Version::ofModuleFileInBCD()
+inline /* constexpr */ uint32_t Version::ofModuleFileInBCD()
 {
 	return toBCD(modFileMajor, modFileMinor, modFileRevision);
 }
@@ -94,7 +98,7 @@ inline std::string Version::ofModuleFileInString()
 	return toString(modFileMajor, modFileMinor, modFileRevision);
 }
 
-inline constexpr uint32_t Version::ofInstrumentFileInBCD()
+inline /* constexpr */ uint32_t Version::ofInstrumentFileInBCD()
 {
 	return toBCD(instFileMajor, instFileMinor, instFileRevision);
 }
@@ -104,7 +108,7 @@ inline std::string Version::ofInstrumentFileInString()
 	return toString(instFileMajor, instFileMinor, instFileRevision);
 }
 
-inline constexpr uint32_t Version::ofBankFileInBCD()
+inline /* constexpr */ uint32_t Version::ofBankFileInBCD()
 {
 	return toBCD(bankFileMajor, bankFileMinor, bankFileRevision);
 }
@@ -114,7 +118,7 @@ inline std::string Version::ofBankFileInString()
 	return toString(bankFileMajor, bankFileMinor, bankFileRevision);
 }
 
-inline constexpr uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
+inline /* constexpr */ uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
 {
 	uint32_t maj = uitobcd(static_cast<uint8_t>(major));
 	uint32_t min = uitobcd(static_cast<uint8_t>(minor));
@@ -127,11 +131,11 @@ inline std::string Version::toString(unsigned int major, unsigned int minor, uns
 	return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(revision);
 }
 
-inline constexpr uint8_t Version::uitobcd(uint8_t v)
+inline /* constexpr */ uint8_t Version::uitobcd(uint8_t v)
 {
-	/* if (v > 99) throw std::out_of_range("[Version::uitobcd] Argument error: out of range"); */
+	 if (v > 99) throw std::out_of_range("[Version::uitobcd] Argument error: out of range");
 
-	uint8_t high = v / 10;
-	uint8_t low = v % 10;
+	uint8_t high = v / 10u;
+	uint8_t low = v % 10u;
 	return static_cast<uint8_t>(high << 4) + low;
 }
