@@ -100,7 +100,7 @@ const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS
 constexpr int STATUS_DISPLAY_TIMEOUT = 0;
 }
 
-MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool configLoaded, QWidget *parent) :
+MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool isFirstLaunch, QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	config_(config),
@@ -155,7 +155,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	else {
 		move(config.lock()->getMainWindowX(), config.lock()->getMainWindowY());
 	}
-	if (!configLoaded) {	// On the first launch
+	if (isFirstLaunch) {
 		const QHash<QString, NoteNotationSystem> defNoteSysMap = {
 			{ "English", NoteNotationSystem::ENGLISH },
 			{ "German", NoteNotationSystem::GERMAN }
@@ -673,6 +673,37 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
+	/* Welcome dialog */
+	{
+		const QString text =
+				"<h2>" + tr("Welcome to BambooTracker!") + "</h2>" +
+				"<h3>" + tr("Don't know where to start?") + "</h3>" +
+				"<p>" + tr("Check the demo modules and instruments included "
+						   "with your download of BambooTracker.") + "</p>" +
+				"<h3>" + tr("Need a list of effects and shortcuts?") + "</h3>" +
+				"<p>" + tr("Check the Help menu at the top of the window.") + "</p>" +
+				"<h3>" + tr("Still lost?") + "</h3>" +
+				"<p>" + tr("The README.md has a link to our Discord server.") + "</p>" +
+				"<h3>" + tr("Think you've found a bug? Missing a feature?") + "</h3>" +
+				"<p>" + tr("BambooTracker is still in development, bugs and missing "
+						   "features are to be expected. So we need your help!") +
+				"<ul style='margin-left: 16px; -qt-list-indent: 0;'>" +
+				//: %1 is the link to the issue submission page in GitHub.
+				"<li>" + tr("Please report any bugs you find and requests and features "
+							"you'd like to see on our Discord server or our bug tracker (%1).")
+				.arg(R"(<a href="https://github.com/rerrahkr/BambooTracker/issues/new/choose">
+					 https://github.com/rerrahkr/BambooTracker/issues/new/choose</a>)") + "</li>" +
+				"<li>" + tr("If you're a developer yourself or would like to start being one, "
+							"consider contributing to the project yourself. "
+							"Any help would be appreciated!") + "</li>" +
+				"</ul></p>";
+		welcomeDiag_ = std::make_unique<QMessageBox>(QMessageBox::NoIcon, tr("Welcome"), text, QMessageBox::Ok, this);
+		welcomeDiag_->setWindowModality(Qt::ApplicationModal);
+		welcomeDiag_->setWindowFlags(welcomeDiag_->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+		welcomeDiag_->setTextFormat(Qt::RichText);
+		if (isFirstLaunch) on_action_Welcome_triggered();
+	}
+
 	/* MIDI */
 	setMidiConfiguration();
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
@@ -693,7 +724,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
 	QString audioApi = gui_utils::utf8ToQString(config.lock()->getSoundAPI());
-	if (!configLoaded) {	// On the first launch
+	if (isFirstLaunch) {
 		bool streamState = false;
 		QString streamErr;
 		for (const QString& audioApi : stream_->getAvailableBackends()) {
@@ -2994,7 +3025,7 @@ void MainWindow::on_actionAbout_triggered()
 			"<p>" + LICENSE + "<br>"
 			+ SOURCE + "<br>" + REPO + "</p>"
 			"<hr>"
-			"<p>" + LIB_HEAD + "<ul>"
+			"<p>" + LIB_HEAD + "<ul style='margin-left: 16px; -qt-list-indent: 0;'>"
 			+ (QStringList { "" } + LIBS).join("<li>") + "</li>"
 			+ "</ul></p>"
 			"<p>" + CONTRIBUTORS + "<br>"
@@ -3968,4 +3999,9 @@ void MainWindow::on_action_Key_Signature_Manager_triggered()
 {
 	if (ksManForm_->isVisible()) ksManForm_->activateWindow();
 	else ksManForm_->show();
+}
+
+void MainWindow::on_action_Welcome_triggered()
+{
+	welcomeDiag_->open();
 }

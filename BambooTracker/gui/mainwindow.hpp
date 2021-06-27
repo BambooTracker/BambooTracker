@@ -73,7 +73,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-        MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool configLoaded, QWidget *parent = nullptr);
+	MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool isFirstLaunch, QWidget *parent = nullptr);
 	~MainWindow() override;
 
 	void assignADPCMSamples();
@@ -205,6 +205,7 @@ private:
 	std::unique_ptr<BookmarkManagerForm> bmManForm_;
 	std::unique_ptr<CommentEditDialog> commentDiag_;
 	std::unique_ptr<KeySignatureManagerForm> ksManForm_;
+	std::unique_ptr<QMessageBox> welcomeDiag_;
 
 	// Bank import
 	std::atomic_bool bankJamMidiCtrl_;
@@ -360,6 +361,7 @@ private slots:
 	void on_action_Hide_Tracks_triggered();
 	void on_action_Estimate_Song_Length_triggered();
 	void on_action_Key_Signature_Manager_triggered();
+	void on_action_Welcome_triggered();
 };
 
 #endif // MAINWINDOW_HPP

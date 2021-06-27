@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
 		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
 
-		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath, hasSuccessed));
+		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath, !hasSuccessed));
 		w->show();
 		int ret = a->exec();
 

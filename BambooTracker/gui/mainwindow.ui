@@ -775,6 +775,7 @@
     <addaction name="actionShortcuts"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
+    <addaction name="action_Welcome"/>
    </widget>
    <widget class="QMenu" name="menuVie_w">
     <property name="title">
@@ -1669,6 +1670,11 @@
   <action name="action_Key_Signature_Manager">
    <property name="text">
     <string>&amp;Key Signature Manager...</string>
+   </property>
+  </action>
+  <action name="action_Welcome">
+   <property name="text">
+    <string>&amp;Welcome...</string>
    </property>
   </action>
  </widget>

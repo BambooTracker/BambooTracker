@@ -12,6 +12,7 @@
 - [#365] - WAV export per channel (thanks [@Toonlink8101])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
+- Welcome dialog (thanks [@OPNA2608])
 
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
