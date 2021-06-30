@@ -28,6 +28,7 @@
 #include <unordered_map>
 #include <QString>
 #include <QSettings>
+#include <QFile>
 #include "configuration.hpp"
 #include "jamming.hpp"
 #include "enum_hash.hpp"
@@ -307,6 +308,8 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 {
 	try {
 		QSettings settings(QSettings::IniFormat, QSettings::UserScope, io::ORGANIZATION_NAME, APPLICATION);
+		if (!QFile(settings.fileName()).exists()) return false;
+
 		std::shared_ptr<Configuration> configLocked = config.lock();
 
 		// Internal //
@@ -489,7 +492,8 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		settings.endGroup();
 
 		return true;
-	} catch (...) {
+	}
+	catch (...) {
 		return false;
 	}
 }
