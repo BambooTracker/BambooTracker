@@ -36,7 +36,8 @@ PziIO::PziIO() : AbstractBankIO("pzi", "FMP PZI", true, false) {}
 
 AbstractBank* PziIO::load(const BinaryContainer& ctr) const
 {
-	if (ctr.readString(0, 4) != "PZI1")
+	std::string ident = ctr.readString(0, 4);
+	if (ident != "PZI0" && ident != "PZI1")
 		throw FileCorruptionError(FileType::Bank, 0);
 
 	constexpr size_t SAMP_OFFS = 0x920;
