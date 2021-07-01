@@ -679,7 +679,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	/* Welcome dialog */
 	{
 		const QString text =
-				"<h2>" + tr("Welcome to BambooTracker!") + "</h2>" +
+				"<h2 style='text-align: center;'>" + tr("Welcome to BambooTracker!") + "</h2>" +
+				"<div style='text-align: center;'>"
+				"<img src='qrc:/icon/app_icon' width=128 height=128>"
+				"</div>"
 				"<h3>" + tr("Don't know where to start?") + "</h3>" +
 				"<p>" + tr("Check the demo modules and instruments included "
 						   "with your download of BambooTracker.") + "</p>" +
@@ -694,8 +697,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 				//: %1 is the link to the issue submission page in GitHub.
 				"<li>" + tr("Please report any bugs you find and requests and features "
 							"you'd like to see on our Discord server or our bug tracker (%1).")
-				.arg(R"(<a href="https://github.com/rerrahkr/BambooTracker/issues/new/choose">
-					 https://github.com/rerrahkr/BambooTracker/issues/new/choose</a>)") + "</li>" +
+				.arg(R"(<a href="https://github.com/BambooTracker/BambooTracker/issues/new/choose">
+					 https://github.com/BambooTracker/BambooTracker/issues/new/choose</a>)") + "</li>" +
 				"<li>" + tr("If you're a developer yourself or would like to start being one, "
 							"consider contributing to the project yourself. "
 							"Any help would be appreciated!") + "</li>" +
