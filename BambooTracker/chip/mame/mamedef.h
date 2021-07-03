@@ -2,7 +2,7 @@
 #define __MAMEDEF_H__
 
 #include <stdint.h>
-#include "../chip_def.h"
+#include "../chip_defs.h"
 
 /* typedefs to use MAME's (U)INTxx types (copied from MAME\src\ods\odscomm.h) */
 /* 8-bit values */
@@ -52,13 +52,19 @@ typedef sample stream_sample_t;
 /* don't define BYTE_XOR_BE so that it throws an error when compiling */
 #endif
 
+#ifndef INLINE
+
 #if defined(_MSC_VER)
-/*#define INLINE	static __forceinline*/
-#define INLINE	static __inline
+/*#define INLINE static __forceinline*/
+#define INLINE static __inline
 #elif defined(__GNUC__)
-#define INLINE	static __inline__
+#define INLINE static __inline__
+#elif defined(_MWERKS_)
+#define INLINE static inline
 #else
-#define INLINE	static inline
+#define INLINE static
+#endif
+
 #endif
 
 #ifndef M_PI
@@ -70,8 +76,6 @@ typedef sample stream_sample_t;
 #else
 #define logerror
 #endif
-
-extern stream_sample_t* DUMMYBUF[];
 
 typedef void (*SRATE_CALLBACK)(void*, UINT32);
 

@@ -11,7 +11,7 @@
 - [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
   - BambooTracker/chip/chip_def.h
   - BambooTracker/chip/mame/*
-- Nuked OPN-MOD (added OPNA functionality to [Nuked-OPN2](https://github.com/nukeykt/Nuked-OPN2) by Alexey Khokholov (Nuke.YKT)) by Jean Pierre Cimalando - LGPL v2.1
+- Nuked OPN-MOD (added OPNA functionality to [Nuked-OPN2](https://github.com/nukeykt/Nuked-OPN2) by Alexey Khokholov (Nuke.YKT)) by Jean Pierre Cimalando - LGPL v2.1 or later
   - BambooTracker/chip/nuked/ym3438.*
 - [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
 - [RtAudio](http://www.music.mcgill.ca/~gary/rtaudio/) by Gary P. Scavone - [rtaudio_license.txt](./rtaudio_license.txt)
@@ -31,6 +31,8 @@
   - BambooTracker/*.{hpp,cpp}
   - BambooTracker/audio/*.{hpp,cpp}
   - BambooTracker/chip/*.{hpp,h,cpp} (except chip_def.h)
+  - BambooTracker/chip/mame/mame_2608.*
+  - BambooTracker/chip/mame/nuked_2608.*
   - BambooTracker/command/*
   - BambooTracker/gui/*
   - BambooTracker/instrument/*

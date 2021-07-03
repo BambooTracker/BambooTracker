@@ -62,7 +62,7 @@ struct _ssg_callbacks
 #endif /* BUILD_YM2203 */
 
 #if BUILD_YM2608
-  /* in 2608intf.c */
+  /* in mame_2608.cpp */
   void ym2608_update_request(void *param);
   #define ym2608_update_req(chip) ym2608_update_request(chip);
 #endif /* BUILD_YM2608 */

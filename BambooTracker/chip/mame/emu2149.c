@@ -232,7 +232,7 @@ PSG_writeIO (PSG * psg, e_uint32 adr, e_uint32 val)
     psg->adr = val & 0x1f;
 }
 
-INLINE static e_int16
+INLINE e_int16
 calc (PSG * psg)
 {
 
@@ -340,7 +340,7 @@ PSG_calc (PSG * psg)
   return (e_int16) (psg->out << 4);
 }
 
-INLINE static void
+INLINE void
 calc_stereo (PSG * psg, e_int32 out[2])
 {
   int i, noise;

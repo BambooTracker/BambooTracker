@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,45 +23,44 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
 #pragma once
 
-#include "chip_defs.h"
-#include <cmath>
-#include <cstddef>
+#include "../2608_interface.hpp"
+#include <memory>
+
+extern "C"
+{
+#include "ym3438.h"
+#include "../mame/emu2149.h"
+}
 
 namespace chip
 {
-class AbstractResampler
+struct Nuked2608State
 {
-public:
-	AbstractResampler();
-	virtual ~AbstractResampler();
-	virtual void init(int srcRate, int destRate, size_t maxDuration);
-	virtual void setDestributionRate(int destRate);
-	virtual void setMaxDuration(size_t maxDuration) noexcept;
-	virtual sample** interpolate(sample** src, size_t nSamples, size_t intrSize) = 0;
-
-	inline size_t calculateInternalSampleSize(size_t nSamples)
-	{
-		return static_cast<size_t>(std::ceil(nSamples * rateRatio_));
-	}
-
-protected:
-	int srcRate_, destRate_;
-	size_t maxDuration_;
-	float rateRatio_;
-	sample* destBuf_[2];
-
-	inline void updateRateRatio()
-	{
-		rateRatio_ = static_cast<float>(srcRate_) / destRate_;
-	}
+	ym3438_t* chip;
+	PSG* ssg;
+	int clock;
+	uint32_t dramSize;
 };
 
-
-class LinearResampler final : public AbstractResampler
+class Nuked2608 final : public Ym2608Interface
 {
 public:
-	sample** interpolate(sample** src, size_t nSamples, size_t) override;
+	~Nuked2608() override;
+	int startDevice(int clock, int& rateSsg, uint32_t dramSize) override;
+	void stopDevice() override;
+	void resetDevice() override;
+	void writeAddressToPortA(uint8_t address) override;
+	void writeAddressToPortB(uint8_t address) override;
+	void writeDataToPortA(uint8_t data) override;
+	void writeDataToPortB(uint8_t data) override;
+	uint8_t readData() override;
+	void updateStream(sample** outputs, int nSamples) override;
+	void updateSsgStream(sample** outputs, int nSamples) override;
+
+private:
+	Nuked2608State state_;
 };
 }

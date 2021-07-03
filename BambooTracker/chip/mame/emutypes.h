@@ -4,14 +4,14 @@
 #ifndef INLINE
 
 #if defined(_MSC_VER)
-/*#define INLINE __forceinline*/
-#define INLINE __inline
+/*#define INLINE static __forceinline*/
+#define INLINE static __inline
 #elif defined(__GNUC__)
-#define INLINE __inline__
+#define INLINE static __inline__
 #elif defined(_MWERKS_)
-#define INLINE inline
+#define INLINE static inline
 #else
-#define INLINE
+#define INLINE static
 #endif
 
 #endif

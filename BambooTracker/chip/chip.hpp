@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "chip_def.h"
+#include "chip_defs.h"
 #include <cstdint>
 #include <memory>
 #include <mutex>

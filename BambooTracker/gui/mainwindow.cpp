@@ -2994,7 +2994,7 @@ void MainWindow::on_actionAbout_triggered()
 	#endif
 		tr("libOPNMIDI by (C) Vitaly Novichkov (MIT License part)"),
 		tr("MAME (MAME License)"),
-		tr("Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1)"),
+		tr("Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1+)"),
 		tr("RtAudio by (C) Gary P. Scavone (RtAudio License)"),
 		tr("RtMidi by (C) Gary P. Scavone (RtMidi License)"),
 	#ifdef USE_REAL_CHIP
