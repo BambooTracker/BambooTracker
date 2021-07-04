@@ -2,6 +2,7 @@
 The following changes affect module playback critically.
 In some cases, you need to modify modules.
 
+- In BambooTracker v0.5.0, MAME FM, SSG, and ADPCM emulations are updated which make several differences in the synthesis accuracy from previous versions.
 - In BambooTracker v0.5.0, the number of buffer in RtAudio is changed to 2. This may change the latency.
 - In BambooTracker v0.3.6, hard envelope settings of SSG is fixed when note off.
 - From BambooTracker v0.3.6, the effects is executed from left to right. In previous versions there was a read order ambiguity.

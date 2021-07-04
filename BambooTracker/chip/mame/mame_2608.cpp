@@ -79,7 +79,7 @@ int Mame2608::startDevice(int clock, int& rateSsg, uint32_t dramSize)
 	rateSsg = clockSsg / 8;
 	state_.ssg = PSG_new(clockSsg, rateSsg);
 	if (!state_.ssg) return 0;
-	PSG_setVolumeMode(state_.ssg, EMU2149_VOL_DEFAULT);
+	PSG_setVolumeMode(state_.ssg, 1);	// YM2149 volume mode
 
 	int rate = clock / 144;	// FM synthesis rate is clock / 2 / 72
 	state_.chip = ym2608_init(&state_, clock, rate, dramSize, nullptr, nullptr, &SSG_INTF);
@@ -138,7 +138,13 @@ void Mame2608::updateStream(sample** outputs, int nSamples)
 void Mame2608::updateSsgStream(sample** outputs, int nSamples)
 {
 	if (state_.ssg) {
-		PSG_calc_stereo(state_.ssg, outputs, nSamples);
+		sample* bufl = outputs[STEREO_LEFT];
+		sample* bufr = outputs[STEREO_RIGHT];
+		for (int i = 0; i < nSamples; ++i) {
+			int16_t s = PSG_calc(state_.ssg) << 1;
+			*bufl++ = s;
+			*bufr++ = s;
+		}
 	}
 	else {
 		std::fill_n(outputs[STEREO_LEFT], nSamples, 0);

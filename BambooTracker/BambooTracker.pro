@@ -46,6 +46,7 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
+    chip/emu2149/emu2149.c \
     chip/mame/mame_2608.cpp \
     chip/nuked/nuked_2608.cpp \
     chip/register_write_logger.cpp \
@@ -108,7 +109,6 @@ SOURCES += \
     chip/chip.cpp \
     chip/opna.cpp \
     chip/resampler.cpp \
-    chip/mame/emu2149.c \
     chip/mame/fm.c \
     chip/mame/ymdeltat.c \
     chip/nuked/ym3438.c \
@@ -216,6 +216,7 @@ HEADERS += \
     chip/2608_interface.hpp \
     chip/chip_defs.h \
     chip/codec/ymb_codec.hpp \
+    chip/emu2149/emu2149.h \
     chip/mame/mame_2608.hpp \
     chip/nuked/nuked_2608.hpp \
     chip/real_chip_interface.hpp \
@@ -255,8 +256,6 @@ HEADERS += \
     gui/key_signature_manager_form.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
-    chip/mame/emu2149.h \
-    chip/mame/emutypes.h \
     chip/mame/fm.h \
     chip/mame/mamedef.h \
     chip/mame/ymdeltat.h \

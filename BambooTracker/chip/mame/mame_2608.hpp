@@ -26,11 +26,7 @@
 #pragma once
 
 #include "../2608_interface.hpp"
-
-extern "C"
-{
-#include "emu2149.h"
-}
+#include "../emu2149/emu2149.h"
 
 namespace chip
 {
