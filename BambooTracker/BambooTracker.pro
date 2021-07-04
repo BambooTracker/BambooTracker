@@ -47,7 +47,9 @@ QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
     chip/emu2149/emu2149.c \
+    chip/mame/fmopn.c \
     chip/mame/mame_2608.cpp \
+    chip/mame/ymdeltat.c \
     chip/nuked/nuked_2608.cpp \
     chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
@@ -109,8 +111,6 @@ SOURCES += \
     chip/chip.cpp \
     chip/opna.cpp \
     chip/resampler.cpp \
-    chip/mame/fm.c \
-    chip/mame/ymdeltat.c \
     chip/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
@@ -217,7 +217,11 @@ HEADERS += \
     chip/chip_defs.h \
     chip/codec/ymb_codec.hpp \
     chip/emu2149/emu2149.h \
+    chip/mame/fmopn.h \
+    chip/mame/fmopn_2608rom.h \
     chip/mame/mame_2608.hpp \
+    chip/mame/mamedefs.h \
+    chip/mame/ymdeltat.h \
     chip/nuked/nuked_2608.hpp \
     chip/real_chip_interface.hpp \
     chip/register_write_logger.hpp \
@@ -256,9 +260,6 @@ HEADERS += \
     gui/key_signature_manager_form.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
-    chip/mame/fm.h \
-    chip/mame/mamedef.h \
-    chip/mame/ymdeltat.h \
     chip/nuked/ym3438.h \
     chip/chip.hpp \
     chip/opna.hpp \

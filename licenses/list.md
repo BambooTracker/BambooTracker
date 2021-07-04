@@ -1,5 +1,5 @@
 # Licenses
-- BambooTracker - GPL v2
+- BambooTracker - GPL v2+
 
 ## Libraries
 - [adpcm](https://github.com/superctr/adpcm) by Ian Karlsson (superctr) - Public domain
@@ -8,13 +8,14 @@
   - BambooTracker/chip/c86ctl/*
 - [emu2149](https://github.com/digital-sound-antiques/emu2149) by Mitsutaka Okazaki - MIT
   - BambooTracker/chip/emu2149/*
+- fmopn by Tatsuyuki Satoh, Jarek Burczynski and ValleyBell - GPL v2+
+  - BambooTracker/chip/mame/fmopn.*
+  - BambooTracker/chip/mame/fmopn_2608rom.h
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand) - MIT
   - BambooTracker/format/wopn_file.*
-- [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
-  - BambooTracker/chip/mame/*
 - Nuked OPN-MOD (added OPNA functionality to [Nuked-OPN2](https://github.com/nukeykt/Nuked-OPN2) by Alexey Khokholov (Nuke.YKT)) by Jean Pierre Cimalando - LGPL v2.1 or later
   - BambooTracker/chip/nuked/ym3438.*
-- [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
+- [Qt](https://www.qt.io/) - GPL v2+ or LGPL v3
 - [RtAudio](http://www.music.mcgill.ca/~gary/rtaudio/) by Gary P. Scavone - [rtaudio_license.txt](./rtaudio_license.txt)
   - submodules/RtAudio/src/*
 - [RtMidi](https://github.com/Wohlstand/rtmidi) by Gary P. Scavone - [rtmidi_license.txt](./rtmidi_license.txt)
@@ -24,8 +25,8 @@
 - [Silk icons](http://www.famfamfam.com/lab/icons/silk/) by Mark James - CC BY 2.5 or 3.0
   - BambooTracker/resources/icon/if_*.png
   - BambooTracker/resources/icon/iconfinder_*.png
-- [VGMPlay](https://github.com/vgmrips/vgmplay) by Valley Bell - GPL v2
-  - BambooTracker/chip/mame/*
+- ymdeltat by Tatsuyuki Satoh, Jarek Burczynski and ValleyBell - GPL v2+
+  - BambooTracker/chip/mame/ymdeltat.*
 
 ## Other parts
 - MIT license
@@ -40,3 +41,5 @@
   - BambooTracker/io/*
   - BambooTracker/midi/*.{hpp,cpp}
   - BambooTracker/module/*
+- BSD 3-Clause
+  - BambooTracker/chip/mame/mamedef.h

@@ -2980,7 +2980,7 @@ void MainWindow::on_actionAbout_triggered()
 	static const QString WEB = tr("Web:")
 			+ R"( <a href="https://bambootracker.github.io/BambooTracker/">https://bambootracker.github.io/BambooTracker/</a>)";
 
-	static const QString LICENSE = tr("This software is licensed under the GNU General Public License v2.0.");
+	static const QString LICENSE = tr("This software is licensed under the GNU General Public License v2.0 or later.");
 	static const QString SOURCE = tr("Source is available at:");
 	static const QString REPO = R"(<a href="https://github.com/BambooTracker/BambooTracker">https://github.com/BambooTracker/BambooTracker</a>)";
 
@@ -2992,17 +2992,18 @@ void MainWindow::on_actionAbout_triggered()
 	#ifdef USE_REAL_CHIP
 		tr("C86CTL by (C) honet (BSD 3-Clause)"),
 	#endif
+		tr("emu2149 by (C) Mitsutaka Okazaki (MIT License)"),
+		tr("fmopn by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)"),
 		tr("libOPNMIDI by (C) Vitaly Novichkov (MIT License part)"),
-		tr("MAME (MAME License)"),
 		tr("Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1+)"),
+		tr("Qt (GPL v2+ or LGPL v3)"),
 		tr("RtAudio by (C) Gary P. Scavone (RtAudio License)"),
 		tr("RtMidi by (C) Gary P. Scavone (RtMidi License)"),
 	#ifdef USE_REAL_CHIP
 		tr("SCCI by (C) gasshi (SCCI License)"),
 	#endif
 		tr("Silk icons by (C) Mark James (CC BY 2.5 or 3.0)"),
-		tr("Qt (GPL v2+ or LGPL v3)"),
-		tr("VGMPlay by (C) Valley Bell (GPL v2)")
+		tr("ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)")
 	};
 
 	static const QString FORMATTED_TEXT =

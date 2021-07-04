@@ -28,26 +28,26 @@
 
 extern "C"
 {
-#include "fm.h"
+#include "fmopn.h"
 }
 
 namespace chip
 {
 namespace // SSG callbacks
 {
-void setSsgClock(void* param, int clock)
+void setSsgClock(void* param, uint32_t clock)
 {
 	auto state = reinterpret_cast<Mame2608State*>(param);
 	if (state->ssg) PSG_set_clock(state->ssg, clock);
 }
 
-void writeSsg(void* param, int address, int data)
+void writeSsg(void* param, uint8_t address, uint8_t data)
 {
 	auto state = reinterpret_cast<Mame2608State*>(param);
 	if (state->ssg) PSG_writeIO(state->ssg, address, data);
 }
 
-int readSsg(void* param)
+uint8_t readSsg(void* param)
 {
 	auto state = reinterpret_cast<Mame2608State*>(param);
 	return (state->ssg ? PSG_readIO(state->ssg) : 0);
@@ -82,7 +82,10 @@ int Mame2608::startDevice(int clock, int& rateSsg, uint32_t dramSize)
 	PSG_setVolumeMode(state_.ssg, 1);	// YM2149 volume mode
 
 	int rate = clock / 144;	// FM synthesis rate is clock / 2 / 72
-	state_.chip = ym2608_init(&state_, clock, rate, dramSize, nullptr, nullptr, &SSG_INTF);
+	state_.chip = ym2608_init(&state_, clock, rate, nullptr, nullptr);
+	if (!state_.chip) return 0;
+	ym2608_link_ssg(state_.chip, &SSG_INTF, &state_);
+	ym2608_alloc_pcmromb(state_.chip, dramSize);
 
 	return rate;
 }
@@ -132,7 +135,7 @@ uint8_t Mame2608::readData()
 
 void Mame2608::updateStream(sample** outputs, int nSamples)
 {
-	ym2608_update_one(state_.chip, outputs, nSamples);
+	ym2608_update_one(state_.chip, nSamples, outputs);
 }
 
 void Mame2608::updateSsgStream(sample** outputs, int nSamples)
@@ -161,5 +164,5 @@ sample* DUMMY_BUF[] = { nullptr, nullptr };
 void ym2608_update_request(void* param)
 {
 	auto state = reinterpret_cast<chip::Mame2608State*>(param);
-	ym2608_update_one(state->chip, DUMMY_BUF, 0);
+	ym2608_update_one(state->chip, 0, DUMMY_BUF);
 }

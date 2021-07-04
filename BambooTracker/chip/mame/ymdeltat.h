@@ -1,6 +1,7 @@
-#pragma once
+#ifndef __YMDELTAT_H__
+#define __YMDELTAT_H__
 
-#include "mamedef.h"
+#include "mamedefs.h"
 
 #define YM_DELTAT_SHIFT    (16)
 
@@ -12,7 +13,7 @@ typedef void (*STATUS_CHANGE_HANDLER)(void *chip, UINT8 status_bits);
 
 
 /* DELTA-T (adpcm type B) struct */
-typedef struct deltat_adpcm_state {     /* AT: rearranged and tigntened structure */
+typedef struct deltat_adpcm_state {     /* AT: rearranged and tightened structure */
 	UINT8	*memory;
 	INT32	*output_pointer;/* pointer of output pointers   */
 	INT32	*pan;			/* pan : &output_pointer[pan]   */
@@ -24,8 +25,9 @@ typedef struct deltat_adpcm_state {     /* AT: rearranged and tigntened structur
 	UINT32	memory_size;
 	UINT32	memory_mask;
 	int		output_range;
+	UINT32	address_mask;
 	UINT32	now_addr;		/* current address      */
-	UINT32	now_step;		/* currect step         */
+	UINT32	now_step;		/* current step         */
 	UINT32	step;			/* step                 */
 	UINT32	start;			/* start address        */
 	UINT32	limit;			/* limit address        */
@@ -40,13 +42,10 @@ typedef struct deltat_adpcm_state {     /* AT: rearranged and tigntened structur
 	UINT8	CPU_data;		/* current data from reg 08 */
 	UINT8	portstate;		/* port status          */
 	UINT8	control2;		/* control reg: SAMPLE, DA/AD, RAM TYPE (x8bit / x1bit), ROM/RAM */
-	UINT8	portshift;		/* address bits shift-left:
-                            ** 8 for YM2610,
-                            ** 5 for Y8950 and YM2608 */
-
-	UINT8	DRAMportshift;	/* address bits shift-right:
-                            ** 0 for ROM and x8bit DRAMs,
-                            ** 3 for x1 DRAMs */
+	UINT8	portshift_base;	/* address bits shift-left:
+							** 8 for YM2610,
+							** 5 for Y8950 and YM2608 */
+	UINT8	now_portshift;	/* current address bits shift-left */
 
 	UINT8	memread;		/* needed for reading/writing external memory */
 
@@ -55,31 +54,30 @@ typedef struct deltat_adpcm_state {     /* AT: rearranged and tigntened structur
 	STATUS_CHANGE_HANDLER	status_reset_handler;
 
 	/* note that different chips have these flags on different
-    ** bits of the status register
-    */
+	** bits of the status register
+	*/
 	void *	status_change_which_chip;	/* this chip id */
 	UINT8	status_change_EOS_bit;		/* 1 on End Of Sample (record/playback/cycle time of AD/DA converting has passed)*/
 	UINT8	status_change_BRDY_bit;		/* 1 after recording 2 datas (2x4bits) or after reading/writing 1 data */
 	UINT8	status_change_ZERO_bit;		/* 1 if silence lasts for more than 290 miliseconds on ADPCM recording */
 
 	/* neither Y8950 nor YM2608 can generate IRQ when PCMBSY bit changes, so instead of above,
-    ** the statusflag gets ORed with PCM_BSY (below) (on each read of statusflag of Y8950 and YM2608)
-    */
+	** the statusflag gets ORed with PCM_BSY (below) (on each read of statusflag of Y8950 and YM2608)
+	*/
 	UINT8	PCM_BSY;		/* 1 when ADPCM is playing; Y8950/YM2608 only */
 
 	UINT8	reg[16];		/* adpcm registers      */
 	UINT8	emulation_mode;	/* which chip we're emulating */
 }YM_DELTAT;
 
-/*void YM_DELTAT_BRDY_callback(YM_DELTAT *DELTAT);*/
+//void YM_DELTAT_BRDY_callback(YM_DELTAT *DELTAT);
 
 UINT8 YM_DELTAT_ADPCM_Read(YM_DELTAT *DELTAT);
 void YM_DELTAT_ADPCM_Write(YM_DELTAT *DELTAT,int r,int v);
-void YM_DELTAT_ADPCM_Reset(YM_DELTAT *DELTAT,int pan,int emulation_mode);
+void YM_DELTAT_ADPCM_Init(YM_DELTAT *DELTAT,int emulation_mode,int portshift,INT32* output_ptr,int output_range);
+void YM_DELTAT_ADPCM_Reset(YM_DELTAT *DELTAT,int pan);
 void YM_DELTAT_ADPCM_CALC(YM_DELTAT *DELTAT);
 
-/*void YM_DELTAT_postload(YM_DELTAT *DELTAT,UINT8 *regs);
-//void YM_DELTAT_savestate(const device_config *device,YM_DELTAT *DELTAT);
-void YM_DELTAT_savestate(YM_DELTAT *DELTAT);*/
-
 void YM_DELTAT_calc_mem_mask(YM_DELTAT* DELTAT);
+
+#endif	// __YMDELTAT_H__
