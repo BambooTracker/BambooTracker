@@ -138,11 +138,13 @@ void TickCounter::resetRest()
 		tickDiffSum_ += tickDiff_;
 		int castedTickDifSum = static_cast<int>(tickDiffSum_);
 		restTickToNextStep_ = defStepSize_ + castedTickDifSum;
-		if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;	// Prevent wait count changing to 0 (freeze)
 		tickDiffSum_ -= castedTickDifSum;
 	}
 	else {
 		restTickToNextStep_ = grooves_.at(static_cast<size_t>(nextGroovePos_));
 		nextGroovePos_ = (nextGroovePos_ + 1) % static_cast<int>(grooves_.size());
 	}
+
+	// Ensure each row lasts for at least 1 tick, and that we can subtract 1 safely.
+	if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;
 }
