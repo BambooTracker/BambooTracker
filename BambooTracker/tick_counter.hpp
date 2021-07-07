@@ -68,6 +68,7 @@ private:
 
 	float tickDiff_;
 	float tickDiffSum_;
+	float prevTickDiffSum_;
 
 	void updateTickDifference();
 	void resetRest();

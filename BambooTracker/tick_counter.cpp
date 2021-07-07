@@ -30,7 +30,11 @@ TickCounter::TickCounter() :
 	tempo_(150),    // Dummy set
 	tickRate_(60),	// NTSC
 	nextGroovePos_(-1),
-	defStepSize_(6)    // Dummy set
+	defStepSize_(6),	// Dummy set
+	restTickToNextStep_(0),
+	tickDiff_(0.f),
+	tickDiffSum_(0.f),
+	prevTickDiffSum_(0.f)
 {
 	updateTickDifference();
 }
@@ -45,7 +49,6 @@ void TickCounter::setTempo(int tempo)
 {
 	tempo_ = tempo;
 	updateTickDifference();
-	tickDiffSum_ = 0;
 	resetRest();
 }
 
@@ -58,7 +61,7 @@ void TickCounter::setSpeed(int speed)
 {
 	defStepSize_ = speed;
 	updateTickDifference();
-	tickDiffSum_ = 0;
+	// Changing speed does not reset tempo, so don't reset tickDiffSum_ either.
 	resetRest();
 }
 
@@ -103,6 +106,7 @@ void TickCounter::setPlayState(bool isPlaySong) noexcept
 
 int TickCounter::countUp()
 {
+	prevTickDiffSum_ = tickDiffSum_;
 	if (isPlaySong_) {
 		int ret = restTickToNextStep_;
 
@@ -130,12 +134,14 @@ void TickCounter::resetCount()
 {
 	restTickToNextStep_ = 0;
 	tickDiffSum_ = 0;
+	prevTickDiffSum_ = 0;
 }
 
+// MUST be idempotent when no groove is active.
 void TickCounter::resetRest()
 {
 	if (nextGroovePos_ == -1) {
-		tickDiffSum_ += tickDiff_;
+		tickDiffSum_ = prevTickDiffSum_ + tickDiff_;
 		int castedTickDifSum = static_cast<int>(tickDiffSum_);
 		restTickToNextStep_ = defStepSize_ + castedTickDifSum;
 		tickDiffSum_ -= castedTickDifSum;
