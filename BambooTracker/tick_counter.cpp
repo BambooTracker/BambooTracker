@@ -83,7 +83,6 @@ void TickCounter::setGrooveState(GrooveState state)
 	case GrooveState::ValidByLocal:
 		nextGroovePos_ = 0;
 		resetRest();
-		--restTickToNextStep_;	// Count down by step head
 		break;
 	case GrooveState::Invalid:
 		nextGroovePos_ = -1;
@@ -110,8 +109,9 @@ int TickCounter::countUp()
 		if (!restTickToNextStep_) {  // When head of step, calculate real step size
 			resetRest();
 		}
-
-		--restTickToNextStep_;   // Count down to next step
+		else {
+			--restTickToNextStep_;	 // Count down to next step
+		}
 
 		return ret;
 	}
@@ -147,4 +147,10 @@ void TickCounter::resetRest()
 
 	// Ensure each row lasts for at least 1 tick, and that we can subtract 1 safely.
 	if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;
+
+	// If resetRest() is called in response to the tracker processing a row or Fxx/Oxx event,
+	// subtract 1 so countUp() will remain on the row for (speed - 1) subsequent ticks.
+	if (isPlaySong_) {
+		restTickToNextStep_--;
+	}
 }
