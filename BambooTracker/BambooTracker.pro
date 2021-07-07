@@ -46,7 +46,6 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
-    chip/emu2149/emu2149.c \
     chip/mame/fmopn.c \
     chip/mame/mame_2608.cpp \
     chip/mame/ymdeltat.c \
@@ -216,7 +215,6 @@ HEADERS += \
     chip/2608_interface.hpp \
     chip/chip_defs.h \
     chip/codec/ymb_codec.hpp \
-    chip/emu2149/emu2149.h \
     chip/mame/fmopn.h \
     chip/mame/fmopn_2608rom.h \
     chip/mame/mame_2608.hpp \
@@ -443,12 +441,15 @@ include("resources/resources.pri")
 # App translations. lupdate requires the source code for updating these to work
 include("lang/lang.pri")
 
-!system_rtaudio|!system_rtmidi {
-  CONFIG += link_prl
-}
+CONFIG += link_prl
 system_* {
   CONFIG += link_pkgconfig
 }
+
+INCLUDEPATH += $$PWD/../submodules/emu2149/src
+LIBS += -L$$OUT_PWD/../submodules/emu2149
+CONFIG(debug, debug|release):LIBS += -lemu2149d
+else:CONFIG(release, debug|release):LIBS += -lemu2149
 
 system_rtaudio {
   PKGCONFIG += rtaudio

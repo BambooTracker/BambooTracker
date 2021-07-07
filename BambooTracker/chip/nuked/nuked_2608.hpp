@@ -33,7 +33,7 @@ extern "C"
 {
 #include "ym3438.h"
 }
-#include "../emu2149/emu2149.h"
+#include "emu2149.h"
 
 namespace chip
 {
