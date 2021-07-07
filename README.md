@@ -311,7 +311,7 @@ Example:
 # Where you want to locally keep the source code clone
 cd /home/owner/devel
 
-# Can leave away --recurse-submodules if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
+# Replace --recurse-submodules with --recurse-submodules=submodules/emu2149 if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
 git clone https://github.com/BambooTracker/BambooTracker --recurse-submodules
 cd BambooTracker
 

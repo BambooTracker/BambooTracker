@@ -4,7 +4,7 @@
 [submodule "submodules/RtMidi/src"]
 	path = submodules/RtMidi/src
 	url = https://github.com/thestk/rtmidi
-[submodule "BambooTracker/chip/emu2149"]
-	path = BambooTracker/chip/emu2149
+[submodule "submodules/emu2149"]
+	path = submodules/emu2149
 	url = https://github.com/rerrahkr/emu2149.git
 	branch = opna-ssg
