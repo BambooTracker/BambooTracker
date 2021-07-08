@@ -3527,7 +3527,7 @@ void ym2608_alloc_pcmromb(void* chip, UINT32 memsize)
 		return;
 	F2608->deltaT.memory = (UINT8*)realloc(F2608->deltaT.memory, memsize);
 	F2608->deltaT.memory_size = memsize;
-	memset(F2608->deltaT.memory, 0xFF, memsize);
+	memset(F2608->deltaT.memory, 0, memsize);
 	YM_DELTAT_calc_mem_mask(&F2608->deltaT);
 	
 	return;
