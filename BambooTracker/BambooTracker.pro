@@ -46,6 +46,10 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
+    chip/mame/fmopn.c \
+    chip/mame/mame_2608.cpp \
+    chip/mame/ymdeltat.c \
+    chip/nuked/nuked_2608.cpp \
     chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
@@ -106,11 +110,6 @@ SOURCES += \
     chip/chip.cpp \
     chip/opna.cpp \
     chip/resampler.cpp \
-    chip/mame/2608intf.c \
-    chip/mame/emu2149.c \
-    chip/mame/fm.c \
-    chip/mame/ymdeltat.c \
-    chip/nuked/nuke2608intf.c \
     chip/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
@@ -213,7 +212,15 @@ SOURCES += \
 
 HEADERS += \
     bamboo_tracker_defs.hpp \
+    chip/2608_interface.hpp \
+    chip/chip_defs.h \
     chip/codec/ymb_codec.hpp \
+    chip/mame/fmopn.h \
+    chip/mame/fmopn_2608rom.h \
+    chip/mame/mame_2608.hpp \
+    chip/mame/mamedefs.h \
+    chip/mame/ymdeltat.h \
+    chip/nuked/nuked_2608.hpp \
     chip/real_chip_interface.hpp \
     chip/register_write_logger.hpp \
     command/command_id.hpp \
@@ -251,13 +258,6 @@ HEADERS += \
     gui/key_signature_manager_form.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
-    chip/mame/2608intf.h \
-    chip/mame/emu2149.h \
-    chip/mame/emutypes.h \
-    chip/mame/fm.h \
-    chip/mame/mamedef.h \
-    chip/mame/ymdeltat.h \
-    chip/nuked/nuke2608intf.h \
     chip/nuked/ym3438.h \
     chip/chip.hpp \
     chip/opna.hpp \
@@ -296,7 +296,6 @@ HEADERS += \
     playback.hpp \
     song_length_calculator.hpp \
     audio/audio_stream.hpp \
-    chip/chip_def.h \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
@@ -442,12 +441,15 @@ include("resources/resources.pri")
 # App translations. lupdate requires the source code for updating these to work
 include("lang/lang.pri")
 
-!system_rtaudio|!system_rtmidi {
-  CONFIG += link_prl
-}
+CONFIG += link_prl
 system_* {
   CONFIG += link_pkgconfig
 }
+
+INCLUDEPATH += $$PWD/../submodules/emu2149/src
+LIBS += -L$$OUT_PWD/../submodules/emu2149
+CONFIG(debug, debug|release):LIBS += -lemu2149d
+else:CONFIG(release, debug|release):LIBS += -lemu2149
 
 system_rtaudio {
   PKGCONFIG += rtaudio

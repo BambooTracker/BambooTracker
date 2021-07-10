@@ -312,7 +312,7 @@ Qmakeのオプション (フラグ/スイッチ):
 # Where you want to locally keep the source code clone
 cd /home/owner/devel
 
-# Can leave away --recurse-submodules if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
+# Replace --recurse-submodules with --recurse-submodules=submodules/emu2149/src if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
 git clone https://github.com/BambooTracker/BambooTracker --recurse-submodules
 cd BambooTracker
 
@@ -353,7 +353,7 @@ make install clean
 *[CHANGELOG.md](./CHANGELOG.md)を参照してください。*
 
 ## ライセンス
-このプログラム及びソースコードのライセンスははGNU General License Version 2です。
+このプログラム及びソースコードのライセンスははGNU General License Version 2及びそれ以降のバージョンです。
 
 *詳細は[LICENSE](./LICENSE)と[licenses/list.md](./licenses/list.md)を参照してください。*
 
@@ -361,7 +361,8 @@ make install clean
 このアプリの作成において、以下の方々にお世話になっております。ありがとうございます。
 
 - Qt
-- YM2608のエミュレーションコードに関してMAME開発チームさんとValley Bellさん
+- MAME YM2608のエミュレーションコードに関してTatsuyuki Satohさん，Jarek Burczynskiさん，Valley Bellさん
+- emu2149に関してDigital Sound Antiquesさん
 - トラッカーのアイコンに関してDecidettoさん
 - その他のアイコンに用いているSilk iconsに関してMark Jamesさん
 - VGMファイルのフォーマットのドキュメントに関してVGMRipsチームの方々

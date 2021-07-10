@@ -311,7 +311,7 @@ Example:
 # Where you want to locally keep the source code clone
 cd /home/owner/devel
 
-# Can leave away --recurse-submodules if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
+# Replace --recurse-submodules with --recurse-submodules=submodules/emu2149/src if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
 git clone https://github.com/BambooTracker/BambooTracker --recurse-submodules
 cd BambooTracker
 
@@ -352,7 +352,7 @@ make install clean
 *See [CHANGELOG.md](./CHANGELOG.md).*
 
 ## License
-This program and its source code are licensed under the GNU General License Version 2.
+This program and its source code are licensed under the GNU General License Version 2 or later.
 
 *See [LICENSE](./LICENSE) and [licenses/list.md](./licenses/list.md) for details.*
 
@@ -360,7 +360,8 @@ This program and its source code are licensed under the GNU General License Vers
 I would like to thank the following people for making it:
 
 - Qt team for Qt framework
-- MAME team, and Valley Bell for the codes of YM2608 chip emulation
+- Tatsuyuki Satoh, Jarek Burczynski and Valley Bell for the codes of MAME YM2608 chip emulation
+- Digital Sound Antiques for emu2149
 - Decidetto for the application icon
 - Mark James for Silk icons used for some other icons
 - VGMRips team for the VGM file format documentation

@@ -1540,11 +1540,9 @@ void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks
     chip->deltaT.status_change_BRDY_bit = 0x08;    /* status flag: set bit3 on BRDY */
     chip->deltaT.status_change_ZERO_bit = 0x10;    /* status flag: set bit4 if silence continues for more than 290 miliseconds while recording the ADPCM */
 
+	YM_DELTAT_ADPCM_Init(&chip->deltaT,YM_DELTAT_EMULATION_MODE_NORMAL,5,chip->out_deltaT,1<<23);
 	chip->deltaT.freqbase = 1.0; /* TODO(jpc) set the freqbase value to fixed */
-    chip->deltaT.output_pointer = chip->out_deltaT;
-    chip->deltaT.portshift = 5;        /* always 5bits shift */ /* ASG */
-    chip->deltaT.output_range = 1<<23;
-    YM_DELTAT_ADPCM_Reset(&chip->deltaT, 3/*CENTER*/, YM_DELTAT_EMULATION_MODE_NORMAL);
+	YM_DELTAT_ADPCM_Reset(&chip->deltaT, 3/*CENTER*/);
 }
 
 void OPN2_Destroy(ym3438_t *chip)

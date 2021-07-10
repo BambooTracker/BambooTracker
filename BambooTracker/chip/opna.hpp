@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,6 +28,7 @@
 #include "chip.hpp"
 #include <memory>
 #include "resampler.hpp"
+#include "2608_interface.hpp"
 #include "real_chip_interface.hpp"
 
 namespace chip
@@ -66,7 +67,7 @@ public:
 private:
 	static size_t count_;
 
-	intf2608* intf_;
+	std::unique_ptr<Ym2608Interface> intf_;
 	size_t dramSize_;
 
 	std::unique_ptr<SimpleRealChipInterface> rcIntf_;

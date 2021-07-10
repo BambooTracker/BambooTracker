@@ -25,43 +25,10 @@
 
 #pragma once
 
-#include "chip_defs.h"
-#include <cmath>
-#include <cstddef>
+#include <stdint.h>
 
-namespace chip
-{
-class AbstractResampler
-{
-public:
-	AbstractResampler();
-	virtual ~AbstractResampler();
-	virtual void init(int srcRate, int destRate, size_t maxDuration);
-	virtual void setDestributionRate(int destRate);
-	virtual void setMaxDuration(size_t maxDuration) noexcept;
-	virtual sample** interpolate(sample** src, size_t nSamples, size_t intrSize) = 0;
+typedef int32_t	sample;
 
-	inline size_t calculateInternalSampleSize(size_t nSamples)
-	{
-		return static_cast<size_t>(std::ceil(nSamples * rateRatio_));
-	}
+enum { CHIP_SMPL_BUF_SIZE_ = 0x10000 };
 
-protected:
-	int srcRate_, destRate_;
-	size_t maxDuration_;
-	float rateRatio_;
-	sample* destBuf_[2];
-
-	inline void updateRateRatio()
-	{
-		rateRatio_ = static_cast<float>(srcRate_) / destRate_;
-	}
-};
-
-
-class LinearResampler final : public AbstractResampler
-{
-public:
-	sample** interpolate(sample** src, size_t nSamples, size_t) override;
-};
-}
+enum Stereo { STEREO_LEFT, STEREO_RIGHT };
