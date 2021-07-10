@@ -13,6 +13,8 @@
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
 - Welcome dialog (thanks [@OPNA2608])
+- [#381] - Support .pzi with `PZI0` file magic ([#379]; thanks [@OPNA2608], [@freq-mod])
+- 2 new sample modules (thanks SuperJet Spade, TastySnax12)
 
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
@@ -26,7 +28,10 @@
 - [#374] - Exclude C86CTL and SCCI headers in the compilation on macOS and Linux ([#357]; thanks [@fpesari], [@OPNA2608], [@freq-mod])
 - [#371] - Change the number of buffers in RtAudio ([#363]; thanks [@nyanpasu64], [@freq-mod], [@OPNA2608])
 - Modify several dialog modalities
+- [#382] - Update MAME emulation (thanks [@OPNA2608])
+- [#382] - Change the project license to GPL v2+
 - Move the repository to GitHub Organization
+- Update translation: pl
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
@@ -91,6 +96,9 @@
 [#363]: https://github.com/BambooTracker/BambooTracker/issues/363
 [#372]: https://github.com/BambooTracker/BambooTracker/pull/372
 [#377]: https://github.com/BambooTracker/BambooTracker/issues/377
+[#381]: https://github.com/BambooTracker/BambooTracker/pull/381
+[#379]: https://github.com/BambooTracker/BambooTracker/issues/379
+[#382]: https://github.com/BambooTracker/BambooTracker/pull/382
 
 ## v0.4.6 (2021-02-11)
 ### Added
