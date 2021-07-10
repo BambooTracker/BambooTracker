@@ -23,9 +23,9 @@ INSTALLS += licenses
     INSTALLS += manpages
 
     !macx {
-      desktopfile.files = $$PWD/applications
-      desktopfile.path = $${DIST_INSTALL_PATH}/
-      INSTALLS += desktopfile
+      desktopfiles.files = $$PWD/applications $$PWD/mime
+      desktopfiles.path = $${DIST_INSTALL_PATH}/
+      INSTALLS += desktopfiles
 
       iconfiles.files = $$files($$PWD/icons/*x*)
       iconfiles.path = $${DIST_INSTALL_PATH}/icons/hicolor/
