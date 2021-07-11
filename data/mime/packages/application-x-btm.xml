@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-btm">
+    <comment>BTM module</comment>
+    <comment xml:lang="de">BTM-Modul</comment>
+    <acronym>BTM</acronym>
+    <expanded-acronym>BambooTracker Module</expanded-acronym>
+    <expanded-acronym xml:lang="de">BambooTracker-Modul</expanded-acronym>
+    <icon name="BambooTracker"/>
+    <magic>
+      <match type="string" offset="0" value="BambooTrackerMod"/>
+    </magic>
+    <glob pattern="*.btm"/>
+  </mime-type>
+</mime-info>

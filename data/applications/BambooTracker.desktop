@@ -2,6 +2,7 @@
 Name=BambooTracker
 GenericName=OPNA Tracker
 GenericName[jp]=OPNAのトラッカーです
+GenericName[de]=OPNA-Tracker
 GenericName[fr]=Tracker OPNA
 Comment=A tracker for the YM2608 (OPNA), which was used in NEC PC-8801/9801 series of computers
 Comment[jp]=このアプリケーションはNEC PC-8801/9801シリーズに搭載されていたFM音源YM2608(OPNA)向けのトラッカーです。
@@ -9,6 +10,7 @@ Comment[de]=Ein Tracker für den YM2608 (OPNA), welcher in NECs PC-8801/9801 Ser
 Comment[fr]=Un tracker pour le YM2608 (OPNA), qui fut utilisé dans la série d'ordinateurs NEC PC-8801/9801
 Exec=BambooTracker
 Icon=BambooTracker
+MimeType=application/x-btm;
 Terminal=false
 Type=Application
 Categories=AudioVideo;AudioVideoEditing;

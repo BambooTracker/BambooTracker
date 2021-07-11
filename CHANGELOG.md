@@ -15,6 +15,7 @@
 - Welcome dialog (thanks [@OPNA2608])
 - [#381] - Support .pzi with `PZI0` file magic ([#379]; thanks [@OPNA2608], [@freq-mod])
 - 2 new sample modules (thanks SuperJet Spade, TastySnax12)
+- [#387] - .btm -> BT filetype association on Linux ([#388]; thanks [@nyanpasu64], [@OPNA2608])
 
 ### Changed
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
@@ -99,6 +100,8 @@
 [#381]: https://github.com/BambooTracker/BambooTracker/pull/381
 [#379]: https://github.com/BambooTracker/BambooTracker/issues/379
 [#382]: https://github.com/BambooTracker/BambooTracker/pull/382
+[#387]: https://github.com/BambooTracker/BambooTracker/issues/387
+[#388]: https://github.com/BambooTracker/BambooTracker/pull/388
 
 ## v0.4.6 (2021-02-11)
 ### Added
