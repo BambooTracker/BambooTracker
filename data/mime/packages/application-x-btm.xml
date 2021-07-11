@@ -4,8 +4,8 @@
     <comment>BTM module</comment>
     <comment xml:lang="de">BTM-Modul</comment>
     <acronym>BTM</acronym>
-    <expaned-acronym>BambooTracker Module</acronym>
-    <expaned-acronym xml:lang="de">BambooTracker-Modul</acronym>
+    <expanded-acronym>BambooTracker Module</expanded-acronym>
+    <expanded-acronym xml:lang="de">BambooTracker-Modul</expanded-acronym>
     <icon name="BambooTracker"/>
     <magic>
       <match type="string" offset="0" value="BambooTrackerMod"/>
