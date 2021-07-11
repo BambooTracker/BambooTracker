@@ -23,7 +23,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 #include "nuked_2608.hpp"
 #include <cstdlib>
 #include <algorithm>

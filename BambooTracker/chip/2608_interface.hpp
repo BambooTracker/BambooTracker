@@ -19,6 +19,5 @@ public:
 	virtual uint8_t readData() = 0;
 	virtual void updateStream(sample** outputs, int nSamples) = 0;
 	virtual void updateSsgStream(sample** outputs, int nSamples) = 0;
-	void a() {}
 };
 }

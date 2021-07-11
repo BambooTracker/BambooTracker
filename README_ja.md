@@ -137,13 +137,13 @@ pkg install bambootracker
 [ビルド方法](#ビルド方法)の項を参照してください。
 
 ## ショートカット
-[KEYCOMMANDS.md](./KEYCOMMANDS.md)を参照してください。
+*[KEYCOMMANDS.md](./KEYCOMMANDS.md)を参照してください。*
 
 ## エフェクト一覧
-[EFFECTLIST.md](./EFFECTLIST.md)を参照してください。
+*[EFFECTLIST.md](./EFFECTLIST.md)を参照してください。*
 
 ## ファイル入出力
-[FILEIO.md](./FILEIO.md)を参照してください。
+*[FILEIO.md](./FILEIO.md)を参照してください。*
 
 ## ビルド方法
 ### 依存関係

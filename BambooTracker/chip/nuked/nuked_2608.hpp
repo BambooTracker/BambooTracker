@@ -23,7 +23,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 #pragma once
 
 #include "../2608_interface.hpp"

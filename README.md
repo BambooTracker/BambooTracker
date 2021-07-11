@@ -137,13 +137,13 @@ pkg install bambootracker
 See [Building](#building)
 
 ## Key commands
-See [KEYCOMMANDS.md](./KEYCOMMANDS.md).
+*See [KEYCOMMANDS.md](./KEYCOMMANDS.md).*
 
 ## Effect list
-See [EFFECTLIST.md](./EFFECTLIST.md).
+*See [EFFECTLIST.md](./EFFECTLIST.md).*
 
 ## File I/O
-See [FILEIO.md](./FILEIO.md).
+*See [FILEIO.md](./FILEIO.md).*
 
 ## Building
 ### Dependencies
