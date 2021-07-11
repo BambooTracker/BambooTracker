@@ -80,8 +80,8 @@ void TickCounter::setGrooveState(GrooveState state)
 {
 	switch (state) {
 	case GrooveState::ValidByGlobal:
-		nextGroovePos_ = static_cast<int>(grooves_.size()) - 1;
-		resetRest();
+		nextGroovePos_ = 0;
+		if (isPlaySong_) restTickToNextStep_ = grooves_.at(0) - 1;
 		break;
 	case GrooveState::ValidByLocal:
 		nextGroovePos_ = 0;
