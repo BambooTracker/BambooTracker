@@ -92,6 +92,12 @@ void TickCounter::setGrooveState(GrooveState state)
 		resetRest();
 		break;
 	}
+
+	// When enabling groove (which disables tempo), reset tempo accumulator.
+	if (state == GrooveState::ValidByGlobal || state == GrooveState::ValidByLocal) {
+		tickDiffSum_ = 0.f;
+		prevTickDiffSum_ = 0.f;
+	}
 }
 
 bool TickCounter::getGrooveEnabled() const noexcept
