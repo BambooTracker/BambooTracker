@@ -30,7 +30,11 @@ TickCounter::TickCounter() :
 	tempo_(150),    // Dummy set
 	tickRate_(60),	// NTSC
 	nextGroovePos_(-1),
-	defStepSize_(6)    // Dummy set
+	defStepSize_(6),	// Dummy set
+	restTickToNextStep_(0),
+	tickDiff_(0.f),
+	tickDiffSum_(0.f),
+	prevTickDiffSum_(0.f)
 {
 	updateTickDifference();
 }
@@ -45,7 +49,6 @@ void TickCounter::setTempo(int tempo)
 {
 	tempo_ = tempo;
 	updateTickDifference();
-	tickDiffSum_ = 0;
 	resetRest();
 }
 
@@ -58,7 +61,7 @@ void TickCounter::setSpeed(int speed)
 {
 	defStepSize_ = speed;
 	updateTickDifference();
-	tickDiffSum_ = 0;
+	// Changing speed does not reset tempo, so don't reset tickDiffSum_ either.
 	resetRest();
 }
 
@@ -77,18 +80,23 @@ void TickCounter::setGrooveState(GrooveState state)
 {
 	switch (state) {
 	case GrooveState::ValidByGlobal:
-		nextGroovePos_ = static_cast<int>(grooves_.size()) - 1;
-		resetRest();
+		nextGroovePos_ = 0;
+		if (isPlaySong_) restTickToNextStep_ = grooves_.at(0) - 1;
 		break;
 	case GrooveState::ValidByLocal:
 		nextGroovePos_ = 0;
 		resetRest();
-		--restTickToNextStep_;	// Count down by step head
 		break;
 	case GrooveState::Invalid:
 		nextGroovePos_ = -1;
 		resetRest();
 		break;
+	}
+
+	// When enabling groove (which disables tempo), reset tempo accumulator.
+	if (state == GrooveState::ValidByGlobal || state == GrooveState::ValidByLocal) {
+		tickDiffSum_ = 0.f;
+		prevTickDiffSum_ = 0.f;
 	}
 }
 
@@ -104,14 +112,16 @@ void TickCounter::setPlayState(bool isPlaySong) noexcept
 
 int TickCounter::countUp()
 {
+	prevTickDiffSum_ = tickDiffSum_;
 	if (isPlaySong_) {
 		int ret = restTickToNextStep_;
 
 		if (!restTickToNextStep_) {  // When head of step, calculate real step size
 			resetRest();
 		}
-
-		--restTickToNextStep_;   // Count down to next step
+		else {
+			--restTickToNextStep_;	 // Count down to next step
+		}
 
 		return ret;
 	}
@@ -130,19 +140,29 @@ void TickCounter::resetCount()
 {
 	restTickToNextStep_ = 0;
 	tickDiffSum_ = 0;
+	prevTickDiffSum_ = 0;
 }
 
+// MUST be idempotent when no groove is active.
 void TickCounter::resetRest()
 {
 	if (nextGroovePos_ == -1) {
-		tickDiffSum_ += tickDiff_;
+		tickDiffSum_ = prevTickDiffSum_ + tickDiff_;
 		int castedTickDifSum = static_cast<int>(tickDiffSum_);
 		restTickToNextStep_ = defStepSize_ + castedTickDifSum;
-		if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;	// Prevent wait count changing to 0 (freeze)
 		tickDiffSum_ -= castedTickDifSum;
 	}
 	else {
 		restTickToNextStep_ = grooves_.at(static_cast<size_t>(nextGroovePos_));
 		nextGroovePos_ = (nextGroovePos_ + 1) % static_cast<int>(grooves_.size());
+	}
+
+	// Ensure each row lasts for at least 1 tick, and that we can subtract 1 safely.
+	if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;
+
+	// If resetRest() is called in response to the tracker processing a row or Fxx/Oxx event,
+	// subtract 1 so countUp() will remain on the row for (speed - 1) subsequent ticks.
+	if (isPlaySong_) {
+		restTickToNextStep_--;
 	}
 }
