@@ -79,6 +79,7 @@ jobs:
 
       - name: Configuring.
         run: |
+          lupdate Project.pro
           qmake Project.pro PREFIX=${BT_INSTALLBASE} \
             CONFIG+=release CONFIG-=debug ${QMAKE_EXTRA_ARGUMENTS}
           ${MAKE} qmake_all
