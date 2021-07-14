@@ -1371,101 +1371,125 @@
 <context>
     <name>EffectDescription</name>
     <message>
+        <location filename="../gui/effect_description.cpp" line="43"/>
         <source>Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
-        <translation type="vanished">Arpeggio, x: druga nuta(0-F), y: trzecia nuta(0-F)</translation>
+        <translation>Arpeggio, x: druga nuta(0-F), y: trzecia nuta(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="44"/>
         <source>Portamento up, xx: depth (00-FF)</source>
-        <translation type="vanished">Portamento w górę, xx: głębokość(00-FF)</translation>
+        <translation>Portamento w górę, xx: głębokość(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="45"/>
         <source>Portamento down, xx: depth (00-FF)</source>
-        <translation type="vanished">Portamento w dół, xx: głębokość(00-FF)</translation>
+        <translation>Portamento w dół, xx: głębokość(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="46"/>
         <source>Tone portamento, xx: depth (00-FF)</source>
-        <translation type="vanished">Portamento tonu, xx: głębokość(00-FF)</translation>
+        <translation>Portamento tonu, xx: głębokość(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="47"/>
         <source>Vibrato, x: period (0-F), y: depth (0-F)</source>
-        <translation type="vanished">Vibrato, x: okres(0-F), y: głębokość(0-F)</translation>
+        <translation>Vibrato, x: okres(0-F), y: głębokość(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="48"/>
         <source>Tremolo, x: period (0-F), y: depth (0-F)</source>
-        <translation type="vanished">Tremolo, x: okres(0-F), y: głębokość(0-F)</translation>
+        <translation>Tremolo, x: okres(0-F), y: głębokość(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="49"/>
         <source>Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
-        <translation type="vanished">Ustawienie stereo, xx: 00 = cisza, 01 = prawo, 02 = lewo, 03 = środek</translation>
+        <translation>Ustawienie stereo, xx: 00 = cisza, 01 = prawo, 02 = lewo, 03 = środek</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="50"/>
         <source>Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation type="vanished">Zjazd poziomu głośności, x: w górę(0-F), y: w dół(0-F)</translation>
+        <translation>Zjazd poziomu głośności, x: w górę(0-F), y: w dół(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="51"/>
         <source>Jump to beginning of order xx</source>
-        <translation type="vanished">Przeskocz do początku klatki xx</translation>
+        <translation>Przeskocz do początku klatki xx</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="52"/>
         <source>End of song</source>
-        <translation type="vanished">Koniec piosenki</translation>
+        <translation>Koniec piosenki</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="53"/>
         <source>Jump to step xx of next order</source>
-        <translation type="vanished">Przeskocz do kroku xx następnego klatki</translation>
+        <translation>Przeskocz do kroku xx następnego klatki</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="54"/>
         <source>Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
-        <translation type="vanished">Zmień szybkość (xx: 00-1F), zmień tempo (xx: 20-FF)</translation>
+        <translation>Zmień szybkość (xx: 00-1F), zmień tempo (xx: 20-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="55"/>
         <source>Note delay, xx: count (00-FF)</source>
-        <translation type="vanished">Opóźnienie nuty, xx: ilość(00-FF)</translation>
+        <translation>Opóźnienie nuty, xx: ilość(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="56"/>
         <source>Auto envelope, x: shift amount (0-F), y: shape (0-F)</source>
-        <translation type="vanished">Automatyczna obwiednia, x: przesunięcie(x-8), y: kształt(0-F)</translation>
+        <translation>Automatyczna obwiednia, x: przesunięcie(x-8), y: kształt(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="57"/>
         <source>Hardware envelope period 1, xx: high byte (00-FF)</source>
-        <translation type="vanished">Okres wykonania sprzętowej obwiedni 1, xx: wysoki bajt(00-FF)</translation>
+        <translation>Okres wykonania sprzętowej obwiedni 1, xx: wysoki bajt(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="58"/>
         <source>Hardware envelope period 2, xx: low byte (00-FF)</source>
-        <translation type="vanished">Okres wykonania sprzętowej obiedni 2, xx: niski bajt(00-FF)</translation>
+        <translation>Okres wykonania sprzętowej obiedni 2, xx: niski bajt(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="59"/>
         <source>Retrigger, x: volume slide (0-7: up, 8-F: down), y: tick (1-F)</source>
         <translatorcomment>i don&apos;t have bloody idea how to translate that, I&apos;m sorry</translatorcomment>
-        <translation type="vanished">Wyzwól ponownie, x: zjazd poziomu głośności (0-7: w górę, 8-F: w dół), y: tick (1-F)</translation>
+        <translation>Wyzwól ponownie, x: zjazd poziomu głośności (0-7: w górę, 8-F: w dół), y: tick (1-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="60"/>
         <source>Set groove xx</source>
-        <translation type="vanished">Ustaw Groove o wartości xx</translation>
+        <translation>Ustaw Groove o wartości xx</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="61"/>
         <source>Detune, xx: pitch (00-FF)</source>
-        <translation type="vanished">Rozstrój, xx: wysokość w centach(00-FF)</translation>
+        <translation>Rozstrój, xx: wysokość w centach(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="62"/>
         <source>Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="vanished">Zjazd nuty w górę, x: ilość(0-F), y: półton(0-F)</translation>
+        <translation>Zjazd nuty w górę, x: ilość(0-F), y: półton(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="63"/>
         <source>Note slide down, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="vanished">Zjazd nuty w dół, x: ilość(0-F), y: półton(0-F)</translation>
+        <translation>Zjazd nuty w dół, x: ilość(0-F), y: półton(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="64"/>
         <source>Note cut, xx: count (00-FF)</source>
-        <translation type="vanished">Odcięcie nuty, xx: ilość(00-FF)</translation>
+        <translation>Odcięcie nuty, xx: ilość(00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="65"/>
         <source>Transpose delay, x: count (0-7: up, 8-F: down), y: seminote (0-F)</source>
-        <translation type="vanished">Opóźnienie transponowania, x: ilość(0-7: góra, 8-F: dół), y: pólton(0-F)</translation>
+        <translation>Opóźnienie transponowania, x: ilość(0-7: góra, 8-F: dół), y: pólton(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="79"/>
         <source>Volume delay, x: count (0-F), yy: volume (00-FF)</source>
-        <translation type="vanished">Opóżnienie głośności, x: ilość(0-F), yy: głośność (00-FF)</translation>
+        <translation>Opóżnienie głośności, x: ilość(0-F), yy: głośność (00-FF)</translation>
     </message>
     <message>
         <source>Note cut, xx: count (01-FF)</source>
@@ -1476,72 +1500,88 @@
         <translation type="vanished">Opóźnienie transponowania, x: ilość(1-7: góra, 9-F: dół), y: pólton(0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="66"/>
         <source>Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone &amp; noise</source>
-        <translation type="vanished">Mikser tonu/szumu, xx: 00=cisza, 01=ton, 02=szum, 03=ton &amp; szum</translation>
+        <translation>Mikser tonu/szumu, xx: 00=cisza, 01=ton, 02=szum, 03=ton &amp; szum</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="67"/>
         <source>Master volume, xx: volume (00-3F)</source>
-        <translation type="vanished">Główny poziom głośności, xx: głośność (00-3F)</translation>
+        <translation>Główny poziom głośności, xx: głośność (00-3F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="68"/>
         <source>Noise pitch, xx: pitch (00-1F)</source>
-        <translation type="vanished">Częstotliwość szumu, xx: wysokość (00-1F)</translation>
+        <translation>Częstotliwość szumu, xx: wysokość (00-1F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="69"/>
         <source>Register address bank 0, xx: address (00-6B)</source>
-        <translation type="vanished">Bank adresów rejestru 0, xx: adres (00-B6)</translation>
+        <translation>Bank adresów rejestru 0, xx: adres (00-B6)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="70"/>
         <source>Register address bank 1, xx: address (00-6B)</source>
-        <translation type="vanished">Bank adresów rejestru 1, xx: adres (00-B6)</translation>
+        <translation>Bank adresów rejestru 1, xx: adres (00-B6)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="71"/>
         <source>Register value set, xx: value (00-FF)</source>
-        <translation type="vanished">Ustaw wartości rejestrów,  xx: wartość rejestru (00-FF)</translation>
+        <translation>Ustaw wartości rejestrów,  xx: wartość rejestru (00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="72"/>
         <source>AR control, x: operator (1-4), yy: attack rate (00-1F)</source>
-        <translation type="vanished">Kotrola AR, x: operator(1-4), yy: wartość AR (00-1F)</translation>
+        <translation>Kotrola AR, x: operator(1-4), yy: wartość AR (00-1F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="73"/>
         <source>Brightness, xx: relative value (01-FF)</source>
-        <translation type="vanished">Brightness, xx: wartość względna (01-FF)</translation>
+        <translation>Brightness, xx: wartość względna (01-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="74"/>
         <source>DR control, x: operator (1-4), yy: decay rate (00-1F)</source>
-        <translation type="vanished">Kontrola DR, x: operator(1-4), yy: wartość DR (00-1F)</translation>
+        <translation>Kontrola DR, x: operator(1-4), yy: wartość DR (00-1F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="75"/>
         <source>Envelope reset, xx: count (00-FF)</source>
-        <translation type="vanished">Resetuj obwiednię, xx: ilość (00-FF)</translation>
+        <translation>Resetuj obwiednię, xx: ilość (00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="76"/>
         <source>FB control, xx: feedback value (00-07)</source>
-        <translation type="vanished">Kontrola FB, xx: ilość sygnału zwrotnego (00-07)</translation>
+        <translation>Kontrola FB, xx: ilość sygnału zwrotnego (00-07)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="77"/>
         <source>Fine detune, xx: pitch (00-FF)</source>
-        <translation type="vanished">Rozstrojenie, xx: wysokość (00-FF)</translation>
+        <translation>Rozstrojenie, xx: wysokość (00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="78"/>
         <source>ML control, x: operator (1-4), y: multiple (0-F)</source>
-        <translation type="vanished">Kontrola ML, x: operator(1-4), y: wartość ML (0-F)</translation>
+        <translation>Kontrola ML, x: operator(1-4), y: wartość ML (0-F)</translation>
     </message>
     <message>
         <source>Volume delay, x: count (1-F), yy: volume (00-FF)</source>
         <translation type="vanished">Opóżnienie głośności, x: ilość(1-F), yy: głośność (00-FF)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="80"/>
         <source>RR control, x: operator (1-4), y: release rate (0-F)</source>
-        <translation type="vanished">Kontrola RR, x: operator(1-4), y: wartość RR (0-F)</translation>
+        <translation>Kontrola RR, x: operator(1-4), y: wartość RR (0-F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="81"/>
         <source>TL control, x: operator (1-4), yy: total level (00-7F)</source>
-        <translation type="vanished">Kontrola TL, x: operator(1-4), yy: wartość TL (00-7F)</translation>
+        <translation>Kontrola TL, x: operator(1-4), yy: wartość TL (00-7F)</translation>
     </message>
     <message>
+        <location filename="../gui/effect_description.cpp" line="82"/>
         <source>Invalid effect</source>
-        <translation type="vanished">Nieprawidłowy efekt</translation>
+        <translation>Nieprawidłowy efekt</translation>
     </message>
 </context>
 <context>
@@ -1723,6 +1763,39 @@
         <location filename="../gui/file_io_error_message_box.hpp" line="47"/>
         <source>Could not open the file.</source>
         <translation>Nie udało się otworzyć pliku.</translation>
+    </message>
+</context>
+<context>
+    <name>FileType</name>
+    <message>
+        <location filename="../gui/file_io_error_message_box.cpp" line="32"/>
+        <source>module</source>
+        <translation type="unfinished">moduł</translation>
+    </message>
+    <message>
+        <location filename="../gui/file_io_error_message_box.cpp" line="33"/>
+        <source>s98</source>
+        <translation type="unfinished">S98</translation>
+    </message>
+    <message>
+        <location filename="../gui/file_io_error_message_box.cpp" line="34"/>
+        <source>vgm</source>
+        <translation type="unfinished">VGM</translation>
+    </message>
+    <message>
+        <location filename="../gui/file_io_error_message_box.cpp" line="35"/>
+        <source>wav</source>
+        <translation type="unfinished">WAV</translation>
+    </message>
+    <message>
+        <location filename="../gui/file_io_error_message_box.cpp" line="36"/>
+        <source>bank</source>
+        <translation type="unfinished">bank brzmień</translation>
+    </message>
+    <message>
+        <location filename="../gui/file_io_error_message_box.cpp" line="37"/>
+        <source>instrument</source>
+        <translation type="unfinished">instrument</translation>
     </message>
 </context>
 <context>
@@ -2378,16 +2451,16 @@
         <translation>Tempo</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2062"/>
-        <location filename="../gui/mainwindow.cpp" line="2517"/>
-        <location filename="../gui/mainwindow.cpp" line="2519"/>
-        <location filename="../gui/mainwindow.cpp" line="2545"/>
+        <location filename="../gui/mainwindow.cpp" line="2066"/>
+        <location filename="../gui/mainwindow.cpp" line="2521"/>
+        <location filename="../gui/mainwindow.cpp" line="2523"/>
+        <location filename="../gui/mainwindow.cpp" line="2549"/>
         <source>Untitled</source>
         <translation>Bez nazwy</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="244"/>
-        <location filename="../gui/mainwindow.cpp" line="3688"/>
+        <location filename="../gui/mainwindow.cpp" line="3693"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
@@ -3223,14 +3296,14 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="266"/>
+        <location filename="../gui/mainwindow.cpp" line="267"/>
         <source>Octave</source>
         <translation>Oktawa</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="279"/>
-        <location filename="../gui/mainwindow.cpp" line="540"/>
-        <location filename="../gui/mainwindow.cpp" line="2327"/>
+        <location filename="../gui/mainwindow.cpp" line="280"/>
+        <location filename="../gui/mainwindow.cpp" line="541"/>
+        <location filename="../gui/mainwindow.cpp" line="2331"/>
         <source>Octave: %1</source>
         <oldsource>Octave: </oldsource>
         <translation>Oktawa: %1</translation>
@@ -3241,202 +3314,216 @@
         <translation type="vanished">Zapisać zmiany do %1?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2505"/>
+        <location filename="../gui/mainwindow.cpp" line="2509"/>
         <location filename="../gui/mainwindow.hpp" line="234"/>
         <location filename="../gui/mainwindow.hpp" line="250"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1349"/>
-        <location filename="../gui/mainwindow.cpp" line="1370"/>
+        <location filename="../gui/mainwindow.cpp" line="1353"/>
+        <location filename="../gui/mainwindow.cpp" line="1374"/>
         <source>Instrument %1</source>
         <oldsource>Instrument </oldsource>
         <translation>Instrument %1</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="542"/>
+        <location filename="../gui/mainwindow.cpp" line="543"/>
         <source>Welcome to BambooTracker v%1!</source>
         <translation>Witamy w programie BambooTracker v%1!</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1701"/>
+        <location filename="../gui/mainwindow.cpp" line="1705"/>
         <source>Open instrument</source>
         <translation>Otwórz instrument</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1765"/>
+        <location filename="../gui/mainwindow.cpp" line="1769"/>
         <source>Save instrument</source>
         <translation>Zapisz instrument</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1811"/>
+        <location filename="../gui/mainwindow.cpp" line="1815"/>
         <source>Open bank</source>
         <translation>Otwórz bank brzmień</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1875"/>
+        <location filename="../gui/mainwindow.cpp" line="1879"/>
         <source>Select instruments to load:</source>
         <translation>Wybierz instrument:</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2534"/>
-        <location filename="../gui/mainwindow.cpp" line="2584"/>
+        <location filename="../gui/mainwindow.cpp" line="2538"/>
+        <location filename="../gui/mainwindow.cpp" line="2588"/>
         <source>No instrument</source>
         <translation>Brak instrumentów</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2224"/>
+        <location filename="../gui/mainwindow.cpp" line="2228"/>
         <source>Standard</source>
         <translation>Standartowy</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="173"/>
+        <location filename="../gui/mainwindow.cpp" line="174"/>
         <source>English</source>
         <comment>Default notation system</comment>
         <extracomment>Set the name of suitable notation system (English or German)</extracomment>
         <translation>Angielski</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="282"/>
+        <location filename="../gui/mainwindow.cpp" line="283"/>
         <source>Volume</source>
         <translation>Poziom głośności</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="299"/>
+        <location filename="../gui/mainwindow.cpp" line="300"/>
         <source>Step highlight 1st</source>
         <translation>Pierwsze podkreślenie kroku</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="315"/>
+        <location filename="../gui/mainwindow.cpp" line="316"/>
         <source>2nd</source>
         <translation>Drugie</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="682"/>
+        <location filename="../gui/mainwindow.cpp" line="683"/>
         <source>Welcome to BambooTracker!</source>
         <translation>Witamy w programie BambooTracker!</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="683"/>
+        <location filename="../gui/mainwindow.cpp" line="687"/>
         <source>Don&apos;t know where to start?</source>
         <translation>Nie wiesz gdzie zacząć?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="684"/>
+        <location filename="../gui/mainwindow.cpp" line="688"/>
         <source>Check the demo modules and instruments included with your download of BambooTracker.</source>
         <translation>Sprawdź piosenki demonstracyjne i instrumenty dołączone do twojej kopii BambooTrackera.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="686"/>
+        <location filename="../gui/mainwindow.cpp" line="690"/>
         <source>Need a list of effects and shortcuts?</source>
         <translation>Potrzebujesz listy efektów i skrótów klawiszowych?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="687"/>
+        <location filename="../gui/mainwindow.cpp" line="691"/>
         <source>Check the Help menu at the top of the window.</source>
         <translation>Sprawdź menu pomocy w górnej części okna.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="688"/>
+        <location filename="../gui/mainwindow.cpp" line="692"/>
         <source>Still lost?</source>
         <translation>Wciąż zagubiony?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="689"/>
+        <location filename="../gui/mainwindow.cpp" line="693"/>
         <source>The README.md has a link to our Discord server.</source>
         <translation>Plik README.md zawiera link do naszego serwera na Discordzie.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="690"/>
+        <location filename="../gui/mainwindow.cpp" line="694"/>
         <source>Think you&apos;ve found a bug? Missing a feature?</source>
         <translation>Uważasz że znalazłeś błąd w programie? Brakującą funkcję?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="691"/>
+        <location filename="../gui/mainwindow.cpp" line="695"/>
         <source>BambooTracker is still in development, bugs and missing features are to be expected. So we need your help!</source>
         <translation>BambooTracker jest wciąż w fazie rozwoju, należy się spodziewać błedów i brakujących funkcji. Potrzebujemy więc Twojej pomocy!</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="695"/>
+        <location filename="../gui/mainwindow.cpp" line="699"/>
         <source>Please report any bugs you find and requests and features you&apos;d like to see on our Discord server or our bug tracker (%1).</source>
         <translation>Prosimy o zgłaszanie jakichkolwiek błedów i próśb o nowe funkcje na nasz serwer na Discordzie lub na naszego bugtrackera (%1).</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="699"/>
+        <location filename="../gui/mainwindow.cpp" line="703"/>
         <source>If you&apos;re a developer yourself or would like to start being one, consider contributing to the project yourself. Any help would be appreciated!</source>
         <translation>Jeżeli jestes programistą, albo chcesz nim zostać, rozważ proszę wsparcie tego projektu. Każda pomoc jest doceniana!</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="703"/>
+        <location filename="../gui/mainwindow.cpp" line="707"/>
         <source>Welcome</source>
         <translation>Witamy</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1720"/>
-        <location filename="../gui/mainwindow.cpp" line="1932"/>
+        <location filename="../gui/mainwindow.cpp" line="1724"/>
+        <location filename="../gui/mainwindow.cpp" line="1936"/>
         <source>The number of instruments has reached the upper limit.</source>
         <translation>Ilość instrumentów przekroczyła wartość maksymalną.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1964"/>
+        <location filename="../gui/mainwindow.cpp" line="1968"/>
         <source>Select instruments to save:</source>
         <translation>Wybierz instrument do zapisu:</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1975"/>
+        <location filename="../gui/mainwindow.cpp" line="1979"/>
         <source>Save bank</source>
         <translation>Zapisz bank brzmień</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2091"/>
+        <location filename="../gui/mainwindow.cpp" line="2095"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2096"/>
+        <location filename="../gui/mainwindow.cpp" line="2100"/>
         <source>Custom</source>
         <translation>Niestandartowy</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2101"/>
+        <location filename="../gui/mainwindow.cpp" line="2105"/>
         <source>PC-9821 with PC-9801-86</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2106"/>
+        <location filename="../gui/mainwindow.cpp" line="2110"/>
         <source>PC-9821 with Speak Board</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2111"/>
+        <location filename="../gui/mainwindow.cpp" line="2115"/>
         <source>PC-88VA2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2116"/>
+        <location filename="../gui/mainwindow.cpp" line="2120"/>
         <source>NEC PC-8801mkIISR</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2225"/>
+        <location filename="../gui/mainwindow.cpp" line="2229"/>
         <source>FM3ch expanded</source>
         <translation>Roszszerzenie FM3ch</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2254"/>
+        <location filename="../gui/mainwindow.cpp" line="2258"/>
         <source>Insufficient memory size to load ADPCM samples. Please delete the unused samples.</source>
         <translation>Niewystarczająca ilość pamięci, by wczytać próbki ADPCM. Proszę usunąć nieużywane próbki.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2405"/>
+        <location filename="../gui/mainwindow.cpp" line="2409"/>
         <source>The module has been changed. Do you want to save it?</source>
         <translation>Moduł został zmieniony. Czy chcesz go zapisać?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2980"/>
+        <location filename="../gui/mainwindow.cpp" line="2984"/>
+        <source>This software is licensed under the GNU General Public License v2.0 or later.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="2999"/>
+        <source>Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1+)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="3007"/>
+        <source>ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>This software is licensed under the GNU General Public License v2.0.</source>
-        <translation>To oprogramowanie jest objete licencją GNU General Public License v2.0.</translation>
+        <translation type="vanished">To oprogramowanie jest objete licencją GNU General Public License v2.0.</translation>
     </message>
     <message>
         <source>&lt;b&gt;YM2608 Music Tracker&lt;br&gt;Copyright (C) 2018-2021 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
@@ -3448,93 +3535,93 @@
         <translation>Nie udało się uruchomić wejścia MIDI.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3191"/>
-        <location filename="../gui/mainwindow.cpp" line="3257"/>
+        <location filename="../gui/mainwindow.cpp" line="3196"/>
+        <location filename="../gui/mainwindow.cpp" line="3262"/>
         <source>BambooTracker module (*.btm)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3191"/>
-        <location filename="../gui/mainwindow.cpp" line="3257"/>
-        <location filename="../gui/mainwindow.cpp" line="3378"/>
-        <location filename="../gui/mainwindow.cpp" line="3513"/>
-        <location filename="../gui/mainwindow.cpp" line="3581"/>
+        <location filename="../gui/mainwindow.cpp" line="3196"/>
+        <location filename="../gui/mainwindow.cpp" line="3262"/>
+        <location filename="../gui/mainwindow.cpp" line="3383"/>
+        <location filename="../gui/mainwindow.cpp" line="3518"/>
+        <location filename="../gui/mainwindow.cpp" line="3586"/>
         <source>All files (*)</source>
         <translation>Wszystkie pliki (*)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3378"/>
+        <location filename="../gui/mainwindow.cpp" line="3383"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3416"/>
+        <location filename="../gui/mainwindow.cpp" line="3421"/>
         <source>Export %1 to WAV</source>
         <translation>Eksportuj %1 do WAV</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3513"/>
+        <location filename="../gui/mainwindow.cpp" line="3518"/>
         <source>VGM file (*.vgm)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3581"/>
+        <location filename="../gui/mainwindow.cpp" line="3586"/>
         <source>S98 file (*.s98)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3748"/>
+        <location filename="../gui/mainwindow.cpp" line="3753"/>
         <source>Do you want to remove all duplicate instruments?</source>
         <translation>Czy chcesz usunąć wszystkie zduplikowane instrumenty?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3851"/>
+        <location filename="../gui/mainwindow.cpp" line="3856"/>
         <source>Do you want to remove all unused ADPCM samples?</source>
         <translation>Czy chcesz usunąć wszystkie nieużywane próbki ADPCM?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3894"/>
+        <location filename="../gui/mainwindow.cpp" line="3899"/>
         <source>Do you want to transpose a song?</source>
         <translation>Czy chcesz transponować piosenkę?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3915"/>
+        <location filename="../gui/mainwindow.cpp" line="3920"/>
         <source>Do you want to swap tracks?</source>
         <translation>Czy chcesz zamienić kanały?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3969"/>
+        <location filename="../gui/mainwindow.cpp" line="3974"/>
         <source>Approximate song length: %1m%2s</source>
         <translation>Przybliżona długość piosenki: %1m%2s</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2586"/>
+        <location filename="../gui/mainwindow.cpp" line="2590"/>
         <source>Instrument: %1</source>
         <oldsource>Instrument: </oldsource>
         <translation>Instrument: %1</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2877"/>
+        <location filename="../gui/mainwindow.cpp" line="2881"/>
         <source>Do you want to change song properties?</source>
         <translation>Czy chcesz zmienić właściwości piosenki?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2953"/>
+        <location filename="../gui/mainwindow.cpp" line="2957"/>
         <source>Change to jam mode</source>
         <translation>Wejdź w tryb improwizacji</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2953"/>
+        <location filename="../gui/mainwindow.cpp" line="2957"/>
         <source>Change to edit mode</source>
         <translation>Wejdź w tryb edycji</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2975"/>
+        <location filename="../gui/mainwindow.cpp" line="2979"/>
         <source>YM2608 Music Tracker</source>
         <translation>Tracker muzyczny dla YM2608</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2977"/>
+        <location filename="../gui/mainwindow.cpp" line="2981"/>
         <source>Web:</source>
         <translation>Strona:</translation>
     </message>
@@ -3543,82 +3630,89 @@
         <translation type="vanished">To oprogramowanie jest objęte licencją GNU General Public Licence v2.0.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2981"/>
+        <location filename="../gui/mainwindow.cpp" line="2985"/>
         <source>Source is available at:</source>
         <translation>Kod źródłowy jest dostępny na:</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2984"/>
+        <location filename="../gui/mainwindow.cpp" line="2988"/>
         <source>Libraries:</source>
         <translation>Biblioteki:</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2985"/>
+        <location filename="../gui/mainwindow.cpp" line="2989"/>
         <source>Also see changelog which lists contributors.</source>
         <translation>Zobacz także changelog wymieniający współautorów.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2986"/>
+        <location filename="../gui/mainwindow.cpp" line="2990"/>
         <source>Thank you to everyone who reports bugs, makes suggestions, and contributes to this project!</source>
         <translation>Dziękujemy każdemu kto zgłasza błedy, sugeruje zmiany i wspomaga ten projekt!</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2990"/>
+        <location filename="../gui/mainwindow.cpp" line="2994"/>
         <source>C86CTL by (C) honet (BSD 3-Clause)</source>
         <translation>C86CTL autorstwa (C) honet (3-klauzulowa licencja BSD)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2992"/>
+        <location filename="../gui/mainwindow.cpp" line="2996"/>
+        <source>emu2149 by (C) Mitsutaka Okazaki (MIT License)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="2997"/>
+        <source>fmopn by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="2998"/>
         <source>libOPNMIDI by (C) Vitaly Novichkov (MIT License part)</source>
         <translation>libOPNMIDI autorstwa (C) Vitaly Novichkov (część objęta licencją MIT)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2993"/>
         <source>MAME (MAME License)</source>
-        <translation>MAME (Licencja MAME)</translation>
+        <translation type="vanished">MAME (Licencja MAME)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2994"/>
         <source>Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1)</source>
-        <translation>Nuked OPN-MOD autorstwa (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1)</translation>
+        <translation type="vanished">Nuked OPN-MOD autorstwa (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2995"/>
+        <location filename="../gui/mainwindow.cpp" line="3001"/>
         <source>RtAudio by (C) Gary P. Scavone (RtAudio License)</source>
         <translation>RtAudio autorstwa (C) Gary P. Scavone (Licencja RtAudio)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2996"/>
+        <location filename="../gui/mainwindow.cpp" line="3002"/>
         <source>RtMidi by (C) Gary P. Scavone (RtMidi License)</source>
         <translation>RtMidi autorstwa (C) Gary P. Scavone (Licencja RtMidi)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2998"/>
+        <location filename="../gui/mainwindow.cpp" line="3004"/>
         <source>SCCI by (C) gasshi (SCCI License)</source>
         <translation>SCCI autorstwa (C) gasshi (Licencja SCCI)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3000"/>
+        <location filename="../gui/mainwindow.cpp" line="3006"/>
         <source>Silk icons by (C) Mark James (CC BY 2.5 or 3.0)</source>
         <translation>Ikony Silk autorstwa (C) Mark James (CC BY 2.5 lub 3.0)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3001"/>
+        <location filename="../gui/mainwindow.cpp" line="3000"/>
         <source>Qt (GPL v2+ or LGPL v3)</source>
         <translation>Qt (GPL v2+ lub LGPL v3)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3002"/>
         <source>VGMPlay by (C) Valley Bell (GPL v2)</source>
-        <translation>VGMPlay autorstwa (C) Valley Bell (GPL v2)</translation>
+        <translation type="vanished">VGMPlay autorstwa (C) Valley Bell (GPL v2)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3019"/>
+        <location filename="../gui/mainwindow.cpp" line="3024"/>
         <source>About</source>
         <translation>O programie</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2505"/>
+        <location filename="../gui/mainwindow.cpp" line="2509"/>
         <source>Failed to backup module.</source>
         <translation>Nie udało się zapisać kopii zapasowej modułu.</translation>
     </message>
@@ -3627,53 +3721,53 @@
         <translation type="vanished">&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Użyte biblioteki:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Zobacz także Changelog który wymienia wszystkich współautorów programu.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3189"/>
+        <location filename="../gui/mainwindow.cpp" line="3194"/>
         <source>Save module</source>
         <translation>Zapisz moduł</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3256"/>
+        <location filename="../gui/mainwindow.cpp" line="3261"/>
         <source>Open module</source>
         <translation>Otwórz moduł</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3326"/>
+        <location filename="../gui/mainwindow.cpp" line="3331"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>Czy chcesz usunąć wszystkie nieużywane instrumenty?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3347"/>
+        <location filename="../gui/mainwindow.cpp" line="3352"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>Czy chcesz usunąć wszystkie nieużywane wzorce?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3376"/>
-        <location filename="../gui/mainwindow.cpp" line="3410"/>
+        <location filename="../gui/mainwindow.cpp" line="3381"/>
+        <location filename="../gui/mainwindow.cpp" line="3415"/>
         <source>Export to WAV</source>
         <translation>Eksportuj do WAV</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3389"/>
-        <location filename="../gui/mainwindow.cpp" line="3522"/>
-        <location filename="../gui/mainwindow.cpp" line="3590"/>
+        <location filename="../gui/mainwindow.cpp" line="3394"/>
+        <location filename="../gui/mainwindow.cpp" line="3527"/>
+        <location filename="../gui/mainwindow.cpp" line="3595"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3511"/>
-        <location filename="../gui/mainwindow.cpp" line="3522"/>
+        <location filename="../gui/mainwindow.cpp" line="3516"/>
+        <location filename="../gui/mainwindow.cpp" line="3527"/>
         <source>Export to VGM</source>
         <translation>Eksportuj do VGM</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3579"/>
-        <location filename="../gui/mainwindow.cpp" line="3590"/>
+        <location filename="../gui/mainwindow.cpp" line="3584"/>
+        <location filename="../gui/mainwindow.cpp" line="3595"/>
         <source>Export to S98</source>
         <translation>Eksportuj do S98</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2253"/>
-        <location filename="../gui/mainwindow.cpp" line="2404"/>
+        <location filename="../gui/mainwindow.cpp" line="2257"/>
+        <location filename="../gui/mainwindow.cpp" line="2408"/>
         <location filename="../gui/mainwindow.hpp" line="226"/>
         <location filename="../gui/mainwindow.hpp" line="242"/>
         <source>Warning</source>
@@ -3827,14 +3921,27 @@
 <context>
     <name>ModuleSaveCheckDialog</name>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="107"/>
+        <location filename="../gui/mainwindow.cpp" line="108"/>
         <source>Save changes to %1?</source>
         <translation>Zapisać zmiany do %1?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="107"/>
+        <location filename="../gui/mainwindow.cpp" line="108"/>
         <source>Untitled</source>
         <translation>Bez nazwy</translation>
+    </message>
+</context>
+<context>
+    <name>NotationSystem</name>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="71"/>
+        <source>English</source>
+        <translation type="unfinished">Angielski</translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="72"/>
+        <source>German</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3897,6 +4004,24 @@
         <location filename="../gui/instrument_editor/pan_macro_editor.cpp" line="40"/>
         <source>Left</source>
         <translation>Lewo</translation>
+    </message>
+</context>
+<context>
+    <name>Panning</name>
+    <message>
+        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="40"/>
+        <source>Left</source>
+        <translation type="unfinished">Lewo</translation>
+    </message>
+    <message>
+        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="41"/>
+        <source>Center</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="42"/>
+        <source>Right</source>
+        <translation type="unfinished">Prawo</translation>
     </message>
 </context>
 <context>
@@ -4265,6 +4390,19 @@
     </message>
 </context>
 <context>
+    <name>SongType</name>
+    <message>
+        <location filename="../gui/module_properties_dialog.cpp" line="37"/>
+        <source>Standard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/module_properties_dialog.cpp" line="38"/>
+        <source>FM3ch expanded</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SwapTracksDialog</name>
     <message>
         <location filename="../gui/swap_tracks_dialog.ui" line="14"/>
@@ -4590,204 +4728,164 @@
 <context>
     <name>effect_desc</name>
     <message>
-        <location filename="../gui/effect_description.cpp" line="43"/>
         <source>Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
-        <translation>Arpeggio, x: druga nuta(0-F), y: trzecia nuta(0-F)</translation>
+        <translation type="vanished">Arpeggio, x: druga nuta(0-F), y: trzecia nuta(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="44"/>
         <source>Portamento up, xx: depth (00-FF)</source>
-        <translation>Portamento w górę, xx: głębokość(00-FF)</translation>
+        <translation type="vanished">Portamento w górę, xx: głębokość(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="45"/>
         <source>Portamento down, xx: depth (00-FF)</source>
-        <translation>Portamento w dół, xx: głębokość(00-FF)</translation>
+        <translation type="vanished">Portamento w dół, xx: głębokość(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="46"/>
         <source>Tone portamento, xx: depth (00-FF)</source>
-        <translation>Portamento tonu, xx: głębokość(00-FF)</translation>
+        <translation type="vanished">Portamento tonu, xx: głębokość(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="47"/>
         <source>Vibrato, x: period (0-F), y: depth (0-F)</source>
-        <translation>Vibrato, x: okres(0-F), y: głębokość(0-F)</translation>
+        <translation type="vanished">Vibrato, x: okres(0-F), y: głębokość(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="48"/>
         <source>Tremolo, x: period (0-F), y: depth (0-F)</source>
-        <translation>Tremolo, x: okres(0-F), y: głębokość(0-F)</translation>
+        <translation type="vanished">Tremolo, x: okres(0-F), y: głębokość(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="49"/>
         <source>Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
-        <translation>Ustawienie stereo, xx: 00 = cisza, 01 = prawo, 02 = lewo, 03 = środek</translation>
+        <translation type="vanished">Ustawienie stereo, xx: 00 = cisza, 01 = prawo, 02 = lewo, 03 = środek</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="50"/>
         <source>Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation>Zjazd poziomu głośności, x: w górę(0-F), y: w dół(0-F)</translation>
+        <translation type="vanished">Zjazd poziomu głośności, x: w górę(0-F), y: w dół(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="51"/>
         <source>Jump to beginning of order xx</source>
-        <translation>Przeskocz do początku klatki xx</translation>
+        <translation type="vanished">Przeskocz do początku klatki xx</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="52"/>
         <source>End of song</source>
-        <translation>Koniec piosenki</translation>
+        <translation type="vanished">Koniec piosenki</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="53"/>
         <source>Jump to step xx of next order</source>
-        <translation>Przeskocz do kroku xx następnego klatki</translation>
+        <translation type="vanished">Przeskocz do kroku xx następnego klatki</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="54"/>
         <source>Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
-        <translation>Zmień szybkość (xx: 00-1F), zmień tempo (xx: 20-FF)</translation>
+        <translation type="vanished">Zmień szybkość (xx: 00-1F), zmień tempo (xx: 20-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="55"/>
         <source>Note delay, xx: count (00-FF)</source>
-        <translation>Opóźnienie nuty, xx: ilość(00-FF)</translation>
+        <translation type="vanished">Opóźnienie nuty, xx: ilość(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="56"/>
         <source>Auto envelope, x: shift amount (0-F), y: shape (0-F)</source>
-        <translation>Automatyczna obwiednia, x: przesunięcie(x-8), y: kształt(0-F)</translation>
+        <translation type="vanished">Automatyczna obwiednia, x: przesunięcie(x-8), y: kształt(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="57"/>
         <source>Hardware envelope period 1, xx: high byte (00-FF)</source>
-        <translation>Okres wykonania sprzętowej obwiedni 1, xx: wysoki bajt(00-FF)</translation>
+        <translation type="vanished">Okres wykonania sprzętowej obwiedni 1, xx: wysoki bajt(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="58"/>
         <source>Hardware envelope period 2, xx: low byte (00-FF)</source>
-        <translation>Okres wykonania sprzętowej obiedni 2, xx: niski bajt(00-FF)</translation>
+        <translation type="vanished">Okres wykonania sprzętowej obiedni 2, xx: niski bajt(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="59"/>
         <source>Retrigger, x: volume slide (0-7: up, 8-F: down), y: tick (1-F)</source>
-        <translation>Wyzwól ponownie, x: zjazd poziomu głośności (0-7: w górę, 8-F: w dół), y: tick (1-F)</translation>
+        <translation type="vanished">Wyzwól ponownie, x: zjazd poziomu głośności (0-7: w górę, 8-F: w dół), y: tick (1-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="60"/>
         <source>Set groove xx</source>
-        <translation>Ustaw Groove o wartości xx</translation>
+        <translation type="vanished">Ustaw Groove o wartości xx</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="61"/>
         <source>Detune, xx: pitch (00-FF)</source>
-        <translation>Rozstrój, xx: wysokość w centach(00-FF)</translation>
+        <translation type="vanished">Rozstrój, xx: wysokość w centach(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="62"/>
         <source>Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translation>Zjazd nuty w górę, x: ilość(0-F), y: półton(0-F)</translation>
+        <translation type="vanished">Zjazd nuty w górę, x: ilość(0-F), y: półton(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="63"/>
         <source>Note slide down, x: count (0-F), y: seminote (0-F)</source>
-        <translation>Zjazd nuty w dół, x: ilość(0-F), y: półton(0-F)</translation>
+        <translation type="vanished">Zjazd nuty w dół, x: ilość(0-F), y: półton(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="64"/>
         <source>Note cut, xx: count (00-FF)</source>
-        <translation>Odcięcie nuty, xx: ilość(00-FF)</translation>
+        <translation type="vanished">Odcięcie nuty, xx: ilość(00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="65"/>
         <source>Transpose delay, x: count (0-7: up, 8-F: down), y: seminote (0-F)</source>
-        <translation>Opóźnienie transponowania, x: ilość(0-7: góra, 8-F: dół), y: pólton(0-F)</translation>
+        <translation type="vanished">Opóźnienie transponowania, x: ilość(0-7: góra, 8-F: dół), y: pólton(0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="66"/>
         <source>Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone &amp; noise</source>
-        <translation>Mikser tonu/szumu, xx: 00=cisza, 01=ton, 02=szum, 03=ton &amp; szum</translation>
+        <translation type="vanished">Mikser tonu/szumu, xx: 00=cisza, 01=ton, 02=szum, 03=ton &amp; szum</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="67"/>
         <source>Master volume, xx: volume (00-3F)</source>
-        <translation>Główny poziom głośności, xx: głośność (00-3F)</translation>
+        <translation type="vanished">Główny poziom głośności, xx: głośność (00-3F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="68"/>
         <source>Noise pitch, xx: pitch (00-1F)</source>
-        <translation>Częstotliwość szumu, xx: wysokość (00-1F)</translation>
+        <translation type="vanished">Częstotliwość szumu, xx: wysokość (00-1F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="69"/>
         <source>Register address bank 0, xx: address (00-6B)</source>
-        <translation>Bank adresów rejestru 0, xx: adres (00-B6)</translation>
+        <translation type="vanished">Bank adresów rejestru 0, xx: adres (00-B6)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="70"/>
         <source>Register address bank 1, xx: address (00-6B)</source>
-        <translation>Bank adresów rejestru 1, xx: adres (00-B6)</translation>
+        <translation type="vanished">Bank adresów rejestru 1, xx: adres (00-B6)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="71"/>
         <source>Register value set, xx: value (00-FF)</source>
-        <translation>Ustaw wartości rejestrów,  xx: wartość rejestru (00-FF)</translation>
+        <translation type="vanished">Ustaw wartości rejestrów,  xx: wartość rejestru (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="72"/>
         <source>AR control, x: operator (1-4), yy: attack rate (00-1F)</source>
-        <translation>Kotrola AR, x: operator(1-4), yy: wartość AR (00-1F)</translation>
+        <translation type="vanished">Kotrola AR, x: operator(1-4), yy: wartość AR (00-1F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="73"/>
         <source>Brightness, xx: relative value (01-FF)</source>
-        <translation>Brightness, xx: wartość względna (01-FF)</translation>
+        <translation type="vanished">Brightness, xx: wartość względna (01-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="74"/>
         <source>DR control, x: operator (1-4), yy: decay rate (00-1F)</source>
-        <translation>Kontrola DR, x: operator(1-4), yy: wartość DR (00-1F)</translation>
+        <translation type="vanished">Kontrola DR, x: operator(1-4), yy: wartość DR (00-1F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="75"/>
         <source>Envelope reset, xx: count (00-FF)</source>
-        <translation>Resetuj obwiednię, xx: ilość (00-FF)</translation>
+        <translation type="vanished">Resetuj obwiednię, xx: ilość (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="76"/>
         <source>FB control, xx: feedback value (00-07)</source>
-        <translation>Kontrola FB, xx: ilość sygnału zwrotnego (00-07)</translation>
+        <translation type="vanished">Kontrola FB, xx: ilość sygnału zwrotnego (00-07)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="77"/>
         <source>Fine detune, xx: pitch (00-FF)</source>
-        <translation>Rozstrojenie, xx: wysokość (00-FF)</translation>
+        <translation type="vanished">Rozstrojenie, xx: wysokość (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="78"/>
         <source>ML control, x: operator (1-4), y: multiple (0-F)</source>
-        <translation>Kontrola ML, x: operator(1-4), y: wartość ML (0-F)</translation>
+        <translation type="vanished">Kontrola ML, x: operator(1-4), y: wartość ML (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="79"/>
         <source>Volume delay, x: count (0-F), yy: volume (00-FF)</source>
-        <translation>Opóżnienie głośności, x: ilość(0-F), yy: głośność (00-FF)</translation>
+        <translation type="vanished">Opóżnienie głośności, x: ilość(0-F), yy: głośność (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="80"/>
         <source>RR control, x: operator (1-4), y: release rate (0-F)</source>
-        <translation>Kontrola RR, x: operator(1-4), y: wartość RR (0-F)</translation>
+        <translation type="vanished">Kontrola RR, x: operator(1-4), y: wartość RR (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="81"/>
         <source>TL control, x: operator (1-4), yy: total level (00-7F)</source>
-        <translation>Kontrola TL, x: operator(1-4), yy: wartość TL (00-7F)</translation>
+        <translation type="vanished">Kontrola TL, x: operator(1-4), yy: wartość TL (00-7F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="82"/>
         <source>Invalid effect</source>
-        <translation>Nieprawidłowy efekt</translation>
+        <translation type="vanished">Nieprawidłowy efekt</translation>
     </message>
 </context>
 </TS>

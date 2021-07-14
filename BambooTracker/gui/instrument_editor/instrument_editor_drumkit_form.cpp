@@ -36,7 +36,11 @@
 
 namespace
 {
-const QString PAN_TEXT[] = { QT_TR_NOOP("Left"), QT_TR_NOOP("Center"), QT_TR_NOOP("Right") };
+const QString PAN_TEXT[] = {
+	QT_TRANSLATE_NOOP("Panning", "Left"),
+	QT_TRANSLATE_NOOP("Panning", "Center"),
+	QT_TRANSLATE_NOOP("Panning", "Right")
+};
 constexpr int PAN_UI2INTRNL[] = { PanType::LEFT, PanType::CENTER, PanType::RIGHT };
 
 inline int convertPanInternalToUi(int intrPan)

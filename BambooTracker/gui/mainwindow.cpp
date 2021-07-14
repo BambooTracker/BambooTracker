@@ -99,6 +99,7 @@ constexpr int STATUS_DISPLAY_TIMEOUT = 0;
 
 class ModuleSaveCheckDialog : public QMessageBox
 {
+	Q_OBJECT
 public:
 	explicit ModuleSaveCheckDialog(const std::string& name, QWidget* parent = nullptr)
 		: QMessageBox(QMessageBox::Warning, "BambooTracker", "",

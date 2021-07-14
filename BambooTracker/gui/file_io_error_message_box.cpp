@@ -29,12 +29,12 @@
 namespace
 {
 const std::unordered_map<io::FileType, QString> FILE_NAMES = {
-	{ io::FileType::Mod, QT_TR_NOOP("module") },
-	{ io::FileType::S98, QT_TR_NOOP("s98") },
-	{ io::FileType::VGM, QT_TR_NOOP("vgm") },
-	{ io::FileType::WAV, QT_TR_NOOP("wav") },
-	{ io::FileType::Bank, QT_TR_NOOP("bank") },
-	{ io::FileType::Inst, QT_TR_NOOP("instrument") }
+	{ io::FileType::Mod, QT_TRANSLATE_NOOP("FileType", "module") },
+	{ io::FileType::S98, QT_TRANSLATE_NOOP("FileType", "s98") },
+	{ io::FileType::VGM, QT_TRANSLATE_NOOP("FileType", "vgm") },
+	{ io::FileType::WAV, QT_TRANSLATE_NOOP("FileType", "wav") },
+	{ io::FileType::Bank, QT_TRANSLATE_NOOP("FileType", "bank") },
+	{ io::FileType::Inst, QT_TRANSLATE_NOOP("FileType", "instrument") }
 };
 }
 
