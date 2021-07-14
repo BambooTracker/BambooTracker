@@ -32,6 +32,7 @@
 - [#382] - Update MAME emulation (thanks [@OPNA2608])
 - [#382] - Change the project license to GPL v2+
 - Move the repository to GitHub Organization
+- [#389] - Update CI's Nixpkgs channel to 21.05
 - Update translation: pl
 
 ### Fixed
@@ -102,6 +103,7 @@
 [#382]: https://github.com/BambooTracker/BambooTracker/pull/382
 [#387]: https://github.com/BambooTracker/BambooTracker/issues/387
 [#388]: https://github.com/BambooTracker/BambooTracker/pull/388
+[#389]: https://github.com/BambooTracker/BambooTracker/pull/389
 
 ## v0.4.6 (2021-02-11)
 ### Added

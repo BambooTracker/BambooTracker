@@ -23,7 +23,7 @@ defaults:
 
 env:
   BUILD_TARGET: linux-64bit
-  NIXPKGS_CHANNEL: nixos-20.09
+  NIXPKGS_CHANNEL: nixos-21.05
   BT_INSTALLBASE: ${{ github.workspace }}/target/
 
 jobs:
