@@ -693,8 +693,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 				//: %1 is the link to the issue submission page in GitHub.
 				"<li>" + tr("Please report any bugs you find and requests and features "
 							"you'd like to see on our Discord server or our bug tracker (%1).")
-				.arg(R"(<a href="https://github.com/BambooTracker/BambooTracker/issues/new/choose">
-					 https://github.com/BambooTracker/BambooTracker/issues/new/choose</a>)") + "</li>" +
+				.arg("<a href=\"https://github.com/BambooTracker/BambooTracker/issues/new/choose\">"
+					 "https://github.com/BambooTracker/BambooTracker/issues/new/choose</a>") + "</li>" +
 				"<li>" + tr("If you're a developer yourself or would like to start being one, "
 							"consider contributing to the project yourself. "
 							"Any help would be appreciated!") + "</li>" +
