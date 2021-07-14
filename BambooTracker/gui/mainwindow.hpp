@@ -65,8 +65,17 @@
 #include "gui/key_signature_manager_form.hpp"
 
 namespace Ui {
+	class ModuleSaveCheckDialog;
 	class MainWindow;
 }
+
+class ModuleSaveCheckDialog : public QMessageBox
+{
+  Q_OBJECT
+
+public:
+  explicit ModuleSaveCheckDialog(const std::string& name, QWidget* parent = nullptr);
+};
 
 class MainWindow : public QMainWindow
 {

@@ -96,18 +96,13 @@ const std::unordered_map<Configuration::ToolbarPosition, Qt::ToolBarArea> TB_POS
 };
 
 constexpr int STATUS_DISPLAY_TIMEOUT = 0;
+}
 
-class ModuleSaveCheckDialog : public QMessageBox
+ModuleSaveCheckDialog::ModuleSaveCheckDialog(const std::string& name, QWidget* parent) :
+	QMessageBox(QMessageBox::Warning, "BambooTracker", "",
+		QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, parent)
 {
-	Q_OBJECT
-public:
-	explicit ModuleSaveCheckDialog(const std::string& name, QWidget* parent = nullptr)
-		: QMessageBox(QMessageBox::Warning, "BambooTracker", "",
-					  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, parent)
-	{
-		setText(tr("Save changes to %1?").arg(name.empty() ? tr("Untitled") : gui_utils::utf8ToQString(name)));
-	}
-};
+	setText(tr("Save changes to %1?").arg(name.empty() ? tr("Untitled") : gui_utils::utf8ToQString(name)));
 }
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bool isFirstLaunch, QWidget *parent) :
