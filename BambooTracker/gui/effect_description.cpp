@@ -25,6 +25,7 @@
 
 #include "effect_description.hpp"
 #include <unordered_map>
+#include <QCoreApplication>
 #include "enum_hash.hpp"
 
 namespace effect_desc
@@ -35,8 +36,6 @@ struct EffectDetail
 {
 	const QString format;
 	const char* desc;
-
-	QString mergedString() const { return format + " - " + desc; }
 };
 
 const std::unordered_map<EffectType, EffectDetail> DETAILS = {
@@ -89,12 +88,16 @@ QString getEffectFormat(const EffectType type)
 }
 QString getEffectDescription(const EffectType type)
 {
-	return DETAILS.at(type).desc;
+	return QCoreApplication::translate("EffectDescription", DETAILS.at(type).desc);
 }
 
 QString getEffectFormatAndDetailString(const EffectType type)
 {
-	if (type == EffectType::NoEffect) return DETAILS.at(EffectType::NoEffect).desc;
-	else return DETAILS.at(type).mergedString();
+	if (type == EffectType::NoEffect) {
+		return getEffectDescription(EffectType::NoEffect);
+	}
+	else {
+		return getEffectFormat(type) + " - " + getEffectDescription(type);
+	}
 }
 }

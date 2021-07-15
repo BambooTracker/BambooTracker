@@ -28,12 +28,13 @@
 #include <vector>
 #include <utility>
 #include <unordered_map>
+#include <QCoreApplication>
 #include "gui/gui_utils.hpp"
 #include "enum_hash.hpp"
 
 namespace
 {
-const std::unordered_map<SongType, QString> SONG_TYPE_TEXT = {
+const std::unordered_map<SongType, const char*> SONG_TYPE_TEXT = {
 	{ SongType::Standard, QT_TRANSLATE_NOOP("SongType", "Standard") },
 	{ SongType::FM3chExpanded, QT_TRANSLATE_NOOP("SongType", "FM3ch expanded") }
 };
@@ -76,8 +77,8 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 		insertSong(i, gui_utils::utf8ToQString(title), core.lock()->getSongStyle(i).type, i);
 	}
 
-	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT.at(SongType::Standard), static_cast<int>(SongType::Standard));
-	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT.at(SongType::FM3chExpanded), static_cast<int>(SongType::FM3chExpanded));
+	ui->sngTypeComboBox->addItem(QCoreApplication::translate("SongType", SONG_TYPE_TEXT.at(SongType::Standard)), static_cast<int>(SongType::Standard));
+	ui->sngTypeComboBox->addItem(QCoreApplication::translate("SongType", SONG_TYPE_TEXT.at(SongType::FM3chExpanded)), static_cast<int>(SongType::FM3chExpanded));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()

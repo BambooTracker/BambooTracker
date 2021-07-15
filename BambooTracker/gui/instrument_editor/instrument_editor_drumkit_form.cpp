@@ -26,6 +26,7 @@
 #include "instrument_editor_drumkit_form.hpp"
 #include "ui_instrument_editor_drumkit_form.h"
 #include <QString>
+#include <QCoreApplication>
 #include "instrument.hpp"
 #include "note.hpp"
 #include "gui/event_guard.hpp"
@@ -36,7 +37,7 @@
 
 namespace
 {
-const QString PAN_TEXT[] = {
+const char* PAN_TEXT[] = {
 	QT_TRANSLATE_NOOP("Panning", "Left"),
 	QT_TRANSLATE_NOOP("Panning", "Center"),
 	QT_TRANSLATE_NOOP("Panning", "Right")
@@ -91,7 +92,7 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 	//========== Pan ==========//
 	ui->panHorizontalSlider->setStyle(new SliderStyle);
 	ui->panHorizontalSlider->installEventFilter(this);
-	ui->panPosLabel->setText(PAN_TEXT[ui->panHorizontalSlider->value()]);
+	ui->panPosLabel->setText(QCoreApplication::translate("Panning", PAN_TEXT[ui->panHorizontalSlider->value()]));
 }
 
 InstrumentEditorDrumkitForm::~InstrumentEditorDrumkitForm()
@@ -249,7 +250,7 @@ void InstrumentEditorDrumkitForm::on_pitchSpinBox_valueChanged(int arg1)
 //--- Pan
 void InstrumentEditorDrumkitForm::on_panHorizontalSlider_valueChanged(int value)
 {
-	const QString text = PAN_TEXT[value];
+	const QString text = QCoreApplication::translate("Panning", PAN_TEXT[value]);
 	ui->panPosLabel->setText(text);
 
 	int key = ui->keyTreeWidget->currentIndex().row();
@@ -279,7 +280,7 @@ void InstrumentEditorDrumkitForm::setInstrumentSampleParameters(int key)
 					instKit->getRawSample(key));
 		item->setText(1, QString::number(sampNum));
 		item->setText(2, QString::number(instKit->getPitch(key)));
-		item->setText(3, PAN_TEXT[convertPanInternalToUi(instKit->getPan(key))]);
+		item->setText(3, QCoreApplication::translate("Panning", PAN_TEXT[convertPanInternalToUi(instKit->getPan(key))]));
 	}
 	else {
 		ui->sampleEditor->setInstrumentSampleParameters(

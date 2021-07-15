@@ -25,10 +25,11 @@
 
 #include "file_io_error_message_box.hpp"
 #include <QMessageBox>
+#include <QCoreApplication>
 
 namespace
 {
-const std::unordered_map<io::FileType, QString> FILE_NAMES = {
+const std::unordered_map<io::FileType, const char*> FILE_NAMES = {
 	{ io::FileType::Mod, QT_TRANSLATE_NOOP("FileType", "module") },
 	{ io::FileType::S98, QT_TRANSLATE_NOOP("FileType", "s98") },
 	{ io::FileType::VGM, QT_TRANSLATE_NOOP("FileType", "vgm") },
@@ -48,7 +49,7 @@ FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, 
 	: parent_(parent)
 {
 	const io::FileIOError *err = &e;
-	QString type = FILE_NAMES.at(err->fileType());
+	QString type = QCoreApplication::translate("FileType", FILE_NAMES.at(err->fileType()));
 
 	if (dynamic_cast<const io::FileNotExistError*>(err)) {
 		desc_ = tr("Path does not exist.");

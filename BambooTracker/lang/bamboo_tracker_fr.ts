@@ -242,7 +242,7 @@
     <name>ConfigurationDialog</name>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="14"/>
-        <location filename="../gui/configuration_dialog.cpp" line="499"/>
+        <location filename="../gui/configuration_dialog.cpp" line="500"/>
         <source>Configuration</source>
         <translation>Configuration</translation>
     </message>
@@ -677,22 +677,22 @@
         <translation type="vanished">Touches spéciales</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="163"/>
+        <location filename="../gui/configuration_dialog.cpp" line="164"/>
         <source>Key off</source>
         <translation>Relâchement de touche</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="164"/>
+        <location filename="../gui/configuration_dialog.cpp" line="165"/>
         <source>Octave up</source>
         <translation>Octave supérieure</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="165"/>
+        <location filename="../gui/configuration_dialog.cpp" line="166"/>
         <source>Octave down</source>
         <translation>Octave inférieure</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="166"/>
+        <location filename="../gui/configuration_dialog.cpp" line="167"/>
         <source>Echo buffer</source>
         <translation>Tampon d&apos;écho</translation>
     </message>
@@ -901,28 +901,28 @@
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="584"/>
+        <location filename="../gui/configuration_dialog.cpp" line="585"/>
         <source>Virtual port</source>
         <translation>Port virtuel</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="360"/>
+        <location filename="../gui/configuration_dialog.cpp" line="361"/>
         <source>Master</source>
         <translation>Maître</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="499"/>
+        <location filename="../gui/configuration_dialog.cpp" line="500"/>
         <source>The change of emulator will be effective after restarting the program.</source>
         <translation>Le changement d&apos;émulateur sera pris en compte au redémarrage du logiciel.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="102"/>
+        <location filename="../gui/configuration_dialog.cpp" line="103"/>
         <source>Warp the cursor around the edges of the pattern editor.</source>
         <translatorcomment>J&apos;ai rien trouvé de mieux.</translatorcomment>
         <translation type="unfinished">Le curseur se déplace de manière cyclique à proximité des bords de l&apos;éditeur de motifs.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="104"/>
+        <location filename="../gui/configuration_dialog.cpp" line="105"/>
         <source>Move to previous or next order when reaching top or bottom in the pattern editor.</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">Se positionner sur l&apos;ordre précédent ou suivant lorsque le sommet ou le bas de l&apos;éditeur de motifs est atteint.</translation>
@@ -933,48 +933,48 @@
         <translation type="obsolete">Afficher le numéro d&apos;ordre et le nombre d&apos;ordres en hexadécimal dans la barre d&apos;état.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="106"/>
+        <location filename="../gui/configuration_dialog.cpp" line="107"/>
         <source>Display row numbers and the playback position on the status bar in hexadecimal.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="108"/>
+        <location filename="../gui/configuration_dialog.cpp" line="109"/>
         <source>Preview previous and next orders in the pattern editor.</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">Prévisualiser les ordres précédent et suivant dans l&apos;éditeur de motifs.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="110"/>
+        <location filename="../gui/configuration_dialog.cpp" line="111"/>
         <source>Create a backup copy of the existing file when saving a module.</source>
         <translation>Créer une copie de sauvegarde du fichier existant lors de la sauvegarde d&apos;un module.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="112"/>
+        <location filename="../gui/configuration_dialog.cpp" line="113"/>
         <source>Don&apos;t select the whole track when double-clicking in the pattern editor.</source>
         <translation>Ne pas sélectionner la piste entière lors d&apos;un double-clic dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="114"/>
+        <location filename="../gui/configuration_dialog.cpp" line="115"/>
         <source>Reverse the order of FM volume so that 00 is the quietest in the pattern editor.</source>
         <translation>Inverser la valeur du volume FM pour que 00 soit le plus bas dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="116"/>
+        <location filename="../gui/configuration_dialog.cpp" line="117"/>
         <source>Move the cursor to right after entering effects in the pattern editor.</source>
         <translation>Déplacer le curseur vers la droite après être entré dans les effets dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="118"/>
+        <location filename="../gui/configuration_dialog.cpp" line="119"/>
         <source>Reconstruct the current channel&apos;s state from previous orders upon playing.</source>
         <translation>Reconstruire l&apos;état du canal actuel à partir des ordres précédents durant la lecture.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="120"/>
+        <location filename="../gui/configuration_dialog.cpp" line="121"/>
         <source>Translate to your language from the next launch. See readme to check supported languages.</source>
         <translation>Traduire en votre langue au prochain démarrage. Lire le fichier readme pour connaître la liste des langues gérées.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="122"/>
+        <location filename="../gui/configuration_dialog.cpp" line="123"/>
         <source>Display FM detune values as signed numbers in the FM envelope editor.</source>
         <translation>Afficher les valeurs de désaccordage FM comme nombres signés dans l&apos;éditeur d&apos;enveloppe FM.</translation>
     </message>
@@ -983,382 +983,382 @@
         <translation type="vanished">Activer un oscilloscope qui affiche la forme d&apos;onde du signal de sortie.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="124"/>
+        <location filename="../gui/configuration_dialog.cpp" line="125"/>
         <source>Fill 00 to effect value column upon entering effect id.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="126"/>
+        <location filename="../gui/configuration_dialog.cpp" line="127"/>
         <source>Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="128"/>
+        <location filename="../gui/configuration_dialog.cpp" line="129"/>
         <source>Overwrite unused and unedited instrument properties on creating new properties. When disabled, override unused properties regardless of editing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="131"/>
+        <location filename="../gui/configuration_dialog.cpp" line="132"/>
         <source>Send only ADPCM samples used by instruments to the ADPCM memory. Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="134"/>
+        <location filename="../gui/configuration_dialog.cpp" line="135"/>
         <source>Correspond the instrument number in patterns when the instrument changes its number.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="136"/>
+        <location filename="../gui/configuration_dialog.cpp" line="137"/>
         <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="138"/>
+        <location filename="../gui/configuration_dialog.cpp" line="139"/>
         <source>Mute hidden tracks when visibility of tracks is changed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="140"/>
+        <location filename="../gui/configuration_dialog.cpp" line="141"/>
         <source>Restore the previous track visibility on startup.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="167"/>
+        <location filename="../gui/configuration_dialog.cpp" line="168"/>
         <source>Play and stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="168"/>
+        <location filename="../gui/configuration_dialog.cpp" line="169"/>
         <source>Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="169"/>
+        <location filename="../gui/configuration_dialog.cpp" line="170"/>
         <source>Play from start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="170"/>
+        <location filename="../gui/configuration_dialog.cpp" line="171"/>
         <source>Play pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="171"/>
+        <location filename="../gui/configuration_dialog.cpp" line="172"/>
         <source>Play from cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="172"/>
+        <location filename="../gui/configuration_dialog.cpp" line="173"/>
         <source>Play from marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="173"/>
+        <location filename="../gui/configuration_dialog.cpp" line="174"/>
         <source>Play step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="174"/>
+        <location filename="../gui/configuration_dialog.cpp" line="175"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="175"/>
+        <location filename="../gui/configuration_dialog.cpp" line="176"/>
         <source>Focus on pattern editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="176"/>
+        <location filename="../gui/configuration_dialog.cpp" line="177"/>
         <source>Focus on order list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="177"/>
+        <location filename="../gui/configuration_dialog.cpp" line="178"/>
         <source>Focus on instrument list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="178"/>
+        <location filename="../gui/configuration_dialog.cpp" line="179"/>
         <source>Toggle edit/jam mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="179"/>
+        <location filename="../gui/configuration_dialog.cpp" line="180"/>
         <source>Set marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="180"/>
+        <location filename="../gui/configuration_dialog.cpp" line="181"/>
         <source>Paste and mix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="181"/>
+        <location filename="../gui/configuration_dialog.cpp" line="182"/>
         <source>Paste and overwrite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="182"/>
+        <location filename="../gui/configuration_dialog.cpp" line="183"/>
         <source>Paste and insert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="183"/>
+        <location filename="../gui/configuration_dialog.cpp" line="184"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="184"/>
+        <location filename="../gui/configuration_dialog.cpp" line="185"/>
         <source>Deselect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="185"/>
+        <location filename="../gui/configuration_dialog.cpp" line="186"/>
         <source>Select row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="186"/>
+        <location filename="../gui/configuration_dialog.cpp" line="187"/>
         <source>Select column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="187"/>
+        <location filename="../gui/configuration_dialog.cpp" line="188"/>
         <source>Select pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="188"/>
+        <location filename="../gui/configuration_dialog.cpp" line="189"/>
         <source>Select order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="189"/>
+        <location filename="../gui/configuration_dialog.cpp" line="190"/>
         <source>Go to step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="190"/>
+        <location filename="../gui/configuration_dialog.cpp" line="191"/>
         <source>Toggle track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="191"/>
+        <location filename="../gui/configuration_dialog.cpp" line="192"/>
         <source>Solo track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="192"/>
+        <location filename="../gui/configuration_dialog.cpp" line="193"/>
         <source>Interpolate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="193"/>
+        <location filename="../gui/configuration_dialog.cpp" line="194"/>
         <source>Reverse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="194"/>
+        <location filename="../gui/configuration_dialog.cpp" line="195"/>
         <source>Go to previous order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="195"/>
+        <location filename="../gui/configuration_dialog.cpp" line="196"/>
         <source>Go to next order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="196"/>
+        <location filename="../gui/configuration_dialog.cpp" line="197"/>
         <source>Toggle bookmark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="197"/>
+        <location filename="../gui/configuration_dialog.cpp" line="198"/>
         <source>Previous bookmark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="198"/>
+        <location filename="../gui/configuration_dialog.cpp" line="199"/>
         <source>Next bookmark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="199"/>
+        <location filename="../gui/configuration_dialog.cpp" line="200"/>
         <source>Transpose, decrease note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="200"/>
+        <location filename="../gui/configuration_dialog.cpp" line="201"/>
         <source>Transpose, increase note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="201"/>
+        <location filename="../gui/configuration_dialog.cpp" line="202"/>
         <source>Transpose, decrease octave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="202"/>
+        <location filename="../gui/configuration_dialog.cpp" line="203"/>
         <source>Transpose, increase octave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="203"/>
+        <location filename="../gui/configuration_dialog.cpp" line="204"/>
         <source>Previous instrument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="204"/>
+        <location filename="../gui/configuration_dialog.cpp" line="205"/>
         <source>Next instrument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="205"/>
+        <location filename="../gui/configuration_dialog.cpp" line="206"/>
         <source>Mask instrument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="206"/>
+        <location filename="../gui/configuration_dialog.cpp" line="207"/>
         <source>Mask volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="207"/>
+        <location filename="../gui/configuration_dialog.cpp" line="208"/>
         <source>Edit instrument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="208"/>
+        <location filename="../gui/configuration_dialog.cpp" line="209"/>
         <source>Follow mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="209"/>
+        <location filename="../gui/configuration_dialog.cpp" line="210"/>
         <source>Duplicate order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="210"/>
+        <location filename="../gui/configuration_dialog.cpp" line="211"/>
         <source>Clone patterns</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="211"/>
+        <location filename="../gui/configuration_dialog.cpp" line="212"/>
         <source>Clone order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="212"/>
+        <location filename="../gui/configuration_dialog.cpp" line="213"/>
         <source>Replace instrument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="213"/>
+        <location filename="../gui/configuration_dialog.cpp" line="214"/>
         <source>Expand pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="214"/>
+        <location filename="../gui/configuration_dialog.cpp" line="215"/>
         <source>Shrink pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="215"/>
+        <location filename="../gui/configuration_dialog.cpp" line="216"/>
         <source>Fine decrease values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="216"/>
+        <location filename="../gui/configuration_dialog.cpp" line="217"/>
         <source>Fine increase values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="217"/>
+        <location filename="../gui/configuration_dialog.cpp" line="218"/>
         <source>Coarse decrease values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="218"/>
+        <location filename="../gui/configuration_dialog.cpp" line="219"/>
         <source>Coarse increase valuse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="219"/>
+        <location filename="../gui/configuration_dialog.cpp" line="220"/>
         <source>Expand effect column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="220"/>
+        <location filename="../gui/configuration_dialog.cpp" line="221"/>
         <source>Shrink effect column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="221"/>
+        <location filename="../gui/configuration_dialog.cpp" line="222"/>
         <source>Previous highlighted step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="222"/>
+        <location filename="../gui/configuration_dialog.cpp" line="223"/>
         <source>Next highlighted step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="223"/>
+        <location filename="../gui/configuration_dialog.cpp" line="224"/>
         <source>Increase pattern size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="224"/>
+        <location filename="../gui/configuration_dialog.cpp" line="225"/>
         <source>Decrease pattern size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="225"/>
+        <location filename="../gui/configuration_dialog.cpp" line="226"/>
         <source>Increase edit step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="226"/>
+        <location filename="../gui/configuration_dialog.cpp" line="227"/>
         <source>Decrease edit step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="227"/>
+        <location filename="../gui/configuration_dialog.cpp" line="228"/>
         <source>Display effect list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="228"/>
+        <location filename="../gui/configuration_dialog.cpp" line="229"/>
         <source>Previous song</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="229"/>
+        <location filename="../gui/configuration_dialog.cpp" line="230"/>
         <source>Next song</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="230"/>
+        <location filename="../gui/configuration_dialog.cpp" line="231"/>
         <source>Jam volume up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="231"/>
+        <location filename="../gui/configuration_dialog.cpp" line="232"/>
         <source>Jam volume down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="314"/>
+        <location filename="../gui/configuration_dialog.cpp" line="315"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="510"/>
+        <location filename="../gui/configuration_dialog.cpp" line="511"/>
         <source>Description: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="604"/>
+        <location filename="../gui/configuration_dialog.cpp" line="605"/>
         <source>Set %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1367,40 +1367,40 @@
         <translation type="vanished">Description : </translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="746"/>
+        <location filename="../gui/configuration_dialog.cpp" line="747"/>
         <source>Open color scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="748"/>
-        <location filename="../gui/configuration_dialog.cpp" line="768"/>
+        <location filename="../gui/configuration_dialog.cpp" line="749"/>
+        <location filename="../gui/configuration_dialog.cpp" line="769"/>
         <source>ini file (*.ini)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="748"/>
-        <location filename="../gui/configuration_dialog.cpp" line="768"/>
+        <location filename="../gui/configuration_dialog.cpp" line="749"/>
+        <location filename="../gui/configuration_dialog.cpp" line="769"/>
         <source>All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="760"/>
-        <location filename="../gui/configuration_dialog.cpp" line="779"/>
+        <location filename="../gui/configuration_dialog.cpp" line="761"/>
+        <location filename="../gui/configuration_dialog.cpp" line="780"/>
         <source>Error</source>
         <translation type="unfinished">Erreur</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="760"/>
+        <location filename="../gui/configuration_dialog.cpp" line="761"/>
         <source>An unknown error occurred while loading the color scheme.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="766"/>
+        <location filename="../gui/configuration_dialog.cpp" line="767"/>
         <source>Save color scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="779"/>
+        <location filename="../gui/configuration_dialog.cpp" line="780"/>
         <source>Failed to save the color scheme.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1408,122 +1408,122 @@
 <context>
     <name>EffectDescription</name>
     <message>
-        <location filename="../gui/effect_description.cpp" line="43"/>
+        <location filename="../gui/effect_description.cpp" line="42"/>
         <source>Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
         <translation type="unfinished">Arpège, x : 2nde note (0-F), y : 3ème note (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="44"/>
+        <location filename="../gui/effect_description.cpp" line="43"/>
         <source>Portamento up, xx: depth (00-FF)</source>
         <translation type="unfinished">Portamento haut, xx : profondeur (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="45"/>
+        <location filename="../gui/effect_description.cpp" line="44"/>
         <source>Portamento down, xx: depth (00-FF)</source>
         <translation type="unfinished">Portamento bas, xx : profondeur (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="46"/>
+        <location filename="../gui/effect_description.cpp" line="45"/>
         <source>Tone portamento, xx: depth (00-FF)</source>
         <translation type="unfinished">Portamento de tonalité, xx : profondeur (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="47"/>
+        <location filename="../gui/effect_description.cpp" line="46"/>
         <source>Vibrato, x: period (0-F), y: depth (0-F)</source>
         <translation type="unfinished">Vibrato, x : période (0-F), y : profondeur (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="48"/>
+        <location filename="../gui/effect_description.cpp" line="47"/>
         <source>Tremolo, x: period (0-F), y: depth (0-F)</source>
         <translation type="unfinished">Trémolo, x : période (0-F), y : profondeur (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="49"/>
+        <location filename="../gui/effect_description.cpp" line="48"/>
         <source>Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
         <translation type="unfinished">Pan, xx : 00 = pas de son, 01 = droite, 02 = gauche, 03 = centre</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="50"/>
+        <location filename="../gui/effect_description.cpp" line="49"/>
         <source>Volume slide, x: up (0-F), y: down (0-F)</source>
         <translation type="unfinished">Glissé de volume, x : haut (0-F), y : bas (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="51"/>
+        <location filename="../gui/effect_description.cpp" line="50"/>
         <source>Jump to beginning of order xx</source>
         <translation type="unfinished">Aller au début de la commande xx</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="52"/>
+        <location filename="../gui/effect_description.cpp" line="51"/>
         <source>End of song</source>
         <translation type="unfinished">Fin du morceau</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="53"/>
+        <location filename="../gui/effect_description.cpp" line="52"/>
         <source>Jump to step xx of next order</source>
         <translation type="unfinished">Aller au pas xx de la prochaine commande</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="54"/>
+        <location filename="../gui/effect_description.cpp" line="53"/>
         <source>Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
         <translation type="unfinished">Changement de vitesse (xx : 00-1F), changement de tempo (xx : 20-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="55"/>
+        <location filename="../gui/effect_description.cpp" line="54"/>
         <source>Note delay, xx: count (00-FF)</source>
         <translation type="unfinished">Délai de note, xx : compte (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="56"/>
+        <location filename="../gui/effect_description.cpp" line="55"/>
         <source>Auto envelope, x: shift amount (0-F), y: shape (0-F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="57"/>
+        <location filename="../gui/effect_description.cpp" line="56"/>
         <source>Hardware envelope period 1, xx: high byte (00-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="58"/>
+        <location filename="../gui/effect_description.cpp" line="57"/>
         <source>Hardware envelope period 2, xx: low byte (00-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="59"/>
+        <location filename="../gui/effect_description.cpp" line="58"/>
         <source>Retrigger, x: volume slide (0-7: up, 8-F: down), y: tick (1-F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="60"/>
+        <location filename="../gui/effect_description.cpp" line="59"/>
         <source>Set groove xx</source>
         <translation type="unfinished">Paramétrer le groove xx</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="61"/>
+        <location filename="../gui/effect_description.cpp" line="60"/>
         <source>Detune, xx: pitch (00-FF)</source>
         <translation type="unfinished">Désaccordage, xx : tonalité (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="62"/>
+        <location filename="../gui/effect_description.cpp" line="61"/>
         <source>Note slide up, x: count (0-F), y: seminote (0-F)</source>
         <translation type="unfinished">Note glissée vers le haut, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="63"/>
+        <location filename="../gui/effect_description.cpp" line="62"/>
         <source>Note slide down, x: count (0-F), y: seminote (0-F)</source>
         <translation type="unfinished">Note glissée vers le bas, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="64"/>
+        <location filename="../gui/effect_description.cpp" line="63"/>
         <source>Note cut, xx: count (00-FF)</source>
         <translation type="unfinished">Coupure de note, xx : compte (01-FF) {00-?}</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="65"/>
+        <location filename="../gui/effect_description.cpp" line="64"/>
         <source>Transpose delay, x: count (0-7: up, 8-F: down), y: seminote (0-F)</source>
         <translation type="unfinished">Délai de transposition, x : compte (1-7 : haut, 9-F : bas), y : demi-note (0-F) {0-7:?} {8-?} {0-?}</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="79"/>
+        <location filename="../gui/effect_description.cpp" line="78"/>
         <source>Volume delay, x: count (0-F), yy: volume (00-FF)</source>
         <translation type="unfinished">Délai de volume, x : compte (1-F), yy : volume (00-FF) {0-?} {00-?}</translation>
     </message>
@@ -1536,67 +1536,67 @@
         <translation type="obsolete">Délai de transposition, x : compte (1-7 : haut, 9-F : bas), y : demi-note (0-F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="66"/>
+        <location filename="../gui/effect_description.cpp" line="65"/>
         <source>Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone &amp; noise</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="67"/>
+        <location filename="../gui/effect_description.cpp" line="66"/>
         <source>Master volume, xx: volume (00-3F)</source>
         <translation type="unfinished">Volume maître, xx : volume (00-3F)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="68"/>
+        <location filename="../gui/effect_description.cpp" line="67"/>
         <source>Noise pitch, xx: pitch (00-1F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="69"/>
+        <location filename="../gui/effect_description.cpp" line="68"/>
         <source>Register address bank 0, xx: address (00-6B)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="70"/>
+        <location filename="../gui/effect_description.cpp" line="69"/>
         <source>Register address bank 1, xx: address (00-6B)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="71"/>
+        <location filename="../gui/effect_description.cpp" line="70"/>
         <source>Register value set, xx: value (00-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="72"/>
+        <location filename="../gui/effect_description.cpp" line="71"/>
         <source>AR control, x: operator (1-4), yy: attack rate (00-1F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="73"/>
+        <location filename="../gui/effect_description.cpp" line="72"/>
         <source>Brightness, xx: relative value (01-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="74"/>
+        <location filename="../gui/effect_description.cpp" line="73"/>
         <source>DR control, x: operator (1-4), yy: decay rate (00-1F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="75"/>
+        <location filename="../gui/effect_description.cpp" line="74"/>
         <source>Envelope reset, xx: count (00-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="76"/>
+        <location filename="../gui/effect_description.cpp" line="75"/>
         <source>FB control, xx: feedback value (00-07)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="77"/>
+        <location filename="../gui/effect_description.cpp" line="76"/>
         <source>Fine detune, xx: pitch (00-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="78"/>
+        <location filename="../gui/effect_description.cpp" line="77"/>
         <source>ML control, x: operator (1-4), y: multiple (0-F)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1605,17 +1605,17 @@
         <translation type="obsolete">Délai de volume, x : compte (1-F), yy : volume (00-FF)</translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="80"/>
+        <location filename="../gui/effect_description.cpp" line="79"/>
         <source>RR control, x: operator (1-4), y: release rate (0-F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="81"/>
+        <location filename="../gui/effect_description.cpp" line="80"/>
         <source>TL control, x: operator (1-4), yy: total level (00-7F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/effect_description.cpp" line="82"/>
+        <location filename="../gui/effect_description.cpp" line="81"/>
         <source>Invalid effect</source>
         <translation type="unfinished">Effet invalide</translation>
     </message>
@@ -1828,42 +1828,42 @@
 <context>
     <name>FileIOErrorMessageBox</name>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="54"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="55"/>
         <source>Path does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="57"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="58"/>
         <source>Unsupported file format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="60"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="61"/>
         <source>Could not load the %1 properly. Please make sure that you have the latest version of BambooTracker.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="64"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="65"/>
         <source>Could not load the %1. It may be corrupted. Stopped at %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="73"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="74"/>
         <source>Failed to load %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="80"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="81"/>
         <source>Failed to export to %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="83"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="84"/>
         <source>Failed to save the %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="92"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="93"/>
         <source>Error</source>
         <translation type="unfinished">Erreur</translation>
     </message>
@@ -1876,32 +1876,32 @@
 <context>
     <name>FileType</name>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="32"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="33"/>
         <source>module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="33"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="34"/>
         <source>s98</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="34"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="35"/>
         <source>vgm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="35"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="36"/>
         <source>wav</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="36"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="37"/>
         <source>bank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/file_io_error_message_box.cpp" line="37"/>
+        <location filename="../gui/file_io_error_message_box.cpp" line="38"/>
         <source>instrument</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2676,16 +2676,16 @@
         <translation type="vanished">Style</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2066"/>
-        <location filename="../gui/mainwindow.cpp" line="2521"/>
-        <location filename="../gui/mainwindow.cpp" line="2523"/>
-        <location filename="../gui/mainwindow.cpp" line="2549"/>
+        <location filename="../gui/mainwindow.cpp" line="2061"/>
+        <location filename="../gui/mainwindow.cpp" line="2516"/>
+        <location filename="../gui/mainwindow.cpp" line="2518"/>
+        <location filename="../gui/mainwindow.cpp" line="2544"/>
         <source>Untitled</source>
         <translation>Sans titre</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="244"/>
-        <location filename="../gui/mainwindow.cpp" line="3693"/>
+        <location filename="../gui/mainwindow.cpp" line="3688"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
@@ -3526,14 +3526,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="267"/>
+        <location filename="../gui/mainwindow.cpp" line="262"/>
         <source>Octave</source>
         <translation>Octave</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="280"/>
-        <location filename="../gui/mainwindow.cpp" line="541"/>
-        <location filename="../gui/mainwindow.cpp" line="2331"/>
+        <location filename="../gui/mainwindow.cpp" line="275"/>
+        <location filename="../gui/mainwindow.cpp" line="536"/>
+        <location filename="../gui/mainwindow.cpp" line="2326"/>
         <source>Octave: %1</source>
         <translation>Octave : %1</translation>
     </message>
@@ -3542,25 +3542,25 @@
         <translation type="vanished">Sauvegarder les modifications dans %1 ?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="543"/>
+        <location filename="../gui/mainwindow.cpp" line="538"/>
         <source>Welcome to BambooTracker v%1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2509"/>
-        <location filename="../gui/mainwindow.hpp" line="234"/>
-        <location filename="../gui/mainwindow.hpp" line="250"/>
+        <location filename="../gui/mainwindow.cpp" line="2504"/>
+        <location filename="../gui/mainwindow.hpp" line="243"/>
+        <location filename="../gui/mainwindow.hpp" line="259"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1353"/>
-        <location filename="../gui/mainwindow.cpp" line="1374"/>
+        <location filename="../gui/mainwindow.cpp" line="1348"/>
+        <location filename="../gui/mainwindow.cpp" line="1369"/>
         <source>Instrument %1</source>
         <translation>Instrument %1</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1705"/>
+        <location filename="../gui/mainwindow.cpp" line="1700"/>
         <source>Open instrument</source>
         <translation>Ouvrir l&apos;instrument</translation>
     </message>
@@ -3569,50 +3569,50 @@
         <translation type="vanished">Le chargement de l&apos;instrument a échoué.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1769"/>
+        <location filename="../gui/mainwindow.cpp" line="1764"/>
         <source>Save instrument</source>
         <translation>Sauvegarder l&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1815"/>
+        <location filename="../gui/mainwindow.cpp" line="1810"/>
         <source>Open bank</source>
         <translation>Ouvrir la banque</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1879"/>
+        <location filename="../gui/mainwindow.cpp" line="1874"/>
         <source>Select instruments to load:</source>
         <translation>Sélectionnez les instruments à charger :</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2538"/>
-        <location filename="../gui/mainwindow.cpp" line="2588"/>
+        <location filename="../gui/mainwindow.cpp" line="2533"/>
+        <location filename="../gui/mainwindow.cpp" line="2583"/>
         <source>No instrument</source>
         <translation>Pas d&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2228"/>
+        <location filename="../gui/mainwindow.cpp" line="2223"/>
         <source>Standard</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="174"/>
+        <location filename="../gui/mainwindow.cpp" line="169"/>
         <source>English</source>
         <comment>Default notation system</comment>
         <extracomment>Set the name of suitable notation system (English or German)</extracomment>
         <translation type="unfinished">Anglais</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="283"/>
+        <location filename="../gui/mainwindow.cpp" line="278"/>
         <source>Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="300"/>
+        <location filename="../gui/mainwindow.cpp" line="295"/>
         <source>Step highlight 1st</source>
         <translation>1er intervalle en surbrillance</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="316"/>
+        <location filename="../gui/mainwindow.cpp" line="311"/>
         <source>2nd</source>
         <translation>2nd</translation>
     </message>
@@ -3653,127 +3653,127 @@
         <translation type="vanished">Banque WOPN (*.wopn)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1968"/>
+        <location filename="../gui/mainwindow.cpp" line="1963"/>
         <source>Select instruments to save:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1979"/>
+        <location filename="../gui/mainwindow.cpp" line="1974"/>
         <source>Save bank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2095"/>
+        <location filename="../gui/mainwindow.cpp" line="2090"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2100"/>
+        <location filename="../gui/mainwindow.cpp" line="2095"/>
         <source>Custom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2105"/>
+        <location filename="../gui/mainwindow.cpp" line="2100"/>
         <source>PC-9821 with PC-9801-86</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2110"/>
+        <location filename="../gui/mainwindow.cpp" line="2105"/>
         <source>PC-9821 with Speak Board</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2115"/>
+        <location filename="../gui/mainwindow.cpp" line="2110"/>
         <source>PC-88VA2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2120"/>
+        <location filename="../gui/mainwindow.cpp" line="2115"/>
         <source>NEC PC-8801mkIISR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2229"/>
+        <location filename="../gui/mainwindow.cpp" line="2224"/>
         <source>FM3ch expanded</source>
         <translation>FM3canaux étendu</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2258"/>
+        <location filename="../gui/mainwindow.cpp" line="2253"/>
         <source>Insufficient memory size to load ADPCM samples. Please delete the unused samples.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2409"/>
+        <location filename="../gui/mainwindow.cpp" line="2404"/>
         <source>The module has been changed. Do you want to save it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.hpp" line="251"/>
+        <location filename="../gui/mainwindow.hpp" line="260"/>
         <source>Could not initialize MIDI input.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2590"/>
+        <location filename="../gui/mainwindow.cpp" line="2585"/>
         <source>Instrument: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3196"/>
-        <location filename="../gui/mainwindow.cpp" line="3262"/>
+        <location filename="../gui/mainwindow.cpp" line="3191"/>
+        <location filename="../gui/mainwindow.cpp" line="3257"/>
         <source>BambooTracker module (*.btm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3196"/>
-        <location filename="../gui/mainwindow.cpp" line="3262"/>
-        <location filename="../gui/mainwindow.cpp" line="3383"/>
-        <location filename="../gui/mainwindow.cpp" line="3518"/>
-        <location filename="../gui/mainwindow.cpp" line="3586"/>
+        <location filename="../gui/mainwindow.cpp" line="3191"/>
+        <location filename="../gui/mainwindow.cpp" line="3257"/>
+        <location filename="../gui/mainwindow.cpp" line="3378"/>
+        <location filename="../gui/mainwindow.cpp" line="3513"/>
+        <location filename="../gui/mainwindow.cpp" line="3581"/>
         <source>All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3383"/>
+        <location filename="../gui/mainwindow.cpp" line="3378"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3421"/>
+        <location filename="../gui/mainwindow.cpp" line="3416"/>
         <source>Export %1 to WAV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3518"/>
+        <location filename="../gui/mainwindow.cpp" line="3513"/>
         <source>VGM file (*.vgm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3586"/>
+        <location filename="../gui/mainwindow.cpp" line="3581"/>
         <source>S98 file (*.s98)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3753"/>
+        <location filename="../gui/mainwindow.cpp" line="3748"/>
         <source>Do you want to remove all duplicate instruments?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3856"/>
+        <location filename="../gui/mainwindow.cpp" line="3851"/>
         <source>Do you want to remove all unused ADPCM samples?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3899"/>
+        <location filename="../gui/mainwindow.cpp" line="3894"/>
         <source>Do you want to transpose a song?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3920"/>
+        <location filename="../gui/mainwindow.cpp" line="3915"/>
         <source>Do you want to swap tracks?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3974"/>
+        <location filename="../gui/mainwindow.cpp" line="3969"/>
         <source>Approximate song length: %1m%2s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3818,188 +3818,188 @@
         <translation type="vanished">Instrument : </translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2881"/>
+        <location filename="../gui/mainwindow.cpp" line="2876"/>
         <source>Do you want to change song properties?</source>
         <translation>Voulez-vous modifier les propriétés du morceau ?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2957"/>
+        <location filename="../gui/mainwindow.cpp" line="2952"/>
         <source>Change to jam mode</source>
         <translation>Passage en mode jeu</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2957"/>
+        <location filename="../gui/mainwindow.cpp" line="2952"/>
         <source>Change to edit mode</source>
         <translation>Passage en mode édition</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3024"/>
+        <location filename="../gui/mainwindow.cpp" line="3019"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2509"/>
+        <location filename="../gui/mainwindow.cpp" line="2504"/>
         <source>Failed to backup module.</source>
         <translation>La sauvegarde du module a échoué.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="683"/>
+        <location filename="../gui/mainwindow.cpp" line="678"/>
         <source>Welcome to BambooTracker!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="687"/>
+        <location filename="../gui/mainwindow.cpp" line="682"/>
         <source>Don&apos;t know where to start?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="688"/>
+        <location filename="../gui/mainwindow.cpp" line="683"/>
         <source>Check the demo modules and instruments included with your download of BambooTracker.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="690"/>
+        <location filename="../gui/mainwindow.cpp" line="685"/>
         <source>Need a list of effects and shortcuts?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="691"/>
+        <location filename="../gui/mainwindow.cpp" line="686"/>
         <source>Check the Help menu at the top of the window.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="692"/>
+        <location filename="../gui/mainwindow.cpp" line="687"/>
         <source>Still lost?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="693"/>
+        <location filename="../gui/mainwindow.cpp" line="688"/>
         <source>The README.md has a link to our Discord server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="694"/>
+        <location filename="../gui/mainwindow.cpp" line="689"/>
         <source>Think you&apos;ve found a bug? Missing a feature?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="695"/>
+        <location filename="../gui/mainwindow.cpp" line="690"/>
         <source>BambooTracker is still in development, bugs and missing features are to be expected. So we need your help!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="699"/>
+        <location filename="../gui/mainwindow.cpp" line="694"/>
         <source>Please report any bugs you find and requests and features you&apos;d like to see on our Discord server or our bug tracker (%1).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="703"/>
+        <location filename="../gui/mainwindow.cpp" line="698"/>
         <source>If you&apos;re a developer yourself or would like to start being one, consider contributing to the project yourself. Any help would be appreciated!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="707"/>
+        <location filename="../gui/mainwindow.cpp" line="702"/>
         <source>Welcome</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1724"/>
-        <location filename="../gui/mainwindow.cpp" line="1936"/>
+        <location filename="../gui/mainwindow.cpp" line="1719"/>
+        <location filename="../gui/mainwindow.cpp" line="1931"/>
         <source>The number of instruments has reached the upper limit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2979"/>
+        <location filename="../gui/mainwindow.cpp" line="2974"/>
         <source>YM2608 Music Tracker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2981"/>
+        <location filename="../gui/mainwindow.cpp" line="2976"/>
         <source>Web:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2984"/>
+        <location filename="../gui/mainwindow.cpp" line="2979"/>
         <source>This software is licensed under the GNU General Public License v2.0 or later.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2985"/>
+        <location filename="../gui/mainwindow.cpp" line="2980"/>
         <source>Source is available at:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2988"/>
+        <location filename="../gui/mainwindow.cpp" line="2983"/>
         <source>Libraries:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2989"/>
+        <location filename="../gui/mainwindow.cpp" line="2984"/>
         <source>Also see changelog which lists contributors.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2990"/>
+        <location filename="../gui/mainwindow.cpp" line="2985"/>
         <source>Thank you to everyone who reports bugs, makes suggestions, and contributes to this project!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2994"/>
+        <location filename="../gui/mainwindow.cpp" line="2989"/>
         <source>C86CTL by (C) honet (BSD 3-Clause)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2996"/>
+        <location filename="../gui/mainwindow.cpp" line="2991"/>
         <source>emu2149 by (C) Mitsutaka Okazaki (MIT License)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2997"/>
+        <location filename="../gui/mainwindow.cpp" line="2992"/>
         <source>fmopn by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2998"/>
+        <location filename="../gui/mainwindow.cpp" line="2993"/>
         <source>libOPNMIDI by (C) Vitaly Novichkov (MIT License part)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2999"/>
+        <location filename="../gui/mainwindow.cpp" line="2994"/>
         <source>Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3000"/>
+        <location filename="../gui/mainwindow.cpp" line="2995"/>
         <source>Qt (GPL v2+ or LGPL v3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3001"/>
+        <location filename="../gui/mainwindow.cpp" line="2996"/>
         <source>RtAudio by (C) Gary P. Scavone (RtAudio License)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3002"/>
+        <location filename="../gui/mainwindow.cpp" line="2997"/>
         <source>RtMidi by (C) Gary P. Scavone (RtMidi License)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3004"/>
+        <location filename="../gui/mainwindow.cpp" line="2999"/>
         <source>SCCI by (C) gasshi (SCCI License)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3006"/>
+        <location filename="../gui/mainwindow.cpp" line="3001"/>
         <source>Silk icons by (C) Mark James (CC BY 2.5 or 3.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3007"/>
+        <location filename="../gui/mainwindow.cpp" line="3002"/>
         <source>ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3194"/>
+        <location filename="../gui/mainwindow.cpp" line="3189"/>
         <source>Save module</source>
         <translation>Sauvegarder le module</translation>
     </message>
@@ -4008,17 +4008,17 @@
         <translation type="vanished">Fichier de module BambooTracker (*.btm)</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3261"/>
+        <location filename="../gui/mainwindow.cpp" line="3256"/>
         <source>Open module</source>
         <translation>Ouvrir le module</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3331"/>
+        <location filename="../gui/mainwindow.cpp" line="3326"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>Voulez-vous supprimer tous les instruments inutilisés ?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3352"/>
+        <location filename="../gui/mainwindow.cpp" line="3347"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>Voulez-vous supprimer tous les motifs inutilisés ?</translation>
     </message>
@@ -4027,15 +4027,15 @@
         <translation type="vanished">Exporter en wav</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3381"/>
-        <location filename="../gui/mainwindow.cpp" line="3415"/>
+        <location filename="../gui/mainwindow.cpp" line="3376"/>
+        <location filename="../gui/mainwindow.cpp" line="3410"/>
         <source>Export to WAV</source>
         <translation>Exporter en WAV</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3394"/>
-        <location filename="../gui/mainwindow.cpp" line="3527"/>
-        <location filename="../gui/mainwindow.cpp" line="3595"/>
+        <location filename="../gui/mainwindow.cpp" line="3389"/>
+        <location filename="../gui/mainwindow.cpp" line="3522"/>
+        <location filename="../gui/mainwindow.cpp" line="3590"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -4048,8 +4048,8 @@
         <translation type="vanished">Exporter en vgm</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3516"/>
-        <location filename="../gui/mainwindow.cpp" line="3527"/>
+        <location filename="../gui/mainwindow.cpp" line="3511"/>
+        <location filename="../gui/mainwindow.cpp" line="3522"/>
         <source>Export to VGM</source>
         <translation>Exporter en VGM</translation>
     </message>
@@ -4062,8 +4062,8 @@
         <translation type="vanished">Exporter en s98</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="3584"/>
-        <location filename="../gui/mainwindow.cpp" line="3595"/>
+        <location filename="../gui/mainwindow.cpp" line="3579"/>
+        <location filename="../gui/mainwindow.cpp" line="3590"/>
         <source>Export to S98</source>
         <translation>Exporter en S98</translation>
     </message>
@@ -4072,25 +4072,25 @@
         <translation type="vanished">L&apos;exportation en fichier s98 a échoué.</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="2257"/>
-        <location filename="../gui/mainwindow.cpp" line="2408"/>
-        <location filename="../gui/mainwindow.hpp" line="226"/>
-        <location filename="../gui/mainwindow.hpp" line="242"/>
+        <location filename="../gui/mainwindow.cpp" line="2252"/>
+        <location filename="../gui/mainwindow.cpp" line="2403"/>
+        <location filename="../gui/mainwindow.hpp" line="235"/>
+        <location filename="../gui/mainwindow.hpp" line="251"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.hpp" line="227"/>
+        <location filename="../gui/mainwindow.hpp" line="236"/>
         <source>%1 If you execute this command, the command history is reset.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.hpp" line="235"/>
+        <location filename="../gui/mainwindow.hpp" line="244"/>
         <source>Could not open the audio stream. Please change the sound settings in Configuration.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.hpp" line="243"/>
+        <location filename="../gui/mainwindow.hpp" line="252"/>
         <source>Could not set the sample rate of the audio stream to %1Hz. Currently the stream runs on %2Hz instead.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4239,12 +4239,12 @@
 <context>
     <name>ModuleSaveCheckDialog</name>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="108"/>
+        <location filename="../gui/mainwindow.cpp" line="105"/>
         <source>Save changes to %1?</source>
         <translation type="unfinished">Sauvegarder les modifications dans %1 ?</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="108"/>
+        <location filename="../gui/mainwindow.cpp" line="105"/>
         <source>Untitled</source>
         <translation type="unfinished">Sans titre</translation>
     </message>
@@ -4252,12 +4252,12 @@
 <context>
     <name>NotationSystem</name>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="71"/>
+        <location filename="../gui/configuration_dialog.cpp" line="72"/>
         <source>English</source>
         <translation type="unfinished">Anglais</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="72"/>
+        <location filename="../gui/configuration_dialog.cpp" line="73"/>
         <source>German</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4332,17 +4332,17 @@
 <context>
     <name>Panning</name>
     <message>
-        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="40"/>
+        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="41"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="41"/>
+        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="42"/>
         <source>Center</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="42"/>
+        <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="43"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4804,12 +4804,12 @@
 <context>
     <name>SongType</name>
     <message>
-        <location filename="../gui/module_properties_dialog.cpp" line="37"/>
+        <location filename="../gui/module_properties_dialog.cpp" line="38"/>
         <source>Standard</source>
         <translation type="unfinished">Standard</translation>
     </message>
     <message>
-        <location filename="../gui/module_properties_dialog.cpp" line="38"/>
+        <location filename="../gui/module_properties_dialog.cpp" line="39"/>
         <source>FM3ch expanded</source>
         <translation type="unfinished">FM3canaux étendu</translation>
     </message>
