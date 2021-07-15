@@ -8,7 +8,7 @@
 - [#354] - VGM export for YM2610B ([#335]; thanks [@freq-mod], [@ToughkidDev])
 - [#314] - FM / ADPCM panning sequence (thanks [@Toonlink8101])
 - Panning settings in the drumkit editor
- - [#345], [#372] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
+- [#345], [#372] - Key signature settings (thanks [@wildmatsu], [@OPNA2608])
 - [#365] - WAV export per channel (thanks [@Toonlink8101])
 - [#345] - German notation system (thanks [@OPNA2608], [@wildmatsu], [@freq-mod])
 - [#332], [#373] - Qt6 support ([#298]; thanks [@OPNA2608])
@@ -52,6 +52,7 @@
 - [#377] - Fixed error in loading .bti containing ADPCM samples larger than 65458B (thanks [@freq-mod])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
+- [#390] - Fix lupdate errors/warnings ([#391]; thanks [@OPNA2608])
 
 [@Mugenri]: https://github.com/Mugenri
 [@Speedvicio]: https://github.com/Speedvicio
@@ -104,6 +105,8 @@
 [#387]: https://github.com/BambooTracker/BambooTracker/issues/387
 [#388]: https://github.com/BambooTracker/BambooTracker/pull/388
 [#389]: https://github.com/BambooTracker/BambooTracker/pull/389
+[#390]: https://github.com/BambooTracker/BambooTracker/issues/390
+[#391]: https://github.com/BambooTracker/BambooTracker/pulls/391
 
 ## v0.4.6 (2021-02-11)
 ### Added
