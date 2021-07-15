@@ -63,8 +63,9 @@ inline bool fromCheckState(Qt::CheckState state)
 
 struct NotationSystemAttribute
 {
-	QString name, dispName;
-	NoteNotationSystem ev;
+	const QString name;
+	const char* dispName;
+	const NoteNotationSystem ev;
 };
 
 const NotationSystemAttribute NOTATION_SYSS[] = {
@@ -149,7 +150,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	{
 		QSignalBlocker blocker(ui->noteNameComboBox);
 		for (const auto& attrib : NOTATION_SYSS) {
-			ui->noteNameComboBox->addItem(attrib.dispName);
+			ui->noteNameComboBox->addItem(QCoreApplication::translate("NotationSystem", attrib.dispName));
 			if (attrib.ev == configLocked->getNotationSystem()) {
 				ui->noteNameComboBox->setCurrentIndex(ui->noteNameComboBox->count() - 1);
 			}

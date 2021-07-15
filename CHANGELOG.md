@@ -52,7 +52,7 @@
 - [#377] - Fixed error in loading .bti containing ADPCM samples larger than 65458B (thanks [@freq-mod])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
-- [#390] - Fix lupdate errors/warnings ([#391]; thanks [@OPNA2608])
+- [#390] - Fix lupdate errors/warnings ([#391], [#392]; thanks [@OPNA2608])
 
 [@Mugenri]: https://github.com/Mugenri
 [@Speedvicio]: https://github.com/Speedvicio
@@ -107,6 +107,7 @@
 [#389]: https://github.com/BambooTracker/BambooTracker/pull/389
 [#390]: https://github.com/BambooTracker/BambooTracker/issues/390
 [#391]: https://github.com/BambooTracker/BambooTracker/pulls/391
+[#392]: https://github.com/BambooTracker/BambooTracker/pulls/392
 
 ## v0.4.6 (2021-02-11)
 ### Added
