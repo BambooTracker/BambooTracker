@@ -6,6 +6,7 @@ let
       version = buildVersion;
       src = ./..;
       patches = [];
+      preConfigure = "lupdate Project.pro";
     });
   };
   pkgs = import <nixpkgs> { config = { inherit packageOverrides; }; };

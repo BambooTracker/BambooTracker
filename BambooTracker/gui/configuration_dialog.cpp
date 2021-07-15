@@ -68,8 +68,8 @@ struct NotationSystemAttribute
 };
 
 const NotationSystemAttribute NOTATION_SYSS[] = {
-	{ "English", QT_TR_NOOP("English"), NoteNotationSystem::ENGLISH },
-	{ "German", QT_TR_NOOP("German"), NoteNotationSystem::GERMAN }
+	{ "English", QT_TRANSLATE_NOOP("NotationSystem", "English"), NoteNotationSystem::ENGLISH },
+	{ "German", QT_TRANSLATE_NOOP("NotationSystem", "German"), NoteNotationSystem::GERMAN }
 };
 }
 

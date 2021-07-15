@@ -34,8 +34,8 @@
 namespace
 {
 const std::unordered_map<SongType, QString> SONG_TYPE_TEXT = {
-	{ SongType::Standard, QT_TR_NOOP("Standard") },
-	{ SongType::FM3chExpanded, QT_TR_NOOP("FM3ch expanded") }
+	{ SongType::Standard, QT_TRANSLATE_NOOP("SongType", "Standard") },
+	{ SongType::FM3chExpanded, QT_TRANSLATE_NOOP("SongType", "FM3ch expanded") }
 };
 }
 
