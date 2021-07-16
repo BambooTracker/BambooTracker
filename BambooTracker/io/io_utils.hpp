@@ -56,12 +56,12 @@ public:
 		const std::string filter = handler->getFilterText();
 		if (handler->isLoadable()) {
 			ldFilters_.insert(ldFilters_.end() - 1, filter);
-			if (ldFilters_.size() > 1) ldExts_ += " ";
+			if (ldFilters_.size() > 2) ldExts_ += " ";
 			ldExts_ += ("*." + ext);
 		}
 		if (handler->isSavable()) {
 			svFilters_.insert(svFilters_.end() - 1, filter);
-			if (svFilters_.size() > 1) svExts_ += " ";
+			if (svFilters_.size() > 2) svExts_ += " ";
 			svExts_ += ("*." + ext);
 		}
 	}
