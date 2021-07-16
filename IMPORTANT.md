@@ -2,6 +2,7 @@
 The following changes affect module playback critically.
 In some cases, you need to modify modules.
 
+- In BambooTracker v0.5.0, a bug for tempo and step size control is fixed that only a row which set the step size change 0Fxx had the step size added by one. To play modules made by previous version at the same speed as before, it is necessary to replace 0Fxx with 0Fxx+1, and set 0Fxx in the next row.
 - In BambooTracker v0.5.0, MAME FM, SSG, and ADPCM emulations are updated which make several differences in the synthesis accuracy from previous versions.
 - In BambooTracker v0.5.0, the number of buffer in RtAudio is changed to 2. This may change the latency.
 - In BambooTracker v0.3.6, hard envelope settings of SSG is fixed when note off.

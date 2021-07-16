@@ -50,6 +50,7 @@
 - [#368] - Move lang files to fix lupdate errors (Thanks [@OPNA2608])
 - [#376] - Skip `0Fxx` tempo change effect that have the same value as the previously set one (thanks [@nyanpasu64])
 - [#377] - Fixed error in loading .bti containing ADPCM samples larger than 65458B (thanks [@freq-mod])
+- [#385] - Fix the tick counter to change `0Fxx` tempo and step size ([#376], [#383]; thanks [@nyanpasu64], [@OPNA2608])
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 - [#390] - Fix lupdate errors/warnings ([#391], [#392]; thanks [@OPNA2608])
@@ -108,6 +109,8 @@
 [#390]: https://github.com/BambooTracker/BambooTracker/issues/390
 [#391]: https://github.com/BambooTracker/BambooTracker/pulls/391
 [#392]: https://github.com/BambooTracker/BambooTracker/pulls/392
+[#383]: https://github.com/BambooTracker/BambooTracker/issues/383
+[#385]: https://github.com/BambooTracker/BambooTracker/pull/385
 
 ## v0.4.6 (2021-02-11)
 ### Added
