@@ -54,6 +54,7 @@
 - [#334] - Fix CI (thanks [@OPNA2608])
 - [#344] - Fix document (thanks [@freq-mod])
 - [#390] - Fix lupdate errors/warnings ([#391], [#392]; thanks [@OPNA2608])
+- [#393] - Fix an error of copying and pasting pattern cells when hiding any tracks (thanks [@Toonlink8101], [@OPNA2608])
 
 [@Mugenri]: https://github.com/Mugenri
 [@Speedvicio]: https://github.com/Speedvicio
@@ -111,6 +112,7 @@
 [#392]: https://github.com/BambooTracker/BambooTracker/pulls/392
 [#383]: https://github.com/BambooTracker/BambooTracker/issues/383
 [#385]: https://github.com/BambooTracker/BambooTracker/pull/385
+[#393]: https://github.com/BambooTracker/BambooTracker/issues/393
 
 ## v0.4.6 (2021-02-11)
 ### Added

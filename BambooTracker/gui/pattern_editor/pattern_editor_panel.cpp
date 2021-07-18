@@ -1744,59 +1744,59 @@ void PatternEditorPanel::copySelectedCells()
 	int w = 1 + r - l;	// Real selected region width
 	int h = 1 + calculateStepDistance(selLeftAbovePos_.order, selLeftAbovePos_.step,
 									  selRightBelowPos_.order, selRightBelowPos_.step);
-	QString str = QString("PATTERN_COPY:%1,%2,%3,")
-				  .arg(QString::number(selLeftAbovePos_.colInTrack),
-					   QString::number(w),
-					   QString::number(h));
-	// NOTE: After this line, PatternPosition.trackVisIdx indecates a real track number.
+	QString str = QString("PATTERN_COPY:%1,%2,%3,").arg(selLeftAbovePos_.colInTrack).arg(w).arg(h);
+	// NOTE: pos.trackVisIdx, endPos.trackVisIdx indecates a real track number.
 	PatternPosition pos = {
-		selLeftAbovePos_.trackVisIdx, selLeftAbovePos_.colInTrack,
+		visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
 		selLeftAbovePos_.order, selLeftAbovePos_.step
 	};
+	const PatternPosition endPos = {
+		visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack,
+		selRightBelowPos_.order, selRightBelowPos_.step
+	};
 	while (true) {
-		int trackIdx = visTracks_.at(pos.trackVisIdx);
 		switch (pos.colInTrack) {
 		case 0:
-			str += QString::number(bt_->getStepNoteNumber(curSongNum_, trackIdx, pos.order, pos.step));
+			str += QString::number(bt_->getStepNoteNumber(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
 			break;
 		case 1:
-			str += QString::number(bt_->getStepInstrument(curSongNum_, trackIdx, pos.order, pos.step));
+			str += QString::number(bt_->getStepInstrument(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
 			break;
 		case 2:
-			str += QString::number(bt_->getStepVolume(curSongNum_, trackIdx, pos.order, pos.step));
+			str += QString::number(bt_->getStepVolume(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
 			break;
 		case 3:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 0));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 0));
 			break;
 		case 4:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 0));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 0));
 			break;
 		case 5:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 1));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 1));
 			break;
 		case 6:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 1));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 1));
 			break;
 		case 7:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 2));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 2));
 			break;
 		case 8:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 2));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 2));
 			break;
 		case 9:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 3));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 3));
 			break;
 		case 10:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 3));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 3));
 			break;
 		}
 
-		if (pos.isEqualCols(selRightBelowPos_)) {
-			if (pos.isEqualRows(selRightBelowPos_)) {
+		if (pos.isEqualCols(endPos)) {
+			if (pos.isEqualRows(endPos)) {
 				break;
 			}
 			else {
-				pos.setCols(selLeftAbovePos_.trackVisIdx, selLeftAbovePos_.colInTrack);
+				pos.setCols(visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack);
 				++pos.step;
 			}
 		}
