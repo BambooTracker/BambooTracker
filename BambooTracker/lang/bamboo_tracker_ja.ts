@@ -29,54 +29,6 @@
         <translation>キー</translation>
     </message>
     <message>
-        <source>C</source>
-        <translation type="vanished">C</translation>
-    </message>
-    <message>
-        <source>C#</source>
-        <translation type="vanished">C#</translation>
-    </message>
-    <message>
-        <source>D</source>
-        <translation type="vanished">D</translation>
-    </message>
-    <message>
-        <source>D#</source>
-        <translation type="vanished">D#</translation>
-    </message>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <source>F</source>
-        <translation type="vanished">F</translation>
-    </message>
-    <message>
-        <source>F#</source>
-        <translation type="vanished">F#</translation>
-    </message>
-    <message>
-        <source>G</source>
-        <translation type="vanished">G</translation>
-    </message>
-    <message>
-        <source>G#</source>
-        <translation type="vanished">G#</translation>
-    </message>
-    <message>
-        <source>A</source>
-        <translation type="vanished">A</translation>
-    </message>
-    <message>
-        <source>A#</source>
-        <translation type="vanished">A#</translation>
-    </message>
-    <message>
-        <source>B</source>
-        <translation type="vanished">B</translation>
-    </message>
-    <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="204"/>
         <source>Rate</source>
         <translation>サンプルレート</translation>
@@ -154,7 +106,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.cpp" line="627"/>
         <source>All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>すべてのファイル (*)</translation>
     </message>
 </context>
 <context>
@@ -316,12 +268,12 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="282"/>
         <source>Note names</source>
-        <translation type="unfinished"></translation>
+        <translation>音名</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="288"/>
         <source>Notation system</source>
-        <translation type="unfinished"></translation>
+        <translation>表記法</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="400"/>
@@ -660,54 +612,6 @@
         <location filename="../gui/configuration_dialog.ui" line="1337"/>
         <source>Low</source>
         <translation>低音</translation>
-    </message>
-    <message>
-        <source>C</source>
-        <translation type="vanished">C</translation>
-    </message>
-    <message>
-        <source>C#</source>
-        <translation type="vanished">C#</translation>
-    </message>
-    <message>
-        <source>D</source>
-        <translation type="vanished">D</translation>
-    </message>
-    <message>
-        <source>D#</source>
-        <translation type="vanished">D#</translation>
-    </message>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <source>F</source>
-        <translation type="vanished">F</translation>
-    </message>
-    <message>
-        <source>F#</source>
-        <translation type="vanished">F#</translation>
-    </message>
-    <message>
-        <source>G</source>
-        <translation type="vanished">G</translation>
-    </message>
-    <message>
-        <source>G#</source>
-        <translation type="vanished">G#</translation>
-    </message>
-    <message>
-        <source>A</source>
-        <translation type="vanished">A</translation>
-    </message>
-    <message>
-        <source>A#</source>
-        <translation type="vanished">A#</translation>
-    </message>
-    <message>
-        <source>B</source>
-        <translation type="vanished">B</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="1991"/>
@@ -1344,7 +1248,7 @@
         <location filename="../gui/configuration_dialog.cpp" line="749"/>
         <location filename="../gui/configuration_dialog.cpp" line="769"/>
         <source>All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>すべてのファイル (*)</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="761"/>
@@ -1453,7 +1357,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="58"/>
         <source>Retrigger, x: volume slide (0-7: up, 8-F: down), y: tick (1-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>リトリガー, x: ボリュームスライド(0-7: アップ, 8-F: ダウン), y: ティック(1-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="59"/>
@@ -1478,25 +1382,17 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="63"/>
         <source>Note cut, xx: count (00-FF)</source>
-        <translation type="unfinished">ノート・カット, xx: カウント(01-FF) {00-?}</translation>
+        <translation>ノート・カット, xx: カウント(00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="64"/>
         <source>Transpose delay, x: count (0-7: up, 8-F: down), y: seminote (0-F)</source>
-        <translation type="unfinished">トランスポーズ・ディレイ, x: カウント(1-7: アップ, 9-F: ダウン), y: 半音数(0-F) {0-7:?} {8-?} {0-?}</translation>
+        <translation>トランスポーズ・ディレイ, x: カウント(0-7: アップ, 8-F: ダウン), y: 半音数(0-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="78"/>
         <source>Volume delay, x: count (0-F), yy: volume (00-FF)</source>
-        <translation type="unfinished">ボリューム・ディレイ, x: カウント(1-F), yy: 音量(00-FF) {0-?} {00-?}</translation>
-    </message>
-    <message>
-        <source>Note cut, xx: count (01-FF)</source>
-        <translation type="vanished">ノート・カット, xx: カウント(01-FF)</translation>
-    </message>
-    <message>
-        <source>Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)</source>
-        <translation type="vanished">トランスポーズ・ディレイ, x: カウント(1-7: アップ, 9-F: ダウン), y: 半音数(0-F)</translation>
+        <translation>ボリューム・ディレイ, x: カウント(0-F), yy: 音量(00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="65"/>
@@ -1546,7 +1442,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="74"/>
         <source>Envelope reset, xx: count (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>エンベロープ・リセット, xx: カウント(00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="75"/>
@@ -1562,10 +1458,6 @@
         <location filename="../gui/effect_description.cpp" line="77"/>
         <source>ML control, x: operator (1-4), y: multiple (0-F)</source>
         <translation>MLコントロール, x: オペレーター(1-4), y: ML値(0-F)</translation>
-    </message>
-    <message>
-        <source>Volume delay, x: count (1-F), yy: volume (00-FF)</source>
-        <translation type="vanished">ボリューム・ディレイ, x: カウント(1-F), yy: 音量(00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="79"/>
@@ -1695,30 +1587,6 @@
 <context>
     <name>FileIOErrorMessageBox</name>
     <message>
-        <source>module</source>
-        <translation type="vanished">モジュール</translation>
-    </message>
-    <message>
-        <source>s98</source>
-        <translation type="vanished">S98</translation>
-    </message>
-    <message>
-        <source>vgm</source>
-        <translation type="vanished">VGM</translation>
-    </message>
-    <message>
-        <source>wav</source>
-        <translation type="vanished">WAV</translation>
-    </message>
-    <message>
-        <source>bank</source>
-        <translation type="vanished">バンク</translation>
-    </message>
-    <message>
-        <source>instrument</source>
-        <translation type="vanished">インストゥルメント</translation>
-    </message>
-    <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="55"/>
         <source>Path does not exist.</source>
         <translation>指定されたパスが存在しません。</translation>
@@ -1769,32 +1637,32 @@
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="33"/>
         <source>module</source>
-        <translation type="unfinished">モジュール</translation>
+        <translation>モジュール</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="34"/>
         <source>s98</source>
-        <translation type="unfinished">S98</translation>
+        <translation>S98</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="35"/>
         <source>vgm</source>
-        <translation type="unfinished">VGM</translation>
+        <translation>VGM</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="36"/>
         <source>wav</source>
-        <translation type="unfinished">WAV</translation>
+        <translation>WAV</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="37"/>
         <source>bank</source>
-        <translation type="unfinished">バンク</translation>
+        <translation>バンク</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="38"/>
         <source>instrument</source>
-        <translation type="unfinished">インストゥルメント</translation>
+        <translation>インストゥルメント</translation>
     </message>
 </context>
 <context>
@@ -1953,7 +1821,7 @@
         <location filename="../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="267"/>
         <location filename="../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="273"/>
         <source>Panning</source>
-        <translation type="unfinished"></translation>
+        <translation>パン</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="146"/>
@@ -1994,12 +1862,12 @@
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="82"/>
         <source>Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>パン</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="115"/>
         <source>Panning</source>
-        <translation type="unfinished"></translation>
+        <translation>パン</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="172"/>
@@ -2083,7 +1951,7 @@
         <location filename="../gui/instrument_editor/instrument_editor_fm_form.ui" line="733"/>
         <location filename="../gui/instrument_editor/instrument_editor_fm_form.ui" line="739"/>
         <source>Panning</source>
-        <translation type="unfinished"></translation>
+        <translation>パン</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_fm_form.ui" line="194"/>
@@ -2345,47 +2213,47 @@
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="14"/>
         <source>Key Signature Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>調号マネージャー</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="20"/>
         <source>Key signature editor</source>
-        <translation type="unfinished"></translation>
+        <translation>調号エディター</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="28"/>
         <source>Key</source>
-        <translation type="unfinished">キー</translation>
+        <translation>調</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="38"/>
         <source>Order</source>
-        <translation type="unfinished">オーダー</translation>
+        <translation>オーダー</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="45"/>
         <source>Step</source>
-        <translation type="unfinished">ステップ</translation>
+        <translation>ステップ</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="60"/>
         <source>Create New</source>
-        <translation type="unfinished">新規作成</translation>
+        <translation>新規作成</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="67"/>
         <source>Update</source>
-        <translation type="unfinished">更新</translation>
+        <translation>更新</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="79"/>
         <source>Remove</source>
-        <translation type="unfinished">削除</translation>
+        <translation>削除</translation>
     </message>
     <message>
         <location filename="../gui/key_signature_manager_form.ui" line="86"/>
         <source>Clear All</source>
-        <translation type="unfinished"></translation>
+        <translation>全削除</translation>
     </message>
 </context>
 <context>
@@ -3271,12 +3139,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1672"/>
         <source>&amp;Key Signature Manager...</source>
-        <translation type="unfinished"></translation>
+        <translation>調号マネージャー(&amp;K)...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1677"/>
         <source>&amp;Welcome...</source>
-        <translation type="unfinished"></translation>
+        <translation>ようこそ(&amp;W)...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1404"/>
@@ -3307,11 +3175,6 @@
         <translation>オクターブ: %1</translation>
     </message>
     <message>
-        <source>Save changes to %1?</source>
-        <oldsource>Save changes to </oldsource>
-        <translation type="vanished">%1の変更を保存しますか?</translation>
-    </message>
-    <message>
         <location filename="../gui/mainwindow.cpp" line="2504"/>
         <location filename="../gui/mainwindow.hpp" line="243"/>
         <location filename="../gui/mainwindow.hpp" line="259"/>
@@ -3328,7 +3191,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="538"/>
         <source>Welcome to BambooTracker v%1!</source>
-        <translation type="unfinished"></translation>
+        <translation>BambooTracker v%1へようこそ!</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1700"/>
@@ -3366,7 +3229,7 @@
         <source>English</source>
         <comment>Default notation system</comment>
         <extracomment>Set the name of suitable notation system (English or German)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>English</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="278"/>
@@ -3386,62 +3249,62 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="678"/>
         <source>Welcome to BambooTracker!</source>
-        <translation type="unfinished"></translation>
+        <translation>BambooTrackerへようこそ!</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="682"/>
         <source>Don&apos;t know where to start?</source>
-        <translation type="unfinished"></translation>
+        <translation>はじめに</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="683"/>
         <source>Check the demo modules and instruments included with your download of BambooTracker.</source>
-        <translation type="unfinished"></translation>
+        <translation>BambooTrackerのダウンロードフォルダに含まれるデモモジュールやインストゥルメントをチェックしてみてください。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="685"/>
         <source>Need a list of effects and shortcuts?</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクトやショートカットのリストは?</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="686"/>
         <source>Check the Help menu at the top of the window.</source>
-        <translation type="unfinished"></translation>
+        <translation>ウィンドウの上部にある「ヘルプ」メニューをチェックしてください。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="687"/>
         <source>Still lost?</source>
-        <translation type="unfinished"></translation>
+        <translation>まだわかんない...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="688"/>
         <source>The README.md has a link to our Discord server.</source>
-        <translation type="unfinished"></translation>
+        <translation>README.mdに、Discordサーバーへのリンクがあります。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="689"/>
         <source>Think you&apos;ve found a bug? Missing a feature?</source>
-        <translation type="unfinished"></translation>
+        <translation>バグ見つけた!あんな機能ほしい!</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="690"/>
         <source>BambooTracker is still in development, bugs and missing features are to be expected. So we need your help!</source>
-        <translation type="unfinished"></translation>
+        <translation>BambooTrackerは開発中のソフトウェアなので、バグがあったりや十分な機能がなかったりします。そのため、皆さんのご協力が必要です。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="694"/>
         <source>Please report any bugs you find and requests and features you&apos;d like to see on our Discord server or our bug tracker (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation>バグや要望などは、Discordサーバーやバグトラッカー(%1)でご報告をお願いします。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="698"/>
         <source>If you&apos;re a developer yourself or would like to start being one, consider contributing to the project yourself. Any help would be appreciated!</source>
-        <translation type="unfinished"></translation>
+        <translation>また開発者として直接プロジェクトに参加することも歓迎しています!</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="702"/>
         <source>Welcome</source>
-        <translation type="unfinished"></translation>
+        <translation>ようこそ</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1719"/>
@@ -3497,7 +3360,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="2253"/>
         <source>Insufficient memory size to load ADPCM samples. Please delete the unused samples.</source>
-        <translation type="unfinished"></translation>
+        <translation>ADPCMサンプルを読み込むためのメモリが足りません。未使用のサンプルを削除してください。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2404"/>
@@ -3522,7 +3385,7 @@
         <location filename="../gui/mainwindow.cpp" line="3513"/>
         <location filename="../gui/mainwindow.cpp" line="3581"/>
         <source>All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>すべてのファイル (*)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3378"/>
@@ -3532,7 +3395,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="3416"/>
         <source>Export %1 to WAV</source>
-        <translation type="unfinished"></translation>
+        <translation>%1をWAVへ書き出し</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3513"/>
@@ -3593,92 +3456,92 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="2974"/>
         <source>YM2608 Music Tracker</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2976"/>
         <source>Web:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2979"/>
         <source>This software is licensed under the GNU General Public License v2.0 or later.</source>
-        <translation type="unfinished"></translation>
+        <translation>本ソフトウェアはGNU General Public License v2.0以降でライセンスされています。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2980"/>
         <source>Source is available at:</source>
-        <translation type="unfinished"></translation>
+        <translation>ソースコードは以下のサイトで入手可能です。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2983"/>
         <source>Libraries:</source>
-        <translation type="unfinished"></translation>
+        <translation>使用ライブラリ:</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2984"/>
         <source>Also see changelog which lists contributors.</source>
-        <translation type="unfinished"></translation>
+        <translation>このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2985"/>
         <source>Thank you to everyone who reports bugs, makes suggestions, and contributes to this project!</source>
-        <translation type="unfinished"></translation>
+        <translation>バグ報告や機能提案など、このプロジェクトに貢献してくださる皆様に感謝いたします。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2989"/>
         <source>C86CTL by (C) honet (BSD 3-Clause)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2991"/>
         <source>emu2149 by (C) Mitsutaka Okazaki (MIT License)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2992"/>
         <source>fmopn by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2993"/>
         <source>libOPNMIDI by (C) Vitaly Novichkov (MIT License part)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2994"/>
         <source>Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1+)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2995"/>
         <source>Qt (GPL v2+ or LGPL v3)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2996"/>
         <source>RtAudio by (C) Gary P. Scavone (RtAudio License)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2997"/>
         <source>RtMidi by (C) Gary P. Scavone (RtMidi License)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2999"/>
         <source>SCCI by (C) gasshi (SCCI License)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3001"/>
         <source>Silk icons by (C) Mark James (CC BY 2.5 or 3.0)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3002"/>
         <source>ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3019"/>
@@ -3689,10 +3552,6 @@
         <location filename="../gui/mainwindow.cpp" line="2504"/>
         <source>Failed to backup module.</source>
         <translation>モジュールのバックアップ作成に失敗しました。</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="vanished">&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3189"/>
@@ -3883,26 +3742,18 @@
         <source>Song type</source>
         <translation>ソングタイプ</translation>
     </message>
-    <message>
-        <source>Standard</source>
-        <translation type="vanished">標準</translation>
-    </message>
-    <message>
-        <source>FM3ch expanded</source>
-        <translation type="vanished">FM3ch拡張</translation>
-    </message>
 </context>
 <context>
     <name>ModuleSaveCheckDialog</name>
     <message>
         <location filename="../gui/mainwindow.cpp" line="105"/>
         <source>Save changes to %1?</source>
-        <translation type="unfinished">%1の変更を保存しますか?</translation>
+        <translation>%1の変更を保存しますか?</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="105"/>
         <source>Untitled</source>
-        <translation type="unfinished">無題</translation>
+        <translation>無題</translation>
     </message>
 </context>
 <context>
@@ -3910,12 +3761,12 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="72"/>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>英語</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="73"/>
         <source>German</source>
-        <translation type="unfinished"></translation>
+        <translation>ドイツ語</translation>
     </message>
 </context>
 <context>
@@ -3972,12 +3823,12 @@
     <message>
         <location filename="../gui/instrument_editor/pan_macro_editor.cpp" line="39"/>
         <source>Right</source>
-        <translation type="unfinished"></translation>
+        <translation>右</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/pan_macro_editor.cpp" line="40"/>
         <source>Left</source>
-        <translation type="unfinished"></translation>
+        <translation>左</translation>
     </message>
 </context>
 <context>
@@ -3985,17 +3836,17 @@
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="41"/>
         <source>Left</source>
-        <translation type="unfinished"></translation>
+        <translation>左</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="42"/>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation>中央</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="43"/>
         <source>Right</source>
-        <translation type="unfinished"></translation>
+        <translation>右</translation>
     </message>
 </context>
 <context>
@@ -4368,12 +4219,12 @@
     <message>
         <location filename="../gui/module_properties_dialog.cpp" line="38"/>
         <source>Standard</source>
-        <translation type="unfinished">標準</translation>
+        <translation>標準</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.cpp" line="39"/>
         <source>FM3ch expanded</source>
-        <translation type="unfinished">FM3ch拡張</translation>
+        <translation>FM3ch拡張</translation>
     </message>
 </context>
 <context>
@@ -4553,7 +4404,7 @@
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="379"/>
         <source>YM2610B OPNB</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="386"/>
@@ -4686,17 +4537,17 @@
     <message>
         <location filename="../gui/wave_export_settings_dialog.ui" line="54"/>
         <source>Separate track export</source>
-        <translation type="unfinished"></translation>
+        <translation>トラック別にエクスポート</translation>
     </message>
     <message>
         <location filename="../gui/wave_export_settings_dialog.ui" line="66"/>
         <source>Reverse</source>
-        <translation type="unfinished">反転</translation>
+        <translation>反転</translation>
     </message>
     <message>
         <location filename="../gui/wave_export_settings_dialog.ui" line="73"/>
         <source>Check All</source>
-        <translation type="unfinished">全選択</translation>
+        <translation>全選択</translation>
     </message>
 </context>
 </TS>
