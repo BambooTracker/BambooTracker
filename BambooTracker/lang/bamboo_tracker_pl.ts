@@ -6,7 +6,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="50"/>
         <source>Users:</source>
-        <translation>Użytkownicy:</translation>
+        <translation>Używane przez:</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="77"/>
@@ -1770,32 +1770,32 @@
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="33"/>
         <source>module</source>
-        <translation type="unfinished">moduł</translation>
+        <translation>moduł</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="34"/>
         <source>s98</source>
-        <translation type="unfinished">S98</translation>
+        <translation>S98</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="35"/>
         <source>vgm</source>
-        <translation type="unfinished">VGM</translation>
+        <translation>VGM</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="36"/>
         <source>wav</source>
-        <translation type="unfinished">WAV</translation>
+        <translation>WAV</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="37"/>
         <source>bank</source>
-        <translation type="unfinished">bank brzmień</translation>
+        <translation>bank brzmień</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="38"/>
         <source>instrument</source>
-        <translation type="unfinished">instrument</translation>
+        <translation>instrument</translation>
     </message>
 </context>
 <context>
@@ -1918,7 +1918,7 @@
         <location filename="../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="210"/>
         <location filename="../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="301"/>
         <source>Users:</source>
-        <translation>Użytkownicy:</translation>
+        <translation>Używane przez:</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="27"/>
@@ -2025,7 +2025,7 @@
         <location filename="../gui/instrument_editor/instrument_editor_fm_form.ui" line="706"/>
         <location filename="../gui/instrument_editor/instrument_editor_fm_form.ui" line="764"/>
         <source>Users:</source>
-        <translation>Użytkownicy:</translation>
+        <translation>Używane przez:</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_fm_form.ui" line="188"/>
@@ -2213,7 +2213,7 @@
         <location filename="../gui/instrument_editor/instrument_editor_ssg_form.ui" line="456"/>
         <location filename="../gui/instrument_editor/instrument_editor_ssg_form.ui" line="495"/>
         <source>Users:</source>
-        <translation>Użytkownicy:</translation>
+        <translation>Używane przez:</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_ssg_form.ui" line="94"/>
@@ -3509,17 +3509,17 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="2979"/>
         <source>This software is licensed under the GNU General Public License v2.0 or later.</source>
-        <translation type="unfinished"></translation>
+        <translation>To oprogramowanie jest objęte licencją GNU General Public Licence v2.0 lub późniejszą.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2994"/>
         <source>Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT), Jean Pierre Cimalando (LGPL v2.1+)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuked OPN-MOD autorstwa (C) Alexey Khokholov (Nuke.YKT) i Jean Pierre Cimalando (LGPL v2.1+)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3002"/>
         <source>ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
-        <translation type="unfinished"></translation>
+        <translation>ymdeltat autorstwa (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</translation>
     </message>
     <message>
         <source>This software is licensed under the GNU General Public License v2.0.</source>
@@ -3657,12 +3657,12 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="2991"/>
         <source>emu2149 by (C) Mitsutaka Okazaki (MIT License)</source>
-        <translation type="unfinished"></translation>
+        <translation>emu2149 autorstwa (C) Mitsutaka Okazaki (Licencja MIT)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2992"/>
         <source>fmopn by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</source>
-        <translation type="unfinished"></translation>
+        <translation>fmopn autorstwa (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2993"/>
@@ -3936,12 +3936,12 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="72"/>
         <source>English</source>
-        <translation type="unfinished">Angielski</translation>
+        <translation>Angielski</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="73"/>
         <source>German</source>
-        <translation type="unfinished"></translation>
+        <translation>Niemiecki</translation>
     </message>
 </context>
 <context>
@@ -4011,17 +4011,17 @@
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="41"/>
         <source>Left</source>
-        <translation type="unfinished">Lewo</translation>
+        <translation>Lewo</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="42"/>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation>Środek</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/instrument_editor_drumkit_form.cpp" line="43"/>
         <source>Right</source>
-        <translation type="unfinished">Prawo</translation>
+        <translation>Prawo</translation>
     </message>
 </context>
 <context>
@@ -4394,12 +4394,12 @@
     <message>
         <location filename="../gui/module_properties_dialog.cpp" line="38"/>
         <source>Standard</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardowy</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.cpp" line="39"/>
         <source>FM3ch expanded</source>
-        <translation type="unfinished"></translation>
+        <translation>Z rozszerzeniem FM3</translation>
     </message>
 </context>
 <context>
