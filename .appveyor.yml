@@ -3,7 +3,7 @@
 #---------------------------------#
 
 # version format
-version: 0.4.6.{build}
+version: 0.5.0.{build}
 
 # branches to build
 branches:
