@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.5.0 (2021-08-01)
 ### Added
 - 2 new pattern effect
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
@@ -32,8 +34,8 @@
 - [#382] - Update MAME emulation (thanks [@OPNA2608])
 - [#382] - Change the project license to GPL v2+
 - Move the repository to GitHub Organization
-- [#389] - Update CI's Nixpkgs channel to 21.05
-- Update translation: pl
+- [#389] - Update CI's Nixpkgs channel to 21.05 (thanks [@OPNA2608])
+- Update translation: pl, ja (thanks [@freq-mod])
 
 ### Fixed
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
