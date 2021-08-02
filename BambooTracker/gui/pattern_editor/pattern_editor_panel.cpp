@@ -1215,7 +1215,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 		emit currentTrackChanged(curPos_.trackVisIdx);
 
 	// Request fore-background repaint if leftmost track is changed else request only background repaint
-	if (leftTrackVisIdx_ != oldLeftTrackIdx) {
+	if (static_cast<bool>(leftTrackVisIdx_&1) != oldLeftTrackIdx) {
 		headerChanged_ = true;
 		foreChanged_ = true;
 		textChanged_ = true;

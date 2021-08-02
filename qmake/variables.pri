@@ -32,9 +32,9 @@ message("Qt is version" $$QT_VERSION)
 msvc|clang|if(gcc:!intel_icc) {
   msvc {
     message("Configured compiler is MSVC")
-    # Pure speculation based on documentation and qmake mkspecs
-    CPP_WARNING_FLAGS += /Wall /Wp64 /WX
+    CPP_WARNING_FLAGS += /W3 /WX
     CPP_WARNING_FLAGS += /utf-8
+    CPP_WARNING_FLAGS += /D_CRT_SECURE_NO_WARNINGS # non _s functions cause errors, cross-platform support for them is terrible
     COMPILER_MAJOR_VERSION = $$QT_MSC_VER
     COMPILER_MINOR_VERSION = $$QT_MSC_FULL_VER
     COMPILER_MINOR_VERSION ~= s/^$$QT_MSC_VER//

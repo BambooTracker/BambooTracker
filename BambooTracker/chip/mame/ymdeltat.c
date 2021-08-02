@@ -152,7 +152,7 @@ static const UINT8 dram_rightshift[4]={3,0,0,0};
 void YM_DELTAT_ADPCM_Write(YM_DELTAT *DELTAT,int r,int v)
 {
 	if(r>=0x10) return;
-	DELTAT->reg[r] = v; /* stock data */
+	DELTAT->reg[r] = (UINT8)v; /* stock data */
 
 	switch( r )
 	{
@@ -293,7 +293,7 @@ value:   START, REC, MEMDAT, REPEAT, SPOFF, x,x,RESET   meaning:
 				DELTAT->limit  = (DELTAT->reg[0xd]*0x0100 | DELTAT->reg[0xc]) << DELTAT->now_portshift;
 			}
 		}
-		DELTAT->control2 = v;
+		DELTAT->control2 = (UINT8)v;
 		break;
 	case 0x02:	/* Start Address L */
 	case 0x03:	/* Start Address H */
@@ -337,7 +337,7 @@ value:   START, REC, MEMDAT, REPEAT, SPOFF, x,x,RESET   meaning:
 
 			if ( DELTAT->now_addr != (DELTAT->end<<1) )
 			{
-				DELTAT->memory[(DELTAT->now_addr>>1)&DELTAT->memory_mask] = v;
+				DELTAT->memory[(DELTAT->now_addr>>1)&DELTAT->memory_mask] = (UINT8)v;
 				DELTAT->now_addr+=2; /* two nibbles at a time */
 
 				/* reset BRDY bit in status register, which means we are processing the write */
@@ -366,7 +366,7 @@ value:   START, REC, MEMDAT, REPEAT, SPOFF, x,x,RESET   meaning:
 		/* ADPCM synthesis from CPU */
 		if ( (DELTAT->portstate & 0xe0)==0x80 )
 		{
-			DELTAT->CPU_data = v;
+			DELTAT->CPU_data = (UINT8)v;
 
 			/* Reset BRDY bit in status register, which means we are full of data */
 			if (DELTAT->status_reset_handler && DELTAT->status_change_BRDY_bit)
@@ -438,7 +438,7 @@ void YM_DELTAT_ADPCM_Reset(YM_DELTAT *DELTAT,int pan)
 	DELTAT->step      = 0;
 	DELTAT->start     = 0;
 	DELTAT->end       = 0;
-	DELTAT->limit     = ~0; /* this way YM2610 and Y8950 (both of which don't have limit address reg) will still work */
+	DELTAT->limit     = (UINT32)~0; /* this way YM2610 and Y8950 (both of which don't have limit address reg) will still work */
 	DELTAT->volume    = 0;
 	DELTAT->pan       = &DELTAT->output_pointer[pan];
 	DELTAT->acc       = 0;
