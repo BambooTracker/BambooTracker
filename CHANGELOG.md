@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
+
+[#398]: https://github.com/BambooTracker/BambooTracker/pull/398
+[#216]: https://github.com/BambooTracker/BambooTracker/issues/216
 
 ## v0.5.0 (2021-08-01)
 ### Added
