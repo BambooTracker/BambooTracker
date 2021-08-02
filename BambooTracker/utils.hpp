@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <vector>
+#include <iterator>
 
 namespace utils
 {

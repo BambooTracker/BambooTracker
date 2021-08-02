@@ -26,6 +26,7 @@
 #include "register_write_logger.hpp"
 #include "io/export_io.hpp"
 #include <algorithm>
+#include <iterator>
 
 namespace chip
 {
