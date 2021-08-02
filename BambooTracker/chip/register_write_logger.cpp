@@ -26,6 +26,7 @@
 #include "register_write_logger.hpp"
 #include "io/export_io.hpp"
 #include <algorithm>
+#include <iterator>
 
 namespace chip
 {
@@ -65,7 +66,7 @@ std::vector<uint8_t> AbstractRegisterWriteLogger::getData()
 
 size_t AbstractRegisterWriteLogger::getSampleLength() const noexcept
 {
-	return totalSampCnt_;
+	return static_cast<size_t>(totalSampCnt_);
 }
 
 size_t AbstractRegisterWriteLogger::setLoopPoint()
@@ -112,7 +113,7 @@ void VgmLogger::recordRegisterChange(uint32_t offset, uint8_t value)
 
 	if (cmdSsg && offset < 0x10) {
 		buf_.push_back(cmdSsg);
-		buf_.push_back(offset);
+		buf_.push_back(static_cast<uint8_t>(offset));
 		buf_.push_back(value);
 	}
 	else if (cmdFmPortA && (offset & 0x100) == 0) {
@@ -172,7 +173,7 @@ void VgmLogger::setWait()
 
 		if (intrRate_ == 50) {
 			if (lastWait_ > 65535) {
-				uint32_t tmp = lastWait_ - 65535;
+				uint32_t tmp = static_cast<uint32_t>(lastWait_ - 65535);
 				if (tmp <= 882) {
 					//65535 - (882 - tmp)
 					sub = 64653 + tmp;
@@ -190,16 +191,16 @@ void VgmLogger::setWait()
 				}
 				buf_.push_back(0x61);
 				buf_.push_back(sub & 0x00ff);
-				buf_.push_back(sub >> 8);
+				buf_.push_back(static_cast<uint8_t>(sub >> 8));
 			}
 			else {
 				if (lastWait_ <= 16) {
-					buf_.push_back(0x70 | (lastWait_ - 1));
+					buf_.push_back(static_cast<uint8_t>(0x70 | (lastWait_ - 1)));
 				}
 				else if (lastWait_ > 2646) {
 					buf_.push_back(0x61);
 					buf_.push_back(lastWait_ & 0x00ff);
-					buf_.push_back(lastWait_ >> 8);
+					buf_.push_back(static_cast<uint8_t>(lastWait_ >> 8));
 				}
 				else if (lastWait_ == 2646) {
 					buf_.push_back(0x63);
@@ -207,27 +208,27 @@ void VgmLogger::setWait()
 					buf_.push_back(0x63);
 				}
 				else if (1764 <= lastWait_ && lastWait_ <= 1780) {
-					uint32_t tmp = lastWait_ - 1764;
+					uint32_t tmp = static_cast<uint32_t>(lastWait_ - 1764);
 					buf_.push_back(0x63);
 					buf_.push_back(0x63);
 					if (tmp) buf_.push_back(0x70 | (tmp - 1));
 				}
 				else if (882 <= lastWait_ && lastWait_ <= 898) {
-					uint32_t tmp = lastWait_ - 882;
+					uint32_t tmp = static_cast<uint32_t>(lastWait_ - 882);
 					buf_.push_back(0x63);
 					if (tmp) buf_.push_back(0x70 | (tmp - 1));
 				}
 				else {
 					buf_.push_back(0x61);
 					buf_.push_back(lastWait_ & 0x00ff);
-					buf_.push_back(lastWait_ >> 8);
+					buf_.push_back(static_cast<uint8_t>(lastWait_ >> 8));
 				}
-				sub = lastWait_;
+				sub = static_cast<uint32_t>(lastWait_);
 			}
 		}
 		else if (intrRate_ == 60) {
 			if (lastWait_ > 65535) {
-				uint32_t tmp = lastWait_ - 65535;
+				uint32_t tmp = static_cast<uint32_t>(lastWait_ - 65535);
 				if (tmp <= 735) {
 					//65535 - (735 - tmp)
 					sub = 64800 + tmp;
@@ -249,12 +250,12 @@ void VgmLogger::setWait()
 			}
 			else {
 				if (lastWait_ <= 16) {
-					buf_.push_back(0x70 | (lastWait_ - 1));
+					buf_.push_back(static_cast<uint8_t>(0x70 | (lastWait_ - 1)));
 				}
 				else if (lastWait_ > 2205) {
 					buf_.push_back(0x61);
 					buf_.push_back(lastWait_ & 0x00ff);
-					buf_.push_back(lastWait_ >> 8);
+					buf_.push_back(static_cast<uint8_t>(lastWait_ >> 8));
 				}
 				else if (lastWait_ == 2205) {
 					buf_.push_back(0x62);
@@ -262,22 +263,22 @@ void VgmLogger::setWait()
 					buf_.push_back(0x62);
 				}
 				else if (1470 <= lastWait_ && lastWait_ <= 1486) {
-					uint32_t tmp = lastWait_ - 1470;
+					uint32_t tmp = static_cast<uint32_t>(lastWait_ - 1470);
 					buf_.push_back(0x62);
 					buf_.push_back(0x62);
 					if (tmp) buf_.push_back(0x70 | (tmp - 1));
 				}
 				else if (735 <= lastWait_ && lastWait_ <= 751) {
-					uint32_t tmp = lastWait_ - 735;
+					uint32_t tmp = static_cast<uint32_t>(lastWait_ - 735);
 					buf_.push_back(0x62);
 					if (tmp) buf_.push_back(0x70 | (tmp - 1));
 				}
 				else {
 					buf_.push_back(0x61);
 					buf_.push_back(lastWait_ & 0x00ff);
-					buf_.push_back(lastWait_ >> 8);
+					buf_.push_back(static_cast<uint8_t>(lastWait_ >> 8));
 				}
-				sub = lastWait_;
+				sub = static_cast<uint32_t>(lastWait_);
 			}
 		}
 		else {
@@ -290,9 +291,9 @@ void VgmLogger::setWait()
 			else {
 				buf_.push_back(0x61);
 				buf_.push_back(lastWait_ & 0x00ff);
-				buf_.push_back(lastWait_ >> 8);
+				buf_.push_back(static_cast<uint8_t>(lastWait_ >> 8));
 			}
-			sub = lastWait_;
+			sub = static_cast<uint32_t>(lastWait_);
 		}
 
 		lastWait_ -= sub;

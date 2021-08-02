@@ -25,6 +25,7 @@
 
 #include "paste_insert_copied_data_to_pattern_command.hpp"
 #include <algorithm>
+#include <iterator>
 #include "pattern_command_utils.hpp"
 
 PasteInsertCopiedDataToPatternCommand::PasteInsertCopiedDataToPatternCommand(

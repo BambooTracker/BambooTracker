@@ -624,6 +624,9 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 
 void OrderListPanel::drawHeaders(int maxWidth)
 {
+	static const QString RHYTM_NAMES[6] = {
+		"BD", "SD", "TOP", "HH", "TOM", "RIM"
+	};
 	QPainter painter(&headerPixmap_);
 	painter.setFont(headerFont_);
 
@@ -658,9 +661,6 @@ void OrderListPanel::drawHeaders(int maxWidth)
 			str = "SG" + QString::number(attrib.channelInSource + 1);
 			break;
 		case SoundSource::RHYTHM:
-			static const QString RHYTM_NAMES[6] = {
-				"BD", "SD", "TOP", "HH", "TOM", "RIM"
-			};
 			str = RHYTM_NAMES[attrib.channelInSource];
 			break;
 		case SoundSource::ADPCM:

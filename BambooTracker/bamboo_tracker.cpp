@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <utility>
 #include <exception>
+#include <iterator>
 #include <unordered_map>
 #include <unordered_set>
 #include "configuration.hpp"

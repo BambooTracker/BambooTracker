@@ -729,7 +729,7 @@ INLINE void FM_STATUS_RESET(FM_ST *ST,int flag)
 /* IRQ mask set */
 INLINE void FM_IRQMASK_SET(FM_ST *ST,int flag)
 {
-	ST->irqmask = flag;
+	ST->irqmask = (UINT8)flag;
 	/* IRQ handling check */
 	FM_STATUS_SET(ST,0);
 	FM_STATUS_RESET(ST,0);
@@ -1148,7 +1148,7 @@ INLINE void set_ar_ksr(UINT8 type, FM_CH *CH,FM_SLOT *SLOT,int v)
 
 	SLOT->ar = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
 
-	SLOT->KSR = 3-(v>>6);
+	SLOT->KSR = (UINT8)(3-(v>>6));
 	if (SLOT->KSR != old_KSR)
 	{
 		CH->SLOT[SLOT1].Incr=-1;
@@ -1540,7 +1540,7 @@ INLINE void refresh_fc_eg_slot(FM_OPN *OPN, FM_SLOT *SLOT , int fc , int kc )
 
 	if( SLOT->ksr != ksr )
 	{
-		SLOT->ksr = ksr;
+		SLOT->ksr = (UINT8)ksr;
 
 		/* calculate envelope generator rates */
 		if ((SLOT->ar + SLOT->ksr) < 32+62)
@@ -1727,7 +1727,7 @@ static void OPNWriteMode(FM_OPN *OPN, int r, int v)
 		OPN->ST.TA = (OPN->ST.TA & 0x3fc)|(v&3);
 		break;
 	case 0x26:  /* timer B */
-		OPN->ST.TB = v;
+		OPN->ST.TB = (UINT8)v;
 		break;
 	case 0x27:  /* mode, timer control */
 		set_timers( OPN, &(OPN->ST),OPN->ST.param,v );
@@ -1888,7 +1888,7 @@ static void OPNWriteReg(FM_OPN *OPN, int r, int v)
 		{
 		case 0:     /* 0xa0-0xa2 : FNUM1 */
 			if (OPN->LegacyMode)
-				OPN->ST.fn_h = CH->block_fnum >> 8;
+				OPN->ST.fn_h = (UINT8)(CH->block_fnum >> 8);
 			{
 				UINT32 fn = (((UINT32)( (OPN->ST.fn_h)&7))<<8) + v;
 				UINT8 blk = OPN->ST.fn_h>>3;
@@ -1910,7 +1910,7 @@ static void OPNWriteReg(FM_OPN *OPN, int r, int v)
 			break;
 		case 2:     /* 0xa8-0xaa : 3CH FNUM1 */
 			if (OPN->LegacyMode)
-				OPN->SL3.fn_h = OPN->SL3.block_fnum[c] >> 8;
+				OPN->SL3.fn_h = (UINT8)(OPN->SL3.block_fnum[c] >> 8);
 			if(r < 0x100)
 			{
 				UINT32 fn = (((UINT32)(OPN->SL3.fn_h&7))<<8) + v;
@@ -1941,7 +1941,7 @@ static void OPNWriteReg(FM_OPN *OPN, int r, int v)
 			{
 				int feedback = (v>>3)&7;
 				CH->ALGO = v&7;
-				CH->FB   = feedback ? feedback+6 : 0;
+				CH->FB   = (UINT8)(feedback ? feedback+6 : 0);
 				setup_connection( OPN, CH, c );
 			}
 			break;
@@ -2881,7 +2881,7 @@ static void FM_ADPCMAWrite(YM2610 *F2610,int r,int v)
 			else
 			{
 				adpcm[c].vol_mul   = 15 - (volume & 7);     /* so called 0.75 dB */
-				adpcm[c].vol_shift =  1 + (volume >> 3);    /* Yamaha engineers used the approximation: each -6 dB is close to divide by two (shift right) */
+				adpcm[c].vol_shift =  (UINT8)(1 + (volume >> 3));    /* Yamaha engineers used the approximation: each -6 dB is close to divide by two (shift right) */
 			}
 
 			/* calc pcm * volume data */
@@ -2909,7 +2909,7 @@ static void FM_ADPCMAWrite(YM2610 *F2610,int r,int v)
 			else
 			{
 				adpcm[c].vol_mul   = 15 - (volume & 7);     /* so called 0.75 dB */
-				adpcm[c].vol_shift =  1 + (volume >> 3);    /* Yamaha engineers used the approximation: each -6 dB is close to divide by two (shift right) */
+				adpcm[c].vol_shift =  (UINT8)(1 + (volume >> 3));    /* Yamaha engineers used the approximation: each -6 dB is close to divide by two (shift right) */
 			}
 
 			adpcm[c].pan    = &F2610->OPN.out_adpcm[(v>>6)&0x03];

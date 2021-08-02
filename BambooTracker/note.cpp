@@ -1132,7 +1132,7 @@ void Note::evaluateState(int octave, int note, int pitch)
 	pitch_ = pitch % SEMINOTE_PITCH;
 	note += pitch / SEMINOTE_PITCH;
 	name_ = ((note % 12) + 12) % 12;;
-	octave_ = octave + std::floor(note / 12.);
+	octave_ = (int)(octave + std::floor(note / 12.));
 	if (octave_ < 0 || (!octave_ && !name_ && pitch_ < 0)) {
 		octave_ = 0;
 		name_ = NoteName::C;

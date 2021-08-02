@@ -335,7 +335,7 @@ void OPN2_DoRegWrite(ym3438_t *chip)
     if (chip->write_fm_data)
     {
         /* Slot */
-        if (op_offset[slot] == (chip->address & 0x107))
+        if (op_offset[slot] == (Bit32u)(chip->address & 0x107))
         {
             if (chip->address & 0x08)
             {
@@ -385,7 +385,7 @@ void OPN2_DoRegWrite(ym3438_t *chip)
         }
 
         /* Channel */
-        if (ch_offset[channel] == (chip->address & 0x103))
+        if (ch_offset[channel] == (Bit32u)(chip->address & 0x103))
         {
             address = chip->address & 0xfc;
             switch (address)
@@ -393,7 +393,7 @@ void OPN2_DoRegWrite(ym3438_t *chip)
             case 0xa0:
                 chip->fnum[channel] = (chip->data & 0xff) | ((chip->reg_a4 & 0x07) << 8);
                 chip->block[channel] = (chip->reg_a4 >> 3) & 0x07;
-                chip->kcode[channel] = (chip->block[channel] << 2) | fn_note[chip->fnum[channel] >> 7];
+                chip->kcode[channel] = (Bit8u)((chip->block[channel] << 2) | fn_note[chip->fnum[channel] >> 7]);
                 break;
             case 0xa4:
                 chip->reg_a4 = chip->data & 0xff;
