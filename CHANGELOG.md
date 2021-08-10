@@ -961,7 +961,7 @@
 - [#30] - Create BambooTracker.1 (thanks [@alexmyczko], [@OPNA2608])
 - [#37], [#38] - Support WOPN bank and instrument format (thanks [@jpcima])
 - Add S98 export
-- [#13] - Add selection to move the cursor to right in the effect columns (thanks [@jimbo1qaz])
+- [#13] - Add selection to Move the cursor right in the effect columns (thanks [@jimbo1qaz])
 - [#13] - Add highlighted step jump shortcuts (thanks [@jimbo1qaz])
 - Add general settings descriptions in configuration dialog
 - [#13] - Add editable step (thanks [@jimbo1qaz])

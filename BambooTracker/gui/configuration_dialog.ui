@@ -108,7 +108,7 @@
            <widget class="QListWidget" name="generalSettingsListWidget">
             <item>
              <property name="text">
-              <string>Warp cursor</string>
+              <string>Wrap cursor</string>
              </property>
              <property name="checkState">
               <enum>Checked</enum>
@@ -116,7 +116,7 @@
             </item>
             <item>
              <property name="text">
-              <string>Warp across orders</string>
+              <string>Wrap across orders</string>
              </property>
              <property name="checkState">
               <enum>Checked</enum>
@@ -164,7 +164,7 @@
             </item>
             <item>
              <property name="text">
-              <string>Move cursor to right</string>
+              <string>Move cursor right</string>
              </property>
              <property name="checkState">
               <enum>Unchecked</enum>
@@ -204,7 +204,7 @@
             </item>
             <item>
              <property name="text">
-              <string>Move cursor by horizontal scroll</string>
+              <string>Move cursor with horizontal scroll bar</string>
              </property>
              <property name="checkState">
               <enum>Checked</enum>
@@ -212,7 +212,7 @@
             </item>
             <item>
              <property name="text">
-              <string>Overwrite unused&amp;unedited property</string>
+              <string>Overwrite unused and unedited properties</string>
              </property>
              <property name="checkState">
               <enum>Unchecked</enum>

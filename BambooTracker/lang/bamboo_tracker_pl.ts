@@ -249,12 +249,12 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="207"/>
-        <source>Move cursor by horizontal scroll</source>
+        <source>Move cursor with horizontal scroll bar</source>
         <translation>Przenoś kursor przy pomocy poziomego paska przewijania</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="215"/>
-        <source>Overwrite unused&amp;unedited property</source>
+        <source>Overwrite unused and unedited properties</source>
         <translation>Nadpisz nieużywane i niezedytowane własności</translation>
     </message>
     <message>
@@ -752,12 +752,12 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="111"/>
-        <source>Warp cursor</source>
+        <source>Wrap cursor</source>
         <translation>Przenieś kursor</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="119"/>
-        <source>Warp across orders</source>
+        <source>Wrap across orders</source>
         <translation>Przeskakuj przez klatki</translation>
     </message>
     <message>
@@ -787,7 +787,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="167"/>
-        <source>Move cursor to right</source>
+        <source>Move cursor right</source>
         <translation>Przesuń kursor w prawo</translation>
     </message>
     <message>
@@ -895,12 +895,12 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="103"/>
-        <source>Warp the cursor around the edges of the pattern editor.</source>
+        <source>Wrap the cursor around the edges of the pattern editor.</source>
         <translation>Przemieszcza kursor wokół krańców edytora wzorców.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="105"/>
-        <source>Move to previous or next order when reaching top or bottom in the pattern editor.</source>
+        <source>Move to the previous or next order when reaching the top or bottom in the pattern editor.</source>
         <translation>Przechodzi do poprzedniej lub następnej klatki po osiągnięciu początku lub końca wzorca.</translation>
     </message>
     <message>
@@ -910,7 +910,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="109"/>
-        <source>Preview previous and next orders in the pattern editor.</source>
+        <source>Preview the previous and next orders in the pattern editor.</source>
         <translation>Pokazuje fragmenty poprzednich i następnych klatek w edytorze wzorców.</translation>
     </message>
     <message>
@@ -931,7 +931,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="117"/>
-        <source>Move the cursor to right after entering effects in the pattern editor.</source>
+        <source>Automatically move the cursor right after entering effects in the pattern editor.</source>
         <translation>Kursor zostanie przesunięty w prawo po wpisaniu efektu w edytorze wzorców.</translation>
     </message>
     <message>
@@ -951,37 +951,37 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="125"/>
-        <source>Fill 00 to effect value column upon entering effect id.</source>
+        <source>Automatically fill 00 to the effect value column upon entering an effect ID.</source>
         <translation>Dodaje 00 do kolumny wartości efektów po wpisaniu ID efektu.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="127"/>
-        <source>Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.</source>
+        <source>Move the cursor with the horizontal scroll bar in the order list and the pattern editor.</source>
         <translation>Przesuwa pozycję kursora o komórkę przy pomocy pionowego paska przewijania w liscie klatek i w edytorze wzorców.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="129"/>
-        <source>Overwrite unused and unedited instrument properties on creating new properties. When disabled, override unused properties regardless of editing.</source>
+        <source>Overwrite unused and unedited instrument properties when creating new properties. If disabled, override unused properties regardless of editing.</source>
         <translation>Nadpisuje nieużywane i niezedytowane właściwości instrumentu przy tworzeniu nowych właściwości. Gdy wyłączone, nieużywane właściwości bedą zastępowane niezależnie od tego, czy były edytowane.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="132"/>
-        <source>Send only ADPCM samples used by instruments to the ADPCM memory. Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost.</source>
+        <source>Only send samples used by instruments to the ADPCM memory. It is recommended to turn this off if you change ADPCM samples frequently due to the high cost of rewriting..</source>
         <translation>Wysyła do pamięci ADPCM tylko próbki używane przez instrumenty. Zalecane jest wyłączenie tej opcji jeżeli często zmieniasz próbki ADPCM ze względu na długi czas nadpsywania. </translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="135"/>
-        <source>Correspond the instrument number in patterns when the instrument changes its number.</source>
+        <source>Automatically update the instrument number in patterns when an instrument's number is changed.</source>
         <translation>Podmienia numer instrumentu we wzorcach gdy instrument zmieni swój numer.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="137"/>
-        <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox.</source>
+        <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume combo box.</source>
         <translation>Ustawia maksymalną głośność poczas trybu improwizacji. Gdy odznaczone, głośność jest zmieniana przy pomocy selektora głośńości.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="139"/>
-        <source>Mute hidden tracks when visibility of tracks is changed.</source>
+        <source>Automatically mute tracks when they are hidden.</source>
         <translation>Wycisza ukryte kanały kiedy widoczność tych kanałów jest zmieniona.</translation>
     </message>
     <message>
@@ -1151,22 +1151,22 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="200"/>
-        <source>Transpose, decrease note</source>
+        <source>Transpose down one semitone</source>
         <translation>Transponuj, zwiększ nutę</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="201"/>
-        <source>Transpose, increase note</source>
+        <source>Transpose up one semitone</source>
         <translation>Transponuj, zwiększ nutę</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="202"/>
-        <source>Transpose, decrease octave</source>
+        <source>Transpose down one octave</source>
         <translation>Transponuj, zmniejsz oktawę</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="203"/>
-        <source>Transpose, increase octave</source>
+        <source>Transpose up one octave</source>
         <translation>Transponuj, zwiększ oktawę</translation>
     </message>
     <message>
