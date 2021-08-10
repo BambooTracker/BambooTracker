@@ -257,11 +257,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.ui" line="207"/>
-        <source>Move cursor by horizontal scroll</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../gui/configuration_dialog.ui" line="439"/>
         <source>Emulation core</source>
         <translation>Cœur d&apos;émulation</translation>
@@ -712,16 +707,14 @@
         <translation>Paramètres généraux</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.ui" line="111"/>
         <source>Warp cursor</source>
         <translatorcomment>J&apos;ai rien trouvé de mieux.</translatorcomment>
-        <translation type="unfinished">Déplacer le curseur de manière cyclique</translation>
+        <translation type="obsolete">Déplacer le curseur de manière cyclique</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.ui" line="119"/>
         <source>Warp across orders</source>
         <translatorcomment>J&apos;ai rien trouvé de mieux. Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
-        <translation type="unfinished">Se déplacer de manière cyclique le long des ordres</translation>
+        <translation type="obsolete">Se déplacer de manière cyclique le long des ordres</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="127"/>
@@ -750,9 +743,8 @@
         <translation>Inverser la valeur du volume FM</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.ui" line="167"/>
         <source>Move cursor to right</source>
-        <translation>Déplacer le curseur vers la droite</translation>
+        <translation type="vanished">Déplacer le curseur vers la droite</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="175"/>
@@ -772,11 +764,6 @@
     <message>
         <source>Show wave visual</source>
         <translation type="vanished">Afficher une visualisation de l&apos;onde</translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.ui" line="215"/>
-        <source>Overwrite unused&amp;unedited property</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="223"/>
@@ -816,6 +803,31 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="36"/>
         <source>Frame rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.ui" line="111"/>
+        <source>Wrap cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.ui" line="119"/>
+        <source>Wrap across orders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.ui" line="167"/>
+        <source>Move cursor right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.ui" line="207"/>
+        <source>Move cursor with horizontal scroll bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.ui" line="215"/>
+        <source>Overwrite unused and unedited properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -911,21 +923,89 @@
         <translation>Maître</translation>
     </message>
     <message>
+        <location filename="../gui/configuration_dialog.cpp" line="103"/>
+        <source>Wrap the cursor around the edges of the pattern editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="105"/>
+        <source>Move to the previous or next order when reaching the top or bottom in the pattern editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="109"/>
+        <source>Preview the previous and next orders in the pattern editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="117"/>
+        <source>Automatically move the cursor right after entering effects in the pattern editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="125"/>
+        <source>Automatically fill 00 to the effect value column upon entering an effect ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="127"/>
+        <source>Move the cursor with the horizontal scroll bar in the order list and the pattern editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="129"/>
+        <source>Overwrite unused and unedited instrument properties when creating new properties. If disabled, override unused properties regardless of editing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="132"/>
+        <source>Only send samples used by instruments to the ADPCM memory. It is recommended to turn this off if you change ADPCM samples frequently due to the high cost of rewriting..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="135"/>
+        <source>Automatically update the instrument number in patterns when an instrument&apos;s number is changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="139"/>
+        <source>Automatically mute tracks when they are hidden.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="200"/>
+        <source>Transpose down one semitone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="201"/>
+        <source>Transpose up one semitone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="202"/>
+        <source>Transpose down one octave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration_dialog.cpp" line="203"/>
+        <source>Transpose up one octave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../gui/configuration_dialog.cpp" line="500"/>
         <source>The change of emulator will be effective after restarting the program.</source>
         <translation>Le changement d&apos;émulateur sera pris en compte au redémarrage du logiciel.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="103"/>
         <source>Warp the cursor around the edges of the pattern editor.</source>
         <translatorcomment>J&apos;ai rien trouvé de mieux.</translatorcomment>
-        <translation type="unfinished">Le curseur se déplace de manière cyclique à proximité des bords de l&apos;éditeur de motifs.</translation>
+        <translation type="obsolete">Le curseur se déplace de manière cyclique à proximité des bords de l&apos;éditeur de motifs.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="105"/>
         <source>Move to previous or next order when reaching top or bottom in the pattern editor.</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
-        <translation type="unfinished">Se positionner sur l&apos;ordre précédent ou suivant lorsque le sommet ou le bas de l&apos;éditeur de motifs est atteint.</translation>
+        <translation type="obsolete">Se positionner sur l&apos;ordre précédent ou suivant lorsque le sommet ou le bas de l&apos;éditeur de motifs est atteint.</translation>
     </message>
     <message>
         <source>Display order numbers and the order count on the status bar in hexadecimal.</source>
@@ -938,10 +1018,9 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="109"/>
         <source>Preview previous and next orders in the pattern editor.</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
-        <translation type="unfinished">Prévisualiser les ordres précédent et suivant dans l&apos;éditeur de motifs.</translation>
+        <translation type="obsolete">Prévisualiser les ordres précédent et suivant dans l&apos;éditeur de motifs.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="111"/>
@@ -959,9 +1038,8 @@
         <translation>Inverser la valeur du volume FM pour que 00 soit le plus bas dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="117"/>
         <source>Move the cursor to right after entering effects in the pattern editor.</source>
-        <translation>Déplacer le curseur vers la droite après être entré dans les effets dans l&apos;éditeur de motif.</translation>
+        <translation type="vanished">Déplacer le curseur vers la droite après être entré dans les effets dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="119"/>
@@ -983,38 +1061,8 @@
         <translation type="vanished">Activer un oscilloscope qui affiche la forme d&apos;onde du signal de sortie.</translation>
     </message>
     <message>
-        <location filename="../gui/configuration_dialog.cpp" line="125"/>
-        <source>Fill 00 to effect value column upon entering effect id.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="127"/>
-        <source>Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="129"/>
-        <source>Overwrite unused and unedited instrument properties on creating new properties. When disabled, override unused properties regardless of editing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="132"/>
-        <source>Send only ADPCM samples used by instruments to the ADPCM memory. Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="135"/>
-        <source>Correspond the instrument number in patterns when the instrument changes its number.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../gui/configuration_dialog.cpp" line="137"/>
         <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="139"/>
-        <source>Mute hidden tracks when visibility of tracks is changed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1180,26 +1228,6 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="199"/>
         <source>Next bookmark</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="200"/>
-        <source>Transpose, decrease note</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="201"/>
-        <source>Transpose, increase note</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="202"/>
-        <source>Transpose, decrease octave</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/configuration_dialog.cpp" line="203"/>
-        <source>Transpose, increase octave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
