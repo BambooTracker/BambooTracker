@@ -201,12 +201,12 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="207"/>
-        <source>Move cursor with horizontal scroll bar</source>
+        <source>Move cursor by horizontal scroll</source>
         <translation>横スクロールでカーソルを移動</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="215"/>
-        <source>Overwrite unused and unedited properties</source>
+        <source>Overwrite unused&amp;unedited property</source>
         <translation>未使用&amp;未編集のプロパティを上書き</translation>
     </message>
     <message>
@@ -656,12 +656,12 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="111"/>
-        <source>Wrap cursor</source>
+        <source>Warp cursor</source>
         <translation>カーソルをワープ</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="119"/>
-        <source>Wrap across orders</source>
+        <source>Warp across orders</source>
         <translation>オーダー間をワープ</translation>
     </message>
     <message>
@@ -691,7 +691,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="167"/>
-        <source>Move cursor right</source>
+        <source>Move cursor to right</source>
         <translation>カーソルを右に移動</translation>
     </message>
     <message>
@@ -799,12 +799,12 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="103"/>
-        <source>Wrap the cursor around the edges of the pattern editor.</source>
+        <source>Warp the cursor around the edges of the pattern editor.</source>
         <translation>パターンの両端をワープします。</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="105"/>
-        <source>Move to the previous or next order when reaching the top or bottom in the pattern editor.</source>
+        <source>Move to previous or next order when reaching top or bottom in the pattern editor.</source>
         <translation>パターンの上下の端から前後のパターンへ移動します。</translation>
     </message>
     <message>
@@ -814,7 +814,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="109"/>
-        <source>Preview the previous and next orders in the pattern editor.</source>
+        <source>Preview previous and next orders in the pattern editor.</source>
         <translation>パターンエディターで前後のオーダーをプレビューします。</translation>
     </message>
     <message>
@@ -835,7 +835,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="117"/>
-        <source>Automatically move the cursor right after entering effects in the pattern editor.</source>
+        <source>Move the cursor to right after entering effects in the pattern editor.</source>
         <translation>パターンエディターでエフェクト入力後にカーソルを右の列へ移動します。</translation>
     </message>
     <message>
@@ -855,27 +855,27 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="125"/>
-        <source>Automatically fill 00 to the effect value column upon entering an effect ID.</source>
+        <source>Fill 00 to effect value column upon entering effect id.</source>
         <translation>エフェクトIDを入力時にエフェクト値を自動で00に設定します。</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="127"/>
-        <source>Move the cursor with the horizontal scroll bar in the order list and the pattern editor.</source>
+        <source>Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.</source>
         <translation>オーダーリストとパターンエディターにおいて横スクロールバーでカーソルをセル単位で移動させます。</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="129"/>
-        <source>Overwrite unused and unedited instrument properties when creating new properties. If disabled, override unused properties regardless of editing.</source>
+        <source>Overwrite unused and unedited instrument properties on creating new properties. When disabled, override unused properties regardless of editing.</source>
         <translation>新しいインストゥルメントプロパティを作成する際に未使用かつ未編集の既存のプロパティを上書きします。編集したかどうかに関わらず上書きする場合はチェックを外してください。</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="132"/>
-        <source>Only send samples used by instruments to the ADPCM memory. It is recommended to turn this off if you change ADPCM samples frequently due to the high cost of rewriting..</source>
+        <source>Send only ADPCM samples used by instruments to the ADPCM memory. Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost.</source>
         <translation>インストゥルメントで使用されているADPCMサンプルのみをADPCMメモリへ書き込みます。メモリの書きかえには高コストであるため、頻繁にサンプルを変更する場合には無効にすることをお勧めします。</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="135"/>
-        <source>Automatically update the instrument number in patterns when an instrument's number is changed.</source>
+        <source>Correspond the instrument number in patterns when the instrument changes its number.</source>
         <translation>インストゥルメントの番号が変更されたとき、パターン中の対応するインストゥルメント番号を同期させます。</translation>
     </message>
     <message>
@@ -885,7 +885,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="139"/>
-        <source>Automatically mute tracks when they are hidden.</source>
+        <source>Mute hidden tracks when visibility of tracks is changed.</source>
         <translation>トラックの可視性が変更されたとき、非表示のトラックをミュートします。</translation>
     </message>
     <message>
@@ -1055,22 +1055,22 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="200"/>
-        <source>Transpose down one semitone</source>
+        <source>Transpose, decrease note</source>
         <translation>トランスポーズ (半音下げる)</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="201"/>
-        <source>Transpose up one semitone</source>
+        <source>Transpose, increase note</source>
         <translation>トランスポーズ (半音上げる)</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="202"/>
-        <source>Transpose down one octave</source>
+        <source>Transpose, decrease octave</source>
         <translation>トランスポーズ (1オクターブ下げる)</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="203"/>
-        <source>Transpose up one octave</source>
+        <source>Transpose, increase octave</source>
         <translation>トランスポーズ (1オクターブ上げる)</translation>
     </message>
     <message>
