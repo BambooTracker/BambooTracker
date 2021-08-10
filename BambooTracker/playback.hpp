@@ -59,6 +59,9 @@ public:
 	const_iterator end() const noexcept { return mem_.end(); }
 	const_iterator cend() const noexcept { return mem_.cend(); }
 
+	iterator erase(iterator position) { return mem_.erase(position); }
+	iterator erase(const_iterator position) { return mem_.erase(position); }
+
 private:
 	std::vector<Effect> mem_;
 };
@@ -131,7 +134,6 @@ private:
 	void checkValidPosition();
 
 	void stepProcess();
-	std::unordered_map<SoundSource, std::vector<bool>> isNoteDelay_;
 
 	void executeFMStepEvents(const Step& step, int ch, bool calledByNoteDelay = false);
 	void executeSSGStepEvents(const Step& step, int ch, bool calledByNoteDelay = false);
@@ -151,13 +153,13 @@ private:
 	std::unordered_map<SoundSource, DirectRegisterSetSource> directRegisterSets_;
 
 	bool executeStoredEffectsGlobal();
-	bool storeEffectToMapFM(int ch, const Effect& eff);
+	void storeEffectToMapFM(int ch, const Effect& eff);
 	void executeStoredEffectsFM(int ch);
-	bool storeEffectToMapSSG(int ch, const Effect& eff);
+	void storeEffectToMapSSG(int ch, const Effect& eff);
 	void executeStoredEffectsSSG(int ch);
-	bool storeEffectToMapRhythm(int ch, const Effect& eff);
+	void storeEffectToMapRhythm(int ch, const Effect& eff);
 	void executeStoredEffectsRhythm(int ch);
-	bool storeEffectToMapADPCM(int ch, const Effect& eff);
+	void storeEffectToMapADPCM(int ch, const Effect& eff);
 	void executeStoredEffectsADPCM();
 	void storeDirectRegisterSetEffectToQueue(SoundSource src, int ch, const Effect& eff);
 	void executeDirectRegisterSetEffect(DirectRegisterSetQueue& queue);

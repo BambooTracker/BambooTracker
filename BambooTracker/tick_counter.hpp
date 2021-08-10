@@ -55,6 +55,7 @@ public:
 	///		0<: rest tick count to next step
 	int countUp();
 	void resetCount();
+	int getCountsInCurrentStep() const noexcept;
 
 private:
 	bool isPlaySong_;
@@ -63,7 +64,7 @@ private:
 	std::vector<int> grooves_;
 	int nextGroovePos_;
 
-	int defStepSize_;
+	int defStepSize_, curStepSize_;
 	int restTickToNextStep_;
 
 	float tickDiff_;

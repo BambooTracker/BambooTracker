@@ -31,6 +31,7 @@ TickCounter::TickCounter() :
 	tickRate_(60),	// NTSC
 	nextGroovePos_(-1),
 	defStepSize_(6),	// Dummy set
+	curStepSize_(6),	// Dummy set
 	restTickToNextStep_(0),
 	tickDiff_(0.f),
 	tickDiffSum_(0.f),
@@ -81,7 +82,10 @@ void TickCounter::setGrooveState(GrooveState state)
 	switch (state) {
 	case GrooveState::ValidByGlobal:
 		nextGroovePos_ = 0;
-		if (isPlaySong_) restTickToNextStep_ = grooves_.at(0) - 1;
+		if (isPlaySong_) {
+			curStepSize_ = grooves_.at(0);
+			restTickToNextStep_ = curStepSize_ - 1;
+		}
 		break;
 	case GrooveState::ValidByLocal:
 		nextGroovePos_ = 0;
@@ -156,13 +160,19 @@ void TickCounter::resetRest()
 		restTickToNextStep_ = grooves_.at(static_cast<size_t>(nextGroovePos_));
 		nextGroovePos_ = (nextGroovePos_ + 1) % static_cast<int>(grooves_.size());
 	}
+	curStepSize_ = restTickToNextStep_;
 
 	// Ensure each row lasts for at least 1 tick, and that we can subtract 1 safely.
-	if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;
+	if (restTickToNextStep_ < 1) curStepSize_ = restTickToNextStep_ = 1;
 
 	// If resetRest() is called in response to the tracker processing a row or Fxx/Oxx event,
 	// subtract 1 so countUp() will remain on the row for (speed - 1) subsequent ticks.
 	if (isPlaySong_) {
 		restTickToNextStep_--;
 	}
+}
+
+int TickCounter::getCountsInCurrentStep() const noexcept
+{
+	return curStepSize_;
 }

@@ -97,7 +97,6 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	/* opna mode is changed in BambooTracker class */
 
 	size_t fmch = Song::getFMChannelCount(songStyle_.type);
-	isNoteDelay_[SoundSource::FM] = std::vector<bool>(fmch);
 	effOnKeyOnMem_[SoundSource::FM] = std::vector<EffectMemory>(fmch);
 	effOnStepBeginMem_[SoundSource::FM] = std::vector<EffectMemory>(fmch);
 	directRegisterSets_[SoundSource::FM] = DirectRegisterSetSource(fmch);
@@ -112,7 +111,6 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	rtrgCntValueFM_ = std::vector<int>(fmch);
 	rtrgVolValueFM_ = std::vector<int>(fmch);
 
-	isNoteDelay_[SoundSource::SSG] = std::vector<bool>(3);
 	effOnKeyOnMem_[SoundSource::SSG] = std::vector<EffectMemory>(3);
 	effOnStepBeginMem_[SoundSource::SSG] = std::vector<EffectMemory>(3);
 	directRegisterSets_[SoundSource::SSG] = DirectRegisterSetSource(3);
@@ -126,7 +124,6 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	rtrgCntValueSSG_ = std::vector<int>(3);
 	rtrgVolValueSSG_ = std::vector<int>(3);
 
-	isNoteDelay_[SoundSource::RHYTHM] = std::vector<bool>(6);
 	effOnKeyOnMem_[SoundSource::RHYTHM] = std::vector<EffectMemory>(6);
 	effOnStepBeginMem_[SoundSource::RHYTHM] = std::vector<EffectMemory>(6);
 	directRegisterSets_[SoundSource::RHYTHM] = DirectRegisterSetSource(6);
@@ -138,7 +135,6 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	rtrgCntValueRhythm_ = std::vector<int>(6);
 	rtrgVolValueRhythm_ = std::vector<int>(6);
 
-	isNoteDelay_[SoundSource::ADPCM] = std::vector<bool>(1);
 	effOnKeyOnMem_[SoundSource::ADPCM] = std::vector<EffectMemory>(1);
 	effOnStepBeginMem_[SoundSource::ADPCM] = std::vector<EffectMemory>(1);
 	directRegisterSets_[SoundSource::ADPCM] = DirectRegisterSetSource(1);
@@ -391,29 +387,46 @@ void PlaybackManager::stepProcess()
 		size_t uch = static_cast<size_t>(attrib.channelInSource);
 		effOnKeyOnMem_[attrib.source].at(uch).clear();
 		directRegisterSets_[attrib.source].at(uch).clear();
-		using storeFunc = bool (PlaybackManager::*)(int, const Effect&);
+		using storeFunc = void (PlaybackManager::*)(int, const Effect&);
 		static const std::unordered_map<SoundSource, storeFunc> storeEffectToMap = {
 			{ SoundSource::FM, &PlaybackManager::storeEffectToMapFM },
 			{ SoundSource::SSG, &PlaybackManager::storeEffectToMapSSG },
 			{ SoundSource::RHYTHM, &PlaybackManager::storeEffectToMapRhythm },
 			{ SoundSource::ADPCM, &PlaybackManager::storeEffectToMapADPCM }
 		};
-		bool isDelay = false;
 		for (int i = 0; i < Step::N_EFFECT; ++i) {
 			Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
-			isDelay |= (this->*storeEffectToMap.at(attrib.source))(attrib.channelInSource, eff);
+			(this->*storeEffectToMap.at(attrib.source))(attrib.channelInSource, eff);
 		}
-		isNoteDelay_[attrib.source].at(uch) = isDelay;
 	}
 
 	// Execute step events
 	bool isNextSet = executeStoredEffectsGlobal();
+	const int countsInStep = tickCounter_.lock()->getCountsInCurrentStep();
 	for (auto& attrib : songStyle_.trackAttribs) {
+		// Check whether it has been set note delay effect
+		size_t uch = static_cast<size_t>(attrib.channelInSource);
+		bool hasSetNoteDelay = false;
+		auto& mem = effOnStepBeginMem_[attrib.source].at(uch);
+		for (auto itr = mem.begin(); itr != mem.end(); ) {
+			if (itr->type == EffectType::NoteDelay) {
+				if (itr->value < countsInStep) {
+					hasSetNoteDelay = true;
+				}
+				else {
+					itr = mem.erase(itr);
+					continue;
+				}
+			}
+			++itr;
+		}
+
+		//
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(playingPos_.order).getStep(playingPos_.step);
 		switch (attrib.source) {
 		case SoundSource::FM:
-			if (isNoteDelay_[SoundSource::FM].at(attrib.channelInSource)) {
+			if (hasSetNoteDelay) {
 				// Set effect
 				executeStoredEffectsFM(attrib.channelInSource);
 				checkFMNoteDelayAndEnvelopeReset(step, attrib.channelInSource);
@@ -424,7 +437,7 @@ void PlaybackManager::stepProcess()
 			}
 			break;
 		case SoundSource::SSG:
-			if (isNoteDelay_[SoundSource::SSG].at(attrib.channelInSource)) {
+			if (hasSetNoteDelay) {
 				// Set effect
 				executeStoredEffectsSSG(attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::SSG, attrib.channelInSource);
@@ -434,7 +447,7 @@ void PlaybackManager::stepProcess()
 			}
 			break;
 		case SoundSource::RHYTHM:
-			if (isNoteDelay_[SoundSource::RHYTHM].at(attrib.channelInSource)) {
+			if (hasSetNoteDelay) {
 				// Set effect
 				executeStoredEffectsRhythm(attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::RHYTHM, attrib.channelInSource);
@@ -444,7 +457,7 @@ void PlaybackManager::stepProcess()
 			}
 			break;
 		case SoundSource::ADPCM:
-			if (isNoteDelay_[SoundSource::ADPCM].at(attrib.channelInSource)) {
+			if (hasSetNoteDelay) {
 				// Set effect
 				executeStoredEffectsADPCM();
 				opnaCtrl_->tickEvent(SoundSource::ADPCM, attrib.channelInSource);
@@ -694,7 +707,7 @@ bool PlaybackManager::executeStoredEffectsGlobal()
 	return changedNextPos;
 }
 
-bool PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
+void PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -722,25 +735,22 @@ bool PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
 	case EffectType::EnvelopeReset:
 	case EffectType::Retrigger:
 		effOnKeyOnMem_[SoundSource::FM].at(static_cast<size_t>(ch)).enqueue(eff);
-		return false;
+		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		playbackSpeedEffMem_.enqueue(eff);
-		return false;
+		break;
 	case EffectType::NoteDelay:
-		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			effOnStepBeginMem_[SoundSource::FM].at(static_cast<size_t>(ch)).enqueue(eff);
-			return true;
-		}
-		return false;
+		effOnStepBeginMem_[SoundSource::FM].at(static_cast<size_t>(ch)).enqueue(eff);
+		break;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
 		posChangeEffMem_.enqueue(eff);
-		return false;
+		break;
 	default:
 		storeDirectRegisterSetEffectToQueue(SoundSource::FM, ch, eff);
-		return false;
+		break;
 	}
 }
 
@@ -886,7 +896,7 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 	}
 }
 
-bool PlaybackManager::storeEffectToMapSSG(int ch, const Effect& eff)
+void PlaybackManager::storeEffectToMapSSG(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -910,25 +920,22 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, const Effect& eff)
 	case EffectType::AutoEnvelope:
 	case EffectType::Retrigger:
 		effOnKeyOnMem_[SoundSource::SSG].at(static_cast<size_t>(ch)).enqueue(eff);
-		return false;
+		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		playbackSpeedEffMem_.enqueue(eff);
-		return false;
+		break;
 	case EffectType::NoteDelay:
-		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			effOnStepBeginMem_[SoundSource::SSG].at(static_cast<size_t>(ch)).enqueue(eff);
-			return true;
-		}
-		return false;
+		effOnStepBeginMem_[SoundSource::SSG].at(static_cast<size_t>(ch)).enqueue(eff);
+		break;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
 		posChangeEffMem_.enqueue(eff);
-		return false;
+		break;
 	default:
 		storeDirectRegisterSetEffectToQueue(SoundSource::SSG, ch, eff);
-		return false;
+		break;
 	}
 }
 
@@ -1040,7 +1047,7 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 	}
 }
 
-bool PlaybackManager::storeEffectToMapRhythm(int ch, const Effect& eff)
+void PlaybackManager::storeEffectToMapRhythm(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Pan:
@@ -1049,25 +1056,22 @@ bool PlaybackManager::storeEffectToMapRhythm(int ch, const Effect& eff)
 	case EffectType::VolumeDelay:
 	case EffectType::Retrigger:
 		effOnKeyOnMem_[SoundSource::RHYTHM].at(static_cast<size_t>(ch)).enqueue(eff);
-		return false;
+		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		playbackSpeedEffMem_.enqueue(eff);
-		return false;
+		break;
 	case EffectType::NoteDelay:
-		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			effOnStepBeginMem_[SoundSource::RHYTHM].at(static_cast<size_t>(ch)).enqueue(eff);
-			return true;
-		}
-		return false;
+		effOnStepBeginMem_[SoundSource::RHYTHM].at(static_cast<size_t>(ch)).enqueue(eff);
+		break;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
 		posChangeEffMem_.enqueue(eff);
-		return false;
+		break;
 	default:
 		storeDirectRegisterSetEffectToQueue(SoundSource::RHYTHM, ch, eff);
-		return false;
+		break;
 	}
 }
 
@@ -1133,7 +1137,7 @@ void PlaybackManager::executeStoredEffectsRhythm(int ch)
 	}
 }
 
-bool PlaybackManager::storeEffectToMapADPCM(int ch, const Effect& eff)
+void PlaybackManager::storeEffectToMapADPCM(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -1153,25 +1157,22 @@ bool PlaybackManager::storeEffectToMapADPCM(int ch, const Effect& eff)
 	case EffectType::VolumeDelay:
 	case EffectType::Retrigger:
 		effOnKeyOnMem_[SoundSource::ADPCM].front().enqueue(eff);
-		return false;
+		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		playbackSpeedEffMem_.enqueue(eff);
-		return false;
+		break;
 	case EffectType::NoteDelay:
-		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			effOnStepBeginMem_[SoundSource::ADPCM].front().enqueue(eff);
-			return true;
-		}
-		return false;
+		effOnStepBeginMem_[SoundSource::ADPCM].front().enqueue(eff);
+		break;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
 		posChangeEffMem_.enqueue(eff);
-		return false;
+		break;
 	default:
 		storeDirectRegisterSetEffectToQueue(SoundSource::ADPCM, ch, eff);
-		return false;
+		break;
 	}
 }
 
