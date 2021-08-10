@@ -134,7 +134,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	glfunc(15, configLocked->getReflectInstrumentNumberChange(),
 		   tr("Automatically update the instrument number in patterns when an instrument's number is changed."));
 	glfunc(16, configLocked->getFixJammingVolume(),
-		   tr("Set maximum volume during jam mode. When unchecked, the volume is changed by the volume combo box."));
+		   tr("Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox."));
 	glfunc(17, configLocked->getMuteHiddenTracks(),
 		   tr("Automatically mute tracks when they are hidden."));
 	glfunc(18, configLocked->getRestoreTrackVisibility(),

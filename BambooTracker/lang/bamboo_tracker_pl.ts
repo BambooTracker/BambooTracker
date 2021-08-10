@@ -976,7 +976,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="137"/>
-        <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume combo box.</source>
+        <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox.</source>
         <translation>Ustawia maksymalną głośność poczas trybu improwizacji. Gdy odznaczone, głośność jest zmieniana przy pomocy selektora głośńości.</translation>
     </message>
     <message>

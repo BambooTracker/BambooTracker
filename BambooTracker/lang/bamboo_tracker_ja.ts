@@ -880,7 +880,7 @@
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="137"/>
-        <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume combo box.</source>
+        <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox.</source>
         <translation>ジャムモード中のインストゥルメントの音量を最大に固定します。無効時にはツールバーの音量設定によって音量が変更されます。</translation>
     </message>
     <message>
