@@ -259,104 +259,105 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	}
 
 	/* Tool bars */
-	auto octLab = new QLabel(tr("Octave"));
-	octLab->setMargin(6);
-	ui->subToolBar->addWidget(octLab);
-	octave_ = new QSpinBox();
-	octave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	octave_->setMaximumWidth(80);
-	octave_->setMinimum(0);
-	octave_->setMaximum(7);
-	octave_->setValue(bt_->getCurrentOctave());
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int octave) {
-		bt_->setCurrentOctave(octave);
-		statusOctave_->setText(tr("Octave: %1").arg(octave));
-	});
-	ui->subToolBar->addWidget(octave_);
-	auto volLab = new QLabel(tr("Volume"));
-	volLab->setMargin(6);
-	ui->subToolBar->addWidget(volLab);
-	volume_ = new QSpinBox();
-	volume_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	volume_->setMaximumWidth(100);
-	volume_->setMinimum(0);
-	volume_->setMaximum(255);
-	volume_->setDisplayIntegerBase(16);
-	volume_->setValue(bt_->getCurrentVolume());
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(volume_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int volume) { bt_->setCurrentVolume(volume); });
-	ui->subToolBar->addWidget(volume_);
-	ui->subToolBar->addSeparator();
-	ui->subToolBar->addAction(ui->actionFollow_Mode);
-	ui->subToolBar->addSeparator();
-	auto hlLab1 = new QLabel(tr("Step highlight 1st"));
-	hlLab1->setMargin(6);
-	ui->subToolBar->addWidget(hlLab1);
-	highlight1_ = new QSpinBox();
-	highlight1_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	highlight1_->setMaximumWidth(80);
-	highlight1_->setMinimum(1);
-	highlight1_->setMaximum(256);
-	highlight1_->setValue(8);
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(highlight1_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int count) {
-		bt_->setModuleStepHighlight1Distance(static_cast<size_t>(count));
-		ui->patternEditor->setPatternHighlight1Count(count);
-	});
-	ui->subToolBar->addWidget(highlight1_);
-	auto hlLab2 = new QLabel(tr("2nd"));
-	hlLab2->setMargin(6);
-	ui->subToolBar->addWidget(hlLab2);
-	highlight2_ = new QSpinBox();
-	highlight2_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	highlight2_->setMaximumWidth(80);
-	highlight2_->setMinimum(1);
-	highlight2_->setMaximum(256);
-	highlight2_->setValue(8);
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(highlight2_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int count) {
-		bt_->setModuleStepHighlight2Distance(static_cast<size_t>(count));
-		ui->patternEditor->setPatternHighlight2Count(count);
-	});
-	ui->subToolBar->addWidget(highlight2_);
-	ui->subToolBar->addSeparator();
-	auto& mainTbConfig = config.lock()->getMainToolbarConfiguration();
-	if (mainTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
-		ui->mainToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
-		ui->mainToolBar->move(mainTbConfig.getX(), mainTbConfig.getY());
-	}
-	else {
-		addToolBar(TB_POS_.at(mainTbConfig.getPosition()), ui->mainToolBar);
-	}
-	auto& subTbConfig = config.lock()->getSubToolbarConfiguration();
-	if (subTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
-		ui->subToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
-		ui->subToolBar->move(subTbConfig.getX(), subTbConfig.getY());
-	}
-	else {
-		auto pos = TB_POS_.at(subTbConfig.getPosition());
-		if (subTbConfig.getNumber()) {
-			if (subTbConfig.hasBreakBefore()) addToolBarBreak(pos);
-			addToolBar(pos, ui->subToolBar);
+	{
+		auto octLab = new QLabel(tr("Octave"));
+		octLab->setMargin(6);
+		ui->subToolBar->addWidget(octLab);
+		octave_ = new QSpinBox();
+		octave_->setMinimum(0);
+		octave_->setMaximum(7);
+		octave_->setValue(bt_->getCurrentOctave());
+		octave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		// Leave Before Qt5.7.0 style due to windows xp
+		QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+						 this, [&](int octave) {
+			bt_->setCurrentOctave(octave);
+			statusOctave_->setText(tr("Octave: %1").arg(octave));
+		});
+		ui->subToolBar->addWidget(octave_);
+		auto volLab = new QLabel(tr("Volume"));
+		volLab->setMargin(6);
+		ui->subToolBar->addWidget(volLab);
+		volume_ = new QSpinBox();
+		volume_->setMinimum(0);
+		volume_->setMaximum(255);
+		volume_->setDisplayIntegerBase(16);
+		QFont volSpinFont = volume_->font();
+		volSpinFont.setCapitalization(QFont::AllUppercase);
+		volume_->setFont(volSpinFont);
+		volume_->setValue(bt_->getCurrentVolume());
+		volume_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		// Leave Before Qt5.7.0 style due to windows xp
+		QObject::connect(volume_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+						 this, [&](int volume) { bt_->setCurrentVolume(volume); });
+		ui->subToolBar->addWidget(volume_);
+		ui->subToolBar->addSeparator();
+		ui->subToolBar->addAction(ui->actionFollow_Mode);
+		ui->subToolBar->addSeparator();
+		auto hlLab1 = new QLabel(tr("Step highlight 1st"));
+		hlLab1->setMargin(6);
+		ui->subToolBar->addWidget(hlLab1);
+		highlight1_ = new QSpinBox();
+		highlight1_->setMinimum(1);
+		highlight1_->setMaximum(256);
+		highlight1_->setValue(8);
+		highlight1_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		// Leave Before Qt5.7.0 style due to windows xp
+		QObject::connect(highlight1_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+						 this, [&](int count) {
+			bt_->setModuleStepHighlight1Distance(static_cast<size_t>(count));
+			ui->patternEditor->setPatternHighlight1Count(count);
+		});
+		ui->subToolBar->addWidget(highlight1_);
+		auto hlLab2 = new QLabel(tr("2nd"));
+		hlLab2->setMargin(6);
+		ui->subToolBar->addWidget(hlLab2);
+		highlight2_ = new QSpinBox();
+		highlight2_->setMinimum(1);
+		highlight2_->setMaximum(256);
+		highlight2_->setValue(8);
+		highlight2_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		// Leave Before Qt5.7.0 style due to windows xp
+		QObject::connect(highlight2_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+						 this, [&](int count) {
+			bt_->setModuleStepHighlight2Distance(static_cast<size_t>(count));
+			ui->patternEditor->setPatternHighlight2Count(count);
+		});
+		ui->subToolBar->addWidget(highlight2_);
+		ui->subToolBar->addSeparator();
+		auto& mainTbConfig = config.lock()->getMainToolbarConfiguration();
+		if (mainTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
+			ui->mainToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+			ui->mainToolBar->move(mainTbConfig.getX(), mainTbConfig.getY());
 		}
 		else {
-			if (mainTbConfig.getPosition() == subTbConfig.getPosition()) {
-				insertToolBar(ui->mainToolBar, ui->subToolBar);
-				if (mainTbConfig.hasBreakBefore()) insertToolBarBreak(ui->mainToolBar);
-			}
-			else {
+			addToolBar(TB_POS_.at(mainTbConfig.getPosition()), ui->mainToolBar);
+		}
+		auto& subTbConfig = config.lock()->getSubToolbarConfiguration();
+		if (subTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
+			ui->subToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+			ui->subToolBar->move(subTbConfig.getX(), subTbConfig.getY());
+		}
+		else {
+			auto pos = TB_POS_.at(subTbConfig.getPosition());
+			if (subTbConfig.getNumber()) {
+				if (subTbConfig.hasBreakBefore()) addToolBarBreak(pos);
 				addToolBar(pos, ui->subToolBar);
 			}
+			else {
+				if (mainTbConfig.getPosition() == subTbConfig.getPosition()) {
+					insertToolBar(ui->mainToolBar, ui->subToolBar);
+					if (mainTbConfig.hasBreakBefore()) insertToolBarBreak(ui->mainToolBar);
+				}
+				else {
+					addToolBar(pos, ui->subToolBar);
+				}
+			}
 		}
+		ui->action_Toolbar->setChecked(config.lock()->getVisibleToolbar());
+		ui->mainToolBar->setVisible(config.lock()->getVisibleToolbar());
+		ui->subToolBar->setVisible(config.lock()->getVisibleToolbar());
 	}
-	ui->action_Toolbar->setChecked(config.lock()->getVisibleToolbar());
-	ui->mainToolBar->setVisible(config.lock()->getVisibleToolbar());
-	ui->subToolBar->setVisible(config.lock()->getVisibleToolbar());
 
 	/* Splitter */
 	ui->splitter->setStretchFactor(0, 0);
@@ -562,108 +563,110 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		setModifiedTrue();
 	});
 
-	// Shortcuts
-	auto linkShortcut = [&](QAction* ptr) {
-		ptr->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-		ui->orderList->addAction(ptr);
-		ui->patternEditor->addAction(ptr);
-	};
+	/* Shortcuts */
+	{
+		auto linkShortcut = [&](QAction* ptr) {
+			ptr->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+			ui->orderList->addAction(ptr);
+			ui->patternEditor->addAction(ptr);
+		};
 
-	linkShortcut(&octUpSc_);
-	QObject::connect(&octUpSc_, &QAction::triggered, this, [&] { changeOctave(true); });
-	linkShortcut(&octDownSc_);
-	QObject::connect(&octDownSc_, &QAction::triggered, this, [&] { changeOctave(false); });
-	QObject::connect(&focusPtnSc_, &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
-	QObject::connect(&focusOdrSc_, &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
-	QObject::connect(&focusInstSc_, &QShortcut::activated, this, [&] {
-		ui->instrumentList->setFocus();
-		updateMenuByInstrumentList();
-	});
-	auto playLinkShortcut = [&](QAction* ptr) {
-		ptr->setShortcutContext(Qt::WidgetShortcut);
-		ui->instrumentList->addAction(ptr);
-		ui->orderList->addActionToPanel(ptr);
-		ui->patternEditor->addActionToPanel(ptr);
-	};
-	playLinkShortcut(ui->actionPlay);
-	playLinkShortcut(&playAndStopSc_);
-	QObject::connect(&playAndStopSc_, &QAction::triggered, this, [&] {
-		if (bt_->isPlaySong()) stopPlaySong();
-		else startPlaySong();
-	});
-	playLinkShortcut(&playStepSc_);
-	QObject::connect(&playStepSc_, &QAction::triggered, this, &MainWindow::playStep);
-	playLinkShortcut(ui->actionPlay_From_Start);
-	playLinkShortcut(ui->actionPlay_Pattern);
-	playLinkShortcut(ui->actionPlay_From_Cursor);
-	playLinkShortcut(ui->actionPlay_From_Marker);
-	playLinkShortcut(ui->actionStop);
-	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentList,
-											 nullptr, nullptr, Qt::WidgetShortcut);
-	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
-	linkShortcut(&goPrevOdrSc_);
-	QObject::connect(&goPrevOdrSc_, &QAction::triggered, this, [&] {
-		ui->orderList->onGoOrderRequested(false);
-	});
-	linkShortcut(&goNextOdrSc_);
-	QObject::connect(&goNextOdrSc_, &QAction::triggered, this, [&] {
-		ui->orderList->onGoOrderRequested(true);
-	});
-	linkShortcut(&prevInstSc_);
-	QObject::connect(&prevInstSc_, &QAction::triggered, this, [&] {
-		if (ui->instrumentList->count()) {
-			int row = ui->instrumentList->currentRow();
-			if (row == -1) ui->instrumentList->setCurrentRow(0);
-			else if (row > 0) ui->instrumentList->setCurrentRow(row - 1);
-		}
-	});
-	linkShortcut(&nextInstSc_);
-	QObject::connect(&nextInstSc_, &QAction::triggered, this, [&] {
-		int cnt = ui->instrumentList->count();
-		if (cnt) {
-			int row = ui->instrumentList->currentRow();
-			if (row == -1) ui->instrumentList->setCurrentRow(cnt - 1);
-			else if (row < cnt - 1) ui->instrumentList->setCurrentRow(row + 1);
-		}
-	});
-	linkShortcut(&incPtnSizeSc_);
-	QObject::connect(&incPtnSizeSc_, &QAction::triggered, this, [&] {
-		ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() + 1);
-	});
-	linkShortcut(&decPtnSizeSc_);
-	QObject::connect(&decPtnSizeSc_, &QAction::triggered, this, [&] {
-		ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
-	});
-	linkShortcut(&incEditStepSc_);
-	QObject::connect(&incEditStepSc_, &QAction::triggered, this, [&] {
-		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() + 1);
-	});
-	linkShortcut(&decEditStepSc_);
-	QObject::connect(&decEditStepSc_, &QAction::triggered, this, [&] {
-		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() - 1);
-	});
-	linkShortcut(&prevSongSc_);
-	QObject::connect(&prevSongSc_, &QAction::triggered, this, [&] {
-		if (ui->songComboBox->isEnabled()) {
-			ui->songComboBox->setCurrentIndex(std::max(ui->songComboBox->currentIndex() - 1, 0));
-		}
-	});
-	linkShortcut(&nextSongSc_);
-	QObject::connect(&nextSongSc_, &QAction::triggered, this, [&] {
-		if (ui->songComboBox->isEnabled()) {
-			ui->songComboBox->setCurrentIndex(std::min(ui->songComboBox->currentIndex() + 1,
-													   ui->songComboBox->count() - 1));
-		}
-	});
-	linkShortcut(&jamVolUpSc_);
-	QObject::connect(&jamVolUpSc_, &QAction::triggered, this, [&] {
-		volume_->setValue(volume_->value() + 1);
-	});
-	linkShortcut(&jamVolDownSc_);
-	QObject::connect(&jamVolDownSc_, &QAction::triggered, this, [&] {
-		volume_->setValue(volume_->value() - 1);
-	});
-	setShortcuts();
+		linkShortcut(&octUpSc_);
+		QObject::connect(&octUpSc_, &QAction::triggered, this, [&] { changeOctave(true); });
+		linkShortcut(&octDownSc_);
+		QObject::connect(&octDownSc_, &QAction::triggered, this, [&] { changeOctave(false); });
+		QObject::connect(&focusPtnSc_, &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
+		QObject::connect(&focusOdrSc_, &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
+		QObject::connect(&focusInstSc_, &QShortcut::activated, this, [&] {
+			ui->instrumentList->setFocus();
+			updateMenuByInstrumentList();
+		});
+		auto playLinkShortcut = [&](QAction* ptr) {
+			ptr->setShortcutContext(Qt::WidgetShortcut);
+			ui->instrumentList->addAction(ptr);
+			ui->orderList->addActionToPanel(ptr);
+			ui->patternEditor->addActionToPanel(ptr);
+		};
+		playLinkShortcut(ui->actionPlay);
+		playLinkShortcut(&playAndStopSc_);
+		QObject::connect(&playAndStopSc_, &QAction::triggered, this, [&] {
+			if (bt_->isPlaySong()) stopPlaySong();
+			else startPlaySong();
+		});
+		playLinkShortcut(&playStepSc_);
+		QObject::connect(&playStepSc_, &QAction::triggered, this, &MainWindow::playStep);
+		playLinkShortcut(ui->actionPlay_From_Start);
+		playLinkShortcut(ui->actionPlay_Pattern);
+		playLinkShortcut(ui->actionPlay_From_Cursor);
+		playLinkShortcut(ui->actionPlay_From_Marker);
+		playLinkShortcut(ui->actionStop);
+		instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentList,
+												 nullptr, nullptr, Qt::WidgetShortcut);
+		QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
+		linkShortcut(&goPrevOdrSc_);
+		QObject::connect(&goPrevOdrSc_, &QAction::triggered, this, [&] {
+			ui->orderList->onGoOrderRequested(false);
+		});
+		linkShortcut(&goNextOdrSc_);
+		QObject::connect(&goNextOdrSc_, &QAction::triggered, this, [&] {
+			ui->orderList->onGoOrderRequested(true);
+		});
+		linkShortcut(&prevInstSc_);
+		QObject::connect(&prevInstSc_, &QAction::triggered, this, [&] {
+			if (ui->instrumentList->count()) {
+				int row = ui->instrumentList->currentRow();
+				if (row == -1) ui->instrumentList->setCurrentRow(0);
+				else if (row > 0) ui->instrumentList->setCurrentRow(row - 1);
+			}
+		});
+		linkShortcut(&nextInstSc_);
+		QObject::connect(&nextInstSc_, &QAction::triggered, this, [&] {
+			int cnt = ui->instrumentList->count();
+			if (cnt) {
+				int row = ui->instrumentList->currentRow();
+				if (row == -1) ui->instrumentList->setCurrentRow(cnt - 1);
+				else if (row < cnt - 1) ui->instrumentList->setCurrentRow(row + 1);
+			}
+		});
+		linkShortcut(&incPtnSizeSc_);
+		QObject::connect(&incPtnSizeSc_, &QAction::triggered, this, [&] {
+			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() + 1);
+		});
+		linkShortcut(&decPtnSizeSc_);
+		QObject::connect(&decPtnSizeSc_, &QAction::triggered, this, [&] {
+			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
+		});
+		linkShortcut(&incEditStepSc_);
+		QObject::connect(&incEditStepSc_, &QAction::triggered, this, [&] {
+			ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() + 1);
+		});
+		linkShortcut(&decEditStepSc_);
+		QObject::connect(&decEditStepSc_, &QAction::triggered, this, [&] {
+			ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() - 1);
+		});
+		linkShortcut(&prevSongSc_);
+		QObject::connect(&prevSongSc_, &QAction::triggered, this, [&] {
+			if (ui->songComboBox->isEnabled()) {
+				ui->songComboBox->setCurrentIndex(std::max(ui->songComboBox->currentIndex() - 1, 0));
+			}
+		});
+		linkShortcut(&nextSongSc_);
+		QObject::connect(&nextSongSc_, &QAction::triggered, this, [&] {
+			if (ui->songComboBox->isEnabled()) {
+				ui->songComboBox->setCurrentIndex(std::min(ui->songComboBox->currentIndex() + 1,
+														   ui->songComboBox->count() - 1));
+			}
+		});
+		linkShortcut(&jamVolUpSc_);
+		QObject::connect(&jamVolUpSc_, &QAction::triggered, this, [&] {
+			volume_->setValue(volume_->value() + 1);
+		});
+		linkShortcut(&jamVolDownSc_);
+		QObject::connect(&jamVolDownSc_, &QAction::triggered, this, [&] {
+			volume_->setValue(volume_->value() - 1);
+		});
+		setShortcuts();
+	}
 
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,

@@ -4,10 +4,12 @@
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
 - [#399] - Fix `0Gxx` note delay effect to be validated against the actual ticks per step (thanks [@Zexxerd])
+- [#401] - Fix the volume spinbox to be displayed in uppercase (thanks [@wildmatsu])
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
 [#399]: https://github.com/BambooTracker/BambooTracker/issues/399
+[#401]: https://github.com/BambooTracker/BambooTracker/issues/401
 
 ## v0.5.0 (2021-08-01)
 ### Added
