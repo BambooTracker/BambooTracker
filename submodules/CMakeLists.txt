@@ -1,0 +1,5 @@
+add_subdirectory(emu2149)
+# TODO option()
+add_subdirectory(RtAudio)
+# TODO option()
+add_subdirectory(RtMidi)
