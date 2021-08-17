@@ -241,6 +241,12 @@ target_include_directories(BambooTracker PRIVATE ${BT_INCLUDEPATHS})
 
 target_compile_options(BambooTracker PRIVATE ${BT_WARNFLAGS})
 
+option(REAL_CHIP "Compile with support for SCCI and C86CTL interfaces to a real OPNA chip" WIN32)
+
+if(REAL_CHIP)
+	target_compile_definitions(BambooTracker PRIVATE USE_REAL_CHIP)
+endif(REAL_CHIP)
+
 target_link_libraries(BambooTracker Qt5::Core Qt5::Gui Qt5::Widgets)
 
 # Submodules
