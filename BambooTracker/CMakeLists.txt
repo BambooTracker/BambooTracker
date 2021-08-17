@@ -1,9 +1,25 @@
+# C11 required
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# C++14 required
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(BT_WARNFLAGS)
+if(MSVC)
+	list(APPEND BT_WARNFLAGS /W3 /WX /utf-8 /D_CRT_SECURE_NO_WARNINGS)
+else(MSVC)
+	list(APPEND BT_WARNFLAGS -Wall -Wextra -pedantic -Werror -pedantic-errors)
+endif(MSVC)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
 
+# C/C++ files
 set(BT_SOURCES
 	chip/mame/fmopn.c
 	chip/mame/mame_2608.cpp
@@ -173,6 +189,7 @@ set(BT_SOURCES
 	resources/icon/icon.qrc
 )
 
+# UI forms
 set(BT_FORMS
 	gui/bookmark_manager_form.ui
 	gui/effect_list_dialog.ui
@@ -216,24 +233,25 @@ set(BT_INCLUDEPATHS
 # Translations
 add_subdirectory(lang)
 
-message("BT_SOURCES=${BT_SOURCES}")
-
 add_executable(BambooTracker
 	${BT_SOURCES} ${BT_FORMS}
 )
 
 target_include_directories(BambooTracker PRIVATE ${BT_INCLUDEPATHS})
 
-add_dependencies(BambooTracker emu2149 rtaudio rtmidi)
+target_compile_options(BambooTracker PRIVATE ${BT_WARNFLAGS})
 
 target_link_libraries(BambooTracker Qt5::Core Qt5::Gui Qt5::Widgets)
 
-target_link_libraries(BambooTracker emu2149 rtaudio rtmidi)
+# Submodules
+add_dependencies(BambooTracker emu2149 rtaudio rtmidi)
 
 target_include_directories(BambooTracker PRIVATE
 	"${PROJECT_SOURCE_DIR}/submodules/emu2149/src"
 	"${PROJECT_SOURCE_DIR}/submodules/RtAudio/src"
 	"${PROJECT_SOURCE_DIR}/submodules/RtMidi/src"
 )
+
+target_link_libraries(BambooTracker emu2149 rtaudio rtmidi)
 
 install(TARGETS BambooTracker DESTINATION "${CMAKE_INSTALL_BINDIR}")
