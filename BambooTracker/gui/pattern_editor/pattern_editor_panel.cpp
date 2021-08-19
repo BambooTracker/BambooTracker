@@ -1140,7 +1140,7 @@ int PatternEditorPanel::calculateColNumInRow(int trackVisIdx, int colNumInTrack,
 void PatternEditorPanel::moveCursorToRight(int n)
 {
 	int oldTrackIdx = curPos_.trackVisIdx;
-	bool oldLeftTrackIdx = leftTrackVisIdx_;
+	int oldLeftTrackIdx = leftTrackVisIdx_;
 
 	curPos_.colInTrack += n;
 	if (n > 0) {
@@ -1215,7 +1215,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 		emit currentTrackChanged(curPos_.trackVisIdx);
 
 	// Request fore-background repaint if leftmost track is changed else request only background repaint
-	if (static_cast<bool>(leftTrackVisIdx_&1) != oldLeftTrackIdx) {
+	if (leftTrackVisIdx_ != oldLeftTrackIdx) {
 		headerChanged_ = true;
 		foreChanged_ = true;
 		textChanged_ = true;
