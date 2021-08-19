@@ -55,7 +55,9 @@ int main(int argc, char* argv[])
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 		QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+		QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::RoundPreferFloor);
+#endif
 		QApplicationWrapper a(argc, argv);
 		if (config->getEnableTranslation()) setupTranslations();
 		a.setWindowIcon(QIcon(":/icon/app_icon"));
