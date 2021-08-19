@@ -56,15 +56,15 @@ int main(int argc, char* argv[])
 		QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-		std::unique_ptr<QApplicationWrapper> a(std::make_unique<QApplicationWrapper>(argc, argv));
+		QApplicationWrapper a(argc, argv);
 		if (config->getEnableTranslation()) setupTranslations();
-		a->setWindowIcon(QIcon(":/icon/app_icon"));
+		a.setWindowIcon(QIcon(":/icon/app_icon"));
 
 		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
 
-		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath, !hasSuccessed));
-		w->show();
-		int ret = a->exec();
+		MainWindow w(config, filePath, !hasSuccessed);
+		w.show();
+		int ret = a.exec();
 
 		io::saveConfiguration(config);
 		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occurred."));
