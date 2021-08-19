@@ -135,7 +135,7 @@ private:
 	/// eff
 	///	[id]
 	///		 "--": none
-	///		other: effect id
+	///		other: effect ID
 	/// [value]
 	///		0<=: effect value
 	///		 -1: none

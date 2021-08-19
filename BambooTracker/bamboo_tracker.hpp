@@ -497,7 +497,7 @@ public:
 	///		0: note
 	///		1: instrument
 	///		2: volume
-	///		3: effect id
+	///		3: effect ID
 	///		4: effect value
 	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   const std::vector<std::vector<std::string>>& cells);

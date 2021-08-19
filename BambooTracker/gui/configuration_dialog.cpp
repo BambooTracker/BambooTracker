@@ -100,13 +100,13 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		item->setData(Qt::UserRole, desc);
 	};
 	glfunc(0, configLocked->getWarpCursor(),
-		   tr("Warp the cursor around the edges of the pattern editor."));
+		   tr("Wrap the cursor around the edges of the pattern editor."));
 	glfunc(1, configLocked->getWarpAcrossOrders(),
-		   tr("Move to previous or next order when reaching top or bottom in the pattern editor."));
+		   tr("Move to the previous or next order when reaching the top or bottom in the pattern editor."));
 	glfunc(2, configLocked->getShowRowNumberInHex(),
 		   tr("Display row numbers and the playback position on the status bar in hexadecimal."));
 	glfunc(3, configLocked->getShowPreviousNextOrders(),
-		   tr("Preview previous and next orders in the pattern editor."));
+		   tr("Preview the previous and next orders in the pattern editor."));
 	glfunc(4, configLocked->getBackupModules(),
 		   tr("Create a backup copy of the existing file when saving a module."));
 	glfunc(5, configLocked->getDontSelectOnDoubleClick(),
@@ -114,7 +114,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	glfunc(6, configLocked->getReverseFMVolumeOrder(),
 		   tr("Reverse the order of FM volume so that 00 is the quietest in the pattern editor."));
 	glfunc(7, configLocked->getMoveCursorToRight(),
-		   tr("Move the cursor to right after entering effects in the pattern editor."));
+		   tr("Automatically move the cursor right after entering effects in the pattern editor."));
 	glfunc(8, configLocked->getRetrieveChannelState(),
 		   tr("Reconstruct the current channel's state from previous orders upon playing."));
 	glfunc(9, configLocked->getEnableTranslation(),
@@ -122,21 +122,21 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	glfunc(10, configLocked->getShowFMDetuneAsSigned(),
 		   tr("Display FM detune values as signed numbers in the FM envelope editor."));
 	glfunc(11, configLocked->getFill00ToEffectValue(),
-		   tr("Fill 00 to effect value column upon entering effect id."));
+		   tr("Automatically fill 00 to the effect value column upon entering an effect ID."));
 	glfunc(12, configLocked->getMoveCursorByHorizontalScroll(),
-		   tr("Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor."));
+		   tr("Move the cursor with the horizontal scroll bar in the order list and the pattern editor."));
 	glfunc(13, configLocked->getOverwriteUnusedUneditedPropety(),
-		   tr("Overwrite unused and unedited instrument properties on creating new properties. "
-			  "When disabled, override unused properties regardless of editing."));
+		   tr("Overwrite unused and unedited instrument properties when creating new properties. "
+			  "If disabled, override unused properties regardless of editing."));
 	glfunc(14, configLocked->getWriteOnlyUsedSamples(),
-		   tr("Send only ADPCM samples used by instruments to the ADPCM memory. "
-			  "Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost."));
+		   tr("Only send samples used by instruments to the ADPCM memory. "
+			  "It is recommended to turn this off if you change ADPCM samples frequently due to the high cost of rewriting.."));
 	glfunc(15, configLocked->getReflectInstrumentNumberChange(),
-		   tr("Correspond the instrument number in patterns when the instrument changes its number."));
+		   tr("Automatically update the instrument number in patterns when an instrument's number is changed."));
 	glfunc(16, configLocked->getFixJammingVolume(),
 		   tr("Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox."));
 	glfunc(17, configLocked->getMuteHiddenTracks(),
-		   tr("Mute hidden tracks when visibility of tracks is changed."));
+		   tr("Automatically mute tracks when they are hidden."));
 	glfunc(18, configLocked->getRestoreTrackVisibility(),
 		   tr("Restore the previous track visibility on startup."));
 
@@ -197,10 +197,10 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ Configuration::ShortcutAction::ToggleBookmark, tr("Toggle bookmark") },
 		{ Configuration::ShortcutAction::PrevBookmark, tr("Previous bookmark") },
 		{ Configuration::ShortcutAction::NextBookmark, tr("Next bookmark") },
-		{ Configuration::ShortcutAction::DecreaseNote, tr("Transpose, decrease note") },
-		{ Configuration::ShortcutAction::IncreaseNote, tr("Transpose, increase note") },
-		{ Configuration::ShortcutAction::DecreaseOctave, tr("Transpose, decrease octave") },
-		{ Configuration::ShortcutAction::IncreaseOctave, tr("Transpose, increase octave") },
+		{ Configuration::ShortcutAction::DecreaseNote, tr("Transpose down one semitone") },
+		{ Configuration::ShortcutAction::IncreaseNote, tr("Transpose up one semitone") },
+		{ Configuration::ShortcutAction::DecreaseOctave, tr("Transpose down one octave") },
+		{ Configuration::ShortcutAction::IncreaseOctave, tr("Transpose up one octave") },
 		{ Configuration::ShortcutAction::PrevInstrument, tr("Previous instrument") },
 		{ Configuration::ShortcutAction::NextInstrument, tr("Next instrument") },
 		{ Configuration::ShortcutAction::MaskInstrument, tr("Mask instrument") },
