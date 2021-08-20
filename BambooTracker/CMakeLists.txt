@@ -247,17 +247,33 @@ if(REAL_CHIP)
 	target_compile_definitions(BambooTracker PRIVATE USE_REAL_CHIP)
 endif(REAL_CHIP)
 
-target_link_libraries(BambooTracker Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(BambooTracker PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets)
 
-# Submodules
-add_dependencies(BambooTracker emu2149 rtaudio rtmidi)
+# emu2149
+add_dependencies(BambooTracker emu2149)
+target_include_directories(BambooTracker PRIVATE "${PROJECT_SOURCE_DIR}/submodules/emu2149/src")
+target_link_libraries(BambooTracker PRIVATE emu2149)
 
-target_include_directories(BambooTracker PRIVATE
-	"${PROJECT_SOURCE_DIR}/submodules/emu2149/src"
-	"${PROJECT_SOURCE_DIR}/submodules/RtAudio/src"
-	"${PROJECT_SOURCE_DIR}/submodules/RtMidi/src"
-)
+# RtAudio
+if(RTAUDIO_FOUND)
+	# target_compile_options(BambooTracker PUBLIC ${RTAUDIO_CFLAGS})
+	target_include_directories(BambooTracker PUBLIC ${RTAUDIO_INCLUDE_DIRS})
+	target_link_libraries(BambooTracker PUBLIC ${RTAUDIO_LDFLAGS})
+else(RTAUDIO_FOUND)
+	add_dependencies(BambooTracker rtaudio)
+	target_include_directories(BambooTracker PRIVATE "${PROJECT_SOURCE_DIR}/submodules/RtAudio/src")
+	target_link_libraries(BambooTracker PRIVATE rtaudio)
+endif(RTAUDIO_FOUND)
 
-target_link_libraries(BambooTracker emu2149 rtaudio rtmidi)
+# RtMidi
+if(RTMIDI_FOUND)
+	# target_compile_options(BambooTracker PUBLIC ${RTMIDI_CFLAGS})
+	target_include_directories(BambooTracker PUBLIC ${RTMIDI_INCLUDE_DIRS})
+	target_link_libraries(BambooTracker PUBLIC ${RTMIDI_LDFLAGS})
+else(RTMIDI_FOUND)
+	add_dependencies(BambooTracker rtmidi)
+	target_include_directories(BambooTracker PRIVATE "${PROJECT_SOURCE_DIR}/submodules/RtMidi/src")
+	target_link_libraries(BambooTracker PRIVATE rtmidi)
+endif(RTMIDI_FOUND)
 
 install(TARGETS BambooTracker DESTINATION "${CMAKE_INSTALL_BINDIR}")
