@@ -252,6 +252,19 @@ set(BT_INCLUDEPATHS
 	module
 )
 
+option(REAL_CHIP "Compile with support for SCCI and C86CTL interfaces to a real OPNA chip" ${WIN32})
+
+if(REAL_CHIP)
+	list(APPEND BT_SOURCES
+		chip/c86ctl/c86ctl_wrapper.cpp
+		chip/scci/scci_wrapper.cpp
+	)
+	list(APPEND BT_INCLUDEPATHS
+		chip/c86ctl
+		chip/scci
+	)
+endif(REAL_CHIP)
+
 # Translations
 add_subdirectory(lang)
 
@@ -262,8 +275,6 @@ add_executable(BambooTracker
 target_include_directories(BambooTracker PRIVATE ${BT_INCLUDEPATHS})
 
 target_compile_options(BambooTracker PRIVATE ${BT_WARNFLAGS})
-
-option(REAL_CHIP "Compile with support for SCCI and C86CTL interfaces to a real OPNA chip" ${WIN32})
 
 if(REAL_CHIP)
 	target_compile_definitions(BambooTracker PRIVATE USE_REAL_CHIP)
