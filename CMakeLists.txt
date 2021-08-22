@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(BambooTracker VERSION 0.5.0 LANGUAGES C CXX)
 
-option(INSTALL_FLAT "Install everything under CMAKE_INSTALL_PREFIX instead of using Unix-style directory layout (GNUInstallDirs)" WIN32)
+option(INSTALL_FLAT "Install everything under CMAKE_INSTALL_PREFIX instead of using Unix-style directory layout (GNUInstallDirs)" ${WIN32})
 
 if(NOT INSTALL_FLAT)
 	include(GNUInstallDirs)

@@ -263,7 +263,7 @@ target_include_directories(BambooTracker PRIVATE ${BT_INCLUDEPATHS})
 
 target_compile_options(BambooTracker PRIVATE ${BT_WARNFLAGS})
 
-option(REAL_CHIP "Compile with support for SCCI and C86CTL interfaces to a real OPNA chip" WIN32)
+option(REAL_CHIP "Compile with support for SCCI and C86CTL interfaces to a real OPNA chip" ${WIN32})
 
 if(REAL_CHIP)
 	target_compile_definitions(BambooTracker PRIVATE USE_REAL_CHIP)
