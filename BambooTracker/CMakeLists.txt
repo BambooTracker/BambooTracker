@@ -17,7 +17,29 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
+# Identify Qt version we're using
+option(QT_VERSION "Which major version of Qt we're building against (5 or 6). Any other value -> automatic detection" OFF)
+if(NOT QT_VERSION MATCHES "[56]")
+	message("Attempting to identify Qt version.")
+	find_package(Qt6 COMPONENTS Core)
+	if(Qt6_FOUND)
+		set(QT_VERSION 6)
+	else(Qt6_FOUND)
+		find_package(Qt5 COMPONENTS Core)
+		if(Qt5_FOUND)
+			set(QT_VERSION 5)
+		else(Qt5_FOUND)
+			message(FATAL_ERROR "Unable to locate either Qt5 or Qt6!")
+		endif(Qt5_FOUND)
+	endif(Qt6_FOUND)
+	message("Using Qt${QT_VERSION}")
+endif(NOT QT_VERSION MATCHES "[56]")
+
+set(QT_COMPONENTS Core Gui Widgets LinguistTools)
+if(QT_VERSION EQUAL 6)
+	list(APPEND QT_COMPONENTS Core5Compat)
+endif(QT_VERSION EQUAL 6)
+find_package("Qt${QT_VERSION}" COMPONENTS ${QT_COMPONENTS} REQUIRED)
 
 # C/C++ files
 set(BT_SOURCES
@@ -247,7 +269,12 @@ if(REAL_CHIP)
 	target_compile_definitions(BambooTracker PRIVATE USE_REAL_CHIP)
 endif(REAL_CHIP)
 
-target_link_libraries(BambooTracker PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets)
+if(QT_VERSION EQUAL 6)
+	set(QT_LIBRARIES Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Core5Compat)
+else(QT_VERSION EQUAL 6)
+	set(QT_LIBRARIES Qt5::Core Qt5::Gui Qt5::Widgets)
+endif(QT_VERSION EQUAL 6)
+target_link_libraries(BambooTracker PUBLIC ${QT_LIBRARIES})
 
 # emu2149
 add_dependencies(BambooTracker emu2149)
