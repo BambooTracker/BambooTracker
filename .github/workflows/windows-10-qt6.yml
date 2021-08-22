@@ -124,7 +124,7 @@ jobs:
           lupdate Project.pro
           mkdir build
           pushd build
-          cmake .. -DCMAKE_INSTALL_PREFIX=${BT_INSTALLBASE} -DCMAKE_BUILD_TYPE=Release
+          cmake .. -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=${BT_INSTALLBASE} -DCMAKE_BUILD_TYPE=Release
           popd
 
       - name: Building.
