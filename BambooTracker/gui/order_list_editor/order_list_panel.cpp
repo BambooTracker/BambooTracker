@@ -45,10 +45,15 @@
 #include "playback.hpp"
 #include "track.hpp"
 #include "bamboo_tracker_defs.hpp"
+#include "gui/dpi.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands_qt.hpp"
 #include "gui/gui_utils.hpp"
 #include "utils.hpp"
+
+using Dpi::scaledQPixmap;
+using Dpi::iRatio;
+using Dpi::scaleRect;
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -258,6 +263,7 @@ void OrderListPanel::updateSizes()
 void OrderListPanel::initDisplay()
 {
 	int width = geometry().width();
+	int ratio = iRatio(*this);
 
 	// Recalculate pixmap sizes
 	viewedRegionHeight_ = std::max((geometry().height() - headerHeight_), rowFontHeight_);
@@ -269,10 +275,10 @@ void OrderListPanel::initDisplay()
 	viewedCenterY_ = (viewedRowsHeight_ - rowFontHeight_) >> 1;
 	viewedCenterBaseY_ = viewedCenterY_ + rowFontAscent_ + (rowFontLeading_ >> 1);
 
-	completePixmap_ = QPixmap(geometry().size());
-	backPixmap_ = QPixmap(width, viewedRowsHeight_);
-	textPixmap_ = QPixmap(width, viewedRowsHeight_);
-	headerPixmap_ = QPixmap(width, headerHeight_);
+	completePixmap_ = scaledQPixmap(geometry().size(), ratio);
+	backPixmap_ = scaledQPixmap(width, viewedRowsHeight_, ratio);
+	textPixmap_ = scaledQPixmap(width, viewedRowsHeight_, ratio);
+	headerPixmap_ = scaledQPixmap(width, headerHeight_, ratio);
 }
 
 void OrderListPanel::drawList(const QRect &rect)
@@ -282,6 +288,7 @@ void OrderListPanel::drawList(const QRect &rect)
 		++repaintingCnt_;	// Use module data after this line
 
 		if (backChanged_ || textChanged_ || headerChanged_ || orderDownCount_ || followModeChanged_) {
+			int ratio = iRatio(*this);
 
 			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
 			completePixmap_.fill(palette_->odrBackColor);
@@ -304,10 +311,11 @@ void OrderListPanel::drawList(const QRect &rect)
 			{
 				QPainter mergePainter(&completePixmap_);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
+				rowsRect = scaleRect(rowsRect, ratio);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
 				mergePainter.drawPixmap(inViewRect, backPixmap_, rowsRect);
 				mergePainter.drawPixmap(inViewRect, textPixmap_, rowsRect);
-				mergePainter.drawPixmap(headerPixmap_.rect(), headerPixmap_);
+				mergePainter.drawPixmap(QPoint(0, 0), headerPixmap_);
 			}
 
 			if (!hasFocus()) drawShadow();
@@ -473,13 +481,22 @@ void OrderListPanel::drawRows(int maxWidth)
 
 void OrderListPanel::quickDrawRows(int maxWidth)
 {
+	int ratio = iRatio(*this);
+
 	int halfRowsCnt = viewedRowCnt_ >> 1;
 	int shift = rowFontHeight_ * orderDownCount_;
 
 	/* Move up by */
-	QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
-	textPixmap_.scroll(0, -shift, srcRect);
-	backPixmap_.scroll(0, -shift, srcRect);
+	{
+		// QPixmap::scroll() takes physical pixels, not virtual.
+		int phShift = shift * ratio;
+		QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
+		srcRect = scaleRect(srcRect, ratio);
+
+		textPixmap_.scroll(0, -phShift, srcRect);
+		backPixmap_.scroll(0, -phShift, srcRect);
+	}
+
 	{
 		int fpos = viewedCenterPos_.row + orderDownCount_ - halfRowsCnt;
 		if (fpos >= 0) viewedFirstPos_.row = fpos;
@@ -632,8 +649,8 @@ void OrderListPanel::drawHeaders(int maxWidth)
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->odrHeaderRowColor);
 	painter.setPen(palette_->odrHeaderBorderColor);
-	int bottomLineY = headerHeight_ - 1;
-	painter.drawLine(0, bottomLineY, geometry().width(), bottomLineY);
+	qreal bottomLineY = headerHeight_ - 0.5;
+	painter.drawLine(QPointF(0., bottomLineY), QPointF(geometry().width(), bottomLineY));
 
 	for (int x = rowNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
 		painter.setPen(palette_->odrHeaderBorderColor);
