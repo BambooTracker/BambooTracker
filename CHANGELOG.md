@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- [#408] - Bumped Qt version of Win7 development builds to 5.15.2
+
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
 - [#399] - Fix `0Gxx` note delay effect to be validated against the actual ticks per step (thanks [@Zexxerd])
@@ -14,6 +17,7 @@
 [#401]: https://github.com/BambooTracker/BambooTracker/issues/401
 [#404]: https://github.com/BambooTracker/BambooTracker/pull/404
 [#400]: https://github.com/BambooTracker/BambooTracker/pull/400
+[#408]: https://github.com/BambooTracker/BambooTracker/pull/408
 
 ## v0.5.0 (2021-08-01)
 ### Added
