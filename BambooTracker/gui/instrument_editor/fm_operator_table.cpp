@@ -108,7 +108,8 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
 	});
 
-	ui->envFrame->installEventFilter(this);
+	ui->envGraph->setBackgroundRole(QPalette::Base);
+	ui->envGraph->installEventFilter(this);
 }
 
 FMOperatorTable::~FMOperatorTable()
@@ -204,11 +205,10 @@ QString FMOperatorTable::toString() const
 
 bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
 {
-	if (obj == ui->envFrame) {
+	if (obj == ui->envGraph) {
 		if (event->type() == QEvent::Paint) {
-			QPainter painter(ui->envFrame);
-			painter.eraseRect(ui->envFrame->rect());
-			painter.drawPixmap(ui->envFrame->rect(), envmap_, envmap_.rect());
+			QPainter painter(ui->envGraph);
+			painter.drawPixmap(ui->envGraph->rect(), envmap_, envmap_.rect());
 		}
 	}
 
@@ -229,7 +229,13 @@ void FMOperatorTable::resizeEvent(QResizeEvent*)
 
 void FMOperatorTable::resizeGraph()
 {
-	envmap_ = QPixmap(ui->envFrame->size());
+	// Resize the graph widget to fill the entire QFrame.
+	// This avoids issues (eg. on the adwaita-qt theme)
+	// where the graph is surrounded by wide margins.
+	// The edges may be cut off, but it's not an issue in practice.
+	ui->envGraph->setGeometry(ui->envFrame->rect());
+
+	envmap_ = QPixmap(ui->envGraph->size());
 	xr_ = (envmap_.width() - (ENV_LINE_W_ + 1) * 2.) / ENV_W_;
 	yr_ = (envmap_.height() - (ENV_LINE_W_ + 1) * 2.) / ENV_H_;
 }
@@ -425,7 +431,7 @@ void FMOperatorTable::repaintGraph()
 		}
 	}
 
-	ui->envFrame->repaint();
+	ui->envGraph->repaint();
 }
 
 void FMOperatorTable::on_ssgegCheckBox_stateChanged(int)
