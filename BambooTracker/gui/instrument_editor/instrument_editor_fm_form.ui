@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>InstrumentEditorFMForm</class>
- <widget class="QWidget" name="InstrumentEditorFMForm">
+ <widget class="QDialog" name="InstrumentEditorFMForm">
   <property name="geometry">
    <rect>
     <x>0</x>

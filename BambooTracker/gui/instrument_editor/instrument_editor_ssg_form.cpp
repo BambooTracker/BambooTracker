@@ -57,7 +57,7 @@ bool isModulatedWaveformSSG(int type)
 }
 
 InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
-	QWidget(parent),
+	QDialog(parent),
 	ui(new Ui::InstrumentEditorSSGForm),
 	instNum_(num)
 {

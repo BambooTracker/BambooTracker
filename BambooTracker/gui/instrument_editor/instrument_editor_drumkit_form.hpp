@@ -27,7 +27,7 @@
 #define INSTRUMENT_EDITOR_DRUMKIT_FORM_HPP
 
 #include <memory>
-#include <QWidget>
+#include <QDialog>
 #include <QKeyEvent>
 #include <QTreeWidgetItem>
 #include "bamboo_tracker.hpp"
@@ -39,7 +39,7 @@ namespace Ui {
 	class InstrumentEditorDrumkitForm;
 }
 
-class InstrumentEditorDrumkitForm : public QWidget
+class InstrumentEditorDrumkitForm : public QDialog
 {
 	Q_OBJECT
 
