@@ -710,9 +710,8 @@ void ConfigurationDialog::updateNoteNames()
 	ui->lowASLabel->setText(man.getNoteName(10));
 	ui->lowBLabel->setText(man.getNoteName(11));
 	ui->lowHighCLabel->setText(man.getNoteName(0));
-	ui->lowHighCLabel->setText(man.getNoteName(1));
-	ui->lowHighCSLabel->setText(man.getNoteName(2));
-	ui->lowHighDLabel->setText(man.getNoteName(3));
+	ui->lowHighCSLabel->setText(man.getNoteName(1));
+	ui->lowHighDLabel->setText(man.getNoteName(2));
 	ui->highCLabel->setText(man.getNoteName(0));
 	ui->highCSLabel->setText(man.getNoteName(1));
 	ui->highDLabel->setText(man.getNoteName(2));
@@ -726,9 +725,8 @@ void ConfigurationDialog::updateNoteNames()
 	ui->highASLabel->setText(man.getNoteName(10));
 	ui->highBLabel->setText(man.getNoteName(11));
 	ui->highHighCLabel->setText(man.getNoteName(0));
-	ui->highHighCLabel->setText(man.getNoteName(1));
-	ui->highHighCSLabel->setText(man.getNoteName(2));
-	ui->highHighDLabel->setText(man.getNoteName(3));
+	ui->highHighCSLabel->setText(man.getNoteName(1));
+	ui->highHighDLabel->setText(man.getNoteName(2));
 }
 
 /***** Appearance *****/
