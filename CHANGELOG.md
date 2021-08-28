@@ -10,6 +10,7 @@
 - [#401] - Fix the volume spinbox to be displayed in uppercase (thanks [@wildmatsu])
 - [#404] - Fix bug where pattern header was sometimes not redrawn (thanks [@nyanpasu64])
 - [#400] - Reworded some text to sound more natural in English (thanks [@wildmatsu])
+- [#410] - Fixed mislabeled piano keys in note entry layout ([#411]; thanks [@OPNA2608])
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
@@ -18,6 +19,8 @@
 [#404]: https://github.com/BambooTracker/BambooTracker/pull/404
 [#400]: https://github.com/BambooTracker/BambooTracker/pull/400
 [#408]: https://github.com/BambooTracker/BambooTracker/pull/408
+[#410]: https://github.com/BambooTracker/BambooTracker/issues/410
+[#411]: https://github.com/BambooTracker/BambooTracker/pull/411
 
 ## v0.5.0 (2021-08-01)
 ### Added
