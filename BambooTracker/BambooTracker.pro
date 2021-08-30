@@ -238,6 +238,7 @@ HEADERS += \
     gui/command/order/order_commands_qt.hpp \
     gui/command/order/order_list_common_qt_command.hpp \
     gui/command/pattern/pattern_editor_common_qt_command.hpp \
+    gui/dpi.hpp \
     gui/drop_detect_list_widget.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \

@@ -50,6 +50,7 @@
 #include "jamming.hpp"
 #include "note.hpp"
 #include "bamboo_tracker_defs.hpp"
+#include "gui/dpi.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "gui/effect_description.hpp"
@@ -57,6 +58,10 @@
 #include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
 #include "utils.hpp"
+
+using Dpi::scaledQPixmap;
+using Dpi::iRatio;
+using Dpi::scaleRect;
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -336,6 +341,7 @@ void PatternEditorPanel::updateSizes()
 void PatternEditorPanel::initDisplay()
 {
 	int width = geometry().width();
+	int ratio = iRatio(*this);
 
 	// Recalculate pixmap sizes
 	viewedRegionHeight_ = std::max((geometry().height() - headerHeight_), stepFontHeight_);
@@ -347,11 +353,11 @@ void PatternEditorPanel::initDisplay()
 	viewedCenterY_ = (viewedRowsHeight_ - stepFontHeight_) >> 1;
 	viewedCenterBaseY_ = viewedCenterY_ + stepFontAscent_ + (stepFontLeading_ >> 1);
 
-	completePixmap_ = QPixmap(geometry().size());
-	backPixmap_ = QPixmap(width, viewedRowsHeight_);
-	textPixmap_ = QPixmap(width, viewedRowsHeight_);
-	forePixmap_ = QPixmap(width, viewedRowsHeight_);
-	headerPixmap_ = QPixmap(width, headerHeight_);
+	completePixmap_ = scaledQPixmap(geometry().size(), ratio);
+	backPixmap_ = scaledQPixmap(width, viewedRowsHeight_, ratio);
+	textPixmap_ = scaledQPixmap(width, viewedRowsHeight_, ratio);
+	forePixmap_ = scaledQPixmap(width, viewedRowsHeight_, ratio);
+	headerPixmap_ = scaledQPixmap(width, headerHeight_, ratio);
 }
 
 void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
@@ -517,7 +523,8 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 
-		if (rect.size() != completePixmap_.size()) {	// Prevent resize event was failed
+		int ratio = iRatio(*this);
+		if (rect.size() * ratio != completePixmap_.size()) {	// Prevent resize event was failed
 			funcResize();
 			headerChanged_ = true;
 			backChanged_ = true;
@@ -551,11 +558,12 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 			{
 				QPainter mergePainter(&completePixmap_);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
+				rowsRect = scaleRect(rowsRect, ratio);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
 				mergePainter.drawPixmap(inViewRect, backPixmap_, rowsRect);
 				mergePainter.drawPixmap(inViewRect, textPixmap_, rowsRect);
 				mergePainter.drawPixmap(inViewRect, forePixmap_, rowsRect);
-				mergePainter.drawPixmap(headerPixmap_.rect(), headerPixmap_);
+				mergePainter.drawPixmap(QPoint(0, 0), headerPixmap_);
 			}
 
 			if (!hasFocus()) drawShadow();
@@ -727,15 +735,24 @@ void PatternEditorPanel::drawRows(int maxWidth)
 
 void PatternEditorPanel::quickDrawRows(int maxWidth)
 {
+	int ratio = iRatio(*this);
+
 	int halfRowsCnt = viewedRowCnt_ >> 1;
 	bool repaintForeAll = (curPos_.step - stepDownCount_ < 0);
 	int shift = stepFontHeight_ * stepDownCount_;
 
 	/* Move up */
-	QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
-	if (!repaintForeAll) forePixmap_.scroll(0, -shift, srcRect);
-	textPixmap_.scroll(0, -shift, srcRect);
-	backPixmap_.scroll(0, -shift, srcRect);
+	{
+		// QPixmap::scroll() takes physical pixels, not virtual.
+		int phShift = shift * ratio;
+		QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
+		srcRect = scaleRect(srcRect, ratio);
+
+		if (!repaintForeAll) forePixmap_.scroll(0, -phShift, srcRect);
+		textPixmap_.scroll(0, -phShift, srcRect);
+		backPixmap_.scroll(0, -phShift, srcRect);
+	}
+
 	{
 		PatternPosition fpos = calculatePositionFrom(viewedCenterPos_.order, viewedCenterPos_.step, stepDownCount_ - halfRowsCnt);
 		if (fpos.order != -1) viewedFirstPos_ = std::move(fpos);
@@ -1069,8 +1086,8 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->ptnHeaderRowColor);
 	painter.setPen(palette_->ptnHeaderBorderColor);
-	int bottomLineY = headerHeight_ - 1;
-	painter.drawLine(0, bottomLineY, geometry().width(), bottomLineY);
+	qreal bottomLineY = headerHeight_ - 0.5;
+	painter.drawLine(QPointF(0., bottomLineY), QPointF(geometry().width(), bottomLineY));
 	int lspace = stepFontWidth_ / 2;
 	for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
 		painter.setPen(palette_->ptnHeaderBorderColor);
