@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#407] - Implement pattern/order editor DPI scaling (thanks [@nyanpasu64])
+
 ### Changed
 - [#408] - Bumped Qt version of Win7 development builds to 5.15.2
 
@@ -11,6 +14,7 @@
 - [#404] - Fix bug where pattern header was sometimes not redrawn (thanks [@nyanpasu64])
 - [#400] - Reworded some text to sound more natural in English (thanks [@wildmatsu])
 - [#410] - Fixed mislabeled piano keys in note entry layout ([#411]; thanks [@OPNA2608])
+- [#407] - Fix icon pixellation on Qt6 (thanks [@nyanpasu64])
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
@@ -21,6 +25,7 @@
 [#408]: https://github.com/BambooTracker/BambooTracker/pull/408
 [#410]: https://github.com/BambooTracker/BambooTracker/issues/410
 [#411]: https://github.com/BambooTracker/BambooTracker/pull/411
+[#407]: https://github.com/BambooTracker/BambooTracker/pull/407
 
 ## v0.5.0 (2021-08-01)
 ### Added
