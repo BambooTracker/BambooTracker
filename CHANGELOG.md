@@ -14,7 +14,7 @@
 - [#404] - Fix bug where pattern header was sometimes not redrawn (thanks [@nyanpasu64])
 - [#400] - Reworded some text to sound more natural in English (thanks [@wildmatsu])
 - [#410] - Fixed mislabeled piano keys in note entry layout ([#411]; thanks [@OPNA2608])
-- [#407] - Fix icon pixellation on Qt6 (thanks [@nyanpasu64])
+- [#402] - Fix icon pixellation on Qt6 ([#407]; thanks [@nyanpasu64])
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
@@ -26,6 +26,7 @@
 [#410]: https://github.com/BambooTracker/BambooTracker/issues/410
 [#411]: https://github.com/BambooTracker/BambooTracker/pull/411
 [#407]: https://github.com/BambooTracker/BambooTracker/pull/407
+[#402]: https://github.com/BambooTracker/BambooTracker/issues/402
 
 ## v0.5.0 (2021-08-01)
 ### Added
