@@ -666,14 +666,14 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 	if (mode_ == SongType::FM3chExpanded && fm.inCh == 2) {
 		FMEnvelopeParameter rr = PARAM_RR[FM3_CH_TO_OP_NUM.at(ch)];
 		int prev = envFM_[2]->getParameterValue(rr);
-		writeFMEnveropeParameterToRegister(2, rr, 127);
+		writeFMEnveropeParameterToRegister(2, rr, 15);
 		envFM_[2]->setParameterValue(rr, prev);
 	}
 	else {
 		auto& env = envFM_[ch];
 		for (const FMEnvelopeParameter& rr : PARAM_RR) {
 			int prev = env->getParameterValue(rr);
-			writeFMEnveropeParameterToRegister(ch, rr, 127);
+			writeFMEnveropeParameterToRegister(ch, rr, 15);
 			env->setParameterValue(rr, prev);
 		}
 	}
@@ -1596,31 +1596,25 @@ void OPNAController::restoreFMEnvelopeFromReset(int ch)
 	auto& inst = refInstFM_[inch];
 
 	if (fm.hasResetEnv == false || !inst) return;
+	fm.hasResetEnv = false;
 
 	switch (mode_) {
 	case SongType::Standard:
 	{
-		if (inst->getEnvelopeResetEnabled(FMOperatorType::All)) {
-			fm.hasResetEnv = false;
-			for (const FMEnvelopeParameter& rr : PARAM_RR) {
-				writeFMEnveropeParameterToRegister(inch, rr, inst->getEnvelopeParameter(rr));
-			}
+		for (const FMEnvelopeParameter& rr : PARAM_RR) {
+			writeFMEnveropeParameterToRegister(inch, rr, inst->getEnvelopeParameter(rr));
 		}
 		break;
 	}
 	case SongType::FM3chExpanded:
 	{
-		if (inst->getEnvelopeResetEnabled(fm.opType)) {
-			if (inch == 2) {
-				FMEnvelopeParameter param = PARAM_RR[FM3_CH_TO_OP_NUM.at(ch)];
-				fm.hasResetEnv = false;
-				writeFMEnveropeParameterToRegister(2, param, refInstFM_[2]->getEnvelopeParameter(param));
-			}
-			else {
-				fm_[inch].hasResetEnv = false;
-				for (const FMEnvelopeParameter& rr : PARAM_RR) {
-					writeFMEnveropeParameterToRegister(inch, rr, inst->getEnvelopeParameter(rr));
-				}
+		if (inch == 2) {
+			FMEnvelopeParameter param = PARAM_RR[FM3_CH_TO_OP_NUM.at(ch)];
+			writeFMEnveropeParameterToRegister(2, param, refInstFM_[2]->getEnvelopeParameter(param));
+		}
+		else {
+			for (const FMEnvelopeParameter& rr : PARAM_RR) {
+				writeFMEnveropeParameterToRegister(inch, rr, inst->getEnvelopeParameter(rr));
 			}
 		}
 		break;
