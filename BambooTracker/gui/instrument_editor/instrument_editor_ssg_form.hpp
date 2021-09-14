@@ -26,7 +26,7 @@
 #ifndef INSTRUMENT_EDITOR_SSG_FORM_HPP
 #define INSTRUMENT_EDITOR_SSG_FORM_HPP
 
-#include <QWidget>
+#include <QDialog>
 #include <QKeyEvent>
 #include <memory>
 #include "bamboo_tracker.hpp"
@@ -41,7 +41,7 @@ namespace Ui {
 	class InstrumentEditorSSGForm;
 }
 
-class InstrumentEditorSSGForm : public QWidget
+class InstrumentEditorSSGForm : public QDialog
 {
 	Q_OBJECT
 

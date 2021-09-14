@@ -1415,13 +1415,13 @@ void MainWindow::openInstrumentEditor()
 	int num = item->data(Qt::UserRole).toInt();
 
 	if (!instForms_->getForm(num)) {	// Create form
-		std::shared_ptr<QWidget> form;
+		std::shared_ptr<QDialog> form;
 		auto inst = bt_->getInstrument(num);
 
 		switch (inst->getType()) {
 		case InstrumentType::FM:
 		{
-			auto fmForm = std::make_shared<InstrumentEditorFMForm>(num);
+			auto fmForm = std::make_shared<InstrumentEditorFMForm>(num, this);
 			form = fmForm;
 			fmForm->setCore(bt_);
 			fmForm->setConfiguration(config_.lock());
@@ -1470,7 +1470,7 @@ void MainWindow::openInstrumentEditor()
 		}
 		case InstrumentType::SSG:
 		{
-			auto ssgForm = std::make_shared<InstrumentEditorSSGForm>(num);
+			auto ssgForm = std::make_shared<InstrumentEditorSSGForm>(num, this);
 			form = ssgForm;
 			ssgForm->setCore(bt_);
 			ssgForm->setConfiguration(config_.lock());
@@ -1519,7 +1519,7 @@ void MainWindow::openInstrumentEditor()
 		}
 		case InstrumentType::ADPCM:
 		{
-			auto adpcmForm = std::make_shared<InstrumentEditorADPCMForm>(num);
+			auto adpcmForm = std::make_shared<InstrumentEditorADPCMForm>(num, this);
 			form = adpcmForm;
 			adpcmForm->setCore(bt_);
 			adpcmForm->setConfiguration(config_.lock());
@@ -1567,7 +1567,7 @@ void MainWindow::openInstrumentEditor()
 		}
 		case InstrumentType::Drumkit:
 		{
-			auto kitForm = std::make_shared<InstrumentEditorDrumkitForm>(num);
+			auto kitForm = std::make_shared<InstrumentEditorDrumkitForm>(num, this);
 			form = kitForm;
 			kitForm->setCore(bt_);
 			kitForm->setConfiguration(config_.lock());

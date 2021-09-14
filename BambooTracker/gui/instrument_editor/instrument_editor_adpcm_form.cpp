@@ -33,7 +33,7 @@
 #include "gui/gui_utils.hpp"
 
 InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
-	QWidget(parent),
+	QDialog(parent),
 	ui(new Ui::InstrumentEditorADPCMForm),
 	instNum_(num),
 	isIgnoreEvent_(false)

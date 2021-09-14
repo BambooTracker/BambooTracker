@@ -26,7 +26,7 @@
 #ifndef INSTRUMENT_EDITOR_FM_FORM_HPP
 #define INSTRUMENT_EDITOR_FM_FORM_HPP
 
-#include <QWidget>
+#include <QDialog>
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
@@ -42,7 +42,7 @@ namespace Ui {
 	class InstrumentEditorFMForm;
 }
 
-class InstrumentEditorFMForm : public QWidget
+class InstrumentEditorFMForm : public QDialog
 {
 	Q_OBJECT
 

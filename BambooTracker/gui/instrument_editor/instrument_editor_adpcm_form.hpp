@@ -27,7 +27,7 @@
 #define INSTRUMENT_EDITOR_ADPCM_FORM_HPP
 
 #include <memory>
-#include <QWidget>
+#include <QDialog>
 #include <QKeyEvent>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
@@ -39,7 +39,7 @@ namespace Ui {
 	class InstrumentEditorADPCMForm;
 }
 
-class InstrumentEditorADPCMForm : public QWidget
+class InstrumentEditorADPCMForm : public QDialog
 {
 	Q_OBJECT
 

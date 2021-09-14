@@ -52,7 +52,7 @@ inline int convertPanInternalToUi(int intrPan)
 }
 
 InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *parent) :
-	QWidget(parent),
+	QDialog(parent),
 	ui(new Ui::InstrumentEditorDrumkitForm),
 	instNum_(num),
 	isIgnoreEvent_(false),

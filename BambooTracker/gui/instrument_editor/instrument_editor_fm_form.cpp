@@ -44,7 +44,7 @@
 #include "gui/gui_utils.hpp"
 
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
-	QWidget(parent),
+	QDialog(parent),
 	ui(new Ui::InstrumentEditorFMForm),
 	instNum_(num),
 	isIgnoreEvent_(false)
