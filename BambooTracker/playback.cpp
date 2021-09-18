@@ -1379,14 +1379,17 @@ void PlaybackManager::tickProcess(int rest)
 			// Channel envelope reset before next key on
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadPos_.order).getStep(nextReadPos_.step);
+			bool hasNoteDelay = false;
 			for (int i = 0; i < Step::N_EFFECT; ++i) {
 				auto&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
 				if (eff.type == EffectType::NoteDelay && eff.value > 0) {	// Note delay check
 					opnaCtrl_->tickEvent(attrib.source, ch);
-					return;
+					hasNoteDelay = true;
+					break;
 				}
 			}
-			if (envRstDlyCntFM_.at(static_cast<size_t>(ch))) envelopeResetEffectFM(step, ch);
+			// Skip the statement below if envelope reset effect has cexecuted
+			if (!hasNoteDelay && envRstDlyCntFM_.at(static_cast<size_t>(ch))) envelopeResetEffectFM(step, ch);
 		}
 		else {
 			opnaCtrl_->tickEvent(attrib.source, ch);
@@ -1423,6 +1426,7 @@ void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch)
 	if (!cnt) {
 		executeFMStepEvents(step, ch, true);
 	}
+	// Skip the statement below if envelope reset effect has cexecuted
 	else if (cnt == 1 && envRstDlyCntFM_.at(static_cast<size_t>(ch))) {
 		// Channel envelope reset before next key on
 		envelopeResetEffectFM(step, ch);
