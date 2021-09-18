@@ -818,7 +818,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		if (!tickTimerForRealChip_) stream_->start();
 	}
 	else {
-		openModule(filePath);	// If use emulation, stream starts
+		openModule(QFileInfo(filePath).absoluteFilePath());	// If use emulation, stream starts
 	}
 }
 
@@ -2129,7 +2129,7 @@ void MainWindow::loadModule()
 	bt_->clearCommandHistory();
 }
 
-void MainWindow::openModule(QString file)
+void MainWindow::openModule(const QString& file)
 {
 	try {
 		freezeViews();

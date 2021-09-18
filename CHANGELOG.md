@@ -19,6 +19,7 @@
 - [#413] - Restore the release rate of FM instrument after using `ESxx` (thanks [@Zexxerd])
 - [#406] - Fix the hovered cursor position in the order list and the pattern editor (thanks [@nyanpasu64])
 - [#421] - Fixed a bug that caused the last tick processing of the current step to be skipped if there was a note delay event in the next step (thanks [@nyanpasu64])
+- [#417] - Write the absolute file path to the file history (thanks [@nyanpasu64])
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
@@ -35,6 +36,7 @@
 [#412]: https://github.com/BambooTracker/BambooTracker/pull/412
 [#406]: https://github.com/BambooTracker/BambooTracker/issues/406
 [#421]: https://github.com/BambooTracker/BambooTracker/issues/421
+[#417]: https://github.com/BambooTracker/BambooTracker/issues/417
 
 ## v0.5.0 (2021-08-01)
 ### Added

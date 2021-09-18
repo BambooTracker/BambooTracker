@@ -65,16 +65,16 @@
 #include "gui/key_signature_manager_form.hpp"
 
 namespace Ui {
-	class ModuleSaveCheckDialog;
-	class MainWindow;
+class ModuleSaveCheckDialog;
+class MainWindow;
 }
 
 class ModuleSaveCheckDialog : public QMessageBox
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
-  explicit ModuleSaveCheckDialog(const std::string& name, QWidget* parent = nullptr);
+	explicit ModuleSaveCheckDialog(const std::string& name, QWidget* parent = nullptr);
 };
 
 class MainWindow : public QMainWindow
@@ -146,7 +146,7 @@ private:
 
 	// Load data
 	void loadModule();
-	void openModule(QString file);
+	void openModule(const QString &file);
 	void loadSong();
 
 	// Play song
