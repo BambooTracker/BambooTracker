@@ -3083,7 +3083,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 	else {
 		if (pos.y() < curRowY_) {
 			int tmpOdr = curPos_.order;
-			int tmpStep = curPos_.step +  (pos.y() - curRowY_) / stepFontHeight_ - 1;
+			int tmpStep = curPos_.step + static_cast<int>(std::ceil((pos.y() - curRowY_) / stepFontHeight_)) - 1;
 			while (true) {
 				if (tmpStep < 0) {
 					if (tmpOdr == 0) {
@@ -3102,7 +3102,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 		}
 		else {
 			int tmpOdr = curPos_.order;
-			int tmpStep = curPos_.step +  (pos.y() - curRowY_) / stepFontHeight_;
+			int tmpStep = curPos_.step + static_cast<int>(std::floor((pos.y() - curRowY_) / stepFontHeight_));
 			while (true) {
 				int endStep = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, tmpOdr));
 				if (tmpStep < endStep) {

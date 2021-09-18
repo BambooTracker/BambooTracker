@@ -1621,11 +1621,11 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 	}
 	else {
 		if (pos.y() < curRowY_) {
-			int tmp = curPos_.row + (pos.y() - curRowY_) / rowFontHeight_ - 1;
+			int tmp = curPos_.row + static_cast<int>(std::ceil((pos.y() - curRowY_) / rowFontHeight_)) - 1;
 			hovPos_.row = (tmp < 0) ? -1 : tmp;
 		}
 		else {
-			hovPos_.row = curPos_.row + (pos.y() - curRowY_) / rowFontHeight_;
+			hovPos_.row = curPos_.row + static_cast<int>(std::floor((pos.y() - curRowY_) / rowFontHeight_));
 			if (hovPos_.row >= static_cast<int>(bt_->getOrderSize(curSongNum_))) hovPos_.row = -1;
 		}
 	}

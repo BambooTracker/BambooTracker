@@ -17,6 +17,7 @@
 - [#410] - Fixed mislabeled piano keys in note entry layout ([#411]; thanks [@OPNA2608])
 - [#402] - Fix icon pixellation on Qt6 ([#407]; thanks [@nyanpasu64])
 - [#413] - Restore the release rate of FM instrument after using `ESxx` (thanks [@Zexxerd])
+- [#406] - Fix the hovered cursor position in the order list and the pattern editor (thanks [@nyanpasu64])
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
@@ -31,6 +32,7 @@
 [#402]: https://github.com/BambooTracker/BambooTracker/issues/402
 [#413]: https://github.com/BambooTracker/BambooTracker/issues/413
 [#412]: https://github.com/BambooTracker/BambooTracker/pull/412
+[#406]: https://github.com/BambooTracker/BambooTracker/issues/406
 
 ## v0.5.0 (2021-08-01)
 ### Added
