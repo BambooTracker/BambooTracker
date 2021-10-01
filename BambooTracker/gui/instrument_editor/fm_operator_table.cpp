@@ -209,7 +209,7 @@ bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
 		if (event->type() == QEvent::Paint) {
 			QPainter painter(viewport);
 			painter.eraseRect(viewport->rect());
-			painter.drawPixmap(viewport->rect(), envmap_, envmap_.rect());
+			painter.drawImage(viewport->rect(), envmap_, envmap_.rect());
 
 			// Don't call event->accept(), because isAccepted() is already true.
 			// Return true to stop QAbstractScrollArea from painting(?) on the viewport.
@@ -235,7 +235,12 @@ void FMOperatorTable::resizeEvent(QResizeEvent*)
 void FMOperatorTable::resizeGraph()
 {
 	QWidget * viewport = ui->envFrame->viewport();
-	envmap_ = QPixmap(viewport->size());
+
+	// Making envmap_ a QImage and using an ARGB pixel format ensures that when we fill
+	// it with instFMEnvBackColor (transparent), the image supports transparency.
+	// On Windows, QPixmap instead defaults to Format_RGB32 which has no alpha channel.
+
+	envmap_ = QImage(viewport->size(), QImage::Format_ARGB32_Premultiplied);
 	xr_ = (envmap_.width() - (ENV_LINE_W_ + 1) * 2.) / ENV_W_;
 	yr_ = (envmap_.height() - (ENV_LINE_W_ + 1) * 2.) / ENV_H_;
 }
