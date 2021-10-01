@@ -108,7 +108,7 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
 	});
 
-	ui->envFrame->installEventFilter(this);
+	ui->envFrame->viewport()->installEventFilter(this);
 }
 
 FMOperatorTable::~FMOperatorTable()
@@ -204,11 +204,16 @@ QString FMOperatorTable::toString() const
 
 bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
 {
-	if (obj == ui->envFrame) {
+	QWidget * viewport = ui->envFrame->viewport();
+	if (obj == viewport) {
 		if (event->type() == QEvent::Paint) {
-			QPainter painter(ui->envFrame);
-			painter.eraseRect(ui->envFrame->rect());
-			painter.drawPixmap(ui->envFrame->rect(), envmap_, envmap_.rect());
+			QPainter painter(viewport);
+			painter.eraseRect(viewport->rect());
+			painter.drawPixmap(viewport->rect(), envmap_, envmap_.rect());
+
+			// Don't call event->accept(), because isAccepted() is already true.
+			// Return true to stop QAbstractScrollArea from painting(?) on the viewport.
+			return true;
 		}
 	}
 
@@ -229,7 +234,8 @@ void FMOperatorTable::resizeEvent(QResizeEvent*)
 
 void FMOperatorTable::resizeGraph()
 {
-	envmap_ = QPixmap(ui->envFrame->size());
+	QWidget * viewport = ui->envFrame->viewport();
+	envmap_ = QPixmap(viewport->size());
 	xr_ = (envmap_.width() - (ENV_LINE_W_ + 1) * 2.) / ENV_W_;
 	yr_ = (envmap_.height() - (ENV_LINE_W_ + 1) * 2.) / ENV_H_;
 }
@@ -425,7 +431,7 @@ void FMOperatorTable::repaintGraph()
 		}
 	}
 
-	ui->envFrame->repaint();
+	ui->envFrame->viewport()->repaint();
 }
 
 void FMOperatorTable::on_ssgegCheckBox_stateChanged(int)
