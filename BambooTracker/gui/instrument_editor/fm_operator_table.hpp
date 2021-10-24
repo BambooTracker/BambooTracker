@@ -33,7 +33,7 @@
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QString>
-#include <QPixmap>
+#include <QImage>
 #include <QPainter>
 #include <QPointF>
 #include "gui/labeled_vertical_slider.hpp"
@@ -95,7 +95,7 @@ private:
 	bool isIgnoreEvent_;
 
 	// Envelope graph
-	QPixmap envmap_;
+	QImage envmap_;
 	static constexpr int ENV_H_ = 127;
 	static constexpr int ENV_W_ = 200;
 	static constexpr int SSGEG_H_ = 35;

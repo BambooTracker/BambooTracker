@@ -255,7 +255,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QFrame" name="envFrame">
+       <widget class="QAbstractScrollArea" name="envFrame">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -284,6 +284,11 @@
    <extends>QFrame</extends>
    <header>gui/labeled_vertical_slider.hpp</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QAbstractScrollArea</class>
+   <extends>QFrame</extends>
+   <header>qabstractscrollarea.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
