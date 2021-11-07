@@ -1,103 +1,103 @@
 ## Key commands
 Please replace some keys with the following in macOS:
 
-- Ctrl → command
-- Alt → option
-- BackSpace → delete
-- Delete → fn+delete
+- <kbd>Ctrl</kbd> → <kbd>⌘ command</kbd>
+- <kbd>Alt</kbd> → <kbd>⌥ option</kbd>
+- <kbd>BackSpace</kbd> → <kbd>delete</kbd>
+- <kbd>Delete</kbd> → <kbd>fn</kbd>+<kbd>delete</kbd>
 
 ### General
-| Key         | Command                     |
-| ----------- | --------------------------- |
-| Ctrl+N      | Create new module           |
-| Ctrl+O      | Open module                 |
-| Ctrl+S      | Save module                 |
-| Ctrl+P      | Open module property dialog |
-| Return      | Play/stop song              |
-| Space       | Toggle jam/edit mode        |
-| F1          | Show effect list dialog     |
-| F2          | Focus on pattern editor     |
-| F3          | Focus on order list         |
-| F4          | Focus on instrument list    |
-| F5          | Play from start             |
-| F6          | Play pattern                |
-| F7          | Play from current position  |
-| Ctrl+F7     | Play from marker            |
-| Ctrl+Return | Play only current step      |
-| F8          | Stop song                   |
-| F12         | Kill sound                  |
+| Key                               | Command                     |
+| --------------------------------- | --------------------------- |
+| <kbd>Ctrl</kbd>+<kbd>N</kbd>      | Create new module           |
+| <kbd>Ctrl</kbd>+<kbd>O</kbd>      | Open module                 |
+| <kbd>Ctrl</kbd>+<kbd>S</kbd>      | Save module                 |
+| <kbd>Ctrl</kbd>+<kbd>P</kbd>      | Open module property dialog |
+| <kbd>Return</kbd>                 | Play/stop song              |
+| <kbd>Space</kbd>                  | Toggle jam/edit mode        |
+| <kbd>F1</kbd>                     | Show effect list dialog     |
+| <kbd>F2</kbd>                     | Focus on pattern editor     |
+| <kbd>F3</kbd>                     | Focus on order list         |
+| <kbd>F4</kbd>                     | Focus on instrument list    |
+| <kbd>F5</kbd>                     | Play from start             |
+| <kbd>F6</kbd>                     | Play pattern                |
+| <kbd>F7</kbd>                     | Play from current position  |
+| <kbd>Ctrl</kbd>+<kbd>F7</kbd>     | Play from marker            |
+| <kbd>Ctrl</kbd>+<kbd>Return</kbd> | Play only current step      |
+| <kbd>F8</kbd>                     | Stop song                   |
+| <kbd>F12</kbd>                    | Kill sound                  |
 
 ### Instrument list
-| Key    | Command                        |
-| ------ | ------------------------------ |
-| Insert | Add instrument                 |
-| Delete | Remove instrument              |
-| Ctrl+I | Open current instrument editor |
+| Key                          | Command                        |
+| ---------------------------- | ------------------------------ |
+| <kbd>Insert</kbd>            | Add instrument                 |
+| <kbd>Delete</kbd>            | Remove instrument              |
+| <kbd>Ctrl</kbd>+<kbd>I</kbd> | Open current instrument editor |
 
 ### Order list
-| Key             | Command             |
-| --------------- | ------------------- |
-| Ctrl+C          | Copy                |
-| Ctrl+V          | Paste               |
-| Ctrl+A          | Select track/all    |
-| Ctrl+D          | Duplicate order     |
-| Alt+D           | Clone patterns      |
-| Home            | Jump to first order |
-| End             | Jump to last order  |
-| PageUp          | Jump to upper oder  |
-| PageDown        | Jump to lower oder  |
-| Insert or Alt+B | Insert order below  |
-| Delete          | Delete order        |
-| Escape          | Deselect            |
+| Key                                              | Command             |
+| ------------------------------------------------ | ------------------- |
+| <kbd>Ctrl</kbd>+<kbd>C</kbd>                     | Copy                |
+| <kbd>Ctrl</kbd>+<kbd>V</kbd>                     | Paste               |
+| <kbd>Ctrl</kbd>+<kbd>A</kbd>                     | Select track/all    |
+| <kbd>Ctrl</kbd>+<kbd>D</kbd>                     | Duplicate order     |
+| <kbd>Alt</kbd>+<kbd>D</kbd>                      | Clone patterns      |
+| <kbd>Home</kbd>                                  | Jump to first order |
+| <kbd>End</kbd>                                   | Jump to last order  |
+| <kbd>PageUp</kbd>                                | Jump to upper oder  |
+| <kbd>PageDown</kbd>                              | Jump to lower oder  |
+| <kbd>Insert</kbd> or <kbd>Alt</kbd>+<kbd>B</kbd> | Insert order below  |
+| <kbd>Delete</kbd>                                | Delete order        |
+| <kbd>Escape</kbd>                                | Deselect            |
 
 ### Pattern editor
-| Key                           | Command                                     |
-| ----------------------------- | ------------------------------------------- |
-| Ctrl+C                        | Copy                                        |
-| Ctrl+X                        | Cut                                         |
-| Ctrl+V                        | Paste                                       |
-| Ctrl+M                        | Paste and mix                               |
-| Ctrl+A                        | Select track/all                            |
-| Ctrl+G                        | Interpolate                                 |
-| Ctrl+R                        | Reverse                                     |
-| Ctrl+F1 or Ctrl+scroll up     | Decrease note                               |
-| Ctrl+F2 or Ctrl+scroll down   | Increase note                               |
-| Ctrl+F3                       | Decrease octave                             |
-| Ctrl+F4                       | Increase octave                             |
-| Shift+F1 or Shift+scroll up   | Fine decrease values                        |
-| Shift+F2 or Shift+scroll down | Fine increase values                        |
-| Shift+F3                      | Coarse decrease values                      |
-| Shift+F4                      | Coarse increase values                      |
-| Alt+F9                        | Toggle track                                |
-| Alt+F10                       | Solo track                                  |
-| Alt+Left                      | Select previous instrument                  |
-| Alt+Right                     | Select next instrument                      |
-| Alt+S                         | Replace instrument                          |
-| Alt+L                         | Expand effect column                        |
-| Alt+K                         | Shrink effect column                        |
-| Ctrl+K                        | Add/Remove bookmark on the current position |
-| Ctrl+B                        | Set/Delete marker                           |
-| Alt+G                         | Show Go To dialog                           |
-| Tab                           | Jump to right track                         |
-| BackTab                       | Jump to left track                          |
-| Home                          | Jump to first step                          |
-| End                           | Jump to last step                           |
-| PageUp                        | Jump to upper step                          |
-| PageDown                      | Jump to lower step                          |
-| Ctrl+Up                       | Jump to upper 1st highlighted step          |
-| Ctrl+Down                     | Jump to lower 1st highlighted step          |
-| Ctrl+PageUp                   | Jump to previous bookmark                   |
-| Ctrl+PageDown                 | Jump to next bookmark                       |
-| Ctrl+Left                     | Go to previous order                        |
-| Ctrl+Right                    | Go to next order                            |
-| Insert or Alt+Down            | Insert step                                 |
-| BackSpace or Alt+Up           | Delete the step above                       |
-| Delete                        | Delete commands                             |
-| Escape                        | Deselection                                 |
-| -                             | Key off                                     |
-| \* (numpad)                   | Increase octave/echo buffer number          |
-| / (numpad)                    | Decrease octave/echo buffer number          |
-| ^                             | Echo buffer access                          |
+| Key                                                            | Command                                     |
+| -------------------------------------------------------------- | ------------------------------------------- |
+| <kbd>Ctrl</kbd>+<kbd>C</kbd>                                   | Copy                                        |
+| <kbd>Ctrl</kbd>+<kbd>X</kbd>                                   | Cut                                         |
+| <kbd>Ctrl</kbd>+<kbd>V</kbd>                                   | Paste                                       |
+| <kbd>Ctrl</kbd>+<kbd>M</kbd>                                   | Paste and mix                               |
+| <kbd>Ctrl</kbd>+<kbd>A</kbd>                                   | Select track/all                            |
+| <kbd>Ctrl</kbd>+<kbd>G</kbd>                                   | Interpolate                                 |
+| <kbd>Ctrl</kbd>+<kbd>R</kbd>                                   | Reverse                                     |
+| <kbd>Ctrl</kbd>+<kbd>F1</kbd> or <kbd>Ctrl</kbd>+scroll up     | Decrease note                               |
+| <kbd>Ctrl</kbd>+<kbd>F2</kbd> or <kbd>Ctrl</kbd>+scroll down   | Increase note                               |
+| <kbd>Ctrl</kbd>+<kbd>F3</kbd>                                  | Decrease octave                             |
+| <kbd>Ctrl</kbd>+<kbd>F4</kbd>                                  | Increase octave                             |
+| <kbd>Shift</kbd>+<kbd>F1</kbd> or <kbd>Shift</kbd>+scroll up   | Fine decrease values                        |
+| <kbd>Shift</kbd>+<kbd>F2</kbd> or <kbd>Shift</kbd>+scroll down | Fine increase values                        |
+| <kbd>Shift</kbd>+<kbd>F3</kbd>                                 | Coarse decrease values                      |
+| <kbd>Shift</kbd>+<kbd>F4</kbd>                                 | Coarse increase values                      |
+| <kbd>Alt</kbd>+<kbd>F9</kbd>                                   | Toggle track                                |
+| <kbd>Alt</kbd>+<kbd>F10</kbd>                                  | Solo track                                  |
+| <kbd>Alt</kbd>+<kbd>←</kbd>                                    | Select previous instrument                  |
+| <kbd>Alt</kbd>+<kbd>→</kbd>                                    | Select next instrument                      |
+| <kbd>Alt</kbd>+<kbd>S</kbd>                                    | Replace instrument                          |
+| <kbd>Alt</kbd>+<kbd>L</kbd>                                    | Expand effect column                        |
+| <kbd>Alt</kbd>+<kbd>K</kbd>                                    | Shrink effect column                        |
+| <kbd>Ctrl</kbd>+<kbd>K</kbd>                                   | Add/Remove bookmark on the current position |
+| <kbd>Ctrl</kbd>+<kbd>B</kbd>                                   | Set/Delete marker                           |
+| <kbd>Alt</kbd>+<kbd>G</kbd>                                    | Show Go To dialog                           |
+| <kbd>Tab</kbd>                                                 | Jump to right track                         |
+| <kbd>BackTab</kbd>                                             | Jump to left track                          |
+| <kbd>Home</kbd>                                                | Jump to first step                          |
+| <kbd>End</kbd>                                                 | Jump to last step                           |
+| <kbd>PageUp</kbd>                                              | Jump to upper step                          |
+| <kbd>PageDown</kbd>                                            | Jump to lower step                          |
+| <kbd>Ctrl</kbd>+<kbd>↑</kbd>                                   | Jump to upper 1st highlighted step          |
+| <kbd>Ctrl</kbd>+<kbd>↓</kbd>                                   | Jump to lower 1st highlighted step          |
+| <kbd>Ctrl</kbd>+<kbd>PageUp</kbd>                              | Jump to previous bookmark                   |
+| <kbd>Ctrl</kbd>+<kbd>PageDown</kbd>                            | Jump to next bookmark                       |
+| <kbd>Ctrl</kbd>+<kbd>←</kbd>                                   | Go to previous order                        |
+| <kbd>Ctrl</kbd>+<kbd>→</kbd>                                   | Go to next order                            |
+| <kbd>Insert</kbd> or <kbd>Alt</kbd>+<kbd>↓</kbd>               | Insert step                                 |
+| <kbd>BackSpace</kbd> or <kbd>Alt</kbd>+<kbd>↑</kbd>            | Delete the step above                       |
+| <kbd>Delete</kbd>                                              | Delete commands                             |
+| <kbd>Escape</kbd>                                              | Deselection                                 |
+| <kbd>-</kbd>                                                   | Key off                                     |
+| <kbd>\*</kbd> (numpad)                                         | Increase octave/echo buffer number          |
+| <kbd>/</kbd> (numpad)                                          | Decrease octave/echo buffer number          |
+| <kbd>^</kbd>                                                   | Echo buffer access                          |
 
 There are two rows of a piano keyboard:
 
