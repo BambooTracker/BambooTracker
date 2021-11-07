@@ -7,6 +7,7 @@
 ### Changed
 - [#408] - Bumped Qt version of Win7 development builds to 5.15.2
 - [#412] - Keep instrument editors on top of main window, spawn centered (thanks [@nyanpasu64])
+- [#427] - Bumped Ubuntu version on build tests to 18.04
 
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
@@ -39,6 +40,7 @@
 [#421]: https://github.com/BambooTracker/BambooTracker/issues/421
 [#417]: https://github.com/BambooTracker/BambooTracker/issues/417
 [#424]: https://github.com/BambooTracker/BambooTracker/pull/424
+[#427]: https://github.com/BambooTracker/BambooTracker/pull/427
 
 ## v0.5.0 (2021-08-01)
 ### Added
