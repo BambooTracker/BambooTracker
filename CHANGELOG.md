@@ -8,6 +8,7 @@
 - [#408] - Bumped Qt version of Win7 development builds to 5.15.2
 - [#412] - Keep instrument editors on top of main window, spawn centered (thanks [@nyanpasu64])
 - [#427] - Bumped Ubuntu version on build tests to 18.04
+- [#429] - Improved keyboard key formatting in documentation (thanks [@cxong])
 
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
@@ -22,6 +23,8 @@
 - [#421] - Fixed a bug that caused the last tick processing of the current step to be skipped if there was a note delay event in the next step (thanks [@nyanpasu64])
 - [#417] - Write the absolute file path to the file history (thanks [@nyanpasu64])
 - [#424] - Fix instrument editor envelope graphs on Breeze master (thanks [@nyanpasu64])
+
+[@cxong]: https://github.com/cxong
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
 [#216]: https://github.com/BambooTracker/BambooTracker/issues/216
@@ -41,6 +44,7 @@
 [#417]: https://github.com/BambooTracker/BambooTracker/issues/417
 [#424]: https://github.com/BambooTracker/BambooTracker/pull/424
 [#427]: https://github.com/BambooTracker/BambooTracker/pull/427
+[#429]: https://github.com/BambooTracker/BambooTracker/pull/429
 
 ## v0.5.0 (2021-08-01)
 ### Added
