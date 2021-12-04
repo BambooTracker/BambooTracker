@@ -23,6 +23,7 @@
 - [#421] - Fixed a bug that caused the last tick processing of the current step to be skipped if there was a note delay event in the next step (thanks [@nyanpasu64])
 - [#417] - Write the absolute file path to the file history (thanks [@nyanpasu64])
 - [#424] - Fix instrument editor envelope graphs on Breeze master (thanks [@nyanpasu64])
+- [#435] - Fix VGM files being written with incorrect headers (thanks [@nyanpasu64])
 
 [@cxong]: https://github.com/cxong
 
@@ -45,6 +46,7 @@
 [#424]: https://github.com/BambooTracker/BambooTracker/pull/424
 [#427]: https://github.com/BambooTracker/BambooTracker/pull/427
 [#429]: https://github.com/BambooTracker/BambooTracker/pull/429
+[#435]: https://github.com/BambooTracker/BambooTracker/pull/435
 
 ## v0.5.0 (2021-08-01)
 ### Added
