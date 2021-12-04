@@ -34,7 +34,8 @@ AbstractRegisterWriteLogger::AbstractRegisterWriteLogger(int target)
 	: target_(target),
 	  lastWait_(0),
 	  isSetLoop_(false),
-	  loopPoint_(0)
+	  loopPoint_(0),
+	  totalSampCnt_(0)
 {
 }
 
