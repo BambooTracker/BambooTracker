@@ -9,6 +9,7 @@
 - [#412] - Keep instrument editors on top of main window, spawn centered (thanks [@nyanpasu64])
 - [#427] - Bumped Ubuntu version on build tests to 18.04
 - [#429] - Improved keyboard key formatting in documentation (thanks [@cxong])
+- [#426] - Update RtAudio submodule to upstream 5.2.0 (thanks [@nyanpasu64])
 
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
@@ -47,6 +48,7 @@
 [#427]: https://github.com/BambooTracker/BambooTracker/pull/427
 [#429]: https://github.com/BambooTracker/BambooTracker/pull/429
 [#435]: https://github.com/BambooTracker/BambooTracker/pull/435
+[#426]: https://github.com/BambooTracker/BambooTracker/pull/426
 
 ## v0.5.0 (2021-08-01)
 ### Added
