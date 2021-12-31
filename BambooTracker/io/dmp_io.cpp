@@ -49,7 +49,7 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 		}
 		uint8_t system = 2; // default to genesis
 		if (fileVersion >= 11) system = ctr.readUint8(csr++);
-		if (system != 2 && system != 3 && system != 8) { // genesis, sms and arcade only
+		if (system != 2 && system != 3 && system != 8 && system != 9) { // genesis, sms, arcade and neo geo only
 			throw FileCorruptionError(FileType::Inst, csr);
 		}
 		insType = ctr.readUint8(csr++);
