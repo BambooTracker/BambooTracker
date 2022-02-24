@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#407] - Implement pattern/order editor DPI scaling (thanks [@nyanpasu64])
+- [#438] - Allow Neo Geo system type in DMP import (thanks [@OPNA2608])
 
 ### Changed
 - [#408] - Bumped Qt version of Win7 development builds to 5.15.2
@@ -49,6 +50,7 @@
 [#429]: https://github.com/BambooTracker/BambooTracker/pull/429
 [#435]: https://github.com/BambooTracker/BambooTracker/pull/435
 [#426]: https://github.com/BambooTracker/BambooTracker/pull/426
+[#438]: https://github.com/BambooTracker/BambooTracker/pull/438
 
 ## v0.5.0 (2021-08-01)
 ### Added
