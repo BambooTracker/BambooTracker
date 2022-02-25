@@ -153,7 +153,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QSpinBox" name="tempoSpinBox">
+              <widget class="WheelSpinBox" name="tempoSpinBox">
                <property name="keyboardTracking">
                 <bool>false</bool>
                </property>
@@ -185,7 +185,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QSpinBox" name="speedSpinBox">
+              <widget class="WheelSpinBox" name="speedSpinBox">
                <property name="keyboardTracking">
                 <bool>false</bool>
                </property>
@@ -217,7 +217,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QSpinBox" name="patternSizeSpinBox">
+              <widget class="WheelSpinBox" name="patternSizeSpinBox">
                <property name="keyboardTracking">
                 <bool>false</bool>
                </property>
@@ -246,7 +246,7 @@
               </widget>
              </item>
              <item row="3" column="1">
-              <widget class="QSpinBox" name="grooveSpinBox">
+              <widget class="WheelSpinBox" name="grooveSpinBox">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -308,7 +308,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QSpinBox" name="editableStepSpinBox">
+              <widget class="WheelSpinBox" name="editableStepSpinBox">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -563,7 +563,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>26</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1702,6 +1702,11 @@
    <class>DropDetectListWidget</class>
    <extends>QListWidget</extends>
    <header>gui/drop_detect_list_widget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>WheelSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>gui/wheel_spin_box.hpp</header>
   </customwidget>
  </customwidgets>
  <tabstops>

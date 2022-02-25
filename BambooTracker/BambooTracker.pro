@@ -82,6 +82,7 @@ SOURCES += \
     gui/note_name_manager.cpp \
     gui/swap_tracks_dialog.cpp \
     gui/transpose_song_dialog.cpp \
+    gui/wheel_spin_box.cpp \
     instrument/sample_adpcm.cpp \
     instrument/sequence_property.cpp \
     io/btb_io.cpp \
@@ -267,6 +268,7 @@ HEADERS += \
     gui/note_name_manager.hpp \
     gui/swap_tracks_dialog.hpp \
     gui/transpose_song_dialog.hpp \
+    gui/wheel_spin_box.hpp \
     instrument/instrument_property_defs.hpp \
     instrument/sample_adpcm.hpp \
     instrument/sequence_property.hpp \
