@@ -11,7 +11,9 @@ fi
 MINGW_TARGETDIR="$1"
 MINGW_TARGETVER="$2"
 MINGW_TARGETBIT="$3"
-MINGW_TARGETNEWDIR="$4"
+MINGW_TARGETNEWDIR_NATIVE="$4"
+
+export MINGW_TARGETNEWDIR="$(echo ${MINGW_TARGETNEWDIR_NATIVE} | sed -e 's#\\#/#g' -e 's#^[A-Z]#\L&#g' -e 's#^\(.\):#/\1#')"/
 
 if [[ ${MINGW_TARGETBIT} -ne 32 && ${MINGW_TARGETBIT} -ne 64 ]]; then
   echo "Invalid bitness! Must be '32' or '64', was '${MINGW_TARGETBIT}'!" >&2
