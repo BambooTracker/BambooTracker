@@ -43,7 +43,7 @@ LabeledVerticalSlider::LabeledVerticalSlider(QString text, QString prefix, QStri
 	prefix_ = prefix;
 	suffix_ = suffix;
 	updateValueLabel();
-	ui->slider->setStyle(new SliderStyle());
+	ui->slider->setStyle(SliderStyle::instance());
 	ui->slider->installEventFilter(this);
 }
 

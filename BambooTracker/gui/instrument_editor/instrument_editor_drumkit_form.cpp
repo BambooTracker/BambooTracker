@@ -90,7 +90,7 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 					 this, [&] { emit sampleMemoryChanged(); });
 
 	//========== Pan ==========//
-	ui->panHorizontalSlider->setStyle(new SliderStyle);
+	ui->panHorizontalSlider->setStyle(SliderStyle::instance());
 	ui->panHorizontalSlider->installEventFilter(this);
 	ui->panPosLabel->setText(QCoreApplication::translate("Panning", PAN_TEXT[ui->panHorizontalSlider->value()]));
 }
