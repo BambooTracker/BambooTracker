@@ -95,9 +95,17 @@ platform: x86
 before_build:
   - ps: $env:Path = "$env:QT;$env:COMPILER;$env:Path"
   - sh: |
+      # Update outdated cacerts
+      curl --insecure --remote-name https://curl.se/ca/cacert.pem
+      sudo mv cacert.pem /etc/ssl/cert.pem
+
       export HOMEBREW_NO_INSTALL_CLEANUP=1
       brew update
+
+      # Download failed: Homebrew-installed `curl` is not installed
+      brew install curl
       brew install qt@5 pkg-config jack p7zip
+
       export PATH="/usr/local/opt/qt@5/bin:$PATH"
       export PKG_CONFIG_PATH="/usr/local/opt/jack/lib/pkgconfig"${PKG_CONFIG_PATH:+':'}$PKG_CONFIG_PATH
 
