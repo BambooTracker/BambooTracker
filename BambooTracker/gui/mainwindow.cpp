@@ -72,6 +72,7 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
+#include "gui/wheel_spin_box.hpp"
 #include "chip/scci/scci_wrapper.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "midi/midi.hpp"
@@ -263,7 +264,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		auto octLab = new QLabel(tr("Octave"));
 		octLab->setMargin(6);
 		ui->subToolBar->addWidget(octLab);
-		octave_ = new QSpinBox();
+		octave_ = new WheelSpinBox();
 		octave_->setMinimum(0);
 		octave_->setMaximum(7);
 		octave_->setValue(bt_->getCurrentOctave());
@@ -278,7 +279,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		auto volLab = new QLabel(tr("Volume"));
 		volLab->setMargin(6);
 		ui->subToolBar->addWidget(volLab);
-		volume_ = new QSpinBox();
+		volume_ = new WheelSpinBox();
 		volume_->setMinimum(0);
 		volume_->setMaximum(255);
 		volume_->setDisplayIntegerBase(16);
@@ -297,7 +298,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		auto hlLab1 = new QLabel(tr("Step highlight 1st"));
 		hlLab1->setMargin(6);
 		ui->subToolBar->addWidget(hlLab1);
-		highlight1_ = new QSpinBox();
+		highlight1_ = new WheelSpinBox();
 		highlight1_->setMinimum(1);
 		highlight1_->setMaximum(256);
 		highlight1_->setValue(8);
@@ -312,7 +313,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		auto hlLab2 = new QLabel(tr("2nd"));
 		hlLab2->setMargin(6);
 		ui->subToolBar->addWidget(hlLab2);
-		highlight2_ = new QSpinBox();
+		highlight2_ = new WheelSpinBox();
 		highlight2_->setMinimum(1);
 		highlight2_->setMaximum(256);
 		highlight2_->setValue(8);
