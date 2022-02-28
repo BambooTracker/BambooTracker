@@ -26,6 +26,7 @@
 - [#417] - Write the absolute file path to the file history (thanks [@nyanpasu64])
 - [#424] - Fix instrument editor envelope graphs on Breeze master (thanks [@nyanpasu64])
 - [#435] - Fix VGM files being written with incorrect headers (thanks [@nyanpasu64])
+- [#418] - Fix SliderStyle memory leak ([#440], thanks [@nyanpasu64])
 
 [@cxong]: https://github.com/cxong
 
@@ -51,6 +52,8 @@
 [#435]: https://github.com/BambooTracker/BambooTracker/pull/435
 [#426]: https://github.com/BambooTracker/BambooTracker/pull/426
 [#438]: https://github.com/BambooTracker/BambooTracker/pull/438
+[#418]: https://github.com/BambooTracker/BambooTracker/issues/418
+[#440]: https://github.com/BambooTracker/BambooTracker/pull/440
 
 ## v0.5.0 (2021-08-01)
 ### Added
