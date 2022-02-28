@@ -30,7 +30,14 @@
 
 class SliderStyle : public QProxyStyle
 {
+private:
+	SliderStyle(QStyle *style = nullptr);
+
 public:
+	/// Get a global SliderStyle that lasts for the lifetime of the app.
+	/// Can only be called a single thread (generally the main GUI thread).
+	static SliderStyle* instance();
+
 	virtual int styleHint (StyleHint hint, const QStyleOption* option = nullptr,
 						   const QWidget* widget = nullptr, QStyleHintReturn* returnData = nullptr) const;
 };

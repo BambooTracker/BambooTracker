@@ -43,7 +43,7 @@ LabeledHorizontalSlider::LabeledHorizontalSlider(QString text, QString prefix, Q
 	prefix_ = prefix;
 	suffix_ = suffix;
 	updateValueLabel();
-	ui->slider->setStyle(new SliderStyle());
+	ui->slider->setStyle(SliderStyle::instance());
 	ui->slider->installEventFilter(this);
 }
 

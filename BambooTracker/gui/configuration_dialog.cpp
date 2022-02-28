@@ -350,7 +350,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	case 48000:	ui->sampleRateComboBox->setCurrentIndex(1);	break;
 	case 55466:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
 	}
-	ui->bufferLengthHorizontalSlider->setStyle(new SliderStyle());
+	ui->bufferLengthHorizontalSlider->setStyle(SliderStyle::instance());
 	QObject::connect(ui->bufferLengthHorizontalSlider, &QSlider::valueChanged,
 					 this, [&](int value) {
 		ui->bufferLengthLabel->setText(QString::number(value) + "ms");

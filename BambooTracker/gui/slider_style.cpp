@@ -25,6 +25,20 @@
 
 #include "slider_style.hpp"
 
+SliderStyle::SliderStyle(QStyle * style) :
+	QProxyStyle(style)
+{}
+
+static SliderStyle* SLIDER_STYLE = nullptr;
+
+SliderStyle* SliderStyle::instance()
+{
+	if (SLIDER_STYLE == nullptr) {
+		SLIDER_STYLE = new SliderStyle();
+	}
+	return SLIDER_STYLE;
+}
+
 int SliderStyle::styleHint (StyleHint hint, const QStyleOption* option,
 							const QWidget* widget, QStyleHintReturn* returnData) const
 {
