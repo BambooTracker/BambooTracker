@@ -271,11 +271,16 @@ if (REAL_CHIP)
 	)
 endif (REAL_CHIP)
 
-# Translations
-add_subdirectory (lang)
-
-add_executable (BambooTracker
+if (APPLE)
+	set (MACOSX_BUNDLE_ICON_FILE BambooTracker.icns)
+	set (MACOSX_ICNS "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/${MACOSX_BUNDLE_ICON_FILE}")
+	set_source_files_properties (${MACOSX_ICNS}
+		PROPERTIES MACOSX_PACKAGE_LOCATION "Resources"
+	)
+endif()
+add_executable (BambooTracker WIN32 MACOSX_BUNDLE
 	${BT_SOURCES} ${BT_FORMS}
+	${MACOSX_ICNS}
 )
 
 target_include_directories (BambooTracker PRIVATE ${BT_INCLUDEPATHS})
@@ -310,3 +315,5 @@ else()
 endif()
 
 install (TARGETS BambooTracker DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
+add_subdirectory (lang)
