@@ -124,7 +124,7 @@ jobs:
           lupdate Project.pro
           mkdir build
           pushd build
-          cmake .. -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=${BT_INSTALLBASE} -DCMAKE_BUILD_TYPE=Release
+          cmake .. -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=${BT_INSTALLBASE} -DCMAKE_BUILD_TYPE=Release -DRTAUDIO_API_DS=ON
           popd
 
       - name: Building.
