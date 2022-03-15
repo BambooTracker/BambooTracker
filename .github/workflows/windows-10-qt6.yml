@@ -122,19 +122,24 @@ jobs:
         run: |
           export PATH="${MINGW_INSTALLBASE}/bin:${PATH}"
           lupdate Project.pro
-          qmake Project.pro PREFIX=${BT_INSTALLBASE} \
-            CONFIG+=release CONFIG-=debug ${QMAKE_EXTRA_ARGUMENTS}
-          ${MAKE} qmake_all
+          mkdir build
+          pushd build
+          cmake .. -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=${BT_INSTALLBASE} -DCMAKE_BUILD_TYPE=Release -DRTAUDIO_API_DS=ON
+          popd
 
       - name: Building.
         run: |
           export PATH="${MINGW_INSTALLBASE}/bin:${PATH}"
+          pushd build
           ${MAKE} -j2
+          popd
 
       - name: Installing.
         run: |
           export PATH="${MINGW_INSTALLBASE}/bin:${PATH}"
+          pushd build
           ${MAKE} -j2 install
+          popd
 
       - name: Test packaging.
         if: env.DONT_PACKAGE != 'true'
