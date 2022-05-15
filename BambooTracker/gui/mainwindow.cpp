@@ -260,14 +260,21 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 
 	/* Tool bars */
 	{
+		auto genSB = [](int value, int min, int max, int minW = 40) {
+			auto sb = new QSpinBox();
+			sb->setMinimum(min);
+			sb->setMaximum(max);
+			sb->setValue(value);
+			sb->setMinimumWidth(minW);
+			sb->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+			return sb;
+		};
+
+		/* Octave */
 		auto octLab = new QLabel(tr("Octave"));
 		octLab->setMargin(6);
 		ui->subToolBar->addWidget(octLab);
-		octave_ = new QSpinBox();
-		octave_->setMinimum(0);
-		octave_->setMaximum(7);
-		octave_->setValue(bt_->getCurrentOctave());
-		octave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		octave_ = genSB(bt_->getCurrentOctave(), 0, 7);
 		// Leave Before Qt5.7.0 style due to windows xp
 		QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 						 this, [&](int octave) {
@@ -275,33 +282,36 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 			statusOctave_->setText(tr("Octave: %1").arg(octave));
 		});
 		ui->subToolBar->addWidget(octave_);
+
+		/* Volume */
 		auto volLab = new QLabel(tr("Volume"));
 		volLab->setMargin(6);
 		ui->subToolBar->addWidget(volLab);
-		volume_ = new QSpinBox();
-		volume_->setMinimum(0);
-		volume_->setMaximum(255);
-		volume_->setDisplayIntegerBase(16);
-		QFont volSpinFont = volume_->font();
-		volSpinFont.setCapitalization(QFont::AllUppercase);
-		volume_->setFont(volSpinFont);
-		volume_->setValue(bt_->getCurrentVolume());
-		volume_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		volume_ = [value = bt_->getCurrentVolume(), genSB] {
+			auto sb = genSB(value, 0, 255);
+			sb->setDisplayIntegerBase(16);
+			QFont font = sb->font();
+			font.setCapitalization(QFont::AllUppercase);
+			sb->setFont(font);
+			return sb;
+		}();
 		// Leave Before Qt5.7.0 style due to windows xp
 		QObject::connect(volume_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 						 this, [&](int volume) { bt_->setCurrentVolume(volume); });
 		ui->subToolBar->addWidget(volume_);
+
 		ui->subToolBar->addSeparator();
+
+		/* Follow mode */
 		ui->subToolBar->addAction(ui->actionFollow_Mode);
+
 		ui->subToolBar->addSeparator();
+
+		/* Step highlight 1st */
 		auto hlLab1 = new QLabel(tr("Step highlight 1st"));
 		hlLab1->setMargin(6);
 		ui->subToolBar->addWidget(hlLab1);
-		highlight1_ = new QSpinBox();
-		highlight1_->setMinimum(1);
-		highlight1_->setMaximum(256);
-		highlight1_->setValue(8);
-		highlight1_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+		highlight1_ = genSB(8, 1, 256, 50);
 		// Leave Before Qt5.7.0 style due to windows xp
 		QObject::connect(highlight1_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 						 this, [&](int count) {
@@ -309,13 +319,12 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 			ui->patternEditor->setPatternHighlight1Count(count);
 		});
 		ui->subToolBar->addWidget(highlight1_);
+
+		/* Step highlight 2nd */
 		auto hlLab2 = new QLabel(tr("2nd"));
 		hlLab2->setMargin(6);
 		ui->subToolBar->addWidget(hlLab2);
-		highlight2_ = new QSpinBox();
-		highlight2_->setMinimum(1);
-		highlight2_->setMaximum(256);
-		highlight2_->setValue(8);
+		highlight2_ = genSB(8, 1, 256, 50);
 		highlight2_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 		// Leave Before Qt5.7.0 style due to windows xp
 		QObject::connect(highlight2_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -324,7 +333,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 			ui->patternEditor->setPatternHighlight2Count(count);
 		});
 		ui->subToolBar->addWidget(highlight2_);
+
 		ui->subToolBar->addSeparator();
+
 		auto& mainTbConfig = config.lock()->getMainToolbarConfiguration();
 		if (mainTbConfig.getPosition() == Configuration::ToolbarPosition::FloatPorition) {
 			ui->mainToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
@@ -365,18 +376,18 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
-					 this, [&](QString str) {
+					 this, [&](const QString& str) {
 		bt_->setModuleTitle(str.toUtf8().toStdString());
 		setModifiedTrue();
 		setWindowTitle();
 	});
 	QObject::connect(ui->authorLineEdit, &QLineEdit::textEdited,
-					 this, [&](QString str) {
+					 this, [&](const QString& str) {
 		bt_->setModuleAuthor(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
 	QObject::connect(ui->copyrightLineEdit, &QLineEdit::textEdited,
-					 this, [&](QString str) {
+					 this, [&](const QString& str) {
 		bt_->setModuleCopyright(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
