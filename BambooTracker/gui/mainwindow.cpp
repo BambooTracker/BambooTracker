@@ -260,7 +260,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 
 	/* Tool bars */
 	{
-		auto genSB = [](int value, int min, int max, int minW = 40) {
+		auto genSB = [](int value, int min, int max, int minW) {
 			auto sb = new QSpinBox();
 			sb->setMinimum(min);
 			sb->setMaximum(max);
@@ -274,7 +274,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		auto octLab = new QLabel(tr("Octave"));
 		octLab->setMargin(6);
 		ui->subToolBar->addWidget(octLab);
-		octave_ = genSB(bt_->getCurrentOctave(), 0, 7);
+		octave_ = genSB(bt_->getCurrentOctave(), 0, 7, 40);
 		// Leave Before Qt5.7.0 style due to windows xp
 		QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 						 this, [&](int octave) {
@@ -288,7 +288,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		volLab->setMargin(6);
 		ui->subToolBar->addWidget(volLab);
 		volume_ = [value = bt_->getCurrentVolume(), genSB] {
-			auto sb = genSB(value, 0, 255);
+			auto sb = genSB(value, 0, 255, 40);
 			sb->setDisplayIntegerBase(16);
 			QFont font = sb->font();
 			font.setCapitalization(QFont::AllUppercase);
