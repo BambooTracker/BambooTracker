@@ -14,6 +14,7 @@
 - [#426] - Update RtAudio submodule to upstream 5.2.0 (thanks [@nyanpasu64])
 - Bumped maximum wave view framerate to 144Hz
 - Update emu2149
+- Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
 
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
