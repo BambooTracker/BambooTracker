@@ -59,7 +59,7 @@ environment:
       MAKE: mingw32-make
       RELEASE_BUILD: true
     - APPVEYOR_JOB_NAME: for macOS
-      APPVEYOR_BUILD_WORKER_IMAGE: macOS-Mojave
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       PLATFORM: macos
       DEST: BambooTracker-v$APPVEYOR_BUILD_VERSION-dev-macos-64bit.zip
       MAKE: make
