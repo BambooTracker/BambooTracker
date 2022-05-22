@@ -2288,7 +2288,7 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 	if (shape) {
 		opna_->setRegister(0x0d, static_cast<uint8_t>(shape));
 		int d = AUTO_ENV_SHAPE_TYPE[shape - 1];
-		opna_->setRegister(0x08 + ssg.ch, 0x10);
+		if (!ssg.isMute) opna_->setRegister(0x08 + ssg.ch, 0x10);
 		ssg.isHardEnv = true;
 		if (shift == -8) {	// Raw
 			ssg.envState = SSGEnvelopeUnit::makeRawUnit(d, (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_);

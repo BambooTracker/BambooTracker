@@ -14,7 +14,7 @@
 - [#426] - Update RtAudio submodule to upstream 5.2.0 (thanks [@nyanpasu64])
 - Bumped maximum wave view framerate to 144Hz
 - Update emu2149
-- Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
+- [#448] - Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
 
 ### Fixed
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
@@ -31,6 +31,7 @@
 - [#424] - Fix instrument editor envelope graphs on Breeze master (thanks [@nyanpasu64])
 - [#435] - Fix VGM files being written with incorrect headers (thanks [@nyanpasu64])
 - [#418] - Fix SliderStyle memory leak ([#440], thanks [@nyanpasu64])
+- [#437] - Keep SSG silent when using `0Hxy` in a muted track (thanks [@Zexxerd])
 
 [@cxong]: https://github.com/cxong
 
@@ -60,6 +61,8 @@
 [#440]: https://github.com/BambooTracker/BambooTracker/pull/440
 [#397]: https://github.com/BambooTracker/BambooTracker/issues/397
 [#405]: https://github.com/BambooTracker/BambooTracker/pull/405
+[#448]: https://github.com/BambooTracker/BambooTracker/pull/448
+[#437]: https://github.com/BambooTracker/BambooTracker/issues/437
 
 ## v0.5.0 (2021-08-01)
 ### Added
