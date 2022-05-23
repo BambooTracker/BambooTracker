@@ -32,6 +32,7 @@
 - [#435] - Fix VGM files being written with incorrect headers (thanks [@nyanpasu64])
 - [#418] - Fix SliderStyle memory leak ([#440], thanks [@nyanpasu64])
 - [#437] - Keep SSG silent when using `0Hxy` in a muted track (thanks [@Zexxerd])
+- [#443] - Fix song length estimation to handle tempo/speed change correctly (thanks [@Drillimation])
 
 [@cxong]: https://github.com/cxong
 
@@ -63,6 +64,7 @@
 [#405]: https://github.com/BambooTracker/BambooTracker/pull/405
 [#448]: https://github.com/BambooTracker/BambooTracker/pull/448
 [#437]: https://github.com/BambooTracker/BambooTracker/issues/437
+[#443]: https://github.com/BambooTracker/BambooTracker/issues/443
 
 ## v0.5.0 (2021-08-01)
 ### Added

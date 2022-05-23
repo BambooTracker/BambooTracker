@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -3976,7 +3976,7 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 
 void MainWindow::on_action_Estimate_Song_Length_triggered()
 {
-	double time = bt_->getApproximateSongLength(bt_->getCurrentSongNumber());
+	double time = bt_->estimateSongLength(bt_->getCurrentSongNumber());
 	int seconds = static_cast<int>(std::round(time));
 	QMessageBox dialog;
 	dialog.setIcon(QMessageBox::Information);

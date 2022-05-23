@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -95,10 +95,12 @@ double SongLengthCalculator::approximateLengthBySecond() const
 			// Update playback state
 			auto&& it = speedEffMap.find(EffectType::SpeedTempoChange);
 			if (it != speedEffMap.end()) {
-				if (it->second < 0x20 && speed != it->second) {
-					speed = it->second;
-					isTempo = true;
-					stepTicks = calculateStrictStepTicks(rate, tempo, speed);
+				if (it->second < 0x20) {
+					if (speed != it->second) {
+						speed = it->second;
+						isTempo = true;
+						stepTicks = calculateStrictStepTicks(rate, tempo, speed);
+					}
 				}
 				else if (tempo != it->second) {
 					tempo = it->second;
