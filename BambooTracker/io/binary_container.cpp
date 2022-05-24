@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -187,6 +187,9 @@ void BinaryContainer::writeChar(size_type offset, char c)
 
 void BinaryContainer::writeString(size_type offset, const std::string& str)
 {
+	if (buf_.size() <= offset || buf_.size() < offset + str.length())
+		throw std::out_of_range("Invalid buffer range in binary container");
+
 	std::copy(str.cbegin(), str.cend(), buf_.begin() + static_cast<int>(offset));
 }
 
@@ -231,11 +234,17 @@ char BinaryContainer::readChar(size_type offset) const
 
 std::string BinaryContainer::readString(size_type offset, size_type length) const
 {
+	if (buf_.size() <= offset || buf_.size() < offset + length)
+		throw std::out_of_range("Invalid buffer range in binary container");
+
 	return std::string(buf_.begin() + static_cast<int>(offset), buf_.begin() + static_cast<int>(offset + length));
 }
 
 BinaryContainer BinaryContainer::getSubcontainer(size_type offset, size_type length) const
 {
+	if (buf_.size() <= offset || buf_.size() < offset + length)
+		throw std::out_of_range("Invalid buffer range in binary container");
+
 	BinaryContainer sub;
 	std::copy_n(buf_.begin() + static_cast<int>(offset), length, std::back_inserter(sub));
 	return sub;
@@ -259,6 +268,9 @@ void BinaryContainer::append(const std::vector<uint8_t>&& a)
 
 void BinaryContainer::write(size_t offset, const std::vector<uint8_t>&& a)
 {
+	if (buf_.size() <= offset || buf_.size() < offset + a.size())
+		throw std::out_of_range("Invalid buffer range in binary container");
+
 	if (isLE_)
 		std::copy(a.cbegin(), a.cend(), buf_.begin() + static_cast<int>(offset));
 	else
@@ -267,6 +279,9 @@ void BinaryContainer::write(size_t offset, const std::vector<uint8_t>&& a)
 
 std::vector<uint8_t> BinaryContainer::read(size_type offset, size_type size) const
 {
+	if (buf_.size() <= offset || buf_.size() < offset + size)
+		throw std::out_of_range("Invalid buffer range in binary container");
+
 	std::vector<uint8_t> data;
 	if (isLE_)
 		std::copy(buf_.cbegin() + static_cast<int>(offset), buf_.cbegin() + static_cast<int>(offset + size), std::back_inserter(data));
