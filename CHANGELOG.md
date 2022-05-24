@@ -33,6 +33,7 @@
 - [#418] - Fix SliderStyle memory leak ([#440], thanks [@nyanpasu64])
 - [#437] - Keep SSG silent when using `0Hxy` in a muted track (thanks [@Zexxerd])
 - [#443] - Fix song length estimation to handle tempo/speed change correctly (thanks [@Drillimation])
+- [#444] - Fix unexpected envelope reset of FM3-OP4 (thanks [@Zexxerd])
 
 [@cxong]: https://github.com/cxong
 
@@ -65,6 +66,7 @@
 [#448]: https://github.com/BambooTracker/BambooTracker/pull/448
 [#437]: https://github.com/BambooTracker/BambooTracker/issues/437
 [#443]: https://github.com/BambooTracker/BambooTracker/issues/443
+[#444]: https://github.com/BambooTracker/BambooTracker/issues/444
 
 ## v0.5.0 (2021-08-01)
 ### Added

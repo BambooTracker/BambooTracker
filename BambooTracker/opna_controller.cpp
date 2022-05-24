@@ -670,10 +670,10 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 		envFM_[2]->setParameterValue(rr, prev);
 	}
 	else {
-		auto& env = envFM_[ch];
+		auto& env = envFM_[fm.inCh];
 		for (const FMEnvelopeParameter& rr : PARAM_RR) {
 			int prev = env->getParameterValue(rr);
-			writeFMEnveropeParameterToRegister(ch, rr, 15);
+			writeFMEnveropeParameterToRegister(fm.inCh, rr, 15);
 			env->setParameterValue(rr, prev);
 		}
 	}
@@ -1106,7 +1106,7 @@ bool OPNAController::isTonePortamentoFM(int ch) const
 bool OPNAController::enableFMEnvelopeReset(int ch) const
 {
 	auto& fm = fm_[ch];
-	return envFM_[fm.ch] ? fm.isEnabledEnvReset : true;
+	return envFM_[fm.inCh] ? fm.isEnabledEnvReset : true;
 }
 
 Note OPNAController::getFMLatestNote(int ch) const
@@ -1870,21 +1870,21 @@ void OPNAController::checkVolumeEffectFM(FMChannel& fm)
 	switch (fm.opType) {
 	case FMOperatorType::All:
 	{
-		int al = envFM_[fm.ch]->getParameterValue(FMEnvelopeParameter::AL);
+		int al = envFM_[fm.inCh]->getParameterValue(FMEnvelopeParameter::AL);
 		if (IS_CARRIER[0][al]) {	// Operator 1
-			int data = envFM_[fm.ch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
+			int data = envFM_[fm.inCh]->getParameterValue(FMEnvelopeParameter::TL1) + v;
 			opna_->setRegister(0x40 + bch, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		if (IS_CARRIER[1][al]) {	// Operator 2
-			int data = envFM_[fm.ch]->getParameterValue(FMEnvelopeParameter::TL2) + v;
+			int data = envFM_[fm.inCh]->getParameterValue(FMEnvelopeParameter::TL2) + v;
 			opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		if (IS_CARRIER[2][al]) {	// Operator 3
-			int data = envFM_[fm.ch]->getParameterValue(FMEnvelopeParameter::TL3) + v;
+			int data = envFM_[fm.inCh]->getParameterValue(FMEnvelopeParameter::TL3) + v;
 			opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		{							// Operator 4 (absolutely carrier)
-			int data = envFM_[fm.ch]->getParameterValue(FMEnvelopeParameter::TL4) + v;
+			int data = envFM_[fm.inCh]->getParameterValue(FMEnvelopeParameter::TL4) + v;
 			opna_->setRegister(0x40 + bch + 12, static_cast<uint8_t>(utils::clamp(data, 0 ,127)));
 		}
 		break;
