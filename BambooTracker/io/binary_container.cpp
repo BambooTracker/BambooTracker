@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <stdexcept>
 
 namespace io
 {
