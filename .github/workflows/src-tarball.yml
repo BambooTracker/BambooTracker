@@ -1,0 +1,52 @@
+name: Upload Source Tarball
+
+on:
+  push:
+    tags: 'v*.*.*'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Identify build type.
+        id: identify-build
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Release ${TAG}"
+          echo "::set-output name=build-tag::${TAG}"
+
+      - name: Checking out repository.
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Package sources.
+        id: packaging
+        run: |
+          export package_name="BambooTracker-src-${{ steps.identify-build.outputs.build-tag }}"
+          echo "::set-output name=package-name::${package_name}"
+          export checkout_name="$(basename ${PWD})"
+          pushd ..
+          mv ${checkout_name} ${package_name}
+          tar -cvf- --sort=name \
+            --exclude=${package_name}.tar.gz \
+            --exclude=.git \
+            --exclude=.gitattributes \
+            --exclude=.gitmodules \
+            --exclude=.gitignore \
+          ${package_name} | gzip -9c > ${package_name}/${package_name}.tar.gz
+          mv ${package_name} ${checkout_name}
+          popd
+
+      - name: Upload source tarball.
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.packaging.outputs.package-name }}.tar.gz
+          asset_name: ${{ steps.packaging.outputs.package-name }}.tar.gz
+          tag: ${{ github.ref }}
