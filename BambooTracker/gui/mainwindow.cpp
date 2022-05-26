@@ -691,7 +691,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		const QString text =
 				"<h2 style='text-align: center;'>" + tr("Welcome to BambooTracker!") + "</h2>" +
 				"<div style='text-align: center;'>"
-				"<img src='qrc:/icon/app_icon' width=128 height=128>"
+				"<img src=':/icon/app_icon' width=128 height=128>"
 				"</div>"
 				"<h3>" + tr("Don't know where to start?") + "</h3>" +
 				"<p>" + tr("Check the demo modules and instruments included "
