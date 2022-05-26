@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -173,12 +173,41 @@ private:
 
 	void tickProcess(int rest);
 
-	void checkFMDelayEventsInTick(const Step& step, int ch);
-	void checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch);
+	/**
+	 * @brief checkFMDelayEventsInTick
+	 * @param step
+	 * @param ch
+	 * @return \c true \c if note delay is occurred.
+	 */
+	bool checkFMDelayEventsInTick(const Step& step, int ch);
+	/**
+	 * @brief checkFMNoteDelayAndEnvelopeReset
+	 * @param step
+	 * @param ch
+	 * @return \c true \c if note delay is occurred.
+	 */
+	bool checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch);
 	void envelopeResetEffectFM(const Step& step, int ch);
-	void checkSSGDelayEventsInTick(const Step& step, int ch);
-	void checkRhythmDelayEventsInTick(const Step& step, int ch);
-	void checkADPCMDelayEventsInTick(const Step& step);
+	/**
+	 * @brief checkSSGDelayEventsInTick
+	 * @param step
+	 * @param ch
+	 * @return \c true \c if note delay is occurred.
+	 */
+	bool checkSSGDelayEventsInTick(const Step& step, int ch);
+	/**
+	 * @brief checkRhythmDelayEventsInTick
+	 * @param step
+	 * @param ch
+	 * @return \c true \c if note delay is occurred.
+	 */
+	bool checkRhythmDelayEventsInTick(const Step& step, int ch);
+	/**
+	 * @brief checkADPCMDelayEventsInTick
+	 * @param step
+	 * @return \c true \c if note delay is occurred.
+	 */
+	bool checkADPCMDelayEventsInTick(const Step& step);
 
 	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_, envRstDlyCntFM_, rtrgCntFM_;
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_, rtrgCntSSG_;

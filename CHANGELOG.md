@@ -35,6 +35,7 @@
 - [#443] - Fix song length estimation to handle tempo/speed change correctly (thanks [@Drillimation])
 - [#444] - Fix unexpected envelope reset of FM3-OP4 (thanks [@Zexxerd])
 - [#448] - Check if the read/write position of the binary container is valid (thanks [@OPNA2608])
+- [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
 
 [@cxong]: https://github.com/cxong
 
@@ -69,6 +70,7 @@
 [#443]: https://github.com/BambooTracker/BambooTracker/issues/443
 [#444]: https://github.com/BambooTracker/BambooTracker/issues/444
 [#447]: https://github.com/BambooTracker/BambooTracker/issues/447
+[#425]: https://github.com/BambooTracker/BambooTracker/issues/425
 
 ## v0.5.0 (2021-08-01)
 ### Added
