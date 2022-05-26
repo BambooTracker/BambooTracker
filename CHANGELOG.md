@@ -7,6 +7,7 @@
 - [#407] - Implement pattern/order editor DPI scaling (thanks [@nyanpasu64])
 - [#438] - Allow Neo Geo system type in DMP import (thanks [@OPNA2608])
 - [#397] - Add CMake build option ([#405]; thanks [@OPNA2608])
+- [#449] - Add source tarballs to releases page ([#450]; thanks [@ehaupt])
 
 ### Changed
 
@@ -75,6 +76,8 @@
 [#444]: https://github.com/BambooTracker/BambooTracker/issues/444
 [#447]: https://github.com/BambooTracker/BambooTracker/issues/447
 [#425]: https://github.com/BambooTracker/BambooTracker/issues/425
+[#449]: https://github.com/BambooTracker/BambooTracker/issues/449
+[#450]: https://github.com/BambooTracker/BambooTracker/pull/450
 
 ## v0.5.0 (2021-08-01)
 
