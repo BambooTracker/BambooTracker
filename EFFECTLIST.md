@@ -1,4 +1,5 @@
-## Effect list
+# Effect List
+
 | Effect | FM                                                                                      | SSG                                                                | Rhythm                            | ADPCM                   | ADPCM Drumkit                                                                            |
 | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
 | 00xy   | Arpeggio (x[0-F]: 2nd note, y[0-F]: 3rd note)                                           | Arpeggio                                                           | -                                 | Arpeggio                | -                                                                                        |
@@ -40,4 +41,3 @@
 | MLxy   | ML control (x[1-4]: operator, y[0-F]: multiple)                                         | -                                                                  | -                                 | -                       | -                                                                                        |
 | RRxy   | RR control (x[1-4]: operator, y[0-F]: release rate)                                     | -                                                                  | -                                 | -                       | -                                                                                        |
 | Txyy   | TL control (x[1-4]: operator, yy[00-7F]: total level)                                   | -                                                                  | -                                 | -                       | -                                                                                        |
-

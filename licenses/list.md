@@ -1,7 +1,9 @@
 # Licenses
+
 - BambooTracker - GPL v2+
 
 ## Libraries
+
 - [adpcm](https://github.com/superctr/adpcm) by Ian Karlsson (superctr) - Public domain
   - BambooTracker/chip/codec/*
 - [C86CTL](https://github.com/honet/c86ctl) by honet - [BSD 3-Clause](./c86ctl_lisence.txt)
@@ -28,7 +30,8 @@
 - ymdeltat by Tatsuyuki Satoh, Jarek Burczynski and ValleyBell - GPL v2+
   - BambooTracker/chip/mame/ymdeltat.*
 
-## Other parts
+## Other Parts
+
 - MIT license
   - BambooTracker/*.{hpp,cpp}
   - BambooTracker/audio/*.{hpp,cpp}

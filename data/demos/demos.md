@@ -1,4 +1,7 @@
-## Sample modules
+# Sample Files
+
+## Modules
+
 - [Dippy] - Neo Megalopolis.btm
 - [HeavyViper] - sword with no scabbard
 - [ImATrackMan] - Battleship.btm
@@ -9,7 +12,8 @@
 - TastySnax12 - Flying High.btm
 - Zexxerd - Jump.btm, Wilderness.btm
 
-## Sample instruments
+## Instruments
+
 - [papiezak] - 2 banks (32 instruments)
 - [Rerrah] - 3 banks (54 instruments)
 - [Takeshi Abo] - 12 banks (255 instruments from [VAL-SOUND](http://valsound.fc2web.com))
