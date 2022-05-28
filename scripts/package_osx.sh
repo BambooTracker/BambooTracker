@@ -12,8 +12,11 @@ find "$(dirname $(dirname $(realpath $(which qmake))))/translations" -type f -na
   cp -v "$qtbasetranslation" "$(echo $qtbasetranslation | sed -e 's,.*qtbase_,'"$LANGDIR"'/qt_,g')"
 done
 
+# Save qico* library for working .ico support!
+mv -v BambooTracker.app/Contents/PlugIns/imageformats/*qico* ./
 rm -vrf BambooTracker.app/Contents/Frameworks/Qt{Pdf,Quick,VirtualKeyboard,QmlModels,Svg,Qml,OpenGL,MultimediaWidgets}.framework
-rm -vrf BambooTracker.app/Contents/PlugIns/{platforminputcontexts,virtualkeyboard,iconengines,imageformats,audio,bearer,mediaservice}
+rm -vrf BambooTracker.app/Contents/PlugIns/{platforminputcontexts,virtualkeyboard,iconengines,imageformats/*,audio,bearer,mediaservice}
+mv -v *qico* BambooTracker.app/Contents/PlugIns/imageformats/
 
 exit 0
 
