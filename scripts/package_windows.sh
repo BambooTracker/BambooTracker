@@ -23,7 +23,11 @@ done
 cp -va ../*.md .
 windeployqt BambooTracker.exe $DEPLOY_OPTS
 cp -va translations/*.qm lang
-rm -vrf imageformats translations
+
+# Save qico* library for working .ico support!
+mv -v imageformats/*qico* ./
+rm -vrf imageformats/* translations
+mv -v *qico* imageformats/
 
 exit 0
 

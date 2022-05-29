@@ -138,7 +138,10 @@ after_build:
       $EXLIB_OPTS | ForEach{If ($HELP_OUT | Select-String $_) { $DEPLOY_OPTS = $DEPLOY_OPTS + " --no-" + $_ }}
       Invoke-Expression ("windeployqt.exe BambooTracker.exe " + $DEPLOY_OPTS)
       Copy-Item -Recurse translations\*.qm lang
-      Remove-Item -Recurse -Force imageformats,translations
+      # Save qico* library for working .ico support!
+      Move-Item imageformats\*qico* .\
+      Remove-Item -Recurse -Force imageformats\*,translations
+      Move-Item *qico* imageformats\
   - sh: bash ../scripts/package_osx.sh
   - cd ..
   - ps: |
