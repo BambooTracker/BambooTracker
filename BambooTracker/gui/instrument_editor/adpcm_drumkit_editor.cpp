@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,8 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "instrument_editor_drumkit_form.hpp"
-#include "ui_instrument_editor_drumkit_form.h"
+#include "adpcm_drumkit_editor.hpp"
+#include "ui_adpcm_drumkit_editor.h"
 #include <QString>
 #include <QCoreApplication>
 #include "instrument.hpp"
@@ -51,12 +51,11 @@ inline int convertPanInternalToUi(int intrPan)
 }
 }
 
-InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::InstrumentEditorDrumkitForm),
-	instNum_(num),
-	isIgnoreEvent_(false),
-	hasShown_(false)
+AdpcmDrumkitEditor::AdpcmDrumkitEditor(int num, QWidget* parent)
+	: InstrumentEditor(num, parent),
+	  ui(new Ui::AdpcmDrumkitEditor),
+	  isIgnoreEvent_(false),
+	  hasShown_(false)
 {
 	ui->setupUi(this);
 
@@ -95,41 +94,38 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 	ui->panPosLabel->setText(QCoreApplication::translate("Panning", PAN_TEXT[ui->panHorizontalSlider->value()]));
 }
 
-InstrumentEditorDrumkitForm::~InstrumentEditorDrumkitForm()
+AdpcmDrumkitEditor::~AdpcmDrumkitEditor()
 {
 	delete ui;
 }
 
-void InstrumentEditorDrumkitForm::setInstrumentNumber(int num)
+SoundSource AdpcmDrumkitEditor::getSoundSource() const
 {
-	instNum_ = num;
+	return SoundSource::ADPCM;
 }
 
-int InstrumentEditorDrumkitForm::getInstrumentNumber() const
+InstrumentType AdpcmDrumkitEditor::getInstrumentType() const
 {
-	return instNum_;
+	return InstrumentType::Drumkit;
 }
 
-void InstrumentEditorDrumkitForm::setCore(std::weak_ptr<BambooTracker> core)
+void AdpcmDrumkitEditor::updateBySettingCore()
 {
-	bt_ = core;
-	ui->sampleEditor->setCore(core);
+	ui->sampleEditor->setCore(bt_);
 	updateInstrumentParameters();
 }
 
-void InstrumentEditorDrumkitForm::setConfiguration(std::weak_ptr<Configuration> config)
+void AdpcmDrumkitEditor::updateBySettingConfiguration()
 {
-	config_ = config;
-	ui->sampleEditor->setConfiguration(config);
+	ui->sampleEditor->setConfiguration(config_);
 }
 
-void InstrumentEditorDrumkitForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
+void AdpcmDrumkitEditor::updateBySettingColorPalette()
 {
-	palette_ = palette;
-	ui->sampleEditor->setColorPalette(palette);
+	ui->sampleEditor->setColorPalette(palette_);
 }
 
-void InstrumentEditorDrumkitForm::updateInstrumentParameters()
+void AdpcmDrumkitEditor::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -144,7 +140,7 @@ void InstrumentEditorDrumkitForm::updateInstrumentParameters()
 }
 
 /********** Events **********/
-bool InstrumentEditorDrumkitForm::eventFilter(QObject* watched, QEvent* event)
+bool AdpcmDrumkitEditor::eventFilter(QObject* watched, QEvent* event)
 {
 	if (watched == ui->panHorizontalSlider) {
 		if (event->type() == QEvent::Wheel) {
@@ -158,7 +154,7 @@ bool InstrumentEditorDrumkitForm::eventFilter(QObject* watched, QEvent* event)
 	return QWidget::eventFilter(watched, event);
 }
 
-void InstrumentEditorDrumkitForm::showEvent(QShowEvent*)
+void AdpcmDrumkitEditor::showEvent(QShowEvent*)
 {
 	if (!hasShown_) {
 		ui->keyTreeWidget->setCurrentItem(ui->keyTreeWidget->topLevelItem(Note::DEFAULT_NOTE_NUM));
@@ -176,7 +172,7 @@ void InstrumentEditorDrumkitForm::showEvent(QShowEvent*)
 }
 
 // MUST DIRECT CONNECTION
-void InstrumentEditorDrumkitForm::keyPressEvent(QKeyEvent *event)
+void AdpcmDrumkitEditor::keyPressEvent(QKeyEvent *event)
 {
 	// General keys
 	switch (event->key()) {
@@ -198,7 +194,7 @@ void InstrumentEditorDrumkitForm::keyPressEvent(QKeyEvent *event)
 }
 
 // MUST DIRECT CONNECTION
-void InstrumentEditorDrumkitForm::keyReleaseEvent(QKeyEvent *event)
+void AdpcmDrumkitEditor::keyReleaseEvent(QKeyEvent *event)
 {
 	// For jam key off
 	if (!event->isAutoRepeat()) {
@@ -211,7 +207,7 @@ void InstrumentEditorDrumkitForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 /********** Slots **********/
-void InstrumentEditorDrumkitForm::on_keyTreeWidget_currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)
+void AdpcmDrumkitEditor::on_keyTreeWidget_currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -228,13 +224,13 @@ void InstrumentEditorDrumkitForm::on_keyTreeWidget_currentItemChanged(QTreeWidge
 	}
 }
 
-void InstrumentEditorDrumkitForm::on_splitter_splitterMoved(int pos, int)
+void AdpcmDrumkitEditor::on_splitter_splitterMoved(int pos, int)
 {
 	config_.lock()->setInstrumentDrumkitWindowHorizontalSplit(pos);
 }
 
 //--- Pitch
-void InstrumentEditorDrumkitForm::on_pitchSpinBox_valueChanged(int arg1)
+void AdpcmDrumkitEditor::on_pitchSpinBox_valueChanged(int arg1)
 {
 	int key = ui->keyTreeWidget->currentIndex().row();
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
@@ -248,7 +244,7 @@ void InstrumentEditorDrumkitForm::on_pitchSpinBox_valueChanged(int arg1)
 }
 
 //--- Pan
-void InstrumentEditorDrumkitForm::on_panHorizontalSlider_valueChanged(int value)
+void AdpcmDrumkitEditor::on_panHorizontalSlider_valueChanged(int value)
 {
 	const QString text = QCoreApplication::translate("Panning", PAN_TEXT[value]);
 	ui->panPosLabel->setText(text);
@@ -265,7 +261,7 @@ void InstrumentEditorDrumkitForm::on_panHorizontalSlider_valueChanged(int value)
 }
 
 //--- Sample
-void InstrumentEditorDrumkitForm::setInstrumentSampleParameters(int key)
+void AdpcmDrumkitEditor::setInstrumentSampleParameters(int key)
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
@@ -297,19 +293,19 @@ void InstrumentEditorDrumkitForm::setInstrumentSampleParameters(int key)
 }
 
 /********** Slots **********/
-void InstrumentEditorDrumkitForm::onSampleNumberChanged()
+void AdpcmDrumkitEditor::onSampleNumberChanged()
 {
 	ui->sampleEditor->onSampleNumberChanged();
 }
 
-void InstrumentEditorDrumkitForm::onSampleParameterChanged(int sampNum)
+void AdpcmDrumkitEditor::onSampleParameterChanged(int sampNum)
 {
 	if (ui->sampleEditor->getSampleNumber() == sampNum) {
 		setInstrumentSampleParameters(ui->keyTreeWidget->currentIndex().row());
 	}
 }
 
-void InstrumentEditorDrumkitForm::onSampleMemoryUpdated()
+void AdpcmDrumkitEditor::onSampleMemoryUpdated()
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
@@ -325,7 +321,7 @@ void InstrumentEditorDrumkitForm::onSampleMemoryUpdated()
 	}
 }
 
-void InstrumentEditorDrumkitForm::on_sampleGroupBox_clicked(bool checked)
+void AdpcmDrumkitEditor::on_sampleGroupBox_clicked(bool checked)
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 

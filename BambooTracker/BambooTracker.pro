@@ -68,14 +68,18 @@ SOURCES += \
     gui/go_to_dialog.cpp \
     gui/gui_utils.cpp \
     gui/hide_tracks_dialog.cpp \
+    gui/instrument_editor/adpcm_drumkit_editor.cpp \
+    gui/instrument_editor/adpcm_instrument_editor.cpp \
     gui/instrument_editor/adpcm_sample_editor.cpp \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
+    gui/instrument_editor/fm_instrument_editor.cpp \
     gui/instrument_editor/grid_settings_dialog.cpp \
-    gui/instrument_editor/instrument_editor_adpcm_form.cpp \
-    gui/instrument_editor/instrument_editor_drumkit_form.cpp \
+    gui/instrument_editor/instrument_editor.cpp \
+    gui/instrument_editor/instrument_editor_manager.cpp \
     gui/instrument_editor/instrument_editor_utils.cpp \
     gui/instrument_editor/pan_macro_editor.cpp \
     gui/instrument_editor/sample_length_dialog.cpp \
+    gui/instrument_editor/ssg_instrument_editor.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/key_signature_manager_form.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
@@ -123,7 +127,6 @@ SOURCES += \
     command/instrument/remove_instrument_command.cpp \
     gui/command/instrument/add_instrument_qt_command.cpp \
     gui/command/instrument/remove_instrument_qt_command.cpp \
-    gui/instrument_editor/instrument_editor_fm_form.cpp \
     gui/instrument_editor/fm_operator_table.cpp \
     gui/labeled_vertical_slider.cpp \
     gui/labeled_horizontal_slider.cpp \
@@ -145,7 +148,6 @@ SOURCES += \
     gui/order_list_editor/order_list_editor.cpp \
     gui/pattern_editor/pattern_editor_panel.cpp \
     gui/pattern_editor/pattern_editor.cpp \
-    gui/instrument_editor/instrument_editor_ssg_form.cpp \
     command/pattern/set_key_off_to_step_command.cpp \
     command/pattern/set_key_on_to_step_command.cpp \
     command/pattern/set_instrument_to_step_command.cpp \
@@ -169,7 +171,6 @@ SOURCES += \
     command/pattern/paste_copied_data_to_pattern_command.cpp \
     command/pattern/erase_cells_in_pattern_command.cpp \
     command/order/paste_copied_data_to_order_command.cpp \
-    gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
     instrument/effect_iterator.cpp \
@@ -246,14 +247,18 @@ HEADERS += \
     gui/go_to_dialog.hpp \
     gui/gui_utils.hpp \
     gui/hide_tracks_dialog.hpp \
+    gui/instrument_editor/adpcm_drumkit_editor.hpp \
+    gui/instrument_editor/adpcm_instrument_editor.hpp \
     gui/instrument_editor/adpcm_sample_editor.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
+    gui/instrument_editor/fm_instrument_editor.hpp \
     gui/instrument_editor/grid_settings_dialog.hpp \
-    gui/instrument_editor/instrument_editor_adpcm_form.hpp \
-    gui/instrument_editor/instrument_editor_drumkit_form.hpp \
+    gui/instrument_editor/instrument_editor.hpp \
+    gui/instrument_editor/instrument_editor_manager.hpp \
     gui/instrument_editor/instrument_editor_utils.hpp \
     gui/instrument_editor/pan_macro_editor.hpp \
     gui/instrument_editor/sample_length_dialog.hpp \
+    gui/instrument_editor/ssg_instrument_editor.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/jam_layout.hpp \
     gui/key_signature_manager_form.hpp \
@@ -304,7 +309,6 @@ HEADERS += \
     command/commands.hpp \
     gui/command/instrument/add_instrument_qt_command.hpp \
     gui/command/instrument/remove_instrument_qt_command.hpp \
-    gui/instrument_editor/instrument_editor_fm_form.hpp \
     gui/instrument_editor/fm_operator_table.hpp \
     gui/labeled_vertical_slider.hpp \
     gui/labeled_horizontal_slider.hpp \
@@ -326,7 +330,6 @@ HEADERS += \
     gui/order_list_editor/order_list_editor.hpp \
     gui/pattern_editor/pattern_editor_panel.hpp \
     gui/pattern_editor/pattern_editor.hpp \
-    gui/instrument_editor/instrument_editor_ssg_form.hpp \
     command/pattern/set_key_off_to_step_command.hpp \
     gui/command/pattern/pattern_commands_qt.hpp \
     command/pattern/set_key_on_to_step_command.hpp \
@@ -353,7 +356,6 @@ HEADERS += \
     command/pattern/paste_copied_data_to_pattern_command.hpp \
     command/pattern/erase_cells_in_pattern_command.hpp \
     command/order/paste_copied_data_to_order_command.hpp \
-    gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
     instrument/sequence_iterator_interface.hpp \
@@ -404,21 +406,21 @@ FORMS += \
     gui/effect_list_dialog.ui \
     gui/go_to_dialog.ui \
     gui/hide_tracks_dialog.ui \
+    gui/instrument_editor/adpcm_drumkit_editor.ui \
+    gui/instrument_editor/adpcm_instrument_editor.ui \
     gui/instrument_editor/adpcm_sample_editor.ui \
+    gui/instrument_editor/fm_instrument_editor.ui \
     gui/instrument_editor/grid_settings_dialog.ui \
-    gui/instrument_editor/instrument_editor_adpcm_form.ui \
-    gui/instrument_editor/instrument_editor_drumkit_form.ui \
     gui/instrument_editor/sample_length_dialog.ui \
+    gui/instrument_editor/ssg_instrument_editor.ui \
     gui/key_signature_manager_form.ui \
     gui/keyboard_shortcut_list_dialog.ui \
     gui/mainwindow.ui \
-    gui/instrument_editor/instrument_editor_fm_form.ui \
     gui/instrument_editor/fm_operator_table.ui \
     gui/labeled_vertical_slider.ui \
     gui/labeled_horizontal_slider.ui \
     gui/order_list_editor/order_list_editor.ui \
     gui/pattern_editor/pattern_editor.ui \
-    gui/instrument_editor/instrument_editor_ssg_form.ui \
     gui/instrument_editor/visualized_instrument_macro_editor.ui \
     gui/module_properties_dialog.ui \
     gui/groove_settings_dialog.ui \

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,8 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "instrument_editor_fm_form.hpp"
-#include "ui_instrument_editor_fm_form.h"
+#include "fm_instrument_editor.hpp"
+#include "ui_fm_instrument_editor.h"
 #include <stdexcept>
 #include <QString>
 #include <QPoint>
@@ -43,10 +43,9 @@
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
 #include "gui/gui_utils.hpp"
 
-InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::InstrumentEditorFMForm),
-	instNum_(num),
+FmInstrumentEditor::FmInstrumentEditor(int num, QWidget* parent) :
+	InstrumentEditor(num, parent),
+	ui(new Ui::FmInstrumentEditor),
 	isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
@@ -109,15 +108,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op1Table, &FMOperatorTable::copyEnvelopePressed,
-					 this, &InstrumentEditorFMForm::copyEnvelope);
+					 this, &FmInstrumentEditor::copyEnvelope);
 	QObject::connect(ui->op1Table, &FMOperatorTable::pasteEnvelopePressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelope);
+					 this, &FmInstrumentEditor::pasteEnvelope);
 	QObject::connect(ui->op1Table, &FMOperatorTable::copyOperatorPressed,
-					 this, &InstrumentEditorFMForm::copyOperator);
+					 this, &FmInstrumentEditor::copyOperator);
 	QObject::connect(ui->op1Table, &FMOperatorTable::pasteOperatorPressed,
-					 this, &InstrumentEditorFMForm::pasteOperator);
+					 this, &FmInstrumentEditor::pasteOperator);
 	QObject::connect(ui->op1Table, &FMOperatorTable::pasteEnvelopeFromPressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
+					 this, &FmInstrumentEditor::pasteEnvelopeFrom);
 
 	ui->op2Table->setOperatorNumber(1);
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -150,15 +149,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op2Table, &FMOperatorTable::copyEnvelopePressed,
-					 this, &InstrumentEditorFMForm::copyEnvelope);
+					 this, &FmInstrumentEditor::copyEnvelope);
 	QObject::connect(ui->op2Table, &FMOperatorTable::pasteEnvelopePressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelope);
+					 this, &FmInstrumentEditor::pasteEnvelope);
 	QObject::connect(ui->op2Table, &FMOperatorTable::copyOperatorPressed,
-					 this, &InstrumentEditorFMForm::copyOperator);
+					 this, &FmInstrumentEditor::copyOperator);
 	QObject::connect(ui->op2Table, &FMOperatorTable::pasteOperatorPressed,
-					 this, &InstrumentEditorFMForm::pasteOperator);
+					 this, &FmInstrumentEditor::pasteOperator);
 	QObject::connect(ui->op2Table, &FMOperatorTable::pasteEnvelopeFromPressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
+					 this, &FmInstrumentEditor::pasteEnvelopeFrom);
 
 	ui->op3Table->setOperatorNumber(2);
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -191,15 +190,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op3Table, &FMOperatorTable::copyEnvelopePressed,
-					 this, &InstrumentEditorFMForm::copyEnvelope);
+					 this, &FmInstrumentEditor::copyEnvelope);
 	QObject::connect(ui->op3Table, &FMOperatorTable::pasteEnvelopePressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelope);
+					 this, &FmInstrumentEditor::pasteEnvelope);
 	QObject::connect(ui->op3Table, &FMOperatorTable::copyOperatorPressed,
-					 this, &InstrumentEditorFMForm::copyOperator);
+					 this, &FmInstrumentEditor::copyOperator);
 	QObject::connect(ui->op3Table, &FMOperatorTable::pasteOperatorPressed,
-					 this, &InstrumentEditorFMForm::pasteOperator);
+					 this, &FmInstrumentEditor::pasteOperator);
 	QObject::connect(ui->op3Table, &FMOperatorTable::pasteEnvelopeFromPressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
+					 this, &FmInstrumentEditor::pasteEnvelopeFrom);
 
 	ui->op4Table->setOperatorNumber(3);
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -232,15 +231,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op4Table, &FMOperatorTable::copyEnvelopePressed,
-					 this, &InstrumentEditorFMForm::copyEnvelope);
+					 this, &FmInstrumentEditor::copyEnvelope);
 	QObject::connect(ui->op4Table, &FMOperatorTable::pasteEnvelopePressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelope);
+					 this, &FmInstrumentEditor::pasteEnvelope);
 	QObject::connect(ui->op4Table, &FMOperatorTable::copyOperatorPressed,
-					 this, &InstrumentEditorFMForm::copyOperator);
+					 this, &FmInstrumentEditor::copyOperator);
 	QObject::connect(ui->op4Table, &FMOperatorTable::pasteOperatorPressed,
-					 this, &InstrumentEditorFMForm::pasteOperator);
+					 this, &FmInstrumentEditor::pasteOperator);
 	QObject::connect(ui->op4Table, &FMOperatorTable::pasteEnvelopeFromPressed,
-					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
+					 this, &FmInstrumentEditor::pasteEnvelopeFrom);
 
 	/******************** LFO editor ********************/
 	ui->lfoGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -444,7 +443,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->opSeqTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
+					 this, &FmInstrumentEditor::onOperatorSequenceTypeChanged);
 
 	//========== Arpeggio ==========//
 	ui->arpOpComboBox->addItem(tr("All"), static_cast<int>(FMOperatorType::All));
@@ -523,10 +522,10 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
+					 this, &FmInstrumentEditor::onArpeggioTypeChanged);
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpOpComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onArpeggioOperatorChanged);
+					 this, &FmInstrumentEditor::onArpeggioOperatorChanged);
 
 	//========== Pitch ==========//
 	ui->ptOpComboBox->addItem(tr("All"), static_cast<int>(FMOperatorType::All));
@@ -614,10 +613,10 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
+					 this, &FmInstrumentEditor::onPitchTypeChanged);
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptOpComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onPitchOperatorChanged);
+					 this, &FmInstrumentEditor::onPitchOperatorChanged);
 
 	//========== Pan ==========//
 	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
@@ -723,44 +722,22 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 }
 
-InstrumentEditorFMForm::~InstrumentEditorFMForm()
+FmInstrumentEditor::~FmInstrumentEditor()
 {
 	delete ui;
 }
 
-void InstrumentEditorFMForm::setInstrumentNumber(int num)
+SoundSource FmInstrumentEditor::getSoundSource() const
 {
-	instNum_ = num;
+	return SoundSource::FM;
 }
 
-int InstrumentEditorFMForm::getInstrumentNumber() const
+InstrumentType FmInstrumentEditor::getInstrumentType() const
 {
-	return instNum_;
+	return InstrumentType::FM;
 }
 
-void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
-{
-	bt_ = core;
-	updateInstrumentParameters();
-}
-
-void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> config)
-{
-	config_ = config;
-
-	std::vector<QString> names;
-	for (const auto& texts : config.lock()->getFMEnvelopeTexts()) {
-		names.push_back(gui_utils::utf8ToQString(texts.name));
-	}
-	ui->op1Table->setEnvelopeSetNames(names);
-	ui->op2Table->setEnvelopeSetNames(names);
-	ui->op3Table->setEnvelopeSetNames(names);
-	ui->op4Table->setEnvelopeSetNames(names);
-
-	updateConfigurationForDisplay();
-}
-
-void InstrumentEditorFMForm::updateConfigurationForDisplay()
+void FmInstrumentEditor::updateByConfigurationChange()
 {
 	ui->op1Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
 	ui->op2Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
@@ -770,22 +747,39 @@ void InstrumentEditorFMForm::updateConfigurationForDisplay()
 	ui->arpEditor->onNoteNamesUpdated();
 }
 
-void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
+void FmInstrumentEditor::updateBySettingCore()
 {
-	palette_ = palette;
-
-	ui->op1Table->setColorPalette(palette);
-	ui->op2Table->setColorPalette(palette);
-	ui->op3Table->setColorPalette(palette);
-	ui->op4Table->setColorPalette(palette);
-
-	ui->opSeqEditor->setColorPalette(palette);
-	ui->arpEditor->setColorPalette(palette);
-	ui->ptEditor->setColorPalette(palette);
-	ui->panEditor->setColorPalette(palette);
+	updateInstrumentParameters();
 }
 
-void InstrumentEditorFMForm::updateInstrumentParameters()
+void FmInstrumentEditor::updateBySettingConfiguration()
+{
+	std::vector<QString> names;
+	for (const auto& texts : config_.lock()->getFMEnvelopeTexts()) {
+		names.push_back(gui_utils::utf8ToQString(texts.name));
+	}
+	ui->op1Table->setEnvelopeSetNames(names);
+	ui->op2Table->setEnvelopeSetNames(names);
+	ui->op3Table->setEnvelopeSetNames(names);
+	ui->op4Table->setEnvelopeSetNames(names);
+
+	updateByConfigurationChange();
+}
+
+void FmInstrumentEditor::updateBySettingColorPalette()
+{
+	ui->op1Table->setColorPalette(palette_);
+	ui->op2Table->setColorPalette(palette_);
+	ui->op3Table->setColorPalette(palette_);
+	ui->op4Table->setColorPalette(palette_);
+
+	ui->opSeqEditor->setColorPalette(palette_);
+	ui->arpEditor->setColorPalette(palette_);
+	ui->ptEditor->setColorPalette(palette_);
+	ui->panEditor->setColorPalette(palette_);
+}
+
+void FmInstrumentEditor::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -804,7 +798,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 
 /********** Events **********/
 // MUST DIRECT CONNECTION
-void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
+void FmInstrumentEditor::keyPressEvent(QKeyEvent *event)
 {
 	// General keys
 	switch (event->key()) {
@@ -826,7 +820,7 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 }
 
 // MUST DIRECT CONNECTION
-void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
+void FmInstrumentEditor::keyReleaseEvent(QKeyEvent *event)
 {
 	// For jam key off
 	if (!event->isAutoRepeat()) {
@@ -838,19 +832,19 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
-void InstrumentEditorFMForm::showEvent(QShowEvent*)
+void FmInstrumentEditor::showEvent(QShowEvent*)
 {
 	paintAlgorithmDiagram();
 	resizeAlgorithmDiagram();
 }
 
-void InstrumentEditorFMForm::resizeEvent(QResizeEvent*)
+void FmInstrumentEditor::resizeEvent(QResizeEvent*)
 {
 	resizeAlgorithmDiagram();
 }
 
 //========== Envelope ==========//
-void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
+void FmInstrumentEditor::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -907,7 +901,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 	ui->op4Table->setGroupEnabled(instFM->getOperatorEnabled(3));
 }
 
-void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
+void FmInstrumentEditor::setInstrumentEnvelopeParameters(QString data)
 {
 	QRegularExpression re("^(?<fb>\\d+),(?<al>\\d+),\\s*"
 						  "(?<ar1>\\d+),(?<dr1>\\d+),(?<sr1>\\d+),(?<rr1>\\d+),(?<sl1>\\d+),"
@@ -966,7 +960,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 	}
 }
 
-void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QString data)
+void FmInstrumentEditor::setInstrumentEnvelopeParameters(int envTypeNum, QString data)
 {
 	QStringList digits;
 	QRegularExpression re(R"((-?\d+))");
@@ -1054,7 +1048,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 	}
 }
 
-void InstrumentEditorFMForm::setInstrumentOperatorParameters(int opNum, QString data)
+void FmInstrumentEditor::setInstrumentOperatorParameters(int opNum, QString data)
 {
 	QRegularExpression re("^(?<ar>\\d+),(?<dr>\\d+),(?<sr>\\d+),(?<rr>\\d+),(?<sl>\\d+),"
 						  "(?<tl>\\d+),(?<ks>\\d+),(?<ml>\\d+),(?<dt>\\d+),(?<ssgeg>-?\\d+)");
@@ -1114,7 +1108,7 @@ void InstrumentEditorFMForm::setInstrumentOperatorParameters(int opNum, QString 
 	}
 }
 
-void InstrumentEditorFMForm::paintAlgorithmDiagram()
+void FmInstrumentEditor::paintAlgorithmDiagram()
 {
 	if (!palette_) return;
 
@@ -1298,14 +1292,14 @@ void InstrumentEditorFMForm::paintAlgorithmDiagram()
 	scene->setSceneRect(scene->itemsBoundingRect());
 }
 
-void InstrumentEditorFMForm::resizeAlgorithmDiagram()
+void FmInstrumentEditor::resizeAlgorithmDiagram()
 {
 	ui->alGraphicsView->fitInView(ui->alGraphicsView->scene()->itemsBoundingRect(),
 								  Qt::AspectRatioMode::KeepAspectRatio);
 }
 
 /********** Slots **********/
-void InstrumentEditorFMForm::copyEnvelope()
+void FmInstrumentEditor::copyEnvelope()
 {
 	QApplication::clipboard()->setText(QString("FM_ENVELOPE:%1,%2,\n%3,\n%4,\n%5,\n%6,")
 									   .arg(ui->fbSlider->value()).arg(ui->alSlider->value())
@@ -1313,18 +1307,18 @@ void InstrumentEditorFMForm::copyEnvelope()
 											ui->op3Table->toString(), ui->op4Table->toString()));
 }
 
-void InstrumentEditorFMForm::pasteEnvelope()
+void FmInstrumentEditor::pasteEnvelope()
 {
 	QString data = QApplication::clipboard()->text().remove("FM_ENVELOPE:");
 	setInstrumentEnvelopeParameters(data);
 }
 
-void InstrumentEditorFMForm::pasteEnvelopeFrom(int typenum)
+void FmInstrumentEditor::pasteEnvelopeFrom(int typenum)
 {
 	setInstrumentEnvelopeParameters(typenum, QApplication::clipboard()->text());
 }
 
-void InstrumentEditorFMForm::copyOperator(int opNum)
+void FmInstrumentEditor::copyOperator(int opNum)
 {
 	QString text;
 	switch (opNum) {
@@ -1337,13 +1331,13 @@ void InstrumentEditorFMForm::copyOperator(int opNum)
 	QApplication::clipboard()->setText(QString("FM_OPERATOR:") + text);
 }
 
-void InstrumentEditorFMForm::pasteOperator(int opNum)
+void FmInstrumentEditor::pasteOperator(int opNum)
 {
 	QString data = QApplication::clipboard()->text().remove("FM_OPERATOR:");
 	setInstrumentOperatorParameters(opNum, data);
 }
 
-void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
+void FmInstrumentEditor::on_envNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMEnvelope(instNum_, arg1);
@@ -1355,15 +1349,15 @@ void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
 	onEnvelopeNumberChanged();
 }
 
-void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPoint &pos)
+void FmInstrumentEditor::on_envGroupBox_customContextMenuRequested(const QPoint &pos)
 {
 	QPoint globalPos = ui->envGroupBox->mapToGlobal(pos);
 	QMenu menu;
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* copy = menu.addAction(tr("Copy envelope"));
-	QObject::connect(copy, &QAction::triggered, this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(copy, &QAction::triggered, this, &FmInstrumentEditor::copyEnvelope);
 	QAction* paste = menu.addAction(tr("Paste envelope"));
-	QObject::connect(paste, &QAction::triggered, this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(paste, &QAction::triggered, this, &FmInstrumentEditor::pasteEnvelope);
 	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
 	std::vector<FMEnvelopeText> textsSet = config_.lock()->getFMEnvelopeTexts();
@@ -1377,7 +1371,7 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	menu.exec(globalPos);
 }
 
-void InstrumentEditorFMForm::onEnvelopeParameterChanged(int envNum)
+void FmInstrumentEditor::onEnvelopeParameterChanged(int envNum)
 {
 	if (ui->envNumSpinBox->value() == envNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -1385,7 +1379,7 @@ void InstrumentEditorFMForm::onEnvelopeParameterChanged(int envNum)
 	}
 }
 
-void InstrumentEditorFMForm::onEnvelopeNumberChanged()
+void FmInstrumentEditor::onEnvelopeNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getEnvelopeFMUsers(ui->envNumSpinBox->value());
@@ -1393,7 +1387,7 @@ void InstrumentEditorFMForm::onEnvelopeNumberChanged()
 }
 
 //========== LFO ==========//
-void InstrumentEditorFMForm::setInstrumentLFOParameters()
+void FmInstrumentEditor::setInstrumentLFOParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -1418,7 +1412,7 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters()
 	}
 }
 
-void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
+void FmInstrumentEditor::setInstrumentLFOParameters(QString data)
 {
 	QRegularExpression re("^(?<freq>\\d+),(?<pms>\\d+),(?<ams>\\d+),(?<cnt>\\d+),"
 						  "(?<am1>\\d+),(?<am2>\\d+),(?<am3>\\d+),(?<am4>\\d+)");
@@ -1436,22 +1430,22 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
 	}
 }
 
-QString InstrumentEditorFMForm::toLFOString() const
+QString FmInstrumentEditor::toLFOString() const
 {
 	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8")
-			.arg(ui->lfoFreqSlider->value())
-			.arg(ui->pmsSlider->value())
-			.arg(ui->amsSlider->value())
-			.arg(ui->lfoStartSpinBox->value())
-			.arg(ui->amOp1CheckBox->isChecked() ? 1 : 0)
-			.arg(ui->amOp2CheckBox->isChecked() ? 1 : 0)
-			.arg(ui->amOp3CheckBox->isChecked() ? 1 : 0)
-			.arg(ui->amOp4CheckBox->isChecked() ? 1 : 0);
+			   .arg(ui->lfoFreqSlider->value())
+			   .arg(ui->pmsSlider->value())
+			   .arg(ui->amsSlider->value())
+			   .arg(ui->lfoStartSpinBox->value())
+			   .arg(ui->amOp1CheckBox->isChecked() ? 1 : 0)
+			   .arg(ui->amOp2CheckBox->isChecked() ? 1 : 0)
+			   .arg(ui->amOp3CheckBox->isChecked() ? 1 : 0)
+			   .arg(ui->amOp4CheckBox->isChecked() ? 1 : 0);
 	return str;
 }
 
 /********** Slots **********/
-void InstrumentEditorFMForm::onLFOParameterChanged(int lfoNum)
+void FmInstrumentEditor::onLFOParameterChanged(int lfoNum)
 {
 	if (ui->lfoNumSpinBox->value() == lfoNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -1459,14 +1453,14 @@ void InstrumentEditorFMForm::onLFOParameterChanged(int lfoNum)
 	}
 }
 
-void InstrumentEditorFMForm::onLFONumberChanged()
+void FmInstrumentEditor::onLFONumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getLFOFMUsers(ui->lfoNumSpinBox->value());
 	ui->lfoUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPoint &pos)
+void FmInstrumentEditor::on_lfoGroupBox_customContextMenuRequested(const QPoint &pos)
 {
 	QClipboard* clipboard = QApplication::clipboard();
 	QPoint globalPos = ui->lfoGroupBox->mapToGlobal(pos);
@@ -1493,7 +1487,7 @@ void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPo
 	menu.exec(globalPos);
 }
 
-void InstrumentEditorFMForm::on_lfoNumSpinBox_valueChanged(int arg1)
+void FmInstrumentEditor::on_lfoNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMLFO(instNum_, arg1);
@@ -1505,7 +1499,7 @@ void InstrumentEditorFMForm::on_lfoNumSpinBox_valueChanged(int arg1)
 	onLFONumberChanged();
 }
 
-void InstrumentEditorFMForm::on_lfoGroupBox_toggled(bool arg1)
+void FmInstrumentEditor::on_lfoGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMLFOEnabled(instNum_, arg1);
@@ -1518,12 +1512,12 @@ void InstrumentEditorFMForm::on_lfoGroupBox_toggled(bool arg1)
 }
 
 //--- OperatorSequence
-FMEnvelopeParameter InstrumentEditorFMForm::getOperatorSequenceParameter() const
+FMEnvelopeParameter FmInstrumentEditor::getOperatorSequenceParameter() const
 {
 	return static_cast<FMEnvelopeParameter>(ui->opSeqTypeComboBox->currentData(Qt::UserRole).toInt());
 }
 
-void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
+void FmInstrumentEditor::setInstrumentOperatorSequenceParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -1551,7 +1545,7 @@ void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
 	}
 }
 
-void InstrumentEditorFMForm::setOperatorSequenceEditor()
+void FmInstrumentEditor::setOperatorSequenceEditor()
 {
 	ui->opSeqEditor->clearRow();
 
@@ -1632,14 +1626,14 @@ void InstrumentEditorFMForm::setOperatorSequenceEditor()
 }
 
 /********** Slots **********/
-void InstrumentEditorFMForm::onOperatorSequenceNumberChanged()
+void FmInstrumentEditor::onOperatorSequenceNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getOperatorSequenceFMUsers(getOperatorSequenceParameter(), ui->opSeqNumSpinBox->value());
 	ui->opSeqUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorFMForm::onOperatorSequenceParameterChanged(FMEnvelopeParameter param, int tnNum)
+void FmInstrumentEditor::onOperatorSequenceParameterChanged(FMEnvelopeParameter param, int tnNum)
 {
 	if (param == getOperatorSequenceParameter() && ui->opSeqNumSpinBox->value() == tnNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -1647,12 +1641,12 @@ void InstrumentEditorFMForm::onOperatorSequenceParameterChanged(FMEnvelopeParame
 	}
 }
 
-void InstrumentEditorFMForm::onOperatorSequenceTypeChanged(int)
+void FmInstrumentEditor::onOperatorSequenceTypeChanged(int)
 {
 	if (!isIgnoreEvent_) setInstrumentOperatorSequenceParameters();
 }
 
-void InstrumentEditorFMForm::on_opSeqEditGroupBox_toggled(bool arg1)
+void FmInstrumentEditor::on_opSeqEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMOperatorSequenceEnabled(instNum_, getOperatorSequenceParameter(), arg1);
@@ -1664,7 +1658,7 @@ void InstrumentEditorFMForm::on_opSeqEditGroupBox_toggled(bool arg1)
 	onOperatorSequenceNumberChanged();
 }
 
-void InstrumentEditorFMForm::on_opSeqNumSpinBox_valueChanged(int arg1)
+void FmInstrumentEditor::on_opSeqNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMOperatorSequence(instNum_, getOperatorSequenceParameter(), arg1);
@@ -1677,12 +1671,12 @@ void InstrumentEditorFMForm::on_opSeqNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Arpeggio
-FMOperatorType InstrumentEditorFMForm::getArpeggioOperator() const
+FMOperatorType FmInstrumentEditor::getArpeggioOperator() const
 {
 	return static_cast<FMOperatorType>(ui->arpOpComboBox->currentData(Qt::UserRole).toInt());
 }
 
-void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
+void FmInstrumentEditor::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -1716,14 +1710,14 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorFMForm::onArpeggioNumberChanged()
+void FmInstrumentEditor::onArpeggioNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getArpeggioFMUsers(ui->arpNumSpinBox->value());
 	ui->arpUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorFMForm::onArpeggioParameterChanged(int tnNum)
+void FmInstrumentEditor::onArpeggioParameterChanged(int tnNum)
 {
 	if (ui->arpNumSpinBox->value() == tnNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -1731,12 +1725,12 @@ void InstrumentEditorFMForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorFMForm::onArpeggioOperatorChanged(int)
+void FmInstrumentEditor::onArpeggioOperatorChanged(int)
 {
 	if (!isIgnoreEvent_) setInstrumentArpeggioParameters();
 }
 
-void InstrumentEditorFMForm::onArpeggioTypeChanged(int)
+void FmInstrumentEditor::onArpeggioTypeChanged(int)
 {
 	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
@@ -1748,7 +1742,7 @@ void InstrumentEditorFMForm::onArpeggioTypeChanged(int)
 	ui->arpEditor->setSequenceType(type);
 }
 
-void InstrumentEditorFMForm::on_arpEditGroupBox_toggled(bool arg1)
+void FmInstrumentEditor::on_arpEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMArpeggioEnabled(instNum_, getArpeggioOperator(), arg1);
@@ -1760,7 +1754,7 @@ void InstrumentEditorFMForm::on_arpEditGroupBox_toggled(bool arg1)
 	onArpeggioNumberChanged();
 }
 
-void InstrumentEditorFMForm::on_arpNumSpinBox_valueChanged(int arg1)
+void FmInstrumentEditor::on_arpNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMArpeggio(instNum_, getArpeggioOperator(), arg1);
@@ -1773,12 +1767,12 @@ void InstrumentEditorFMForm::on_arpNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pitch
-FMOperatorType InstrumentEditorFMForm::getPitchOperator() const
+FMOperatorType FmInstrumentEditor::getPitchOperator() const
 {
 	return static_cast<FMOperatorType>(ui->ptOpComboBox->currentData(Qt::UserRole).toInt());
 }
 
-void InstrumentEditorFMForm::setInstrumentPitchParameters()
+void FmInstrumentEditor::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -1812,14 +1806,14 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorFMForm::onPitchNumberChanged()
+void FmInstrumentEditor::onPitchNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getPitchFMUsers(ui->ptNumSpinBox->value());
 	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorFMForm::onPitchParameterChanged(int ptNum)
+void FmInstrumentEditor::onPitchParameterChanged(int ptNum)
 {
 	if (ui->ptNumSpinBox->value() == ptNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -1827,12 +1821,12 @@ void InstrumentEditorFMForm::onPitchParameterChanged(int ptNum)
 	}
 }
 
-void InstrumentEditorFMForm::onPitchOperatorChanged(int)
+void FmInstrumentEditor::onPitchOperatorChanged(int)
 {
 	if (!isIgnoreEvent_) setInstrumentPitchParameters();
 }
 
-void InstrumentEditorFMForm::onPitchTypeChanged(int)
+void FmInstrumentEditor::onPitchTypeChanged(int)
 {
 	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
@@ -1844,7 +1838,7 @@ void InstrumentEditorFMForm::onPitchTypeChanged(int)
 	ui->ptEditor->setSequenceType(type);
 }
 
-void InstrumentEditorFMForm::on_ptEditGroupBox_toggled(bool arg1)
+void FmInstrumentEditor::on_ptEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMPitchEnabled(instNum_, getPitchOperator(), arg1);
@@ -1856,7 +1850,7 @@ void InstrumentEditorFMForm::on_ptEditGroupBox_toggled(bool arg1)
 	onPitchNumberChanged();
 }
 
-void InstrumentEditorFMForm::on_ptNumSpinBox_valueChanged(int arg1)
+void FmInstrumentEditor::on_ptNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMPitch(instNum_, getPitchOperator(), arg1);
@@ -1869,7 +1863,7 @@ void InstrumentEditorFMForm::on_ptNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pan
-void InstrumentEditorFMForm::setInstrumentPanParameters()
+void FmInstrumentEditor::setInstrumentPanParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -1896,14 +1890,14 @@ void InstrumentEditorFMForm::setInstrumentPanParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorFMForm::onPanNumberChanged()
+void FmInstrumentEditor::onPanNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getPanFMUsers(ui->panNumSpinBox->value());
 	ui->panUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorFMForm::onPanParameterChanged(int panNum)
+void FmInstrumentEditor::onPanParameterChanged(int panNum)
 {
 	if (ui->panNumSpinBox->value() == panNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -1911,7 +1905,7 @@ void InstrumentEditorFMForm::onPanParameterChanged(int panNum)
 	}
 }
 
-void InstrumentEditorFMForm::on_panEditGroupBox_toggled(bool arg1)
+void FmInstrumentEditor::on_panEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMPanEnabled(instNum_, arg1);
@@ -1923,7 +1917,7 @@ void InstrumentEditorFMForm::on_panEditGroupBox_toggled(bool arg1)
 	onPanNumberChanged();
 }
 
-void InstrumentEditorFMForm::on_panNumSpinBox_valueChanged(int arg1)
+void FmInstrumentEditor::on_panNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMPan(instNum_, arg1);
@@ -1936,7 +1930,7 @@ void InstrumentEditorFMForm::on_panNumSpinBox_valueChanged(int arg1)
 }
 
 //========== Others ==========//
-void InstrumentEditorFMForm::setInstrumentEnvelopeResetParameters()
+void FmInstrumentEditor::setInstrumentEnvelopeResetParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,43 +23,41 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INSTRUMENT_EDITOR_FM_FORM_HPP
-#define INSTRUMENT_EDITOR_FM_FORM_HPP
+#pragma once
 
-#include <QDialog>
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <memory>
-#include "bamboo_tracker.hpp"
 #include "instrument.hpp"
-#include "configuration.hpp"
-#include "jamming.hpp"
+#include "gui/instrument_editor/instrument_editor.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
-#include "gui/color_palette.hpp"
 
 namespace Ui {
-	class InstrumentEditorFMForm;
+class FmInstrumentEditor;
 }
 
-class InstrumentEditorFMForm : public QDialog
+class FmInstrumentEditor final : public InstrumentEditor
 {
 	Q_OBJECT
 
 public:
-	InstrumentEditorFMForm(int num, QWidget *parent = nullptr);
-	~InstrumentEditorFMForm() override;
-	void setInstrumentNumber(int num);
-	int getInstrumentNumber() const;
-	void setCore(std::weak_ptr<BambooTracker> core);
-	void setConfiguration(std::weak_ptr<Configuration> config);
-	void updateConfigurationForDisplay();
-	void setColorPalette(std::shared_ptr<ColorPalette> palette);
+	FmInstrumentEditor(int num, QWidget* parent = nullptr);
+	~FmInstrumentEditor() override;
 
-signals:
-	void jamKeyOnEvent(JamKey key);
-	void jamKeyOffEvent(JamKey key);
-	void modified();
+	/**
+	 * @brief Return sound source of instrument related to this dialog.
+	 * @return FM.
+	 */
+	SoundSource getSoundSource() const override;
+
+	/**
+	 * @brief Return instrument type of instrument related to this dialog.
+	 * @return FM.
+	 */
+	InstrumentType getInstrumentType() const override;
+
+	void updateByConfigurationChange() override;
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
@@ -68,13 +66,13 @@ protected:
 	void resizeEvent(QResizeEvent*) override;
 
 private:
-	Ui::InstrumentEditorFMForm *ui;
-	int instNum_;
+	Ui::FmInstrumentEditor *ui;
 	bool isIgnoreEvent_;
 
-	std::weak_ptr<BambooTracker> bt_;
-	std::shared_ptr<ColorPalette> palette_;
-	std::weak_ptr<Configuration> config_;
+	// FM specific process called in settiing core / cofiguration / color palette.
+	void updateBySettingCore() override;
+	void updateBySettingConfiguration() override;
+	void updateBySettingColorPalette() override;
 
 	void updateInstrumentParameters();
 
@@ -209,5 +207,3 @@ private slots:
 private:
 	void setInstrumentEnvelopeResetParameters();
 };
-
-#endif // INSTRUMENT_EDITOR_FM_FORM_HPP

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,8 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "instrument_editor_ssg_form.hpp"
-#include "ui_instrument_editor_ssg_form.h"
+#include "ssg_instrument_editor.hpp"
+#include "ui_ssg_instrument_editor.h"
 #include <vector>
 #include <set>
 #include <utility>
@@ -56,10 +56,9 @@ bool isModulatedWaveformSSG(int type)
 }
 }
 
-InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::InstrumentEditorSSGForm),
-	instNum_(num)
+SsgInstrumentEditor::SsgInstrumentEditor(int num, QWidget* parent)
+	: InstrumentEditor(num, parent),
+	  ui(new Ui::SsgInstrumentEditor)
 {
 	ui->setupUi(this);
 
@@ -382,7 +381,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
+					 this, &SsgInstrumentEditor::onArpeggioTypeChanged);
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -464,50 +463,44 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
+					 this, &SsgInstrumentEditor::onPitchTypeChanged);
 }
 
-InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
+SsgInstrumentEditor::~SsgInstrumentEditor()
 {
 	delete ui;
 }
 
-void InstrumentEditorSSGForm::setInstrumentNumber(int num)
+SoundSource SsgInstrumentEditor::getSoundSource() const
 {
-	instNum_ = num;
+	return SoundSource::SSG;
 }
 
-int InstrumentEditorSSGForm::getInstrumentNumber() const
+InstrumentType SsgInstrumentEditor::getInstrumentType() const
 {
-	return instNum_;
+	return InstrumentType::SSG;
 }
 
-void InstrumentEditorSSGForm::setCore(std::weak_ptr<BambooTracker> core)
-{
-	bt_ = core;
-	updateInstrumentParameters();
-}
-
-void InstrumentEditorSSGForm::setConfiguration(std::weak_ptr<Configuration> config)
-{
-	config_ = config;
-}
-
-void InstrumentEditorSSGForm::updateConfigurationForDisplay()
+void SsgInstrumentEditor::updateByConfigurationChange()
 {
 	ui->arpEditor->onNoteNamesUpdated();
 }
 
-void InstrumentEditorSSGForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
+void SsgInstrumentEditor::updateBySettingCore()
 {
-	ui->waveEditor->setColorPalette(palette);
-	ui->tnEditor->setColorPalette(palette);
-	ui->envEditor->setColorPalette(palette);
-	ui->arpEditor->setColorPalette(palette);
-	ui->ptEditor->setColorPalette(palette);
+	updateInstrumentParameters();
 }
 
-void InstrumentEditorSSGForm::updateInstrumentParameters()
+void SsgInstrumentEditor::updateBySettingColorPalette()
+{
+	ui->waveEditor->setColorPalette(palette_);
+	ui->tnEditor->setColorPalette(palette_);
+	ui->envEditor->setColorPalette(palette_);
+	ui->arpEditor->setColorPalette(palette_);
+	ui->ptEditor->setColorPalette(palette_);
+}
+
+void SsgInstrumentEditor::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -523,7 +516,7 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 
 /********** Events **********/
 // MUST DIRECT CONNECTION
-void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
+void SsgInstrumentEditor::keyPressEvent(QKeyEvent *event)
 {
 	// General keys
 	switch (event->key()) {
@@ -545,7 +538,7 @@ void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 }
 
 // MUST DIRECT CONNECTION
-void InstrumentEditorSSGForm::keyReleaseEvent(QKeyEvent *event)
+void SsgInstrumentEditor::keyReleaseEvent(QKeyEvent *event)
 {
 	// For jam key off
 	if (!event->isAutoRepeat()) {
@@ -558,7 +551,7 @@ void InstrumentEditorSSGForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //--- Waveform
-void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
+void SsgInstrumentEditor::setInstrumentWaveformParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -594,7 +587,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 	}
 }
 
-SSGWaveformUnit InstrumentEditorSSGForm::setWaveformSequenceColumn(int col, int wfRow)
+SSGWaveformUnit SsgInstrumentEditor::setWaveformSequenceColumn(int col, int wfRow)
 {
 	auto button = ui->squareMaskButtonGroup->checkedButton();
 	if (button == ui->squareMaskRawRadioButton) {
@@ -614,14 +607,14 @@ SSGWaveformUnit InstrumentEditorSSGForm::setWaveformSequenceColumn(int col, int 
 }
 
 /********** Slots **********/
-void InstrumentEditorSSGForm::onWaveformNumberChanged()
+void SsgInstrumentEditor::onWaveformNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getWaveformSSGUsers(ui->waveNumSpinBox->value());
 	ui->waveUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorSSGForm::onWaveformParameterChanged(int wfNum)
+void SsgInstrumentEditor::onWaveformParameterChanged(int wfNum)
 {
 	if (ui->waveNumSpinBox->value() == wfNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -629,7 +622,7 @@ void InstrumentEditorSSGForm::onWaveformParameterChanged(int wfNum)
 	}
 }
 
-void InstrumentEditorSSGForm::on_waveEditGroupBox_toggled(bool arg1)
+void SsgInstrumentEditor::on_waveEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGWaveformEnabled(instNum_, arg1);
@@ -641,7 +634,7 @@ void InstrumentEditorSSGForm::on_waveEditGroupBox_toggled(bool arg1)
 	onWaveformNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_waveNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGWaveform(instNum_, arg1);
@@ -653,7 +646,7 @@ void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 	onWaveformNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_squareMaskRawSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_squareMaskRawSpinBox_valueChanged(int arg1)
 {
 	ui->squareMaskRawSpinBox->setSuffix(
 				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
@@ -662,7 +655,7 @@ void InstrumentEditorSSGForm::on_squareMaskRawSpinBox_valueChanged(int arg1)
 }
 
 //--- Tone/Noise
-void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
+void SsgInstrumentEditor::setInstrumentToneNoiseParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -688,14 +681,14 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorSSGForm::onToneNoiseNumberChanged()
+void SsgInstrumentEditor::onToneNoiseNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getToneNoiseSSGUsers(ui->tnNumSpinBox->value());
 	ui->tnUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorSSGForm::onToneNoiseParameterChanged(int tnNum)
+void SsgInstrumentEditor::onToneNoiseParameterChanged(int tnNum)
 {
 	if (ui->tnNumSpinBox->value() == tnNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -703,7 +696,7 @@ void InstrumentEditorSSGForm::onToneNoiseParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorSSGForm::on_tnEditGroupBox_toggled(bool arg1)
+void SsgInstrumentEditor::on_tnEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGToneNoiseEnabled(instNum_, arg1);
@@ -715,7 +708,7 @@ void InstrumentEditorSSGForm::on_tnEditGroupBox_toggled(bool arg1)
 	onToneNoiseNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_tnNumSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_tnNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGToneNoise(instNum_, arg1);
@@ -728,7 +721,7 @@ void InstrumentEditorSSGForm::on_tnNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Envelope
-void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
+void SsgInstrumentEditor::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -764,7 +757,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	}
 }
 
-SSGEnvelopeUnit InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col, int envRow)
+SSGEnvelopeUnit SsgInstrumentEditor::setEnvelopeSequenceColumn(int col, int envRow)
 {
 	if (ui->hardFreqButtonGroup->checkedButton() == ui->hardFreqRawRadioButton) {
 		SSGEnvelopeUnit unit = SSGEnvelopeUnit::makeRawUnit(envRow, ui->hardFreqRawSpinBox->value());
@@ -783,14 +776,14 @@ SSGEnvelopeUnit InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col, int 
 }
 
 /********** Slots **********/
-void InstrumentEditorSSGForm::onEnvelopeNumberChanged()
+void SsgInstrumentEditor::onEnvelopeNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getEnvelopeSSGUsers(ui->envNumSpinBox->value());
 	ui->envUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorSSGForm::onEnvelopeParameterChanged(int envNum)
+void SsgInstrumentEditor::onEnvelopeParameterChanged(int envNum)
 {
 	if (ui->envNumSpinBox->value() == envNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -798,7 +791,7 @@ void InstrumentEditorSSGForm::onEnvelopeParameterChanged(int envNum)
 	}
 }
 
-void InstrumentEditorSSGForm::on_envEditGroupBox_toggled(bool arg1)
+void SsgInstrumentEditor::on_envEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGEnvelopeEnabled(instNum_, arg1);
@@ -810,7 +803,7 @@ void InstrumentEditorSSGForm::on_envEditGroupBox_toggled(bool arg1)
 	onEnvelopeNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_envNumSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_envNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGEnvelope(instNum_, arg1);
@@ -822,7 +815,7 @@ void InstrumentEditorSSGForm::on_envNumSpinBox_valueChanged(int arg1)
 	onEnvelopeNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_hardFreqRawSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_hardFreqRawSpinBox_valueChanged(int arg1)
 {
 	ui->hardFreqRawSpinBox->setSuffix(
 				QString(" (0x") + QString("%1 | ").arg(arg1, 4, 16, QChar('0')).toUpper()
@@ -830,7 +823,7 @@ void InstrumentEditorSSGForm::on_hardFreqRawSpinBox_valueChanged(int arg1)
 }
 
 //--- Arpeggio
-void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
+void SsgInstrumentEditor::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -862,14 +855,14 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorSSGForm::onArpeggioNumberChanged()
+void SsgInstrumentEditor::onArpeggioNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getArpeggioSSGUsers(ui->arpNumSpinBox->value());
 	ui->arpUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorSSGForm::onArpeggioParameterChanged(int tnNum)
+void SsgInstrumentEditor::onArpeggioParameterChanged(int tnNum)
 {
 	if (ui->arpNumSpinBox->value() == tnNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -877,7 +870,7 @@ void InstrumentEditorSSGForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorSSGForm::onArpeggioTypeChanged(int)
+void SsgInstrumentEditor::onArpeggioTypeChanged(int)
 {
 	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
@@ -889,7 +882,7 @@ void InstrumentEditorSSGForm::onArpeggioTypeChanged(int)
 	ui->arpEditor->setSequenceType(type);
 }
 
-void InstrumentEditorSSGForm::on_arpEditGroupBox_toggled(bool arg1)
+void SsgInstrumentEditor::on_arpEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGArpeggioEnabled(instNum_, arg1);
@@ -901,7 +894,7 @@ void InstrumentEditorSSGForm::on_arpEditGroupBox_toggled(bool arg1)
 	onArpeggioNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_arpNumSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_arpNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGArpeggio(instNum_, arg1);
@@ -914,7 +907,7 @@ void InstrumentEditorSSGForm::on_arpNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pitch
-void InstrumentEditorSSGForm::setInstrumentPitchParameters()
+void SsgInstrumentEditor::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -946,14 +939,14 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorSSGForm::onPitchNumberChanged()
+void SsgInstrumentEditor::onPitchNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getPitchSSGUsers(ui->ptNumSpinBox->value());
 	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorSSGForm::onPitchParameterChanged(int ptNum)
+void SsgInstrumentEditor::onPitchParameterChanged(int ptNum)
 {
 	if (ui->ptNumSpinBox->value() == ptNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -961,7 +954,7 @@ void InstrumentEditorSSGForm::onPitchParameterChanged(int ptNum)
 	}
 }
 
-void InstrumentEditorSSGForm::onPitchTypeChanged(int)
+void SsgInstrumentEditor::onPitchTypeChanged(int)
 {
 	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
@@ -973,7 +966,7 @@ void InstrumentEditorSSGForm::onPitchTypeChanged(int)
 	ui->ptEditor->setSequenceType(type);
 }
 
-void InstrumentEditorSSGForm::on_ptEditGroupBox_toggled(bool arg1)
+void SsgInstrumentEditor::on_ptEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGPitchEnabled(instNum_, arg1);
@@ -985,7 +978,7 @@ void InstrumentEditorSSGForm::on_ptEditGroupBox_toggled(bool arg1)
 	onPitchNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_ptNumSpinBox_valueChanged(int arg1)
+void SsgInstrumentEditor::on_ptNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentSSGPitch(instNum_, arg1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,38 +23,38 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INSTRUMENT_EDITOR_DRUMKIT_FORM_HPP
-#define INSTRUMENT_EDITOR_DRUMKIT_FORM_HPP
+#pragma once
 
 #include <memory>
-#include <QDialog>
 #include <QKeyEvent>
 #include <QTreeWidgetItem>
-#include "bamboo_tracker.hpp"
-#include "configuration.hpp"
-#include "jamming.hpp"
-#include "gui/color_palette.hpp"
+#include "gui/instrument_editor/instrument_editor.hpp"
 
 namespace Ui {
-	class InstrumentEditorDrumkitForm;
+class AdpcmDrumkitEditor;
 }
 
-class InstrumentEditorDrumkitForm : public QDialog
+class AdpcmDrumkitEditor final : public InstrumentEditor
 {
 	Q_OBJECT
 
 public:
-	explicit InstrumentEditorDrumkitForm(int num, QWidget *parent = nullptr);
-	~InstrumentEditorDrumkitForm() override;
-	void setInstrumentNumber(int num);
-	int getInstrumentNumber() const;
-	void setCore(std::weak_ptr<BambooTracker> core);
-	void setConfiguration(std::weak_ptr<Configuration> config);
-	void setColorPalette(std::shared_ptr<ColorPalette> palette);
-signals:
-	void jamKeyOnEvent(JamKey key);
-	void jamKeyOffEvent(JamKey key);
-	void modified();
+	explicit AdpcmDrumkitEditor(int num, QWidget* parent = nullptr);
+	~AdpcmDrumkitEditor() override;
+
+	/**
+	 * @brief Return sound source of instrument related to this dialog.
+	 * @return ADPCM.
+	 */
+	SoundSource getSoundSource() const override;
+
+	/**
+	 * @brief Return instrument type of instrument related to this dialog.
+	 * @return Drumkit.
+	 */
+	InstrumentType getInstrumentType() const override;
+
+	void updateByConfigurationChange() override {}
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
@@ -63,14 +63,14 @@ protected:
 	void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
-	Ui::InstrumentEditorDrumkitForm *ui;
-	int instNum_;
+	Ui::AdpcmDrumkitEditor *ui;
 	bool isIgnoreEvent_;
 	bool hasShown_;
 
-	std::weak_ptr<BambooTracker> bt_;
-	std::weak_ptr<Configuration> config_;
-	std::shared_ptr<ColorPalette> palette_;
+	// Drumkit specific process called in settiing core / cofiguration / color palette.
+	void updateBySettingCore() override;
+	void updateBySettingConfiguration() override;
+	void updateBySettingColorPalette() override;
 
 	void updateInstrumentParameters();
 
@@ -104,5 +104,3 @@ private slots:
 private:
 	void setInstrumentSampleParameters(int key);
 };
-
-#endif // INSTRUMENT_EDITOR_DRUMKIT_FORM_HPP

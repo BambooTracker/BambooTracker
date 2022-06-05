@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,13 +30,13 @@
 #include <QUndoCommand>
 #include <QString>
 #include <QListWidget>
-#include "gui/instrument_editor/instrument_form_manager.hpp"
+#include "gui/instrument_editor/instrument_editor_manager.hpp"
 
 class ChangeInstrumentNameQtCommand final : public QUndoCommand
 {
 public:
-	ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
-								  std::weak_ptr<InstrumentFormManager> formMan,
+	ChangeInstrumentNameQtCommand(QListWidget* list, int num, int row,
+								  std::weak_ptr<InstrumentEditorManager> dialogMan,
 								  const QString& oldName, const QString& newName,
 								  QUndoCommand* parent = nullptr);
 	void undo() override;
@@ -47,7 +47,7 @@ private:
 	QListWidget *list_;
 	const int num_;
 	const int row_;
-	std::weak_ptr<InstrumentFormManager> formMan_;
+	std::weak_ptr<InstrumentEditorManager> dialogMan_;
 	const QString oldName_, newName_;
 };
 

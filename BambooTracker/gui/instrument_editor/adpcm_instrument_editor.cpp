@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,8 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "instrument_editor_adpcm_form.hpp"
-#include "ui_instrument_editor_adpcm_form.h"
+#include "adpcm_instrument_editor.hpp"
+#include "ui_adpcm_instrument_editor.h"
 #include <set>
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
@@ -32,11 +32,10 @@
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
 #include "gui/gui_utils.hpp"
 
-InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::InstrumentEditorADPCMForm),
-	instNum_(num),
-	isIgnoreEvent_(false)
+AdpcmInstrumentEditor::AdpcmInstrumentEditor(int num, QWidget* parent)
+	: InstrumentEditor(num, parent),
+	  ui(new Ui::AdpcmInstrumentEditor),
+	  isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
 
@@ -213,7 +212,7 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorADPCMForm::onArpeggioTypeChanged);
+					 this, &AdpcmInstrumentEditor::onArpeggioTypeChanged);
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -295,7 +294,7 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	});
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorADPCMForm::onPitchTypeChanged);
+					 this, &AdpcmInstrumentEditor::onPitchTypeChanged);
 
 	//========== Pan ==========//
 	QObject::connect(ui->panEditor, &VisualizedInstrumentMacroEditor::sequenceDataAdded,
@@ -364,51 +363,48 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	});
 }
 
-InstrumentEditorADPCMForm::~InstrumentEditorADPCMForm()
+AdpcmInstrumentEditor::~AdpcmInstrumentEditor()
 {
 	delete ui;
 }
 
-void InstrumentEditorADPCMForm::setInstrumentNumber(int num)
+SoundSource AdpcmInstrumentEditor::getSoundSource() const
 {
-	instNum_ = num;
+	return SoundSource::ADPCM;
 }
 
-int InstrumentEditorADPCMForm::getInstrumentNumber() const
+InstrumentType AdpcmInstrumentEditor::getInstrumentType() const
 {
-	return instNum_;
+	return InstrumentType::ADPCM;
 }
 
-void InstrumentEditorADPCMForm::setCore(std::weak_ptr<BambooTracker> core)
-{
-	bt_ = core;
-	ui->sampleEditor->setCore(core);
-	updateInstrumentParameters();
-}
-
-void InstrumentEditorADPCMForm::setConfiguration(std::weak_ptr<Configuration> config)
-{
-	config_ = config;
-	ui->sampleEditor->setConfiguration(config);
-}
-
-void InstrumentEditorADPCMForm::updateConfigurationForDisplay()
+void AdpcmInstrumentEditor::updateByConfigurationChange()
 {
 	ui->sampleEditor->onNoteNamesUpdated();
 	ui->arpEditor->onNoteNamesUpdated();
 }
 
-void InstrumentEditorADPCMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
+void AdpcmInstrumentEditor::updateBySettingCore()
 {
-	palette_ = palette;
-	ui->sampleEditor->setColorPalette(palette);
-	ui->envEditor->setColorPalette(palette);
-	ui->arpEditor->setColorPalette(palette);
-	ui->ptEditor->setColorPalette(palette);
-	ui->panEditor->setColorPalette(palette);
+	ui->sampleEditor->setCore(bt_);
+	updateInstrumentParameters();
 }
 
-void InstrumentEditorADPCMForm::updateInstrumentParameters()
+void AdpcmInstrumentEditor::updateBySettingConfiguration()
+{
+	ui->sampleEditor->setConfiguration(config_);
+}
+
+void AdpcmInstrumentEditor::updateBySettingColorPalette()
+{
+	ui->sampleEditor->setColorPalette(palette_);
+	ui->envEditor->setColorPalette(palette_);
+	ui->arpEditor->setColorPalette(palette_);
+	ui->ptEditor->setColorPalette(palette_);
+	ui->panEditor->setColorPalette(palette_);
+}
+
+void AdpcmInstrumentEditor::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
@@ -424,7 +420,7 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 
 /********** Events **********/
 // MUST DIRECT CONNECTION
-void InstrumentEditorADPCMForm::keyPressEvent(QKeyEvent *event)
+void AdpcmInstrumentEditor::keyPressEvent(QKeyEvent *event)
 {
 	// General keys
 	switch (event->key()) {
@@ -446,7 +442,7 @@ void InstrumentEditorADPCMForm::keyPressEvent(QKeyEvent *event)
 }
 
 // MUST DIRECT CONNECTION
-void InstrumentEditorADPCMForm::keyReleaseEvent(QKeyEvent *event)
+void AdpcmInstrumentEditor::keyReleaseEvent(QKeyEvent *event)
 {
 	// For jam key off
 	if (!event->isAutoRepeat()) {
@@ -459,7 +455,7 @@ void InstrumentEditorADPCMForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //--- Sample
-void InstrumentEditorADPCMForm::setInstrumentSampleParameters()
+void AdpcmInstrumentEditor::setInstrumentSampleParameters()
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
@@ -472,19 +468,19 @@ void InstrumentEditorADPCMForm::setInstrumentSampleParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorADPCMForm::onSampleNumberChanged()
+void AdpcmInstrumentEditor::onSampleNumberChanged()
 {
 	ui->sampleEditor->onSampleNumberChanged();
 }
 
-void InstrumentEditorADPCMForm::onSampleParameterChanged(int sampNum)
+void AdpcmInstrumentEditor::onSampleParameterChanged(int sampNum)
 {
 	if (ui->sampleEditor->getSampleNumber() == sampNum) {
 		setInstrumentSampleParameters();
 	}
 }
 
-void InstrumentEditorADPCMForm::onSampleMemoryUpdated()
+void AdpcmInstrumentEditor::onSampleMemoryUpdated()
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
@@ -493,7 +489,7 @@ void InstrumentEditorADPCMForm::onSampleMemoryUpdated()
 }
 
 //--- Envelope
-void InstrumentEditorADPCMForm::setInstrumentEnvelopeParameters()
+void AdpcmInstrumentEditor::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -519,14 +515,14 @@ void InstrumentEditorADPCMForm::setInstrumentEnvelopeParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorADPCMForm::onEnvelopeNumberChanged()
+void AdpcmInstrumentEditor::onEnvelopeNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getEnvelopeADPCMUsers(ui->envNumSpinBox->value());
 	ui->envUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorADPCMForm::onEnvelopeParameterChanged(int envNum)
+void AdpcmInstrumentEditor::onEnvelopeParameterChanged(int envNum)
 {
 	if (ui->envNumSpinBox->value() == envNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -534,7 +530,7 @@ void InstrumentEditorADPCMForm::onEnvelopeParameterChanged(int envNum)
 	}
 }
 
-void InstrumentEditorADPCMForm::on_envEditGroupBox_toggled(bool arg1)
+void AdpcmInstrumentEditor::on_envEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMEnvelopeEnabled(instNum_, arg1);
@@ -546,7 +542,7 @@ void InstrumentEditorADPCMForm::on_envEditGroupBox_toggled(bool arg1)
 	onEnvelopeNumberChanged();
 }
 
-void InstrumentEditorADPCMForm::on_envNumSpinBox_valueChanged(int arg1)
+void AdpcmInstrumentEditor::on_envNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMEnvelope(instNum_, arg1);
@@ -559,7 +555,7 @@ void InstrumentEditorADPCMForm::on_envNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Arpeggio
-void InstrumentEditorADPCMForm::setInstrumentArpeggioParameters()
+void AdpcmInstrumentEditor::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -591,14 +587,14 @@ void InstrumentEditorADPCMForm::setInstrumentArpeggioParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorADPCMForm::onArpeggioNumberChanged()
+void AdpcmInstrumentEditor::onArpeggioNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getArpeggioADPCMUsers(ui->arpNumSpinBox->value());
 	ui->arpUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorADPCMForm::onArpeggioParameterChanged(int tnNum)
+void AdpcmInstrumentEditor::onArpeggioParameterChanged(int tnNum)
 {
 	if (ui->arpNumSpinBox->value() == tnNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -606,7 +602,7 @@ void InstrumentEditorADPCMForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorADPCMForm::onArpeggioTypeChanged(int)
+void AdpcmInstrumentEditor::onArpeggioTypeChanged(int)
 {
 	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
@@ -618,7 +614,7 @@ void InstrumentEditorADPCMForm::onArpeggioTypeChanged(int)
 	ui->arpEditor->setSequenceType(type);
 }
 
-void InstrumentEditorADPCMForm::on_arpEditGroupBox_toggled(bool arg1)
+void AdpcmInstrumentEditor::on_arpEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMArpeggioEnabled(instNum_, arg1);
@@ -630,7 +626,7 @@ void InstrumentEditorADPCMForm::on_arpEditGroupBox_toggled(bool arg1)
 	onArpeggioNumberChanged();
 }
 
-void InstrumentEditorADPCMForm::on_arpNumSpinBox_valueChanged(int arg1)
+void AdpcmInstrumentEditor::on_arpNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMArpeggio(instNum_, arg1);
@@ -643,7 +639,7 @@ void InstrumentEditorADPCMForm::on_arpNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pitch
-void InstrumentEditorADPCMForm::setInstrumentPitchParameters()
+void AdpcmInstrumentEditor::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -675,14 +671,14 @@ void InstrumentEditorADPCMForm::setInstrumentPitchParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorADPCMForm::onPitchNumberChanged()
+void AdpcmInstrumentEditor::onPitchNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getPitchADPCMUsers(ui->ptNumSpinBox->value());
 	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorADPCMForm::onPitchParameterChanged(int ptNum)
+void AdpcmInstrumentEditor::onPitchParameterChanged(int ptNum)
 {
 	if (ui->ptNumSpinBox->value() == ptNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -690,7 +686,7 @@ void InstrumentEditorADPCMForm::onPitchParameterChanged(int ptNum)
 	}
 }
 
-void InstrumentEditorADPCMForm::onPitchTypeChanged(int)
+void AdpcmInstrumentEditor::onPitchTypeChanged(int)
 {
 	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
@@ -702,7 +698,7 @@ void InstrumentEditorADPCMForm::onPitchTypeChanged(int)
 	ui->ptEditor->setSequenceType(type);
 }
 
-void InstrumentEditorADPCMForm::on_ptEditGroupBox_toggled(bool arg1)
+void AdpcmInstrumentEditor::on_ptEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMPitchEnabled(instNum_, arg1);
@@ -714,7 +710,7 @@ void InstrumentEditorADPCMForm::on_ptEditGroupBox_toggled(bool arg1)
 	onPitchNumberChanged();
 }
 
-void InstrumentEditorADPCMForm::on_ptNumSpinBox_valueChanged(int arg1)
+void AdpcmInstrumentEditor::on_ptNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMPitch(instNum_, arg1);
@@ -727,7 +723,7 @@ void InstrumentEditorADPCMForm::on_ptNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pan
-void InstrumentEditorADPCMForm::setInstrumentPanParameters()
+void AdpcmInstrumentEditor::setInstrumentPanParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
@@ -754,14 +750,14 @@ void InstrumentEditorADPCMForm::setInstrumentPanParameters()
 }
 
 /********** Slots **********/
-void InstrumentEditorADPCMForm::onPanNumberChanged()
+void AdpcmInstrumentEditor::onPanNumberChanged()
 {
 	// Change users view
 	std::multiset<int> users = bt_.lock()->getPanADPCMUsers(ui->panNumSpinBox->value());
 	ui->panUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
-void InstrumentEditorADPCMForm::onPanParameterChanged(int panNum)
+void AdpcmInstrumentEditor::onPanParameterChanged(int panNum)
 {
 	if (ui->panNumSpinBox->value() == panNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
@@ -769,7 +765,7 @@ void InstrumentEditorADPCMForm::onPanParameterChanged(int panNum)
 	}
 }
 
-void InstrumentEditorADPCMForm::on_panEditGroupBox_toggled(bool arg1)
+void AdpcmInstrumentEditor::on_panEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMPanEnabled(instNum_, arg1);
@@ -781,7 +777,7 @@ void InstrumentEditorADPCMForm::on_panEditGroupBox_toggled(bool arg1)
 	onPanNumberChanged();
 }
 
-void InstrumentEditorADPCMForm::on_panNumSpinBox_valueChanged(int arg1)
+void AdpcmInstrumentEditor::on_panNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentADPCMPan(instNum_, arg1);

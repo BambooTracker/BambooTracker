@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,40 +23,93 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INSTRUMENT_FORM_MANAGER_HPP
-#define INSTRUMENT_FORM_MANAGER_HPP
+#pragma once
 
 #include <QObject>
-#include <QWidget>
-#include <memory>
-#include <unordered_map>
+#include <QSharedPointer>
+#include <QHash>
+#include <QSet>
 #include "instrument/envelope_fm.hpp"
 #include "bamboo_tracker_defs.hpp"
+#include "utils.hpp"
 
+class InstrumentEditor;
 enum class InstrumentType;
 
-class InstrumentFormManager : public QObject
+/**
+ * @brief The InstrumentEditorManager class
+ */
+class InstrumentEditorManager : public QObject
 {
 	Q_OBJECT
 
 public:
+	/**
+	 * @brief Constructor.
+	 */
+	InstrumentEditorManager();
+
+	/**
+	 * @brief Update dialogs by changing configuration.
+	 */
 	void updateByConfiguration();
 
-	const std::shared_ptr<QWidget> getForm(int n) const;
-	void remove(int n);
-	void add(int n, std::shared_ptr<QWidget> form, SoundSource src, InstrumentType type);
-	void swap(int a, int b);
+	/**
+	 * @brief getDialog
+	 * @param index Index of dialog list.
+	 * @return Shared pointer of dialog when dialog list contains it, otherwise \c nullptr.
+	 */
+	const QSharedPointer<InstrumentEditor> getDialog(int index) const;
 
-	void showForm(int n);
+	/**
+	 * @brief add Add instrument dialog to dialog list.
+	 * @param index Index of instrument dialog in dialog list.
+	 * @param Dialog shared pointer of dialog.
+	 * @return \c true when dialog addition is success.
+	 */
+	bool add(int index, QSharedPointer<InstrumentEditor> dialog);
+
+	/**
+	 * @brief Swap dialogs in dialog list.
+	 * @param index1 1st index of dialog.
+	 * @param index2 2nd index of dialog.
+	 */
+	void swap(int index1, int index2);
+
+	/**
+	 * @brief Remove dialog from dialog list and dispose it.
+	 *        If dialog is opened, it will be closed.
+	 * @param index Index of dialog in dialog list.
+	 * @return \c true when Dialog deletion is success.
+	 */
+	bool remove(int index);
+
+	/**
+	 * @brief showDialog
+	 * @param index Index of dialog in dialog list.
+	 */
+	void showDialog(int index);
+
+	/**
+	 * @brief Close all managed dialogs.
+	 */
 	void closeAll();
+
+	/**
+	 * @brief Dispose all managed dialogs.
+	 *        Opened dialogs are closed.
+	 */
 	void clearAll();
 
-	SoundSource getFormInstrumentSoundSource(int n) const;
-	InstrumentType getFormInstrumentType(int n) const;
-
-	int checkActivatedFormNumber() const;
+	/**
+	 * @brief getActivatedDialogIndex
+	 * @return Index of dialog in doalog list.
+	 *         When no dialog is activated, returns -1.
+	 */
+	int getActivatedDialogIndex() const;
 
 public slots:
+	// Update FM parameters
 	void onInstrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentFMEnvelopeNumberChanged();
 	void onInstrumentFMLFOParameterChanged(int lfoNum, int fromInstNum);
@@ -68,6 +121,7 @@ public slots:
 	void onInstrumentFMPitchParameterChanged(int ptNum, int fromInstNum);
 	void onInstrumentFMPitchNumberChanged();
 
+	// Update SSG parameters
 	void onInstrumentSSGWaveformParameterChanged(int wfNum, int fromInstNum);
 	void onInstrumentSSGWaveformNumberChanged();
 	void onInstrumentSSGToneNoiseParameterChanged(int tnNum, int fromInstNum);
@@ -79,6 +133,7 @@ public slots:
 	void onInstrumentSSGPitchParameterChanged(int ptNum, int fromInstNum);
 	void onInstrumentSSGPitchNumberChanged();
 
+	// Update ADPCM/Drumkit parameters
 	void onInstrumentADPCMSampleParameterChanged(int sampNum, int fromInstNum);
 	void onInstrumentADPCMSampleNumberChanged();
 	void onInstrumentADPCMSampleMemoryUpdated();
@@ -90,8 +145,21 @@ public slots:
 	void onInstrumentADPCMPitchNumberChanged();
 
 private:
-	std::unordered_map<int, std::shared_ptr<QWidget>> map_;
+	// Size of dialog list
+	enum { MAX_NUM_DIALOG = 128 };
+	// Dialog list
+	QSharedPointer<InstrumentEditor> dialogs_[MAX_NUM_DIALOG];
+	// Map of instrument type and dialog index list
+	QHash<InstrumentType, QSet<int>> typeIndices_;
+
+	// Assert that given index is valid for dialog list.
+	static constexpr bool assertIndex(int index) { return utils::isInRange<int>(index, 0, MAX_NUM_DIALOG); }
+
+	// Get indices of dialog which is neccessary to update parameters.
+	inline QSet<int> getIndicesForParameterUpdating(InstrumentType type, int skippedIdx = -1)
+	{
+		auto idcs = typeIndices_[type];
+		if (assertIndex(skippedIdx)) idcs.remove(skippedIdx);
+		return idcs;
+	}
 };
-
-
-#endif // INSTRUMENT_FORM_MANAGER_HPP

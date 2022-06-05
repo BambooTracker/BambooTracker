@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InstrumentEditorDrumkitForm</class>
- <widget class="QDialog" name="InstrumentEditorDrumkitForm">
+ <class>AdpcmDrumkitEditor</class>
+ <widget class="QDialog" name="AdpcmDrumkitEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -53,11 +53,11 @@
          <property name="uniformRowHeights">
           <bool>true</bool>
          </property>
-         <attribute name="headerDefaultSectionSize">
-          <number>40</number>
-         </attribute>
          <attribute name="headerMinimumSectionSize">
           <number>10</number>
+         </attribute>
+         <attribute name="headerDefaultSectionSize">
+          <number>40</number>
          </attribute>
          <attribute name="headerStretchLastSection">
           <bool>true</bool>

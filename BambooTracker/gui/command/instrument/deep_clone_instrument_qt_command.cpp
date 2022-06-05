@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,17 +28,16 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(
-		QListWidget *list, int num, InstrumentType type, const QString& name,
-		std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin, bool onlyUsed,
-		QUndoCommand *parent)
+DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, const QString& name,
+														   std::weak_ptr<InstrumentEditorManager> dialogMan, MainWindow* mainWin, bool onlyUsed,
+														   QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  cloneNum_(num),
-	  formMan_(formMan),
+	  dialogMan_(dialogMan),
 	  type_(type),
 	  name_(name),
-	  mainwin_(mainwin),
+	  mainWin_(mainWin),
 	  onlyUsed_(onlyUsed)
 {
 }
@@ -48,7 +47,7 @@ void DeepCloneInstrumentQtCommand::redo()
 	list_->insertItem(cloneNum_, gui_command_utils::createInstrumentListItem(cloneNum_, type_, name_));
 
 	if (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)
-		mainwin_->assignADPCMSamples();
+		mainWin_->assignADPCMSamples();
 }
 
 void DeepCloneInstrumentQtCommand::undo()
@@ -56,10 +55,10 @@ void DeepCloneInstrumentQtCommand::undo()
 	auto&& item = list_->takeItem(cloneNum_);
 	delete item;
 
-	formMan_.lock()->remove(cloneNum_);
+	dialogMan_.lock()->remove(cloneNum_);
 
 	if ((type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit) && onlyUsed_) {
-		mainwin_->assignADPCMSamples();
+		mainWin_->assignADPCMSamples();
 	}
 }
 

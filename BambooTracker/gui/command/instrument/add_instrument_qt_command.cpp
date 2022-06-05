@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,17 +28,16 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-AddInstrumentQtCommand::AddInstrumentQtCommand(
-		QListWidget *list, int num, const QString& name, InstrumentType type,
-		std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
-		bool onlyUsed, bool preventFirstStore, QUndoCommand *parent)
+AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, const QString& name, InstrumentType type,
+											   std::weak_ptr<InstrumentEditorManager> dialogMan, MainWindow* mainWin,
+											   bool onlyUsed, bool preventFirstStore, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  name_(name),
 	  type_(type),
-	  formMan_(formMan),
-	  mainwin_(mainwin),
+	  dialogMan_(dialogMan),
+	  mainWin_(mainWin),
 	  onlyUsed_(onlyUsed),
 	  hasDone_(!preventFirstStore)
 {
@@ -49,10 +48,10 @@ void AddInstrumentQtCommand::undo()
 	auto&& item = list_->takeItem(num_);
 	delete item;
 
-	formMan_.lock()->remove(num_);
+	dialogMan_.lock()->remove(num_);
 
 	if ((type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit) && onlyUsed_) {
-		mainwin_->assignADPCMSamples();
+		mainWin_->assignADPCMSamples();
 	}
 }
 
@@ -61,7 +60,7 @@ void AddInstrumentQtCommand::redo()
 	list_->insertItem(num_, gui_command_utils::createInstrumentListItem(num_, type_, name_));
 
 	if (hasDone_ && (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)) {
-		mainwin_->assignADPCMSamples();
+		mainWin_->assignADPCMSamples();
 	}
 	hasDone_ = true;
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InstrumentEditorFMForm</class>
- <widget class="QDialog" name="InstrumentEditorFMForm">
+ <class>FmInstrumentEditor</class>
+ <widget class="QDialog" name="FmInstrumentEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -834,6 +834,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>PanMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/pan_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>LabeledVerticalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_vertical_slider.hpp</header>
@@ -849,12 +855,6 @@
    <class>LabeledHorizontalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_horizontal_slider.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PanMacroEditor</class>
-   <extends>QWidget</extends>
-   <header>gui/instrument_editor/pan_macro_editor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
