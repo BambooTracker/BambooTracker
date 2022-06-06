@@ -130,18 +130,19 @@ set (BT_SOURCES
 	gui/groove_settings_dialog.cpp
 	gui/gui_utils.cpp
 	gui/hide_tracks_dialog.cpp
+	gui/instrument_editor/adpcm_drumkit_editor.cpp
+	gui/instrument_editor/adpcm_instrument_editor.cpp
 	gui/instrument_editor/adpcm_sample_editor.cpp
 	gui/instrument_editor/arpeggio_macro_editor.cpp
+	gui/instrument_editor/fm_instrument_editor.cpp
 	gui/instrument_editor/fm_operator_table.cpp
 	gui/instrument_editor/grid_settings_dialog.cpp
-	gui/instrument_editor/instrument_editor_adpcm_form.cpp
-	gui/instrument_editor/instrument_editor_drumkit_form.cpp
-	gui/instrument_editor/instrument_editor_fm_form.cpp
-	gui/instrument_editor/instrument_editor_ssg_form.cpp
+	gui/instrument_editor/instrument_editor.cpp
+	gui/instrument_editor/instrument_editor_manager.cpp
 	gui/instrument_editor/instrument_editor_utils.cpp
-	gui/instrument_editor/instrument_form_manager.cpp
 	gui/instrument_editor/pan_macro_editor.cpp
 	gui/instrument_editor/sample_length_dialog.cpp
+	gui/instrument_editor/ssg_instrument_editor.cpp
 	gui/instrument_editor/tone_noise_macro_editor.cpp
 	gui/instrument_editor/visualized_instrument_macro_editor.cpp
 	gui/instrument_selection_dialog.cpp
@@ -182,8 +183,8 @@ set (BT_SOURCES
 	io/dmp_io.cpp
 	io/export_io.cpp
 	io/ff_io.cpp
-	io/ins_io.cpp
 	io/instrument_io.cpp
+	io/ins_io.cpp
 	io/io_utils.cpp
 	io/module_io.cpp
 	io/opni_io.cpp
@@ -227,14 +228,14 @@ set (BT_FORMS
 	gui/go_to_dialog.ui
 	gui/groove_settings_dialog.ui
 	gui/hide_tracks_dialog.ui
+	gui/instrument_editor/adpcm_drumkit_editor.ui
+	gui/instrument_editor/adpcm_instrument_editor.ui
 	gui/instrument_editor/adpcm_sample_editor.ui
+	gui/instrument_editor/fm_instrument_editor.ui
 	gui/instrument_editor/fm_operator_table.ui
 	gui/instrument_editor/grid_settings_dialog.ui
-	gui/instrument_editor/instrument_editor_adpcm_form.ui
-	gui/instrument_editor/instrument_editor_drumkit_form.ui
-	gui/instrument_editor/instrument_editor_fm_form.ui
-	gui/instrument_editor/instrument_editor_ssg_form.ui
 	gui/instrument_editor/sample_length_dialog.ui
+	gui/instrument_editor/ssg_instrument_editor.ui
 	gui/instrument_editor/visualized_instrument_macro_editor.ui
 	gui/instrument_selection_dialog.ui
 	gui/keyboard_shortcut_list_dialog.ui
