@@ -36,6 +36,12 @@
 class InstrumentEditor;
 enum class InstrumentType;
 
+// Hash function for QHash
+constexpr uint qHash(const InstrumentType& type, uint seed)
+{
+	return qHash(static_cast<int>(type), seed);
+}
+
 /**
  * @brief The InstrumentEditorManager class
  */
