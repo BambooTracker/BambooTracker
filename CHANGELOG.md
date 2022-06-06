@@ -41,6 +41,7 @@
 - [#444] - Fix unexpected envelope reset of FM3-OP4 (thanks [@Zexxerd])
 - [#448] - Check if the read/write position of the binary container is valid (thanks [@OPNA2608])
 - [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
+- [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
 
 [@cxong]: https://github.com/cxong
 
@@ -78,6 +79,8 @@
 [#425]: https://github.com/BambooTracker/BambooTracker/issues/425
 [#449]: https://github.com/BambooTracker/BambooTracker/issues/449
 [#450]: https://github.com/BambooTracker/BambooTracker/pull/450
+[#451]: https://github.com/BambooTracker/BambooTracker/issues/451
+[#452]: https://github.com/BambooTracker/BambooTracker/pull/452
 
 ## v0.5.0 (2021-08-01)
 
