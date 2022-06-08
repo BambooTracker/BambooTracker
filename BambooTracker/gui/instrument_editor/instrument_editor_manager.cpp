@@ -172,7 +172,7 @@ void InstrumentEditorManager::removeAll()
 {
 	for (const auto& editor : editors_) {
 		if (!editor) continue;
-		if (!editor->close()) delete editor.get();
+		if (!editor->close()) delete editor.data();
 	}
 }
 
