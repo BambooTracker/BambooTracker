@@ -43,26 +43,28 @@ InstrumentEditorManager::InstrumentEditorManager()
 {
 }
 
+InstrumentEditorManager::~InstrumentEditorManager()
+{
+	removeAll();
+}
+
 void InstrumentEditorManager::updateByConfiguration()
 {
-	for (const auto& idcs : typeIndices_) {
+	for (const auto& idcs : qAsConst(typeIndices_)) {
 		for (auto idx : idcs) {
-			if (auto& dialog = dialogs_[idx]) dialog->updateByConfigurationChange();
+			if (auto& editor = editors_[idx]) editor->updateByConfigurationChange();
 		}
 	}
 }
 
-const QSharedPointer<InstrumentEditor> InstrumentEditorManager::getDialog(int index) const
-{
-	return (assertIndex(index) ? dialogs_[index] : QSharedPointer<InstrumentEditor>());
-}
-
-bool InstrumentEditorManager::add(int index, QSharedPointer<InstrumentEditor> dialog)
+bool InstrumentEditorManager::add(int index, InstrumentEditor* editor)
 {
 	if (!assertIndex(index)) return false;
 
-	typeIndices_[dialog->getInstrumentType()].insert(index);
-	dialogs_[index] = std::move(dialog);
+	typeIndices_[editor->getInstrumentType()].insert(index);
+	editors_[index] = editor;
+	// Editor is deleted automatically in closed.
+	editor->setAttribute(Qt::WA_DeleteOnClose);
 
 	// Parameter numbers update in MainWindow
 
@@ -73,30 +75,30 @@ void InstrumentEditorManager::swap(int index1, int index2)
 {
 	if (!assertIndex(index1) || !assertIndex(index2)) return;
 
-	if (dialogs_[index1]) {
-		InstrumentType typeA = dialogs_[index1]->getInstrumentType();
+	if (editors_[index1]) {
+		InstrumentType typeA = editors_[index1]->getInstrumentType();
 		typeIndices_[typeA].remove(index1);
-		if (dialogs_[index2]) {
-			InstrumentType typeB = dialogs_[index2]->getInstrumentType();
+		if (editors_[index2]) {
+			InstrumentType typeB = editors_[index2]->getInstrumentType();
 			typeIndices_[typeB].remove(index2);
-			std::swap(dialogs_[index1], dialogs_[index2]);
-			dialogs_[index1]->setInstrumentNumber(index1);
+			std::swap(editors_[index1], editors_[index2]);
+			editors_[index1]->setInstrumentNumber(index1);
 			typeIndices_[typeB].insert(index1);
 		}
 		else {
-			dialogs_[index2] = dialogs_[index1];
-			dialogs_[index1].reset();
+			editors_[index2] = editors_[index1];
+			editors_[index1] = nullptr;
 		}
-		dialogs_[index2]->setInstrumentNumber(index2);
+		editors_[index2]->setInstrumentNumber(index2);
 		typeIndices_[typeA].insert(index2);
 	}
 	else {
-		if (dialogs_[index2]) {
-			InstrumentType typeB = dialogs_[index2]->getInstrumentType();
+		if (editors_[index2]) {
+			InstrumentType typeB = editors_[index2]->getInstrumentType();
 			typeIndices_[typeB].remove(index2);
-			dialogs_[index1] = dialogs_[index2];
-			dialogs_[index2].reset();
-			dialogs_[index1]->setInstrumentNumber(index1);
+			editors_[index1] = editors_[index2];
+			editors_[index2] = nullptr;
+			editors_[index1]->setInstrumentNumber(index1);
 			typeIndices_[typeB].insert(index1);
 		}
 	}
@@ -123,11 +125,10 @@ void InstrumentEditorManager::swap(int index1, int index2)
 
 bool InstrumentEditorManager::remove(int index)
 {
-	if (assertIndex(index)) return false;
+	if (!assertIndex(index)) return false;
 
-	if (dialogs_[index]) {
-		dialogs_[index]->close();
-		dialogs_[index].reset();
+	if (editors_[index]) {
+		editors_[index]->close();
 	}
 
 	onInstrumentFMEnvelopeNumberChanged();
@@ -152,62 +153,61 @@ bool InstrumentEditorManager::remove(int index)
 	return true;
 }
 
-void InstrumentEditorManager::showDialog(int index)
+void InstrumentEditorManager::showEditor(int index)
 {
 	if (!assertIndex(index)) return;
 
-	auto& dialog = dialogs_[index];
-	if (!dialog) return;
+	auto& editor = editors_[index];
+	if (!editor) return;
 
-	if (dialog->isVisible()) {
-		dialog->activateWindow();
+	if (editor->isVisible()) {
+		editor->activateWindow();
 	}
 	else {
-		dialog->show();
+		editor->show();
 	}
 }
 
-void InstrumentEditorManager::closeAll()
+void InstrumentEditorManager::removeAll()
 {
-	for (const auto& idcs : typeIndices_) {
-		for (auto idx : idcs) {
-			auto& dialog = dialogs_[idx];
-			if (dialog) dialog->close();
-		}
+	for (const auto& editor : editors_) {
+		if (!editor) continue;
+		if (!editor->close()) delete editor.get();
 	}
 }
 
-void InstrumentEditorManager::clearAll()
+bool InstrumentEditorManager::hasShownEditor(int index) const
 {
-	// Close all dialogs before disposing.
-	closeAll();
-
-	for (auto& idcs : typeIndices_) {
-		for (auto idx : idcs) {
-			dialogs_[idx].reset();
-		}
-		idcs.clear();
-	}
+	return (assertIndex(index) && !editors_[index].isNull());
 }
 
-int InstrumentEditorManager::getActivatedDialogIndex() const
+int InstrumentEditorManager::getActivatedEditorIndex() const
 {
 	const QWidget* win = QApplication::activeWindow();
-	for (const auto& idcs : typeIndices_) {
+	for (const auto& idcs : qAsConst(typeIndices_)) {
 		for (auto idx : idcs) {
-			if (dialogs_[idx] == win) return idx;
+			if (editors_[idx] == win) return idx;
 		}
 	}
 	return -1;
 }
 
 /********** Slots **********/
+void InstrumentEditorManager::onInstrumentNameChanged(int instNum)
+{
+	if (!assertIndex(instNum)) return;
+	if (auto& editor = editors_[instNum])
+	{
+		editor->updateWindowTitle();
+	}
+}
+
 void InstrumentEditorManager::onInstrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum)
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onEnvelopeParameterChanged(envNum);
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onEnvelopeParameterChanged(envNum);
 		}
 	}
 }
@@ -216,8 +216,8 @@ void InstrumentEditorManager::onInstrumentFMEnvelopeNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onEnvelopeNumberChanged();
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onEnvelopeNumberChanged();
 		}
 	}
 }
@@ -226,8 +226,8 @@ void InstrumentEditorManager::onInstrumentFMLFOParameterChanged(int lfoNum, int 
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onLFOParameterChanged(lfoNum);
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onLFOParameterChanged(lfoNum);
 		}
 	}
 }
@@ -236,8 +236,8 @@ void InstrumentEditorManager::onInstrumentFMLFONumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onLFONumberChanged();
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onLFONumberChanged();
 		}
 	}
 }
@@ -246,8 +246,8 @@ void InstrumentEditorManager::onInstrumentFMOperatorSequenceParameterChanged(FME
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onOperatorSequenceParameterChanged(param, opSeqNum);
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onOperatorSequenceParameterChanged(param, opSeqNum);
 		}
 	}
 }
@@ -256,8 +256,8 @@ void InstrumentEditorManager::onInstrumentFMOperatorSequenceNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onOperatorSequenceNumberChanged();
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onOperatorSequenceNumberChanged();
 		}
 	}
 }
@@ -266,8 +266,8 @@ void InstrumentEditorManager::onInstrumentFMArpeggioParameterChanged(int arpNum,
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onArpeggioParameterChanged(arpNum);
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onArpeggioParameterChanged(arpNum);
 		}
 	}
 }
@@ -276,8 +276,8 @@ void InstrumentEditorManager::onInstrumentFMArpeggioNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onArpeggioNumberChanged();
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onArpeggioNumberChanged();
 		}
 	}
 }
@@ -286,8 +286,8 @@ void InstrumentEditorManager::onInstrumentFMPitchParameterChanged(int ptNum, int
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onPitchParameterChanged(ptNum);
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onPitchParameterChanged(ptNum);
 		}
 	}
 }
@@ -296,8 +296,8 @@ void InstrumentEditorManager::onInstrumentFMPitchNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::FM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<FmInstrumentEditor>()) {
-			dialog->onPitchNumberChanged();
+		if (auto editor = qobject_cast<FmInstrumentEditor*>(editors_[idx])) {
+			editor->onPitchNumberChanged();
 		}
 	}
 }
@@ -306,8 +306,8 @@ void InstrumentEditorManager::onInstrumentSSGWaveformParameterChanged(int wfNum,
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onWaveformParameterChanged(wfNum);
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onWaveformParameterChanged(wfNum);
 		}
 	}
 }
@@ -316,8 +316,8 @@ void InstrumentEditorManager::onInstrumentSSGWaveformNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onWaveformNumberChanged();
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onWaveformNumberChanged();
 		}
 	}
 }
@@ -326,8 +326,8 @@ void InstrumentEditorManager::onInstrumentSSGToneNoiseParameterChanged(int tnNum
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onToneNoiseParameterChanged(tnNum);
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onToneNoiseParameterChanged(tnNum);
 		}
 	}
 }
@@ -336,8 +336,8 @@ void InstrumentEditorManager::onInstrumentSSGToneNoiseNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onToneNoiseNumberChanged();
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onToneNoiseNumberChanged();
 		}
 	}
 }
@@ -346,8 +346,8 @@ void InstrumentEditorManager::onInstrumentSSGEnvelopeParameterChanged(int envNum
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onEnvelopeParameterChanged(envNum);
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onEnvelopeParameterChanged(envNum);
 		}
 	}
 }
@@ -356,8 +356,8 @@ void InstrumentEditorManager::onInstrumentSSGEnvelopeNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onEnvelopeNumberChanged();
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onEnvelopeNumberChanged();
 		}
 	}
 }
@@ -366,8 +366,8 @@ void InstrumentEditorManager::onInstrumentSSGArpeggioParameterChanged(int arpNum
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onArpeggioParameterChanged(arpNum);
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onArpeggioParameterChanged(arpNum);
 		}
 	}
 }
@@ -376,8 +376,8 @@ void InstrumentEditorManager::onInstrumentSSGArpeggioNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onArpeggioNumberChanged();
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onArpeggioNumberChanged();
 		}
 	}
 }
@@ -386,8 +386,8 @@ void InstrumentEditorManager::onInstrumentSSGPitchParameterChanged(int ptNum, in
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onPitchParameterChanged(ptNum);
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onPitchParameterChanged(ptNum);
 		}
 	}
 }
@@ -396,8 +396,8 @@ void InstrumentEditorManager::onInstrumentSSGPitchNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::SSG);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<SsgInstrumentEditor>()) {
-			dialog->onPitchNumberChanged();
+		if (auto editor = qobject_cast<SsgInstrumentEditor*>(editors_[idx])) {
+			editor->onPitchNumberChanged();
 		}
 	}
 }
@@ -408,15 +408,15 @@ void InstrumentEditorManager::onInstrumentADPCMSampleParameterChanged(int sampNu
 
 	const auto idcsAdpcm = getIndicesForParameterUpdating(InstrumentType::ADPCM);
 	for (auto idx : idcsAdpcm) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onSampleParameterChanged(sampNum);
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onSampleParameterChanged(sampNum);
 		}
 	}
 
 	const auto idcsKit = getIndicesForParameterUpdating(InstrumentType::Drumkit);
 	for (auto idx : idcsKit) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmDrumkitEditor>()) {
-			dialog->onSampleParameterChanged(sampNum);
+		if (auto editor = qobject_cast<AdpcmDrumkitEditor*>(editors_[idx])) {
+			editor->onSampleParameterChanged(sampNum);
 		}
 	}
 }
@@ -425,15 +425,15 @@ void InstrumentEditorManager::onInstrumentADPCMSampleNumberChanged()
 {
 	const auto idcsAdpcm = getIndicesForParameterUpdating(InstrumentType::ADPCM);
 	for (auto idx : idcsAdpcm) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onSampleNumberChanged();
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onSampleNumberChanged();
 		}
 	}
 
 	const auto idcsKit = getIndicesForParameterUpdating(InstrumentType::Drumkit);
 	for (auto idx : idcsKit) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmDrumkitEditor>()) {
-			dialog->onSampleNumberChanged();
+		if (auto editor = qobject_cast<AdpcmDrumkitEditor*>(editors_[idx])) {
+			editor->onSampleNumberChanged();
 		}
 	}
 }
@@ -442,15 +442,15 @@ void InstrumentEditorManager::onInstrumentADPCMSampleMemoryUpdated()
 {
 	const auto idcsAdpcm = getIndicesForParameterUpdating(InstrumentType::ADPCM);
 	for (auto idx : idcsAdpcm) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onSampleMemoryUpdated();
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onSampleMemoryUpdated();
 		}
 	}
 
 	const auto idcsKit = getIndicesForParameterUpdating(InstrumentType::Drumkit);
 	for (auto idx : idcsKit) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmDrumkitEditor>()) {
-			dialog->onSampleMemoryUpdated();
+		if (auto editor = qobject_cast<AdpcmDrumkitEditor*>(editors_[idx])) {
+			editor->onSampleMemoryUpdated();
 		}
 	}
 }
@@ -459,8 +459,8 @@ void InstrumentEditorManager::onInstrumentADPCMEnvelopeParameterChanged(int envN
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::ADPCM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onEnvelopeParameterChanged(envNum);
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onEnvelopeParameterChanged(envNum);
 		}
 	}
 }
@@ -469,8 +469,8 @@ void InstrumentEditorManager::onInstrumentADPCMEnvelopeNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::ADPCM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onEnvelopeNumberChanged();
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onEnvelopeNumberChanged();
 		}
 	}
 }
@@ -479,8 +479,8 @@ void InstrumentEditorManager::onInstrumentADPCMArpeggioParameterChanged(int arpN
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::ADPCM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onArpeggioParameterChanged(arpNum);
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onArpeggioParameterChanged(arpNum);
 		}
 	}
 }
@@ -489,8 +489,8 @@ void InstrumentEditorManager::onInstrumentADPCMArpeggioNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::ADPCM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onArpeggioNumberChanged();
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onArpeggioNumberChanged();
 		}
 	}
 }
@@ -499,8 +499,8 @@ void InstrumentEditorManager::onInstrumentADPCMPitchParameterChanged(int ptNum, 
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::ADPCM, fromInstNum);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onPitchParameterChanged(ptNum);
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onPitchParameterChanged(ptNum);
 		}
 	}
 }
@@ -509,8 +509,8 @@ void InstrumentEditorManager::onInstrumentADPCMPitchNumberChanged()
 {
 	const auto idcs = getIndicesForParameterUpdating(InstrumentType::ADPCM);
 	for (auto idx : idcs) {
-		if (auto dialog = dialogs_[idx].objectCast<AdpcmInstrumentEditor>()) {
-			dialog->onPitchNumberChanged();
+		if (auto editor = qobject_cast<AdpcmInstrumentEditor*>(editors_[idx])) {
+			editor->onPitchNumberChanged();
 		}
 	}
 }

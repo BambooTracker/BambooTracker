@@ -24,10 +24,18 @@
  */
 
 #include "instrument_editor.hpp"
+#include <QString>
+#include "gui/gui_utils.hpp"
 
 InstrumentEditor::InstrumentEditor(int num, QWidget* parent)
 	: QDialog(parent), instNum_(num)
 {
+}
+
+void InstrumentEditor::setInstrumentNumber(int num)
+{
+	instNum_ = num;
+	updateWindowTitle();
 }
 
 void InstrumentEditor::setCore(std::weak_ptr<BambooTracker> core)
@@ -46,4 +54,11 @@ void InstrumentEditor::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
 	updateBySettingColorPalette();
+}
+
+void InstrumentEditor::updateWindowTitle()
+{
+	if (bt_.expired()) return;
+	auto name = gui_utils::utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
+	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 }

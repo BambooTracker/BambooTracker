@@ -46,7 +46,6 @@
 #include <QToolButton>
 #include <QSignalBlocker>
 #include <QTextCodec>
-#include <QSharedPointer>
 #include "jamming.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -1163,7 +1162,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	config_.lock()->setVisibleStatusBar(ui->statusBar->isVisible());
 	config_.lock()->setFollowMode(bt_->isFollowPlay());
 
-	instDialogMan_->closeAll();
+	instDialogMan_->removeAll();
 
 	io::saveFileHistory(fileHistory_);
 
@@ -1322,7 +1321,7 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 		return;
 	}
 
-	int n = instDialogMan_->getActivatedDialogIndex();
+	int n = instDialogMan_->getActivatedEditorIndex();
 	if (n == -1) {
 		bt_->jamKeyOff(k); // possibility to recover on stuck note
 		if (!release) bt_->jamKeyOn(k, !config_.lock()->getFixJammingVolume());
@@ -1426,14 +1425,15 @@ void MainWindow::openInstrumentEditor()
 	auto item = ui->instrumentList->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
 
-	if (!instDialogMan_->getDialog(num)) {	// Create form
-		QSharedPointer<InstrumentEditor> editor;
+	if (!instDialogMan_->hasShownEditor(num)) {
+		// Create editor
+		InstrumentEditor* editor;
 		auto inst = bt_->getInstrument(num);
 
 		switch (inst->getType()) {
 		case InstrumentType::FM:
 		{
-			auto fmEditor = QSharedPointer<FmInstrumentEditor>::create(num, this);
+			auto fmEditor = new FmInstrumentEditor(num, this);
 			editor = fmEditor;
 			fmEditor->setCore(bt_);
 			fmEditor->setConfiguration(config_.lock());
@@ -1441,34 +1441,34 @@ void MainWindow::openInstrumentEditor()
 			fmEditor->resize(config_.lock()->getInstrumentFMWindowWidth(),
 							 config_.lock()->getInstrumentFMWindowHeight());
 
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::envelopeNumberChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::envelopeNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMEnvelopeNumberChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::envelopeParameterChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::envelopeParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMEnvelopeParameterChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::lfoNumberChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::lfoNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMLFONumberChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::lfoParameterChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::lfoParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMLFOParameterChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::operatorSequenceNumberChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::operatorSequenceNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMOperatorSequenceNumberChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::operatorSequenceParameterChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::operatorSequenceParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMOperatorSequenceParameterChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::arpeggioNumberChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::arpeggioNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMArpeggioNumberChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::arpeggioParameterChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::arpeggioParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMArpeggioParameterChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::pitchNumberChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::pitchNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMPitchNumberChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::pitchParameterChanged,
+			QObject::connect(fmEditor, &FmInstrumentEditor::pitchParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentFMPitchParameterChanged);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::jamKeyOnEvent,
+			QObject::connect(fmEditor, &FmInstrumentEditor::jamKeyOnEvent,
 							 this, [&](JamKey key) {
 				bt_->jamKeyOnForced(key, SoundSource::FM, !config_.lock()->getFixJammingVolume());
 			}, Qt::DirectConnection);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::jamKeyOffEvent,
+			QObject::connect(fmEditor, &FmInstrumentEditor::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::FM); },
 			Qt::DirectConnection);
-			QObject::connect(fmEditor.data(), &FmInstrumentEditor::modified,
+			QObject::connect(fmEditor, &FmInstrumentEditor::modified,
 							 this, &MainWindow::setModifiedTrue);
 
 			fmEditor->installEventFilter(this);
@@ -1482,7 +1482,7 @@ void MainWindow::openInstrumentEditor()
 		}
 		case InstrumentType::SSG:
 		{
-			auto ssgEditor = QSharedPointer<SsgInstrumentEditor>::create(num, this);
+			auto ssgEditor = new SsgInstrumentEditor(num, this);
 			editor = ssgEditor;
 			ssgEditor->setCore(bt_);
 			ssgEditor->setConfiguration(config_.lock());
@@ -1490,34 +1490,34 @@ void MainWindow::openInstrumentEditor()
 			ssgEditor->resize(config_.lock()->getInstrumentSSGWindowWidth(),
 							  config_.lock()->getInstrumentSSGWindowHeight());
 
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::waveformNumberChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::waveformNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGWaveformNumberChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::waveformParameterChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::waveformParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGWaveformParameterChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::toneNoiseNumberChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::toneNoiseNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGToneNoiseNumberChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::toneNoiseParameterChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::toneNoiseParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGToneNoiseParameterChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::envelopeNumberChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::envelopeNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGEnvelopeNumberChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::envelopeParameterChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::envelopeParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGEnvelopeParameterChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::arpeggioNumberChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::arpeggioNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGArpeggioNumberChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::arpeggioParameterChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::arpeggioParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGArpeggioParameterChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::pitchNumberChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::pitchNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGPitchNumberChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::pitchParameterChanged,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::pitchParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentSSGPitchParameterChanged);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::jamKeyOnEvent,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::jamKeyOnEvent,
 							 this, [&](JamKey key) {
 				bt_->jamKeyOnForced(key, SoundSource::SSG, !config_.lock()->getFixJammingVolume());
 			}, Qt::DirectConnection);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::jamKeyOffEvent,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::SSG); }
 			, Qt::DirectConnection);
-			QObject::connect(ssgEditor.data(), &SsgInstrumentEditor::modified,
+			QObject::connect(ssgEditor, &SsgInstrumentEditor::modified,
 							 this, &MainWindow::setModifiedTrue);
 
 			ssgEditor->installEventFilter(this);
@@ -1531,7 +1531,7 @@ void MainWindow::openInstrumentEditor()
 		}
 		case InstrumentType::ADPCM:
 		{
-			auto adpcmEditor = QSharedPointer<AdpcmInstrumentEditor>::create(num, this);
+			auto adpcmEditor = new AdpcmInstrumentEditor(num, this);
 			editor = adpcmEditor;
 			adpcmEditor->setCore(bt_);
 			adpcmEditor->setConfiguration(config_.lock());
@@ -1539,34 +1539,34 @@ void MainWindow::openInstrumentEditor()
 			adpcmEditor->resize(config_.lock()->getInstrumentADPCMWindowWidth(),
 								config_.lock()->getInstrumentADPCMWindowHeight());
 
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::sampleNumberChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::sampleNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMSampleNumberChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::sampleParameterChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::sampleParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMSampleParameterChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::sampleAssignRequested,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::sampleAssignRequested,
 							 this, &MainWindow::assignADPCMSamples);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::sampleMemoryChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::sampleMemoryChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMSampleMemoryUpdated);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::envelopeNumberChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::envelopeNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMEnvelopeNumberChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::envelopeParameterChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::envelopeParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMEnvelopeParameterChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::arpeggioNumberChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::arpeggioNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMArpeggioNumberChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::arpeggioParameterChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::arpeggioParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMArpeggioParameterChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::pitchNumberChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::pitchNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMPitchNumberChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::pitchParameterChanged,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::pitchParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMPitchParameterChanged);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::jamKeyOnEvent,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::jamKeyOnEvent,
 							 this, [&](JamKey key) {
 				bt_->jamKeyOnForced(key, SoundSource::ADPCM, !config_.lock()->getFixJammingVolume());
 			}, Qt::DirectConnection);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::jamKeyOffEvent,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); },
 			Qt::DirectConnection);
-			QObject::connect(adpcmEditor.data(), &AdpcmInstrumentEditor::modified,
+			QObject::connect(adpcmEditor, &AdpcmInstrumentEditor::modified,
 							 this, &MainWindow::setModifiedTrue);
 
 			adpcmEditor->installEventFilter(this);
@@ -1579,7 +1579,7 @@ void MainWindow::openInstrumentEditor()
 		}
 		case InstrumentType::Drumkit:
 		{
-			auto kitEditor = QSharedPointer<AdpcmDrumkitEditor>::create(num, this);
+			auto kitEditor = new AdpcmDrumkitEditor(num, this);
 			editor = kitEditor;
 			kitEditor->setCore(bt_);
 			kitEditor->setConfiguration(config_.lock());
@@ -1587,22 +1587,22 @@ void MainWindow::openInstrumentEditor()
 			kitEditor->resize(config_.lock()->getInstrumentDrumkitWindowWidth(),
 							  config_.lock()->getInstrumentDrumkitWindowHeight());
 
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::sampleNumberChanged,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::sampleNumberChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMSampleNumberChanged);
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::sampleParameterChanged,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::sampleParameterChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMSampleParameterChanged);
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::sampleAssignRequested,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::sampleAssignRequested,
 							 this, &MainWindow::assignADPCMSamples);
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::sampleMemoryChanged,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::sampleMemoryChanged,
 							 instDialogMan_.get(), &InstrumentEditorManager::onInstrumentADPCMSampleMemoryUpdated);
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::jamKeyOnEvent,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::jamKeyOnEvent,
 							 this, [&](JamKey key) {
 				bt_->jamKeyOnForced(key, SoundSource::ADPCM, !config_.lock()->getFixJammingVolume());
 			}, Qt::DirectConnection);
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::jamKeyOffEvent,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); },
 			Qt::DirectConnection);
-			QObject::connect(kitEditor.data(), &AdpcmDrumkitEditor::modified,
+			QObject::connect(kitEditor, &AdpcmDrumkitEditor::modified,
 							 this, &MainWindow::setModifiedTrue);
 
 			kitEditor->installEventFilter(this);
@@ -1616,10 +1616,10 @@ void MainWindow::openInstrumentEditor()
 
 		editor->addActions({ &octUpSc_, &octDownSc_, &jamVolUpSc_, &jamVolDownSc_ });
 
-		instDialogMan_->add(num, std::move(editor));
+		instDialogMan_->add(num, editor);
 	}
 
-	instDialogMan_->showDialog(num);
+	instDialogMan_->showEditor(num);
 }
 
 int MainWindow::findRowFromInstrumentList(int instNum)
@@ -2058,7 +2058,7 @@ void MainWindow::redo()
 /********** Load data **********/
 void MainWindow::loadModule()
 {
-	instDialogMan_->clearAll();
+	instDialogMan_->removeAll();
 	ui->instrumentList->clear();
 	on_instrumentList_itemSelectionChanged();
 

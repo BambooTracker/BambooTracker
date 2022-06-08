@@ -59,7 +59,7 @@ public:
 	 * @brief setInstrumentNumber
 	 * @param num Instrument number.
 	 */
-	void setInstrumentNumber(int num) { instNum_ = num; }
+	void setInstrumentNumber(int num);
 
 	/**
 	 * @brief getInstrumentNumber
@@ -89,6 +89,11 @@ public:
 	 * @brief updateByConfigurationChange
 	 */
 	virtual void updateByConfigurationChange() = 0;
+
+	/**
+	 * @brief updateWindowTitle
+	 */
+	void updateWindowTitle();
 
 signals:
 	/**

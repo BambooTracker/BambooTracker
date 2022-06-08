@@ -34,7 +34,6 @@
 #include "sequence_property.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
-#include "gui/gui_utils.hpp"
 
 namespace
 {
@@ -504,8 +503,7 @@ void SsgInstrumentEditor::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	auto name = gui_utils::utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
-	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
+	updateWindowTitle();
 
 	setInstrumentWaveformParameters();
 	setInstrumentToneNoiseParameters();

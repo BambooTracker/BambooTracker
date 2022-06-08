@@ -32,7 +32,6 @@
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/note_name_manager.hpp"
-#include "gui/gui_utils.hpp"
 #include "gui/slider_style.hpp"
 
 namespace
@@ -129,10 +128,10 @@ void AdpcmDrumkitEditor::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
+	updateWindowTitle();
+
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
-	auto name = gui_utils::utf8ToQString(instKit->getName());
-	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	for (const auto& key : instKit->getAssignedKeys()) {
 		setInstrumentSampleParameters(key);

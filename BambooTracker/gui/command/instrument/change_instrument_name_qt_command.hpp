@@ -36,7 +36,7 @@ class ChangeInstrumentNameQtCommand final : public QUndoCommand
 {
 public:
 	ChangeInstrumentNameQtCommand(QListWidget* list, int num, int row,
-								  std::weak_ptr<InstrumentEditorManager> dialogMan,
+								  std::weak_ptr<InstrumentEditorManager> editorMan,
 								  const QString& oldName, const QString& newName,
 								  QUndoCommand* parent = nullptr);
 	void undo() override;
@@ -47,7 +47,7 @@ private:
 	QListWidget *list_;
 	const int num_;
 	const int row_;
-	std::weak_ptr<InstrumentEditorManager> dialogMan_;
+	std::weak_ptr<InstrumentEditorManager> editorMan_;
 	const QString oldName_, newName_;
 };
 

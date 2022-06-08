@@ -32,12 +32,12 @@
 #include "instrument_command_qt_utils.hpp"
 
 SwapInstrumentsQtCommand::SwapInstrumentsQtCommand(QListWidget* list, int inst1Row, int inst2Row, const QString& inst1Name,
-												   const QString& inst2Name, std::weak_ptr<InstrumentEditorManager> dialogMan,
+												   const QString& inst2Name, std::weak_ptr<InstrumentEditorManager> editorMan,
 												   PatternEditor* pattern, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  ptn_(pattern),
-	  dialogMan_(dialogMan)
+	  editorMan_(editorMan)
 {
 	if (inst1Row < inst2Row) {
 		inst1Row_ = inst1Row;
@@ -85,11 +85,7 @@ void SwapInstrumentsQtCommand::swap(int above, int below, QString aboveName, QSt
 	list_->insertItem(above, belowItem);
 	list_->insertItem(below, aboveItem);
 
-	dialogMan_.lock()->swap(aboveId, belowId);
-	if (auto aboveDialog = dialogMan_.lock()->getDialog(aboveId))
-		aboveDialog->setWindowTitle(newAboveName);
-	if (auto belowDialog = dialogMan_.lock()->getDialog(belowId))
-		belowDialog->setWindowTitle(newBelowName);
+	editorMan_.lock()->swap(aboveId, belowId);
 
 	ptn_->onPatternDataGlobalChanged();
 }

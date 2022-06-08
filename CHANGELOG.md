@@ -19,6 +19,7 @@
 - Bumped maximum wave view framerate to 144Hz
 - Update emu2149
 - [#448] - Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
+- [#420] - Free memory after instrument editor is closed (thanks [@nyanpasu64])
 
 ### Fixed
 
@@ -81,6 +82,7 @@
 [#450]: https://github.com/BambooTracker/BambooTracker/pull/450
 [#451]: https://github.com/BambooTracker/BambooTracker/issues/451
 [#452]: https://github.com/BambooTracker/BambooTracker/pull/452
+[#420]: https://github.com/BambooTracker/BambooTracker/issues/420
 
 ## v0.5.0 (2021-08-01)
 

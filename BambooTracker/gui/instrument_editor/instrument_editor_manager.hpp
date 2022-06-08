@@ -26,7 +26,7 @@
 #pragma once
 
 #include <QObject>
-#include <QSharedPointer>
+#include <QPointer>
 #include <QHash>
 #include <QSet>
 #include "instrument/envelope_fm.hpp"
@@ -56,65 +56,68 @@ public:
 	InstrumentEditorManager();
 
 	/**
-	 * @brief Update dialogs by changing configuration.
+	 * @brief Destructor.
+	 */
+	~InstrumentEditorManager();
+
+	/**
+	 * @brief Update editors by changing configuration.
 	 */
 	void updateByConfiguration();
 
 	/**
-	 * @brief getDialog
-	 * @param index Index of dialog list.
-	 * @return Shared pointer of dialog when dialog list contains it, otherwise \c nullptr.
+	 * @brief add Add instrument editor to editor list.
+	 * @param index Index of instrument editor in editor list.
+	 * @param editor Shared pointer of editor.
+	 * @return \c true when editor addition is success.
 	 */
-	const QSharedPointer<InstrumentEditor> getDialog(int index) const;
+	bool add(int index, InstrumentEditor* editor);
 
 	/**
-	 * @brief add Add instrument dialog to dialog list.
-	 * @param index Index of instrument dialog in dialog list.
-	 * @param Dialog shared pointer of dialog.
-	 * @return \c true when dialog addition is success.
-	 */
-	bool add(int index, QSharedPointer<InstrumentEditor> dialog);
-
-	/**
-	 * @brief Swap dialogs in dialog list.
-	 * @param index1 1st index of dialog.
-	 * @param index2 2nd index of dialog.
+	 * @brief Swap editors in editor list.
+	 * @param index1 1st index of editor.
+	 * @param index2 2nd index of editor.
 	 */
 	void swap(int index1, int index2);
 
 	/**
-	 * @brief Remove dialog from dialog list and dispose it.
-	 *        If dialog is opened, it will be closed.
-	 * @param index Index of dialog in dialog list.
-	 * @return \c true when Dialog deletion is success.
+	 * @brief Remove editor from editor list and dispose it.
+	 *        If editor is opened, it will be closed.
+	 * @param index Index of editor in editor list.
+	 * @return \c true when editor deletion is success.
 	 */
 	bool remove(int index);
 
 	/**
-	 * @brief showDialog
-	 * @param index Index of dialog in dialog list.
+	 * @brief showEditor
+	 * @param index Index of editor in editor list.
 	 */
-	void showDialog(int index);
+	void showEditor(int index);
 
 	/**
-	 * @brief Close all managed dialogs.
+	 * @brief Dispose all managed editors.
+	 *        Opened editors are closed.
 	 */
-	void closeAll();
+	void removeAll();
 
 	/**
-	 * @brief Dispose all managed dialogs.
-	 *        Opened dialogs are closed.
+	 * @brief hasShownEditor
+	 * @param index Index of editor in editor list.
+	 * @return \c true when editor list registers editor.
 	 */
-	void clearAll();
+	bool hasShownEditor(int index) const;
 
 	/**
-	 * @brief getActivatedDialogIndex
-	 * @return Index of dialog in doalog list.
-	 *         When no dialog is activated, returns -1.
+	 * @brief getActivatedEditorIndex
+	 * @return Index of editor in doalog list.
+	 *         When no editor is activated, returns -1.
 	 */
-	int getActivatedDialogIndex() const;
+	int getActivatedEditorIndex() const;
 
 public slots:
+	// Update windows title
+	void onInstrumentNameChanged(int instNum);
+
 	// Update FM parameters
 	void onInstrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentFMEnvelopeNumberChanged();
@@ -151,17 +154,17 @@ public slots:
 	void onInstrumentADPCMPitchNumberChanged();
 
 private:
-	// Size of dialog list
-	enum { MAX_NUM_DIALOG = 128 };
-	// Dialog list
-	QSharedPointer<InstrumentEditor> dialogs_[MAX_NUM_DIALOG];
-	// Map of instrument type and dialog index list
+	// Size of editor list
+	enum { MAX_NUM_EDITOR = 128 };
+	// Editor list
+	QPointer<InstrumentEditor> editors_[MAX_NUM_EDITOR];
+	// Map of instrument type and editor index list
 	QHash<InstrumentType, QSet<int>> typeIndices_;
 
-	// Assert that given index is valid for dialog list.
-	static constexpr bool assertIndex(int index) { return utils::isInRange<int>(index, 0, MAX_NUM_DIALOG); }
+	// Assert that given index is valid for editor list.
+	static constexpr bool assertIndex(int index) { return utils::isInRange<int>(index, 0, MAX_NUM_EDITOR); }
 
-	// Get indices of dialog which is neccessary to update parameters.
+	// Get indices of editor which is neccessary to update parameters.
 	inline QSet<int> getIndicesForParameterUpdating(InstrumentType type, int skippedIdx = -1)
 	{
 		auto idcs = typeIndices_[type];
