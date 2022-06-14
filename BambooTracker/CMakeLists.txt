@@ -193,6 +193,7 @@ set (BT_SOURCES
 	io/pps_io.cpp
 	io/pvi_io.cpp
 	io/pzi_io.cpp
+	io/raw_adpcm_io.cpp
 	io/tfi_io.cpp
 	io/vgi_io.cpp
 	io/wav_container.cpp
