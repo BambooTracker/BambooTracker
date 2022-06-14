@@ -15,6 +15,7 @@ The tracker can load instrument from the following files.
 - .opni (WOPN instrument file)
 - .y12 (Gens KMod dump file)
 - .ins (MVSTracker instrument file)
+- .spb (Raw ADPCM sample file)
 
 It also supports loading FM envelopes in plain text formats.  
 ADPCM waveform editor supports .wav import (16-bit mono 2k-55.5kHz).

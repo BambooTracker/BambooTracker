@@ -8,6 +8,7 @@
 - [#438] - Allow Neo Geo system type in DMP import (thanks [@OPNA2608])
 - [#397] - Add CMake build option ([#405]; thanks [@OPNA2608])
 - [#449] - Add source tarballs to releases page ([#450]; thanks [@ehaupt])
+- [#414] - .spb support as ADPCM sample (thanks [@OPNA2608])
 
 ### Changed
 
@@ -83,6 +84,7 @@
 [#451]: https://github.com/BambooTracker/BambooTracker/issues/451
 [#452]: https://github.com/BambooTracker/BambooTracker/pull/452
 [#420]: https://github.com/BambooTracker/BambooTracker/issues/420
+[#414]: https://github.com/BambooTracker/BambooTracker/issues/414
 
 ## v0.5.0 (2021-08-01)
 
