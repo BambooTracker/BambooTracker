@@ -524,20 +524,26 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 		visualTimer_->start(static_cast<int>(std::round(1000. / config.lock()->getWaveViewFrameRate())));
 
 	/* Status bar */
-	statusStyle_ = new QLabel();
-	statusStyle_->setAlignment(Qt::AlignRight);
-	statusInst_ = new QLabel();
+	statusStyle_ = new QLabel(ui->statusBar);
+	statusStyle_->setAlignment(Qt::AlignTrailing | Qt::AlignVCenter);
+	statusInst_ = new QLabel(ui->statusBar);
 	statusInst_->setFixedWidth(110);
-	statusOctave_ = new QLabel();
+	statusInst_->setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
+	statusOctave_ = new QLabel(ui->statusBar);
 	statusOctave_->setFixedWidth(90);
-	statusIntr_ = new QLabel();
+	statusOctave_->setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
+	statusIntr_ = new QLabel(ui->statusBar);
 	statusIntr_->setFixedWidth(50);
-	statusMixer_ = new QLabel();
+	statusIntr_->setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
+	statusMixer_ = new QLabel(ui->statusBar);
 	statusMixer_->setFixedWidth(200);
-	statusBpm_ = new QLabel();
+	statusMixer_->setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
+	statusBpm_ = new QLabel(ui->statusBar);
 	statusBpm_->setFixedWidth(90);
-	statusPlayPos_ = new QLabel();
+	statusBpm_->setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
+	statusPlayPos_ = new QLabel(ui->statusBar);
 	statusPlayPos_->setFixedWidth(40);
+	statusPlayPos_->setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
 	ui->statusBar->addPermanentWidget(statusStyle_);
 	ui->statusBar->addPermanentWidget(statusInst_);
 	ui->statusBar->addPermanentWidget(statusOctave_);
