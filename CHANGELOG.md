@@ -1,18 +1,29 @@
 # Changelog
 
 ## Unreleased
+
 ### Added
+
 - [#407] - Implement pattern/order editor DPI scaling (thanks [@nyanpasu64])
 - [#438] - Allow Neo Geo system type in DMP import (thanks [@OPNA2608])
+- [#397] - Add CMake build option ([#405]; thanks [@OPNA2608])
+- [#449] - Add source tarballs to releases page ([#450]; thanks [@ehaupt])
+- [#414] - .spb support as ADPCM sample (thanks [@OPNA2608])
 
 ### Changed
+
 - [#408] - Bumped Qt version of Win7 development builds to 5.15.2
 - [#412] - Keep instrument editors on top of main window, spawn centered (thanks [@nyanpasu64])
 - [#427] - Bumped Ubuntu version on build tests to 18.04
 - [#429] - Improved keyboard key formatting in documentation (thanks [@cxong])
 - [#426] - Update RtAudio submodule to upstream 5.2.0 (thanks [@nyanpasu64])
+- Bumped maximum wave view framerate to 144Hz
+- Update emu2149
+- [#448] - Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
+- [#420] - Free memory after instrument editor is closed (thanks [@nyanpasu64])
 
 ### Fixed
+
 - [#398] - Fix MSVC support ([#216]; thanks [@djtuBIG-MaliceX], [@OPNA2608])
 - [#399] - Fix `0Gxx` note delay effect to be validated against the actual ticks per step (thanks [@Zexxerd])
 - [#401] - Fix the volume spinbox to be displayed in uppercase (thanks [@wildmatsu])
@@ -27,6 +38,12 @@
 - [#424] - Fix instrument editor envelope graphs on Breeze master (thanks [@nyanpasu64])
 - [#435] - Fix VGM files being written with incorrect headers (thanks [@nyanpasu64])
 - [#418] - Fix SliderStyle memory leak ([#440], thanks [@nyanpasu64])
+- [#437] - Keep SSG silent when using `0Hxy` in a muted track (thanks [@Zexxerd])
+- [#443] - Fix song length estimation to handle tempo/speed change correctly (thanks [@Drillimation])
+- [#444] - Fix unexpected envelope reset of FM3-OP4 (thanks [@Zexxerd])
+- [#448] - Check if the read/write position of the binary container is valid (thanks [@OPNA2608])
+- [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
+- [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
 
 [@cxong]: https://github.com/cxong
 
@@ -54,9 +71,25 @@
 [#438]: https://github.com/BambooTracker/BambooTracker/pull/438
 [#418]: https://github.com/BambooTracker/BambooTracker/issues/418
 [#440]: https://github.com/BambooTracker/BambooTracker/pull/440
+[#397]: https://github.com/BambooTracker/BambooTracker/issues/397
+[#405]: https://github.com/BambooTracker/BambooTracker/pull/405
+[#448]: https://github.com/BambooTracker/BambooTracker/pull/448
+[#437]: https://github.com/BambooTracker/BambooTracker/issues/437
+[#443]: https://github.com/BambooTracker/BambooTracker/issues/443
+[#444]: https://github.com/BambooTracker/BambooTracker/issues/444
+[#447]: https://github.com/BambooTracker/BambooTracker/issues/447
+[#425]: https://github.com/BambooTracker/BambooTracker/issues/425
+[#449]: https://github.com/BambooTracker/BambooTracker/issues/449
+[#450]: https://github.com/BambooTracker/BambooTracker/pull/450
+[#451]: https://github.com/BambooTracker/BambooTracker/issues/451
+[#452]: https://github.com/BambooTracker/BambooTracker/pull/452
+[#420]: https://github.com/BambooTracker/BambooTracker/issues/420
+[#414]: https://github.com/BambooTracker/BambooTracker/issues/414
 
 ## v0.5.0 (2021-08-01)
+
 ### Added
+
 - 2 new pattern effect
   - `0Kxy`: Retrigger ([#249]; thanks [@Speedvicio], [@Ravancloak])
   - `ESxx`: FM envelope reset ([#301]; thanks [@Zexxerd])
@@ -73,6 +106,7 @@
 - [#387] - .btm -> BT filetype association on Linux ([#388]; thanks [@nyanpasu64], [@OPNA2608])
 
 ### Changed
+
 - [#333] - Allow single pattern clone at hovered or current position in the order list (thanks [@Mugenri])
 - [#348] - Update RtAudio & RtMidi library (thanks [@OPNA2608])
 - [#342] - Use Qt's loading / saving file dialog on Linux and BSD ([#338]; thanks [@freq-mod], [@EnfauKerus], [@OPNA2608])
@@ -91,6 +125,7 @@
 - Update translation: pl, ja (thanks [@freq-mod])
 
 ### Fixed
+
 - [#328] - Fix progress bar length in the wav export dialog (thanks [@Drillimation], [@OPNA2608])
 - [#336] - Fix noise distortion for Nuked OPN-Mod ([#255]; thanks [@OPNA2608], [@jpcima], [@freq-mod], [@nukeykt])
 - [#339] - Fix the order of loading FM operators in .vgi and .tfi (thanks [@OPNA2608])
@@ -170,7 +205,9 @@
 [#393]: https://github.com/BambooTracker/BambooTracker/issues/393
 
 ## v0.4.6 (2021-02-11)
+
 ### Added
+
 - [#285] - Linux build (thanks [@OPNA2608])
 - [#294] - Build option for linking against system RtAudio and RtMidi ([#263], [#288]; thanks [@OPNA2608])
 - [#308] - Support .pvi import which has a file identifier as `PVI1` (thanks [@freq-mod], [@OPNA2608])
@@ -180,6 +217,7 @@
 - 1 new sample module (thanks [@Zexxerd])
 
 ### Changed
+
 - [#285] - Change CI service from Travis CI to GitHub Actions (thanks [@OPNA2608])
 - Use current channel in jam mode when editing an instrument (thanks [@Ravancloak])
 - Keep playing state after changing the configuration (thanks [@OPNA2608])
@@ -189,6 +227,7 @@
 - [#306] - Clean README ([#297]; thanks [@freq-mod], [@OPNA2608])
 
 ### Fixed
+
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
 - [#291] - Fix icon install paths (thanks [@OPNA2608])
 - Fix .tfi import to load the operator 2 and 3 correctly ([#290]; thanks [@OPNA2608])
@@ -231,7 +270,9 @@
 [#324]: https://github.com/BambooTracker/BambooTracker/pull/324
 
 ## v0.4.5 (2020-11-05)
+
 ### Added
+
 - [#238] - MIDI API selection ([#230]; thanks [@OPNA2608], [@ehaupt])
 - Frame rate setting in the wave view
 - 1 new pattern effect `FPxx`: fine detune
@@ -239,6 +280,7 @@
 - 1 new color schemes (thanks [@Yuzu4K])
 
 ### Changed
+
 - [#266] - Set a license to a part of the source code (thanks [@superctr])
 - [#274] - Try to initialize audio stream by multiple APIs on the first launch ([#270]; thanks [@N-SPC700], [@OPNA2608])
 - [#268], [#273] - Changed issue template policy (thanks [@OPNA2608])
@@ -248,6 +290,7 @@
 - Update translation: ja
 
 ### Fixed
+
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
 - [#259] - Fix copying and pasting position error when hiding any tracks (thanks [@YoshiLightStar])
 - [#258] - Fix an error of wav/vgm/s98 export (thanks [@Zexxerd])
@@ -291,7 +334,9 @@
 [#283]: https://github.com/BambooTracker/BambooTracker/pull/283
 
 ## v0.4.4 (2020-08-22)
+
 ### Added
+
 - [#242] - Estimate Song Length (thanks [@Drillimation])
 - Settings of header color and editor shadow
 - [#136] - Support MUCOM88 voice file import (thanks [@freq-mod])
@@ -300,6 +345,7 @@
 - 5 new color schemes
 
 ### Changed
+
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
 - [#238] - Update RtMidi library
@@ -310,6 +356,7 @@
 - Update translation: ja
 
 ### Fixed
+
 - [#229] - Fix detection of effect `0Bxx`, `0Cxx` and `0Dxx` in WAV/VGM/S98 export (thanks [@YuzuMSX])
 - Enable play/stop shortcuts in the instrument list (thanks [@nyanpasu64])
 - [#228] - Fix incorrect instrument swapping (thanks [@YuzuMSX])
@@ -344,7 +391,9 @@
 [#252]: https://github.com/BambooTracker/BambooTracker/issues/252
 
 ## 0.4.3 (2020-06-28)
+
 ### Added
+
 - [#2], [#213], [#214] - ADPCM sample editor (thanks [@freq-mod])
 - [#98] - Track visibility control (thanks [@pedipanol], [@freq-mod])
 - Slope notation in text edit of instrument sequence
@@ -352,12 +401,14 @@
 - [#136] - Support PMD .FF file import (thanks [@OPNA2608])
 
 ### Changed
+
 - [#219] - Enable SSG Tone/Noise editor to turn off tone and noise (thanks [@ImATrackMan])
 - Enable song type change without creating a new song
 - [#200] - Change build methods on CI (thanks [@OPNA2608])
 - Update translation: ja
 
 ### Fixed
+
 - Resize width of the order list after closing configuration dialog
 - Fix corruption while loading module
 - [#217] - Remove redundant call (thanks [@nyanpasu64])
@@ -382,7 +433,9 @@
 [#227]: https://github.com/BambooTracker/BambooTracker/pull/227
 
 ## v0.4.2 (2020-05-10)
+
 ### Added
+
 - [#6], [#211] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
 - Color settings of pattern marker
 - [#206] - Enable to swap instruments (thanks [@Mikejmoffitt])
@@ -394,12 +447,14 @@
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
 ### Changed
+
 - Change comment dialog to modeless
 - Rename ADPCM Waveform to Sample
 - Move wave view settings to View menu
 - Update translation: ja
 
 ### Fixed
+
 - [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
 - [#208] - Fix speed/tempo states retrieving on starting playback (thanks [@freq-mod])
 - [#207] - Fix pattern editor resolution after module open error on launch (thanks [@freq-mod])
@@ -417,7 +472,9 @@
 [#144]: https://github.com/BambooTracker/BambooTracker/issues/144
 
 ## v0.4.1 (2020-04-20)
+
 ### Added
+
 - Shortcut settings
 - 6 new shortcuts
   - Increase/Decrease pattern size
@@ -426,12 +483,14 @@
 - 255 new sample instruments (thanks [Takeshi Abo])
 
 ### Changed
+
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
 - [#205] - Modify README ([#203]; thanks [@OPNA2608], [@Mikejmoffitt])
 - [#206] - Enable sound preview in bank import (thanks [@Mikejmoffitt])
 - Update translation: ja
 
 ### Fixed
+
 - [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
 - [#199] - Fix ADPCM sample sometimes has wrong DC offset in synthesis (thanks [@galap-1])
 - Reset internal start/stop address point of ADPCM sample after loading samples
@@ -454,7 +513,9 @@
 [#206]: https://github.com/BambooTracker/BambooTracker/issues/206
 
 ## v0.4.0 (2020-03-27)
+
 ### Added
+
 - [#6], [#184], [#185], [#186], [#187] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Shortcuts instead of insert key
 - Note transpose shortcuts using mouse wheel
@@ -470,6 +531,7 @@
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed
+
 - [#182] - Enable the first note-on when tone portamento is set before the playing start position (thanks [@freq-mod])
 - [#183] - Implement ADPCM part in Nuked OPN-Mod (thanks [@jpcima])
 - [#186] - Selectable to overwrite instrument properties depending on whether or not to be edited (thanks [@OPNA2608])
@@ -480,6 +542,7 @@
 - Update translation: ja
 
 ### Fixed
+
 - Close all windows when the main window closed
 - Fix paint glitches of order list and pattern editor
 - Fix edit step crashing on change
@@ -489,6 +552,7 @@
 - [#192] - Fix that any shortcuts set in the configuration is ignored (thanks [@SMB7])
 
 ### Removed
+
 - Expand/Shrink pattern selection from menubar
 
 [@freq-mod]: https://github.com/freq-mod
@@ -511,13 +575,17 @@
 [#194]: https://github.com/BambooTracker/BambooTracker/issues/194
 
 ## v0.3.5 (2020-02-15)
+
 ### Added
+
 - Support C86CTL
 
 ### Changed
+
 - Update SCCI library
 
 ### Fixed
+
 - Fix AutoEnv and square mask pitch calculation
 - [#181] - Fix crash when changing length of instrument sequence during jamming (thanks [@papiezak])
 - Fix SCCI crash on launching in Windows XP (thanks [@ponzu0147])
@@ -528,12 +596,15 @@
 [#181]: https://github.com/BambooTracker/BambooTracker/issues/181
 
 ## v0.3.4 (2020-01-29)
+
 ### Added
+
 - [#179] - Jump to previous/next order or pattern by forward/backward mouse button (thanks [@Midi-In])
 - [#178] - View-based horizontal scroll in the order list and the pattern editor (thanks [@Midi-In])
 - 1 new sample instrument bank
 
 ### Changed
+
 - Change layout of the main window
 - Modify some words in the tracker
 - [#175] - Sound B7 when do key-on higher keys by keyboard (thanks [@papiezak])
@@ -545,6 +616,7 @@
 - Update translation: ja
 
 ### Fixed
+
 - [#172], [#173] - Check MIDI in api (thanks [@OPNA2608], [@jpcima], [@papiezak])
 - Fix drawing of pattern editor and order list
 - Fix jamming ignorance in FM & SSG editor using key layouts except QWERTY
@@ -562,7 +634,9 @@
 [#180]: https://github.com/BambooTracker/BambooTracker/issues/180
 
 ## v0.3.3 (2019-12-17)
+
 ### Fixed
+
 - [#170] - Fix selected instrument indexing in bank export (thanks [@Ravancloak], [@ImATrackMan])
 - Update backup if it already exists
 - [#170] - Copy command sequence type in deep clone instrument (thanks [@Ravancloak], [@ImATrackMan], [@galap-1])
@@ -574,12 +648,15 @@
 [#171]: https://github.com/BambooTracker/BambooTracker/issues/171
 
 ## v0.3.2 (2019-12-13)
+
 ### Changed
+
 - Change drawing method of FM envelope in FM instrument editor
 - Use Qt for file I/O
 - Modify FM envelope graph in FM instrument editor
 
 ### Fixed
+
 - Fix incorrect text painting in the pattern editor
 - [#168] - Fix pattern rendering glitches (thanks [@OPNA2608], [@YuzuMSX])
 - [#169] - Fix the order list corruption after changing font (thanks [@jimbo1qaz])
@@ -593,7 +670,9 @@
 [#169]: https://github.com/BambooTracker/BambooTracker/issues/169
 
 ## v0.3.1 (2019-11-30)
+
 ### Added
+
 - [#132] - 3 new pattern effects
   - `0Xxx`, `0Yxx`: register address set
   - `0Zxx`: register value set
@@ -606,6 +685,7 @@
 - Add the icon of renaming instrument in the instrument list
 
 ### Changed
+
 - Change width of items in status bar
 - [#161] - Reduce drawing cost of the pattern editor and the order list (thanks [@papiezak])
 - Change background color of odd columns in the instrument sequence editor
@@ -616,6 +696,7 @@
 - Update translation: ja
 
 ### Fixed
+
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])
 - Fix groove start position by `0Oxx` (thanks [@maakmusic])
 - Fix some drawing errors in pattern editor and order list
@@ -635,7 +716,9 @@
 [#167]: https://github.com/BambooTracker/BambooTracker/issues/167
 
 ## v0.3.0 (2019-10-25)
+
 ### Added
+
 - [#96] - macOS support (thanks [@OPNA2608], [@jpcima] and others)
 - [#132] - 11 new pattern effects
   - `0Hxy`: SSG auto envelope ([#3]; thanks [@marysiamzawka])
@@ -654,6 +737,7 @@
 - [#145] - Add configuration of font family and size of the pattern editor and the order list (thanks [@jimbo1qaz], [@papiezak])
 
 ### Changed
+
 - [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)
 - [#96], [#152], [#158] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608], [@papiezak])
 - Disable slider operation during playback
@@ -665,6 +749,7 @@
   - F4: Focus on instrument list
 
 ### Fixed
+
 - Fix to draw the playing cursor when follow mode is turned off
 - [#152] - Prevent real step size setting to 0 (thanks [@OPNA2608])
 - [#153] - Fix hardware envelope to set data in sequence (thanks [@papiezak])
@@ -690,11 +775,14 @@
 [@ValleyBell]: https://github.com/ValleyBell
 
 ## v0.2.4 (2019-09-17)
+
 ### Changed
+
 - Finish value entry in the cell of pattern editor and order list when the cursor is moved
 - Update translation: ja
 
 ### Fixed
+
 - [#147], [#148] - Fix some typos (thanks [@alexmyczko])
 - Ignore instrument addition when the instrument list has filled (thanks [@maakmusic])
 - [#149] - Fix incorrect key off controls before key on (thanks [@CommodoreKulor])
@@ -711,7 +799,9 @@
 [#151]: https://github.com/BambooTracker/BambooTracker/issues/151
 
 ## v0.2.3 (2019-08-31)
+
 ### Added
+
 - Add the selection of effect value initialization upon entering effect id
 - [#136] - Add instrument bank (thanks [@papiezak], [@jpcima])
 - Keep selected file filter in instrument and bank import
@@ -719,6 +809,7 @@
 - Add sample instruments (thanks [@papiezak])
 
 ### Fixed
+
 - [#143] - Fix the corruption of note delay effect without note on (thanks [@ImATrackMan])
 - [#146] - Fix the replay corruption after song-end effect (thanks [@papiezak])
 
@@ -727,14 +818,18 @@
 [#146]: https://github.com/BambooTracker/BambooTracker/issues/146
 
 ## v0.2.2 (2019-06-25)
+
 ### Added
+
 - [#141] - Add bank import and icons to instrument context menu (thanks [@jpcima])
 - [#142] - Add search box for instrument selection dialog (thanks [@jpcima])
 
 ### Changed
+
 - [#139] - Update translation: fr ([#122]; thanks [@jpcima], [@trebmuh])
 
 ### Fixed
+
 - Fix SSG hardware envelope to reset on note on
 - Fix that Drum master volume effect is not available
 - [#137] - Fix corruption that occurred when using volume slide in FM3ch expansion (thanks [@SMB7])
@@ -754,16 +849,20 @@
 [@SMB7]: https://github.com/SMB7
 
 ## v0.2.1 (2019-06-16)
+
 ### Added
+
 - [#127] - Add effect display width to module (thanks [@ImATrackMan])
 - Add 1 sample module (thanks [Dippy])
 
 ### Changed
+
 - [#123], [#125] - Update translation: fr ([#122]; thanks [@trebmuh], [@jpcima])
 - [#129] - Set the maximum count of FM channel to 6 in jamming during FX 3ch expanded mode (thanks [@galap-1])
 - [#134] - Change delay effects to affect over step except note delay (thanks [@scarletbullgon])
 
 ### Fixed
+
 - [#124] - Automatic section size for table column ([#122]; thanks [@jpcima], [@trebmuh])
 - [#96] - Clean audio buffer initially (thanks [@OPNA2608])
 - [#126] - Reset scrollbar positions in order list when loading song (thanks [@N-SPC700], [@OPNA2608])
@@ -795,7 +894,9 @@
 [@nukeykt]: https://github.com/nukeykt
 
 ## v0.2.0 (2019-04-30)
+
 ### Added
+
 - [#76], [#107] - MIDI keyboard support ([#32]; thanks [@galap-1], [@jpcima], [@OPNA2608])
 - Add edit/jam button in tool bar
 - Add 1 sample module (thanks [@SuperJetSpade])
@@ -817,6 +918,7 @@
 - [#79] - Add plain keyboard shortcut list dialog (thanks [@papiezak])
 
 ### Changed
+
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
 - Change to keep current instrument when loading module
 - Move tick frequency settings from module settings groupbox to module properties dialog
@@ -826,6 +928,7 @@
 - [#121] - Update translation: fr, ja (thanks [@jpcima], [@trebmuh])
 
 ### Fixed
+
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
 - [#81] - Fix crash when toggling FM1 on/off using mouse (thanks [@papiezak])
 - Fix operator mask in restarting
@@ -855,6 +958,7 @@
 - Fix channel state retrieve to stop instrument sequences when there is no note at the first step
 
 ### Removed
+
 - Remove module and instrument saving to past version
 - [#3] - Remove square-mask frequency selection by note+pitch
 - Delete module properties dialog open button in module settings groupbox
@@ -910,7 +1014,9 @@
 [@Delta-Psi]: https://github.com/Delta-Psi
 
 ## v0.1.6 (2019-03-16)
+
 ### Added
+
 - [#63] - L10n: French, Japanese (thanks [@jpcima], [@trebmuh])
 - Add file history
 - [#65] - Add repository to Appveyor and Travis CI (thanks [@papiezak], [@OPNA2608], [@jpcima])
@@ -919,6 +1025,7 @@
 - [#53] - Add 2 demo modules (thanks [@ehaupt], [@maakmusic])
 
 ### Fixed
+
 - [#69] - Fix corruption in jamming (thanks [@maakmusic], [@ImATrackMan])
 - [#61] - Fix translation building for <Qt5.12 (thanks [@OPNA2608], [@jpcima])
 - [#64] - Fix the envlope reset behavior (thanks [@Pigu-A])
@@ -957,7 +1064,9 @@
 [@emninem]: https://github.com/emninem
 
 ## v0.1.5 (2019-02-11)
+
 ### Added
+
 - Add mix settings
 - [#56] - Add installation rules and loader for translations (thanks [@jpcima])
 - Load module from command line argument
@@ -967,6 +1076,7 @@
 - Add effect description in status bar
 
 ### Fixed
+
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
 - [#51] - Add png icon (thanks [@ehaupt])
 - [#52], [#54] - Fix install instructions for FreeBSD, Debian and Ubuntu (thanks [@ehaupt], [@alexmyczko])
@@ -1001,7 +1111,9 @@
 [@scarletbullgon]: https://github.com/scarletbullgon
 
 ## v0.1.4 (2019-01-01)
+
 ### Added
+
 - [#27] - Add application icon (thanks [@Decidetto])
 - [#29], [#36], [#41] - Create BambooTracker.desktop (thanks [@alexmyczko], [@trebmuh], [@OPNA2608])
 - [#30] - Create BambooTracker.1 (thanks [@alexmyczko], [@OPNA2608])
@@ -1015,6 +1127,7 @@
 - Add tool bar in instrument list
 
 ### Fixed
+
 - [#28] - Fix error when compiling before Qt5.10 (thanks [@papiezak] and others)
 - [#33] - Revise README (thanks [@OPNA2608])
 - [#31] - Replacing Json config with QSettings ([#17]; thanks [@OPNA2608])
@@ -1049,13 +1162,16 @@
 [@jpcima]: https://github.com/jpcima
 
 ## v0.1.3 (2018-12-14)
+
 ### Added
+
 - [#18] - Add FM operator copy/paste (thanks [@jimbo1qaz])
 - [#14] - Assign instrument editor close shortcut to escape key (thanks [@jimbo1qaz])
 - [#26] - Add menu shortcuts (thanks [@jimbo1qaz])
 - [#2] - Add simple key shortcut settings (thanks [@pedipanol])
 
 ### Fixed
+
 - Fix default place of load/save instrument
 - [#25] - Change FM synthesis frequency from 110933Hz to 55466Hz (thanks [@papiezak])
 - [#6], [#14] - Fix to set new property when adding instrument (thanks [@ScoopJohn], [@jimbo1qaz])
@@ -1077,12 +1193,15 @@
 [@papiezak]: https://github.com/papiezak
 
 ## v0.1.2 (2018-12-02)
+
 ### Added
+
 - [#2], [#6] - Add selection whether the order of FM volume is reversed (thanks [@pedipanol], [@ScoopJohn])
 - [#22] - Add .dmp, .tfi and .vgi instrument file importing support ([#2], [#6]; thanks [@Pigu-A])
 - [#12] - Add order/pattern focus shortcut (thanks [@jimbo1qaz])
 
 ### Fixed
+
 - Fix module load error by missing pattern size initialization (thanks [@maakmusic])
 - [#10] - Rearrange tab stops for better keyboard navigation (thanks [@Pigu-A])
 - [#11] - Change envelope reset behavior (thanks [@Pigu-A])
@@ -1115,10 +1234,13 @@
 [@ScoopJohn]: https://github.com/ScoopJohn
 
 ## v0.1.1 (2018-11-27)
+
 ### Added
+
 - [#8] - Add dependencies and compile instructions on linux to readme (thanks [@OPNA2608])
 
 ### Fixed
+
 - [#5] - Fix scroll directions of scroll bar arrow in instrument sequence editor (thanks [@Xyz39808])
 - [#4] - Fix wrong offset jump when opening file with operator sequence (thanks [@9001], [@nabetaqz])
 - [#9] - Check if saved soundOutput exists ([#7]; thanks [@OPNA2608], [@marysiamzawka])
@@ -1136,5 +1258,7 @@
 [@nabetaqz]: https://twitter.com/nabetaqz
 
 ## v0.1.0 (2018-11-25)
+
 ### Added
+
 - First release

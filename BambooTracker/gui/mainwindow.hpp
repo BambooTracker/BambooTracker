@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -54,7 +54,7 @@
 #include "bamboo_tracker.hpp"
 #include "precise_timer.hpp"
 #include "audio/audio_stream.hpp"
-#include "gui/instrument_editor/instrument_form_manager.hpp"
+#include "gui/instrument_editor/instrument_editor_manager.hpp"
 #include "gui/color_palette.hpp"
 #include "gui/file_history.hpp"
 #include "gui/effect_list_dialog.hpp"
@@ -119,7 +119,7 @@ private:
 	std::shared_ptr<QLibrary> scciDll_, c86ctlDll_;
 
 	// Instrument list
-	std::shared_ptr<InstrumentFormManager> instForms_;
+	std::shared_ptr<InstrumentEditorManager> instDialogMan_;
 	QListWidgetItem* renamingInstItem_;
 	QLineEdit* renamingInstEdit_;
 	void addInstrument();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -109,5 +109,18 @@ template <class Map, typename T>
 inline auto findMapValue(const Map& map, const T& value)
 {
 	return findIf(map, [&](typename Map::const_reference pair) { return pair.second == value; });
+}
+
+/**
+ * @brief isInRange
+ * @param value Value.
+ * @param min  Left-closed value.
+ * @param max Right-closed value.
+ * @return /c True when /c value is in [lower, upper].
+ */
+template <typename T>
+constexpr auto isInRange(T value, T lower, T upper)
+{
+	return (lower <= value && value <= upper);
 }
 }

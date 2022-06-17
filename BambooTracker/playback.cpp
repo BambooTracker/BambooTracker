@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -500,10 +500,11 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 	int noteNum = step.getNoteNumber();
 	switch (noteNum) {
 	case Step::NOTE_NONE:
-		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+		if (!calledByNoteDelay) {
+			// When this is called by note delay, skip delay check because it has already checked.
 			checkFMDelayEventsInTick(step, ch);
-			opnaCtrl_->tickEvent(SoundSource::FM, ch);
 		}
+		opnaCtrl_->tickEvent(SoundSource::FM, ch);
 		break;
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffFM(ch);
@@ -550,10 +551,11 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 	int noteNum = step.getNoteNumber();
 	switch (noteNum) {
 	case Step::NOTE_NONE:
-		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+		if (!calledByNoteDelay) {
+			// When this is called by note delay, skip delay check because it has already checked.
 			checkSSGDelayEventsInTick(step, ch);
-			opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 		}
+		opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 		break;
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffSSG(ch);
@@ -592,10 +594,11 @@ void PlaybackManager::executeRhythmStepEvents(const Step& step, int ch, bool cal
 	// Set key
 	switch (step.getNoteNumber()) {
 	case Step::NOTE_NONE:
-		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+		if (!calledByNoteDelay) {
+			// When this is called by note delay, skip delay check because it has already checked.
 			checkRhythmDelayEventsInTick(step, ch);
-			opnaCtrl_->tickEvent(SoundSource::RHYTHM, ch);
 		}
+		opnaCtrl_->tickEvent(SoundSource::RHYTHM, ch);
 		break;
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->setKeyOffFlagRhythm(ch);
@@ -632,10 +635,11 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 	int noteNum = step.getNoteNumber();
 	switch (noteNum) {
 	case Step::NOTE_NONE:
-		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+		if (!calledByNoteDelay) {
+			// When this is called by note delay, skip delay check because it has already checked.
 			checkADPCMDelayEventsInTick(step);
-			opnaCtrl_->tickEvent(SoundSource::ADPCM, 0);
 		}
+		opnaCtrl_->tickEvent(SoundSource::ADPCM, 0);
 		break;
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffADPCM();
@@ -1368,11 +1372,12 @@ void PlaybackManager::tickProcess(int rest)
 		auto& curStep = song.getTrack(attrib.number)
 						.getPatternFromOrderNumber(playingPos_.order).getStep(playingPos_.step);
 		int ch = attrib.channelInSource;
+		bool hasDoneNoteDelay = false;
 		switch (attrib.source) {
-		case SoundSource::FM:		checkFMDelayEventsInTick(curStep, ch);		break;
-		case SoundSource::SSG:		checkSSGDelayEventsInTick(curStep, ch);		break;
-		case SoundSource::RHYTHM:	checkRhythmDelayEventsInTick(curStep, ch);	break;
-		case SoundSource::ADPCM:	checkADPCMDelayEventsInTick(curStep);		break;
+		case SoundSource::FM:		hasDoneNoteDelay = checkFMDelayEventsInTick(curStep, ch);		break;
+		case SoundSource::SSG:		hasDoneNoteDelay = checkSSGDelayEventsInTick(curStep, ch);		break;
+		case SoundSource::RHYTHM:	hasDoneNoteDelay = checkRhythmDelayEventsInTick(curStep, ch);	break;
+		case SoundSource::ADPCM:	hasDoneNoteDelay = checkADPCMDelayEventsInTick(curStep);		break;
 		}
 
 		if (rest == 1 && nextReadPos_.isValid() && attrib.source == SoundSource::FM && !isPlayingStep()) {
@@ -1391,14 +1396,15 @@ void PlaybackManager::tickProcess(int rest)
 			// Skip the statement below if envelope reset effect has cexecuted
 			if (!hasNoteDelay && envRstDlyCntFM_.at(static_cast<size_t>(ch))) envelopeResetEffectFM(step, ch);
 		}
-		else {
+		else if (!hasDoneNoteDelay) {
+			// Skip tick process when step process was called by note delay event.
 			opnaCtrl_->tickEvent(attrib.source, ch);
 		}
 	}
 	opnaCtrl_->updateRegisterStates();
 }
 
-void PlaybackManager::checkFMDelayEventsInTick(const Step& step, int ch)
+bool PlaybackManager::checkFMDelayEventsInTick(const Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
@@ -1417,20 +1423,24 @@ void PlaybackManager::checkFMDelayEventsInTick(const Step& step, int ch)
 	if (!rtrgCntFM_.at(uch))
 		opnaCtrl_->retriggerKeyOnFM(ch, rtrgVolValueFM_.at(uch));
 	// Check note delay and envelope reset
-	checkFMNoteDelayAndEnvelopeReset(step, ch);
+	return checkFMNoteDelayAndEnvelopeReset(step, ch);
 }
 
-void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch)
+bool PlaybackManager::checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch)
 {
 	int cnt = ntDlyCntFM_.at(static_cast<size_t>(ch));
 	if (!cnt) {
 		executeFMStepEvents(step, ch, true);
+		return true;
 	}
+
 	// Skip the statement below if envelope reset effect has cexecuted
-	else if (cnt == 1 && envRstDlyCntFM_.at(static_cast<size_t>(ch))) {
+	if (cnt == 1 && envRstDlyCntFM_.at(static_cast<size_t>(ch))) {
 		// Channel envelope reset before next key on
 		envelopeResetEffectFM(step, ch);
 	}
+
+	return false;
 }
 
 void PlaybackManager::envelopeResetEffectFM(const Step& step, int ch)
@@ -1453,7 +1463,7 @@ void PlaybackManager::envelopeResetEffectFM(const Step& step, int ch)
 	}
 }
 
-void PlaybackManager::checkSSGDelayEventsInTick(const Step& step, int ch)
+bool PlaybackManager::checkSSGDelayEventsInTick(const Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
@@ -1469,11 +1479,14 @@ void PlaybackManager::checkSSGDelayEventsInTick(const Step& step, int ch)
 	if (!rtrgCntSSG_.at(uch))
 		opnaCtrl_->retriggerKeyOnSSG(ch, rtrgVolValueSSG_.at(uch));
 	// Check note delay
-	if (!ntDlyCntSSG_.at(uch))
+	if (!ntDlyCntSSG_.at(uch)) {
 		executeSSGStepEvents(step, ch, true);
+		return true;
+	}
+	return false;
 }
 
-void PlaybackManager::checkRhythmDelayEventsInTick(const Step& step, int ch)
+bool PlaybackManager::checkRhythmDelayEventsInTick(const Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
@@ -1486,11 +1499,14 @@ void PlaybackManager::checkRhythmDelayEventsInTick(const Step& step, int ch)
 	if (!rtrgCntRhythm_.at(uch))
 		opnaCtrl_->retriggerKeyOnFlagRhythm(ch, rtrgVolValueRhythm_.at(uch));
 	// Check note delay
-	if (!ntDlyCntRhythm_.at(uch))
+	if (!ntDlyCntRhythm_.at(uch)) {
 		executeRhythmStepEvents(step, ch, true);
+		return true;
+	}
+	return false;
 }
 
-void PlaybackManager::checkADPCMDelayEventsInTick(const Step& step)
+bool PlaybackManager::checkADPCMDelayEventsInTick(const Step& step)
 {
 	// Check volume delay
 	if (!volDlyCntADPCM_)
@@ -1505,8 +1521,11 @@ void PlaybackManager::checkADPCMDelayEventsInTick(const Step& step)
 	if (!rtrgCntADPCM_)
 		opnaCtrl_->retriggerKeyOnADPCM(rtrgVolValueADPCM_);
 	// Check note delay
-	if (!ntDlyCntADPCM_)
+	if (!ntDlyCntADPCM_) {
 		executeADPCMStepEvents(step, true);
+		return true;
+	}
+	return false;
 }
 
 void PlaybackManager::clearEffectMaps()

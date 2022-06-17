@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,7 +30,7 @@
 #include <memory>
 #include <QListWidget>
 #include <QString>
-#include "gui/instrument_editor/instrument_form_manager.hpp"
+#include "gui/instrument_editor/instrument_editor_manager.hpp"
 
 class PatternEditor;
 
@@ -39,7 +39,7 @@ class SwapInstrumentsQtCommand final : public QUndoCommand
 public:
 	SwapInstrumentsQtCommand(QListWidget *list, int inst1Row, int inst2Row,
 							 const QString& inst1Name, const QString& inst2Name,
-							 std::weak_ptr<InstrumentFormManager> formMan,
+							 std::weak_ptr<InstrumentEditorManager> editorMan,
 							 PatternEditor* pattern, QUndoCommand* parent = nullptr);
 	void undo() override;
 	void redo() override;
@@ -49,7 +49,7 @@ private:
 	QListWidget* list_;
 	PatternEditor* ptn_;
 	int inst1Row_, inst2Row_;
-	std::weak_ptr<InstrumentFormManager> formMan_;
+	std::weak_ptr<InstrumentEditorManager> editorMan_;
 	QString inst1Name_, inst2Name_;
 
 	void swap(int above, int below, QString aboveName, QString belowName);

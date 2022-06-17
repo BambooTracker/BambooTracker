@@ -1,8 +1,11 @@
-## File I/O
-### Module
+# File I/O
+
+## Module
+
 The tracker enables to open and save to .btm (BambooTracker module file).
 
-### Instrument
+## Instrument
+
 The tracker can load instrument from the following files.
 
 - .bti (BambooTracker instrument file)
@@ -12,13 +15,15 @@ The tracker can load instrument from the following files.
 - .opni (WOPN instrument file)
 - .y12 (Gens KMod dump file)
 - .ins (MVSTracker instrument file)
+- .spb (Raw ADPCM sample file)
 
 It also supports loading FM envelopes in plain text formats.  
 ADPCM waveform editor supports .wav import (16-bit mono 2k-55.5kHz).
 
 An instrument is saved as a .bti file.
 
-### Bank
+## Bank
+
 The tracker can load bank from the following files.
 
 - .btb (BambooTracker bank file)
@@ -33,7 +38,8 @@ The tracker can load bank from the following files.
 
 A bank is saved as a .btb file.
 
-### Export
+## Export
+
 The tracker can export a song to the following files:
 
 - .wav (WAVE file)

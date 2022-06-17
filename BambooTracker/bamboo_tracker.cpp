@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -2303,7 +2303,7 @@ void BambooTracker::swapTracks(int songNum, int track1, int track2)
 	mod_->getSong(songNum).swapTracks(track1, track2);
 }
 
-double BambooTracker::getApproximateSongLength(int songNum) const
+double BambooTracker::estimateSongLength(int songNum) const
 {
 	SongLengthCalculator calc(*mod_.get(), songNum);
 	return calc.approximateLengthBySecond();

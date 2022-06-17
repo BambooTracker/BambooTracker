@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,38 +23,28 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef REMOVE_INSTRUMENT_QT_COMMAND_HPP
-#define REMOVE_INSTRUMENT_QT_COMMAND_HPP
+#include "raw_adpcm_io.hpp"
+#include "file_io_error.hpp"
+#include "io_utils.hpp"
 
-#include <memory>
-#include <QUndoCommand>
-#include <QWidget>
-#include <QListWidget>
-#include <QString>
-#include "gui/mainwindow.hpp"
-#include "gui/instrument_editor/instrument_editor_manager.hpp"
-
-enum class InstrumentType;
-
-class RemoveInstrumentQtCommand final : public QUndoCommand
+namespace io
 {
-public:
-	RemoveInstrumentQtCommand(QListWidget *list, int num, int row, const QString& name,
-							  InstrumentType type, std::weak_ptr<InstrumentEditorManager> dialogMan,
-							  MainWindow* mainWin, bool updateRequested, QUndoCommand *parent = nullptr);
-	void undo() override;
-	void redo() override;
-	int id() const override;
+RawAdpcmIO::RawAdpcmIO() : AbstractInstrumentIO("spb", "ADPCM sample", true, false) {}
 
-private:
-	QListWidget *list_;
-	const int num_;
-	const QString name_;
-	const int row_;
-	const InstrumentType type_;
-	std::weak_ptr<InstrumentEditorManager> dialogMan_;
-	MainWindow* mainWin_;
-	const bool updateRequested_;
-};
+AbstractInstrument* RawAdpcmIO::load(const BinaryContainer& ctr, const std::string& fileName,
+								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
+	if (sampIdx < 0) throw FileCorruptionError(FileType::Inst, 0);
 
-#endif // REMOVE_INSTRUMENT_QT_COMMAND_HPP
+	auto adpcm = new InstrumentADPCM(instNum, fileName, instManLocked.get());
+	adpcm->setSampleNumber(sampIdx);
+
+	instManLocked->storeSampleADPCMRawSample(sampIdx, ctr.toVector());
+	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x49cd);	// 16000Hz
+
+	return adpcm;
+}
+}

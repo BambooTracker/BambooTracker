@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,75 +23,94 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INSTRUMENT_EDITOR_ADPCM_FORM_HPP
-#define INSTRUMENT_EDITOR_ADPCM_FORM_HPP
+#pragma once
 
-#include <memory>
-#include <QDialog>
 #include <QKeyEvent>
-#include "bamboo_tracker.hpp"
-#include "configuration.hpp"
-#include "jamming.hpp"
-#include "gui/color_palette.hpp"
+#include <memory>
+#include "instrument.hpp"
+#include "instrument/instrument_property_defs.hpp"
+#include "gui/instrument_editor/instrument_editor.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 
 namespace Ui {
-	class InstrumentEditorADPCMForm;
+class SsgInstrumentEditor;
 }
 
-class InstrumentEditorADPCMForm : public QDialog
+class SsgInstrumentEditor final : public InstrumentEditor
 {
 	Q_OBJECT
 
 public:
-	explicit InstrumentEditorADPCMForm(int num, QWidget *parent = nullptr);
-	~InstrumentEditorADPCMForm() override;
-	void setInstrumentNumber(int num);
-	int getInstrumentNumber() const;
-	void setCore(std::weak_ptr<BambooTracker> core);
-	void setConfiguration(std::weak_ptr<Configuration> config);
-	void updateConfigurationForDisplay();
-	void setColorPalette(std::shared_ptr<ColorPalette> palette);
+	SsgInstrumentEditor(int num, QWidget* parent = nullptr);
+	~SsgInstrumentEditor() override;
 
-signals:
-	void jamKeyOnEvent(JamKey key);
-	void jamKeyOffEvent(JamKey key);
-	void modified();
+	/**
+	 * @brief Return sound source of instrument related to this dialog.
+	 * @return SSG.
+	 */
+	SoundSource getSoundSource() const override;
+
+	/**
+	 * @brief Return instrument type of instrument related to this dialog.
+	 * @return SSG.
+	 */
+	InstrumentType getInstrumentType() const override;
+
+	void updateByConfigurationChange() override;
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
-	Ui::InstrumentEditorADPCMForm *ui;
-	int instNum_;
+	Ui::SsgInstrumentEditor *ui;
 	bool isIgnoreEvent_;
 
-	std::weak_ptr<BambooTracker> bt_;
-	std::weak_ptr<Configuration> config_;
-	std::shared_ptr<ColorPalette> palette_;
+	// SSG specific process called in settiing core / cofiguration / color palette.
+	void updateBySettingCore() override;
+	void updateBySettingConfiguration() override {}
+	void updateBySettingColorPalette() override;
 
 	void updateInstrumentParameters();
 
-	//========== Sample ==========//
+	//========== Waveform ==========//
 signals:
-	void sampleNumberChanged();
-	void sampleParameterChanged(int sampNum, int fromInstNum);
-	void sampleAssignRequested();
-	void sampleMemoryChanged();
+	void waveformNumberChanged();
+	void waveformParameterChanged(int wfNum, int fromInstNum);
 
 public slots:
-	void onSampleNumberChanged();
-	void onSampleParameterChanged(int sampNum);
-	void onSampleMemoryUpdated();
+	void onWaveformNumberChanged();
+	void onWaveformParameterChanged(int wfNum);
 
 private:
-	void setInstrumentSampleParameters();
+	void setInstrumentWaveformParameters();
+	SSGWaveformUnit setWaveformSequenceColumn(int col, int wfRow);
+
+private slots:
+	void on_waveEditGroupBox_toggled(bool arg1);
+	void on_waveNumSpinBox_valueChanged(int arg1);
+	void on_squareMaskRawSpinBox_valueChanged(int arg1);
+
+	//========== Tone/Noise ==========//
+signals:
+	void toneNoiseNumberChanged();
+	void toneNoiseParameterChanged(int tnNum, int fromInstNum);
+
+public slots:
+	void onToneNoiseNumberChanged();
+	void onToneNoiseParameterChanged(int tnNum);
+
+private:
+	void setInstrumentToneNoiseParameters();
+
+private slots:
+	void on_tnEditGroupBox_toggled(bool arg1);
+	void on_tnNumSpinBox_valueChanged(int arg1);
 
 	//========== Envelope ==========//
 signals:
 	void envelopeNumberChanged();
-	void envelopeParameterChanged(int envNum, int fromInstNum);
+	void envelopeParameterChanged(int wfNum, int fromInstNum);
 
 public slots:
 	void onEnvelopeNumberChanged();
@@ -99,10 +118,12 @@ public slots:
 
 private:
 	void setInstrumentEnvelopeParameters();
+	SSGEnvelopeUnit setEnvelopeSequenceColumn(int col, int envRow);
 
 private slots:
 	void on_envEditGroupBox_toggled(bool arg1);
 	void on_envNumSpinBox_valueChanged(int arg1);
+	void on_hardFreqRawSpinBox_valueChanged(int arg1);
 
 	//========== Arpeggio ==========//
 signals:
@@ -137,22 +158,4 @@ private slots:
 	void onPitchTypeChanged(int);
 	void on_ptEditGroupBox_toggled(bool arg1);
 	void on_ptNumSpinBox_valueChanged(int arg1);
-
-	//========== Pan ==========//
-signals:
-	void panNumberChanged();
-	void panParameterChanged(int panNum, int fromInstNum);
-
-public slots:
-	void onPanNumberChanged();
-	void onPanParameterChanged(int arpNum);
-
-private:
-	void setInstrumentPanParameters();
-
-private slots:
-	void on_panEditGroupBox_toggled(bool arg1);
-	void on_panNumSpinBox_valueChanged(int arg1);
 };
-
-#endif // INSTRUMENT_EDITOR_ADPCM_FORM_HPP

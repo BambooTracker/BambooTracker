@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,7 +32,7 @@
 #include <QListWidget>
 #include <QString>
 #include "gui/mainwindow.hpp"
-#include "gui/instrument_editor/instrument_form_manager.hpp"
+#include "gui/instrument_editor/instrument_editor_manager.hpp"
 
 enum class InstrumentType;
 
@@ -40,8 +40,8 @@ class AddInstrumentQtCommand final : public QUndoCommand
 {
 public:
 	AddInstrumentQtCommand(QListWidget *list, int num, const QString& name, InstrumentType type,
-						   std::weak_ptr<InstrumentFormManager> formMan,
-						   MainWindow* mainwin, bool onlyUsed, bool preventFirstStore = false,
+						   std::weak_ptr<InstrumentEditorManager> dialogMan,
+						   MainWindow* mainWin, bool onlyUsed, bool preventFirstStore = false,
 						   QUndoCommand *parent = nullptr);
 	void undo() override;
 	void redo() override;
@@ -52,8 +52,8 @@ private:
 	const int num_;
 	const QString name_;
 	const InstrumentType type_;
-	std::weak_ptr<InstrumentFormManager> formMan_;
-	MainWindow* mainwin_;
+	std::weak_ptr<InstrumentEditorManager> dialogMan_;
+	MainWindow* mainWin_;
 	const bool onlyUsed_;
 	bool hasDone_;
 };

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InstrumentEditorSSGForm</class>
- <widget class="QDialog" name="InstrumentEditorSSGForm">
+ <class>SsgInstrumentEditor</class>
+ <widget class="QDialog" name="SsgInstrumentEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -599,7 +599,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="hardFreqButtonGroup"/>
   <buttongroup name="squareMaskButtonGroup"/>
+  <buttongroup name="hardFreqButtonGroup"/>
  </buttongroups>
 </ui>

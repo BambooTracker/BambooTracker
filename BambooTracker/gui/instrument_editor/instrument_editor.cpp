@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,38 +23,42 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef REMOVE_INSTRUMENT_QT_COMMAND_HPP
-#define REMOVE_INSTRUMENT_QT_COMMAND_HPP
-
-#include <memory>
-#include <QUndoCommand>
-#include <QWidget>
-#include <QListWidget>
+#include "instrument_editor.hpp"
 #include <QString>
-#include "gui/mainwindow.hpp"
-#include "gui/instrument_editor/instrument_editor_manager.hpp"
+#include "gui/gui_utils.hpp"
 
-enum class InstrumentType;
-
-class RemoveInstrumentQtCommand final : public QUndoCommand
+InstrumentEditor::InstrumentEditor(int num, QWidget* parent)
+	: QDialog(parent), instNum_(num)
 {
-public:
-	RemoveInstrumentQtCommand(QListWidget *list, int num, int row, const QString& name,
-							  InstrumentType type, std::weak_ptr<InstrumentEditorManager> dialogMan,
-							  MainWindow* mainWin, bool updateRequested, QUndoCommand *parent = nullptr);
-	void undo() override;
-	void redo() override;
-	int id() const override;
+}
 
-private:
-	QListWidget *list_;
-	const int num_;
-	const QString name_;
-	const int row_;
-	const InstrumentType type_;
-	std::weak_ptr<InstrumentEditorManager> dialogMan_;
-	MainWindow* mainWin_;
-	const bool updateRequested_;
-};
+void InstrumentEditor::setInstrumentNumber(int num)
+{
+	instNum_ = num;
+	updateWindowTitle();
+}
 
-#endif // REMOVE_INSTRUMENT_QT_COMMAND_HPP
+void InstrumentEditor::setCore(std::weak_ptr<BambooTracker> core)
+{
+	bt_ = core;
+	updateBySettingCore();
+}
+
+void InstrumentEditor::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	config_ = config;
+	updateBySettingConfiguration();
+}
+
+void InstrumentEditor::setColorPalette(std::shared_ptr<ColorPalette> palette)
+{
+	palette_ = palette;
+	updateBySettingColorPalette();
+}
+
+void InstrumentEditor::updateWindowTitle()
+{
+	if (bt_.expired()) return;
+	auto name = gui_utils::utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
+	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
+}

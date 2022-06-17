@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,7 +30,7 @@
 #include <QListWidget>
 #include <memory>
 #include "gui/mainwindow.hpp"
-#include "gui/instrument_editor/instrument_form_manager.hpp"
+#include "gui/instrument_editor/instrument_editor_manager.hpp"
 
 enum class InstrumentType;
 
@@ -38,7 +38,7 @@ class DeepCloneInstrumentQtCommand final : public QUndoCommand
 {
 public:
 	DeepCloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, const QString& name,
-								 std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
+								 std::weak_ptr<InstrumentEditorManager> dialogMan, MainWindow* mainWin,
 								 bool onlyUsed, QUndoCommand* parent = nullptr);
 
 	void undo() override;
@@ -48,10 +48,10 @@ public:
 private:
 	QListWidget* list_;
 	const int cloneNum_;
-	std::weak_ptr<InstrumentFormManager> formMan_;
+	std::weak_ptr<InstrumentEditorManager> dialogMan_;
 	const InstrumentType type_;
 	const QString name_;
-	MainWindow* mainwin_;
+	MainWindow* mainWin_;
 	const bool onlyUsed_;
 };
 

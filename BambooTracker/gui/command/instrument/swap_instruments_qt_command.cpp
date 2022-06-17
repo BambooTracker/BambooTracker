@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,16 +28,16 @@
 #include "instrument.hpp"
 #include "command/command_id.hpp"
 #include "gui/pattern_editor/pattern_editor.hpp"
+#include "gui/instrument_editor/instrument_editor.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-SwapInstrumentsQtCommand::SwapInstrumentsQtCommand(
-		QListWidget* list, int inst1Row, int inst2Row, const QString& inst1Name,
-		const QString& inst2Name, std::weak_ptr<InstrumentFormManager> formMan,
-		PatternEditor* pattern, QUndoCommand* parent)
+SwapInstrumentsQtCommand::SwapInstrumentsQtCommand(QListWidget* list, int inst1Row, int inst2Row, const QString& inst1Name,
+												   const QString& inst2Name, std::weak_ptr<InstrumentEditorManager> editorMan,
+												   PatternEditor* pattern, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  ptn_(pattern),
-	  formMan_(formMan)
+	  editorMan_(editorMan)
 {
 	if (inst1Row < inst2Row) {
 		inst1Row_ = inst1Row;
@@ -85,11 +85,7 @@ void SwapInstrumentsQtCommand::swap(int above, int below, QString aboveName, QSt
 	list_->insertItem(above, belowItem);
 	list_->insertItem(below, aboveItem);
 
-	formMan_.lock()->swap(aboveId, belowId);
-	if (auto aboveForm = formMan_.lock()->getForm(aboveId).get())
-		aboveForm->setWindowTitle(newAboveName);
-	if (auto belowForm = formMan_.lock()->getForm(belowId).get())
-		belowForm->setWindowTitle(newBelowName);
+	editorMan_.lock()->swap(aboveId, belowId);
 
 	ptn_->onPatternDataGlobalChanged();
 }

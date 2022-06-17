@@ -1,4 +1,5 @@
-## Key commands
+# Key Commands
+
 Please replace some keys with the following in macOS:
 
 - <kbd>Ctrl</kbd> → <kbd>⌘ command</kbd>
@@ -6,7 +7,8 @@ Please replace some keys with the following in macOS:
 - <kbd>BackSpace</kbd> → <kbd>delete</kbd>
 - <kbd>Delete</kbd> → <kbd>fn</kbd>+<kbd>delete</kbd>
 
-### General
+## General
+
 | Key                               | Command                     |
 | --------------------------------- | --------------------------- |
 | <kbd>Ctrl</kbd>+<kbd>N</kbd>      | Create new module           |
@@ -27,14 +29,16 @@ Please replace some keys with the following in macOS:
 | <kbd>F8</kbd>                     | Stop song                   |
 | <kbd>F12</kbd>                    | Kill sound                  |
 
-### Instrument list
+## Instrument List
+
 | Key                          | Command                        |
 | ---------------------------- | ------------------------------ |
 | <kbd>Insert</kbd>            | Add instrument                 |
 | <kbd>Delete</kbd>            | Remove instrument              |
 | <kbd>Ctrl</kbd>+<kbd>I</kbd> | Open current instrument editor |
 
-### Order list
+## Order List
+
 | Key                                              | Command             |
 | ------------------------------------------------ | ------------------- |
 | <kbd>Ctrl</kbd>+<kbd>C</kbd>                     | Copy                |
@@ -50,7 +54,8 @@ Please replace some keys with the following in macOS:
 | <kbd>Delete</kbd>                                | Delete order        |
 | <kbd>Escape</kbd>                                | Deselect            |
 
-### Pattern editor
+## Pattern Editor
+
 | Key                                                            | Command                                     |
 | -------------------------------------------------------------- | ------------------------------------------- |
 | <kbd>Ctrl</kbd>+<kbd>C</kbd>                                   | Copy                                        |
@@ -101,7 +106,7 @@ Please replace some keys with the following in macOS:
 
 There are two rows of a piano keyboard:
 
-```
+```text
 Current octave+1
  2 3  5 6 7  9
 Q W ER T Y UI O

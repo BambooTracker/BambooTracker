@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -432,7 +432,7 @@ public:
 	void sortSongs(const std::vector<int>& numbers);
 	void transposeSong(int songNum, int seminotes, const std::vector<int>& excludeInsts);
 	void swapTracks(int songNum, int track1, int track2);
-	double getApproximateSongLength(int songNum) const;
+	double estimateSongLength(int songNum) const;
 	size_t getTotalStepCount(int songNum, size_t loopCnt) const;
 	/*----- Bookmark -----*/
 	void addBookmark(int songNum, const std::string& name, int order, int step);

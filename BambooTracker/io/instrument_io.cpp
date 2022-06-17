@@ -32,6 +32,7 @@
 #include "opni_io.hpp"
 #include "y12_io.hpp"
 #include "ins_io.hpp"
+#include "raw_adpcm_io.hpp"
 
 namespace io
 {
@@ -68,6 +69,7 @@ InstrumentIO::InstrumentIO()
 	handler_.add(new OpniIO);
 	handler_.add(new Y12IO);
 	handler_.add(new InsIO);
+	handler_.add(new RawAdpcmIO);
 }
 
 InstrumentIO& InstrumentIO::getInstance()

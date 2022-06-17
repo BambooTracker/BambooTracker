@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,16 +25,16 @@
 
 #include "change_instrument_name_qt_command.hpp"
 #include "command/command_id.hpp"
+#include "gui/instrument_editor/instrument_editor.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(
-		QListWidget *list, int num, int row, std::weak_ptr<InstrumentFormManager> formMan,
-		const QString& oldName, const QString& newName, QUndoCommand *parent)
+ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget* list, int num, int row, std::weak_ptr<InstrumentEditorManager> editorMan,
+		const QString& oldName, const QString& newName, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  row_(row),
-	  formMan_(formMan),
+	  editorMan_(editorMan),
 	  oldName_(oldName),
 	  newName_(newName)
 {
@@ -46,9 +46,7 @@ void ChangeInstrumentNameQtCommand::redo()
 	auto title = gui_command_utils::makeInstrumentListText(num_, newName_);
 	item->setText(title);
 
-	if (auto form = formMan_.lock()->getForm(num_).get()) {
-		form->setWindowTitle(title);
-	}
+	editorMan_.lock()->onInstrumentNameChanged(num_);
 }
 
 void ChangeInstrumentNameQtCommand::undo()
@@ -57,9 +55,7 @@ void ChangeInstrumentNameQtCommand::undo()
 	auto title = gui_command_utils::makeInstrumentListText(num_, oldName_);
 	item->setText(title);
 
-	if (auto form = formMan_.lock()->getForm(num_).get()) {
-		form->setWindowTitle(title);
-	}
+	editorMan_.lock()->onInstrumentNameChanged(num_);
 }
 
 int ChangeInstrumentNameQtCommand::id() const

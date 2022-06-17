@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,13 +28,12 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-CloneInstrumentQtCommand::CloneInstrumentQtCommand(
-		QListWidget *list, int num, InstrumentType type, const QString& name,
-		std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
+CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, const QString& name,
+												   std::weak_ptr<InstrumentEditorManager> dialogMan, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  cloneNum_(num),
-	  formMan_(formMan),
+	  dialogMan_(dialogMan),
 	  type_(type),
 	  name_(name)
 {
@@ -50,7 +49,7 @@ void CloneInstrumentQtCommand::undo()
 	auto&& item = list_->takeItem(cloneNum_);
 	delete item;
 
-	formMan_.lock()->remove(cloneNum_);
+	dialogMan_.lock()->remove(cloneNum_);
 }
 
 int CloneInstrumentQtCommand::id() const
