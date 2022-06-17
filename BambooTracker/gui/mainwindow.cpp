@@ -72,6 +72,7 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
+#include "gui/wheel_spin_box.hpp"
 #include "chip/scci/scci_wrapper.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "midi/midi.hpp"
@@ -261,7 +262,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	/* Tool bars */
 	{
 		auto genSB = [](int value, int min, int max, int minW) {
-			auto sb = new QSpinBox();
+			auto sb = new WheelSpinBox();
 			sb->setMinimum(min);
 			sb->setMaximum(max);
 			sb->setValue(value);
