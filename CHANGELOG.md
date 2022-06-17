@@ -21,6 +21,7 @@
 - Update emu2149
 - [#448] - Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
 - [#420] - Free memory after instrument editor is closed (thanks [@nyanpasu64])
+- [#442] - Don't focus main window spinboxes on mouse scroll (thanks [@nyanpasu64])
 
 ### Fixed
 
@@ -44,6 +45,7 @@
 - [#448] - Check if the read/write position of the binary container is valid (thanks [@OPNA2608])
 - [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
 - [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
+- [#454] - Reduce misalignment of text in the status bar ([#415]; thanks [@OPNA2608])
 
 [@cxong]: https://github.com/cxong
 
@@ -85,6 +87,9 @@
 [#452]: https://github.com/BambooTracker/BambooTracker/pull/452
 [#420]: https://github.com/BambooTracker/BambooTracker/issues/420
 [#414]: https://github.com/BambooTracker/BambooTracker/issues/414
+[#454]: https://github.com/BambooTracker/BambooTracker/pull/454
+[#415]: https://github.com/BambooTracker/BambooTracker/issues/415
+[#442]: https://github.com/BambooTracker/BambooTracker/pull/442
 
 ## v0.5.0 (2021-08-01)
 

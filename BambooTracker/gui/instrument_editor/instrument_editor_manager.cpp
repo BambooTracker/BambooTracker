@@ -50,7 +50,8 @@ InstrumentEditorManager::~InstrumentEditorManager()
 
 void InstrumentEditorManager::updateByConfiguration()
 {
-	for (const auto& idcs : qAsConst(typeIndices_)) {
+	const auto& cTypeIdcs = typeIndices_;
+	for (const auto& idcs : cTypeIdcs) {
 		for (auto idx : idcs) {
 			if (auto& editor = editors_[idx]) editor->updateByConfigurationChange();
 		}
@@ -184,7 +185,8 @@ bool InstrumentEditorManager::hasShownEditor(int index) const
 int InstrumentEditorManager::getActivatedEditorIndex() const
 {
 	const QWidget* win = QApplication::activeWindow();
-	for (const auto& idcs : qAsConst(typeIndices_)) {
+	const auto& cTypeIdcs = typeIndices_;
+	for (const auto& idcs : cTypeIdcs) {
 		for (auto idx : idcs) {
 			if (editors_[idx] == win) return idx;
 		}

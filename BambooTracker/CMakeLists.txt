@@ -165,6 +165,7 @@ set (BT_SOURCES
 	gui/vgm_export_settings_dialog.cpp
 	gui/wave_export_settings_dialog.cpp
 	gui/wave_visual.cpp
+	gui/wheel_spin_box.cpp
 	instrument/abstract_instrument_property.cpp
 	instrument/bank.cpp
 	instrument/effect_iterator.cpp
