@@ -46,6 +46,7 @@
 - [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
 - [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
 - [#454] - Reduce misalignment of text in the status bar ([#415]; thanks [@OPNA2608])
+- [#422] - Fix crash when redoing pattern effect entry `0Bxx`, `0Cxx` and `0Dxx` (thanks [@nyanpasu64])
 
 [@cxong]: https://github.com/cxong
 
@@ -90,6 +91,7 @@
 [#454]: https://github.com/BambooTracker/BambooTracker/pull/454
 [#415]: https://github.com/BambooTracker/BambooTracker/issues/415
 [#442]: https://github.com/BambooTracker/BambooTracker/pull/442
+[#422]: https://github.com/BambooTracker/BambooTracker/issues/422
 
 ## v0.5.0 (2021-08-01)
 

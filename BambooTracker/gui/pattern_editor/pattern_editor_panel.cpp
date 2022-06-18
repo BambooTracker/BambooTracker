@@ -2840,9 +2840,17 @@ bool PatternEditorPanel::keyReleased(QKeyEvent* event)
 void PatternEditorPanel::paintEvent(QPaintEvent *event)
 {	
 	if (bt_ && isInitedFirstMod_.load()) {
-		// Check order size
+		// Check the cursor position and clamp it if neccesary.
 		int odrSize = static_cast<int>(bt_->getOrderSize(curSongNum_));
-		if (curPos_.order >= odrSize) curPos_.setRows(odrSize - 1, 0);
+		if (curPos_.order >= odrSize) {
+			curPos_.setRows(odrSize - 1, 0);
+		}
+		else {
+			int patternSize = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+			if (curPos_.step >= patternSize) {
+				curPos_.step = patternSize - 1;
+			}
+		}
 
 		const QRect& area = event->rect();
 		if (area.x() == 0 && area.y() == 0) {
