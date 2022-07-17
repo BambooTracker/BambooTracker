@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -252,6 +252,16 @@ EffectType validateEffectId(SoundSource src, const std::string& id)
 		switch (src) {
 		case SoundSource::FM:
 			return EffectType::Brightness;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "EA") {
+		switch (src) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+		case SoundSource::ADPCM:
+			return EffectType::XVolumeSlide;
 		default:
 			return EffectType::NoEffect;
 		}

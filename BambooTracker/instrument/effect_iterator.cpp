@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "effect_iterator.hpp"
 #include "note.hpp"
 #include <cstddef>
+#include "utils.hpp"
 
 namespace
 {
@@ -170,4 +171,51 @@ int NoteSlideEffectIterator::end()
 	pos_ = END_SEQ_POS;
 	started_ = false;
 	return END_SEQ_POS;
+}
+
+XVolumeSlideEffectIterator::XVolumeSlideEffectIterator(int factor, int cycleCount)
+	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(END_SEQ_POS),
+	  mem_(0),
+	  sum_(0),
+	  factor_(factor),
+	  cycleCount_(cycleCount)
+{
+}
+
+InstrumentSequenceBaseUnit XVolumeSlideEffectIterator::data() const noexcept
+{
+	return InstrumentSequenceBaseUnit(mem_);
+}
+
+int XVolumeSlideEffectIterator::next()
+{
+	if (hasEnded()) {
+		pos_ = 0;
+		mem_ = 0;
+		sum_ = 0;
+	}
+	else {
+		int prevSum = std::exchange(sum_, ++pos_ * factor_ / cycleCount_);
+		mem_ = sum_ - prevSum;
+		pos_ %= cycleCount_;
+		sum_ %= factor_;
+	}
+
+	return pos_;
+}
+
+int XVolumeSlideEffectIterator::front()
+{
+	pos_ = 0;
+	mem_ = 0;
+	sum_ = 0;
+	return 0;
+}
+
+int XVolumeSlideEffectIterator::end()
+{
+	pos_ = END_SEQ_POS;
+	mem_ = 0;
+	sum_ = 0;
+	return pos_;
 }

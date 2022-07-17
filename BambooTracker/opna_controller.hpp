@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -136,6 +136,7 @@ public:
 	void setVibratoEffectFM(int ch, int period, int depth);
 	void setTremoloEffectFM(int ch, int period, int depth);
 	void setVolumeSlideFM(int ch, int depth, bool isUp);
+	void setXVolumeSlideFM(int ch, int factor);
 	void setDetuneFM(int ch, int pitch);
 	void setFineDetuneFM(int ch, int pitch);
 	void setNoteSlideFM(int ch, int speed, int seminote);
@@ -180,6 +181,8 @@ private:
 		std::unique_ptr<WavingEffectIterator> vibItr;
 		std::unique_ptr<WavingEffectIterator> treItr;
 		int volSld, volSldSum;
+		std::unique_ptr<XVolumeSlideEffectIterator> xVolSldItr;
+		int xvolSldSum;
 		int detune, fdetune;
 		std::unique_ptr<NoteSlideEffectIterator> nsItr;
 		int nsSum;
@@ -262,6 +265,7 @@ public:
 	void setVibratoEffectSSG(int ch, int period, int depth);
 	void setTremoloEffectSSG(int ch, int period, int depth);
 	void setVolumeSlideSSG(int ch, int depth, bool isUp);
+	void setXVolumeSlideSSG(int ch, int factor);
 	void setDetuneSSG(int ch, int pitch);
 	void setFineDetuneSSG(int ch, int pitch);
 	void setNoteSlideSSG(int ch, int speed, int seminote);
@@ -311,6 +315,7 @@ private:
 		std::unique_ptr<WavingEffectIterator> vibItr;
 		std::unique_ptr<WavingEffectIterator> treItr;
 		int volSld, volSldSum;
+		std::unique_ptr<XVolumeSlideEffectIterator> xVolSldItr;
 		int detune, fdetune;
 		std::unique_ptr<NoteSlideEffectIterator> nsItr;
 		int nsSum;
@@ -334,6 +339,7 @@ private:
 	void writeWaveformSSGToRegister(SSGChannel& ssg);
 	void writeSquareWaveform(SSGChannel& ssg);
 
+	void xslideVolumeSsg(SSGChannel& ssg);
 	void writeEnvelopeSSGToRegister(SSGChannel& ssg);
 	void setRealVolumeSSG(SSGChannel& ssg);
 
@@ -411,6 +417,7 @@ public:
 	void setVibratoEffectADPCM(int period, int depth);
 	void setTremoloEffectADPCM(int period, int depth);
 	void setVolumeSlideADPCM(int depth, bool isUp);
+	void setXVolumeSlideADPCM(int factor);
 	void setDetuneADPCM(int pitch);
 	void setFineDetuneADPCM(int pitch);
 	void setNoteSlideADPCM(int speed, int seminote);
@@ -451,6 +458,7 @@ private:
 	std::unique_ptr<WavingEffectIterator> vibItrADPCM_;
 	std::unique_ptr<WavingEffectIterator> treItrADPCM_;
 	int volSldADPCM_, volSldSumADPCM_;
+	std::unique_ptr<XVolumeSlideEffectIterator> xVolSldItrAdpcm_;
 	int detuneADPCM_, fdetuneADPCM_;
 	std::unique_ptr<NoteSlideEffectIterator> nsItADPCM_;
 	int nsSumADPCM_;
@@ -467,6 +475,7 @@ private:
 	void releaseStartADPCMSequences();
 	void tickEventADPCM();
 
+	void xslideVolumeAdpcm();
 	void writeEnvelopeADPCMToRegister();
 
 	void checkPanADPCM(int type);

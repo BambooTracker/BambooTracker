@@ -9,6 +9,7 @@
 - [#397] - Add CMake build option ([#405]; thanks [@OPNA2608])
 - [#449] - Add source tarballs to releases page ([#450]; thanks [@ehaupt])
 - [#414] - .spb support as ADPCM sample (thanks [@OPNA2608])
+- 1 new pattern effect `EAxy`: extended volume slide
 
 ### Changed
 
@@ -47,7 +48,7 @@
 - [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
 - [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
 - [#454] - Reduce misalignment of text in the status bar ([#415]; thanks [@OPNA2608])
-- [#422] - Fix crash when redoing pattern effect entry `0Bxx`, `0Cxx` and `0Dxx` (thanks [@nyanpasu64])
+- [#422] - Fix crash when redoing pattern effect entry `0Bxx`, `0Cxx` and `0Dxx` ([#441]; thanks [@nyanpasu64])
 - Fix crash when playing a non-existent instrument on ADPCM channel
 
 [@cxong]: https://github.com/cxong
@@ -94,6 +95,7 @@
 [#415]: https://github.com/BambooTracker/BambooTracker/issues/415
 [#442]: https://github.com/BambooTracker/BambooTracker/pull/442
 [#422]: https://github.com/BambooTracker/BambooTracker/issues/422
+[#441]: https://github.com/BambooTracker/BambooTracker/issues/441
 
 ## v0.5.0 (2021-08-01)
 

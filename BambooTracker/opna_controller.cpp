@@ -883,6 +883,7 @@ void OPNAController::setVolumeFM(int ch, int volume)
 	auto& fm = fm_[ch];
 	fm.baseVol = volume;
 	fm.oneshotVol = UNUSED_VALUE;
+	fm.xvolSldSum = 0;
 
 	if (refInstFM_[fm.inCh]) updateFMVolume(fm);	// Change TL
 }
@@ -891,6 +892,7 @@ void OPNAController::setOneshotVolumeFM(int ch, int volume)
 {
 	auto& fm = fm_[ch];
 	fm.oneshotVol = volume;
+	fm.xvolSldSum = 0;
 
 	if (refInstFM_[fm.inCh]) updateFMVolume(fm);	// Change TL
 }
@@ -977,6 +979,14 @@ void OPNAController::setTremoloEffectFM(int ch, int period, int depth)
 void OPNAController::setVolumeSlideFM(int ch, int depth, bool isUp)
 {
 	fm_[ch].volSld = isUp ? -depth : depth;
+}
+
+void OPNAController::setXVolumeSlideFM(int ch, int factor)
+{
+	auto& iter = fm_[ch].xVolSldItr;
+	constexpr int CYCLE_COUNT = 2;
+	if (factor) iter = std::make_unique<XVolumeSlideEffectIterator>(-factor, CYCLE_COUNT);
+	else iter.reset();
 }
 
 void OPNAController::setDetuneFM(int ch, int pitch)
@@ -1090,6 +1100,7 @@ void OPNAController::haltSequencesFM(int ch)
 	if (auto& vibItr = fm.vibItr) vibItr->end();
 	if (auto& nsItr = fm.nsItr) nsItr->end();
 	if (auto& panItr = panItrFM_[fm.inCh]) panItr->end();
+	if (auto& xVolSldItr = fm.xVolSldItr) xVolSldItr->end();
 }
 
 /********** Chip details **********/
@@ -1203,6 +1214,8 @@ void OPNAController::initFM()
 		fm.treItr.reset();
 		fm.volSld = 0;
 		fm.volSldSum = 0;
+		fm.xVolSldItr.reset();
+		fm.xvolSldSum = 0;
 		fm.detune = 0;
 		fm.fdetune = 0;
 		fm.nsItr.reset();
@@ -1712,6 +1725,7 @@ void OPNAController::setFrontFMSequences(FMChannel& fm)
 
 	checkOperatorSequenceFM(fm, 1);
 
+	if (auto& xVolSldItr = fm.xVolSldItr) xVolSldItr->next();
 	if (auto& treItr = fm.treItr) treItr->front();
 	fm.volSldSum += fm.volSld;
 	checkVolumeEffectFM(fm);
@@ -1755,6 +1769,7 @@ void OPNAController::releaseStartFMSequences(FMChannel& fm)
 
 	checkOperatorSequenceFM(fm, 2);
 
+	if (auto& xVolSldItr = fm.xVolSldItr) xVolSldItr->next();
 	if (auto& treItr = fm.treItr) treItr->release();
 	fm.volSldSum += fm.volSld;
 	checkVolumeEffectFM(fm);
@@ -1802,6 +1817,7 @@ void OPNAController::tickEventFM(FMChannel& fm)
 
 		checkOperatorSequenceFM(fm, 0);
 
+		if (auto& xVolSldItr = fm.xVolSldItr) xVolSldItr->next();
 		if (auto& treItr = fm.treItr) treItr->next();
 		fm.volSldSum += fm.volSld;
 		checkVolumeEffectFM(fm);
@@ -1857,13 +1873,27 @@ void OPNAController::checkOperatorSequenceFM(FMChannel& fm, int type)
 
 void OPNAController::checkVolumeEffectFM(FMChannel& fm)
 {
-	int v;
+	int v = fm.volSldSum + fm.xvolSldSum;
+
+	bool isChangedBase = false;
+	if (auto& xVolSldItr = fm.xVolSldItr) {
+		int xslided = fm.xvolSldSum + xVolSldItr->data().data;
+		int newSum;
+		if (fm.oneshotVol == UNUSED_VALUE) {
+			newSum = utils::clamp(fm.baseVol + xslided, 0, 127) - fm.baseVol;
+		}
+		else {
+			newSum = utils::clamp(fm.oneshotVol + xslided, 0, 127) - fm.oneshotVol;
+		}
+		isChangedBase = (std::exchange(fm.xvolSldSum, newSum) != newSum);
+	}
+
 	if (auto& treItr = fm.treItr) {
-		v = treItr->data().data + fm.volSldSum;
+		v += treItr->data().data + fm.volSldSum;
 	}
 	else {
-		if (fm.volSld) v = fm.volSldSum;
-		else return;
+		if (fm.volSld) v += fm.volSldSum;
+		else if (!isChangedBase) return;
 	}
 
 	uint32_t bch = getFMChannelOffset(fm.ch);
@@ -2207,6 +2237,14 @@ void OPNAController::setVolumeSlideSSG(int ch, int depth, bool isUp)
 	ssg_[ch].volSld = isUp ? depth : -depth;
 }
 
+void OPNAController::setXVolumeSlideSSG(int ch, int factor)
+{
+	auto& iter = ssg_[ch].xVolSldItr;
+	constexpr int CYCLE_COUNT = 8;
+	if (factor) iter = std::make_unique<XVolumeSlideEffectIterator>(factor, CYCLE_COUNT);
+	else iter.reset();
+}
+
 void OPNAController::setDetuneSSG(int ch, int pitch)
 {
 	auto& ssg = ssg_[ch];
@@ -2325,6 +2363,7 @@ void OPNAController::haltSequencesSSG(int ch)
 	if (auto& ptItr = ssg.ptItr) ptItr->end();
 	if (auto& vibItr = ssg.vibItr) vibItr->end();
 	if (auto& nsItr = ssg.nsItr) nsItr->end();
+	if (auto& xVolSldItr = ssg.xVolSldItr) xVolSldItr->end();
 }
 
 /********** Chip details **********/
@@ -2394,6 +2433,7 @@ void OPNAController::initSSG()
 		ssg.treItr.reset();
 		ssg.volSld = 0;
 		ssg.volSldSum = 0;
+		ssg.xVolSldItr.reset();
 		ssg.detune = 0;
 		ssg.fdetune = 0;
 		ssg.nsItr.reset();
@@ -2437,6 +2477,10 @@ void OPNAController::setFrontSSGSequences(SSGChannel& ssg)
 	if (ssg.volSld) {
 		ssg.volSldSum += ssg.volSld;
 		ssg.shouldSetEnv = true;
+	}
+	if (auto& xVolSldItr = ssg.xVolSldItr) {
+		xVolSldItr->next();
+		xslideVolumeSsg(ssg);
 	}
 	if (auto& envItr = ssg.envItr) {
 		envItr->front();
@@ -2494,6 +2538,10 @@ void OPNAController::releaseStartSSGSequences(SSGChannel& ssg)
 	if (ssg.volSld) {
 		ssg.volSldSum += ssg.volSld;
 		ssg.shouldSetEnv = true;
+	}
+	if (auto& xVolSldItr = ssg.xVolSldItr) {
+		xVolSldItr->next();
+		xslideVolumeSsg(ssg);
 	}
 	if (auto& envItr = ssg.envItr) {
 		envItr->release();
@@ -2567,6 +2615,10 @@ void OPNAController::tickEventSSG(SSGChannel& ssg)
 		if (ssg.volSld) {
 			ssg.volSldSum += ssg.volSld;
 			ssg.shouldSetEnv = true;
+		}
+		if (auto& xVolSldItr = ssg.xVolSldItr) {
+			xVolSldItr->next();
+			xslideVolumeSsg(ssg);
 		}
 		if (auto& envItr = ssg.envItr) {
 			envItr->next();
@@ -2949,6 +3001,23 @@ void OPNAController::writeSquareWaveform(SSGChannel& ssg)
 	ssg.shouldSetTone = true;
 	ssg.shouldSetSqMaskFreq = false;
 	ssg.wfChState = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE);
+}
+
+void OPNAController::xslideVolumeSsg(SSGChannel& ssg)
+{
+	bool isChanged;
+	auto slide = [v = ssg.xVolSldItr->data().data](int& target) {
+		return std::exchange(target, utils::clamp(target + v, 0, 15));
+	};
+	int prevBase = slide(ssg.baseVol);
+	if (ssg.oneshotVol == UNUSED_VALUE) {
+		isChanged = (ssg.baseVol != prevBase);
+	}
+	else {
+		int prevOneShot = slide(ssg.oneshotVol);
+		isChanged = (ssg.oneshotVol != prevOneShot);
+	}
+	ssg.shouldSetEnv |= isChanged;
 }
 
 void OPNAController::writeEnvelopeSSGToRegister(SSGChannel& ssg)
@@ -3626,6 +3695,14 @@ void OPNAController::setVolumeSlideADPCM(int depth, bool isUp)
 	volSldADPCM_ = isUp ? depth : -depth;
 }
 
+void OPNAController::setXVolumeSlideADPCM(int factor)
+{
+	constexpr int COEFFICIENT = 1;
+	constexpr int CYCLE_COUNT = 1;
+	if (factor)	xVolSldItrAdpcm_ = std::make_unique<XVolumeSlideEffectIterator>(factor * COEFFICIENT, CYCLE_COUNT);
+	else xVolSldItrAdpcm_.reset();
+}
+
 void OPNAController::setDetuneADPCM(int pitch)
 {
 	if (refInstKit_) return;
@@ -3669,6 +3746,7 @@ void OPNAController::haltSequencesADPCM()
 	if (vibItrADPCM_) vibItrADPCM_->end();
 	if (nsItADPCM_) nsItADPCM_->end();
 	if (panItrADPCM_) panItrADPCM_->end();
+	if (xVolSldItrAdpcm_) xVolSldItrAdpcm_->end();
 }
 
 /********** Chip details **********/
@@ -3729,6 +3807,7 @@ void OPNAController::initADPCM()
 	treItrADPCM_.reset();
 	volSldADPCM_ = 0;
 	volSldSumADPCM_ = 0;
+	xVolSldItrAdpcm_.reset();
 	detuneADPCM_ = 0;
 	fdetuneADPCM_ = 0;
 	nsItADPCM_.reset();
@@ -3769,6 +3848,10 @@ void OPNAController::setFrontADPCMSequences()
 	if (volSldADPCM_) {
 		volSldSumADPCM_ += volSldADPCM_;
 		shouldWriteEnvADPCM_ = true;
+	}
+	if (xVolSldItrAdpcm_) {
+		xVolSldItrAdpcm_->next();
+		xslideVolumeAdpcm();
 	}
 	if (envItrADPCM_) {
 		envItrADPCM_->front();
@@ -3814,6 +3897,10 @@ void OPNAController::releaseStartADPCMSequences()
 	if (volSldADPCM_) {
 		volSldSumADPCM_ += volSldADPCM_;
 		shouldWriteEnvADPCM_ = true;
+	}
+	if (xVolSldItrAdpcm_) {
+		xVolSldItrAdpcm_->next();
+		xslideVolumeAdpcm();
 	}
 	if (envItrADPCM_) {
 		envItrADPCM_->release();
@@ -3873,6 +3960,10 @@ void OPNAController::tickEventADPCM()
 			volSldSumADPCM_ += volSldADPCM_;
 			shouldWriteEnvADPCM_ = true;
 		}
+		if (xVolSldItrAdpcm_) {
+			xVolSldItrAdpcm_->next();
+			xslideVolumeAdpcm();
+		}
 		if (envItrADPCM_) {
 			envItrADPCM_->next();
 			writeEnvelopeADPCMToRegister();
@@ -3918,6 +4009,23 @@ void OPNAController::tickEventADPCM()
 			hasStartRequestedKit_ = false;
 		}
 	}
+}
+
+void OPNAController::xslideVolumeAdpcm()
+{
+	bool isChanged;
+	auto slide = [v = xVolSldItrAdpcm_->data().data](int& target) {
+		return std::exchange(target, utils::clamp(target + v, 0, bt_defs::NSTEP_ADPCM_VOLUME - 1));
+	};
+	int prevBase = slide(baseVolADPCM_);
+	if (oneshotVolADPCM_ == UNUSED_VALUE) {
+		isChanged = (baseVolADPCM_ != prevBase);
+	}
+	else {
+		int prevOneShot = slide(oneshotVolADPCM_);
+		isChanged = (oneshotVolADPCM_ != prevOneShot);
+	}
+	shouldWriteEnvADPCM_ |= isChanged;
 }
 
 void OPNAController::writeEnvelopeADPCMToRegister()

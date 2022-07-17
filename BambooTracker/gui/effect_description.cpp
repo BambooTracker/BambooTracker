@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -71,6 +71,7 @@ const std::unordered_map<EffectType, EffectDetail> DETAILS = {
 	{ EffectType::ARControl, { "Axyy", QT_TRANSLATE_NOOP("EffectDescription", "AR control, x: operator (1-4), yy: attack rate (00-1F)") } },
 	{ EffectType::Brightness, { "B0xx", QT_TRANSLATE_NOOP("EffectDescription", "Brightness, xx: relative value (01-FF)") } },
 	{ EffectType::DRControl, { "Dxyy", QT_TRANSLATE_NOOP("EffectDescription", "DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
+	{ EffectType::XVolumeSlide, { "EAxy", QT_TRANSLATE_NOOP("EffectDescription", "Extended volume slide, x: up (0-F), y: down (0-F)") } },
 	{ EffectType::EnvelopeReset, { "ESxx", QT_TRANSLATE_NOOP("EffectDescription", "Envelope reset, xx: count (00-FF)") } },
 	{ EffectType::FBControl, { "FBxx", QT_TRANSLATE_NOOP("EffectDescription", "FB control, xx: feedback value (00-07)") } },
 	{ EffectType::FineDetune, { "FPxx", QT_TRANSLATE_NOOP("EffectDescription", "Fine detune, xx: pitch (00-FF)") } },

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -71,6 +71,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::ARControl, { SoundSource::FM });
 	addRow(EffectType::Brightness, { SoundSource::FM });
 	addRow(EffectType::DRControl, { SoundSource::FM });
+	addRow(EffectType::XVolumeSlide, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
 	addRow(EffectType::EnvelopeReset, { SoundSource::FM });
 	addRow(EffectType::FBControl, { SoundSource::FM });
 	addRow(EffectType::FineDetune, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });

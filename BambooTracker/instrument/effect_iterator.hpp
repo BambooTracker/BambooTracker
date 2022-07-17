@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -80,4 +80,23 @@ public:
 private:
 	bool started_;
 	std::vector<InstrumentSequenceBaseUnit> seq_;
+};
+
+class XVolumeSlideEffectIterator : public SequenceIteratorInterface<InstrumentSequenceBaseUnit>
+{
+public:
+	XVolumeSlideEffectIterator(int factor, int cycleCount);
+	SequenceType type()	const noexcept override { return SequenceType::AbsoluteSequence; }
+
+	InstrumentSequenceBaseUnit data() const noexcept override;
+
+	int next() override;	// Use next() instead of front() and release()
+	int front() override;
+	inline int release() override { return next(); }
+	int end() override;
+
+private:
+	int mem_, sum_;
+	int factor_;
+	int count_, cycleCount_;
 };

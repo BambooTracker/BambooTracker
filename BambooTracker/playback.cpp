@@ -739,6 +739,7 @@ void PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
 	case EffectType::Brightness:
 	case EffectType::EnvelopeReset:
 	case EffectType::Retrigger:
+	case EffectType::XVolumeSlide:
 		effOnKeyOnMem_[SoundSource::FM].at(static_cast<size_t>(ch)).enqueue(eff);
 		break;
 	case EffectType::SpeedTempoChange:
@@ -891,6 +892,12 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 				}
 				break;
 			}
+			case EffectType::XVolumeSlide:
+			{
+				int factor = (eff.value >> 4) - (eff.value & 0x0f);
+				opnaCtrl_->setXVolumeSlideFM(ch, factor);
+				break;
+			}
 			default:
 				break;
 			}
@@ -924,6 +931,7 @@ void PlaybackManager::storeEffectToMapSSG(int ch, const Effect& eff)
 	case EffectType::HardEnvLowPeriod:
 	case EffectType::AutoEnvelope:
 	case EffectType::Retrigger:
+	case EffectType::XVolumeSlide:
 		effOnKeyOnMem_[SoundSource::SSG].at(static_cast<size_t>(ch)).enqueue(eff);
 		break;
 	case EffectType::SpeedTempoChange:
@@ -1040,6 +1048,12 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 					rtrgCntValueSSG_.at(uch) = cnt;
 					rtrgVolValueSSG_.at(uch) = ((eff.value & 0x80) ? -1 : 1) * ((eff.value & 0x70) >> 4);
 				}
+				break;
+			}
+			case EffectType::XVolumeSlide:
+			{
+				int factor = (eff.value >> 4) - (eff.value & 0x0f);
+				opnaCtrl_->setXVolumeSlideSSG(ch, factor);
 				break;
 			}
 			default:
@@ -1161,6 +1175,7 @@ void PlaybackManager::storeEffectToMapADPCM(int ch, const Effect& eff)
 	case EffectType::TransposeDelay:
 	case EffectType::VolumeDelay:
 	case EffectType::Retrigger:
+	case EffectType::XVolumeSlide:
 		effOnKeyOnMem_[SoundSource::ADPCM].front().enqueue(eff);
 		break;
 	case EffectType::SpeedTempoChange:
@@ -1264,6 +1279,12 @@ void PlaybackManager::executeStoredEffectsADPCM()
 					rtrgCntValueADPCM_ = cnt;
 					rtrgVolValueADPCM_ = ((eff.value & 0x80) ? -1 : 1) * (eff.value & 0x0f);
 				}
+				break;
+			}
+			case EffectType::XVolumeSlide:
+			{
+				int factor = (eff.value >> 4) - (eff.value & 0x0f);
+				opnaCtrl_->setXVolumeSlideADPCM(factor);
 				break;
 			}
 			default:
@@ -1681,14 +1702,14 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
 	std::vector<bool> isSetFBCtrlFM(fmch, false), isSetTLCtrlFM(fmch, false), isSetMLCtrlFM(fmch, false);
 	std::vector<bool> isSetARCtrlFM(fmch, false), isSetDRCtrlFM(fmch, false), isSetRRCtrlFM(fmch, false);
-	std::vector<bool> isSetBrightFM(fmch, false), isSetFiDtnFM(fmch, false);
+	std::vector<bool> isSetBrightFM(fmch, false), isSetFiDtnFM(fmch, false), isSetXVolSldFM(fmch, false);
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
-	std::vector<bool> isSetTNMixSSG(3, false), isSetFiDtnSSG(3, false);
+	std::vector<bool> isSetTNMixSSG(3, false), isSetFiDtnSSG(3, false), isSetXVolSldSSG(3, false);
 	std::vector<bool> isSetVolRhythm(6, false), isSetPanRhythm(6, false);
 	bool isSetInstADPCM(false), isSetVolADPCM(false), isSetArpADPCM(false), isSetPrtADPCM(false);
 	bool isSetVibADPCM(false), isSetTreADPCM(false), isSetPanADPCM(false), isSetVolSldADPCM(false);
-	bool isSetDtnADPCM(false), isSetFiDtnADPCM(false);
+	bool isSetDtnADPCM(false), isSetFiDtnADPCM(false), isSetXVolSldADPCM(false);
 	bool isSetMVolRhythm = false;
 	bool isSetNoisePitchSSG = false;
 	bool isSetHardEnvPeriodHighSSG = false;
@@ -1888,6 +1909,15 @@ void PlaybackManager::retrieveChannelStates()
 							}
 						}
 						break;
+					case EffectType::XVolumeSlide:
+						if (!isSetXVolSldFM[uch]) {
+							isSetXVolSldFM[uch] = true;
+							if (isPrevPos) {
+								int factor = (eff.value >> 4) - (eff.value & 0x0f);
+								opnaCtrl_->setXVolumeSlideFM(ch, factor);
+							}
+						}
+						break;
 					default:
 						break;
 					}
@@ -2023,6 +2053,15 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetAutoEnvSSG) {
 							isSetAutoEnvSSG = true;
 							if (isPrevPos) opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.value >> 4) - 8, eff.value & 0x0f);
+						}
+						break;
+					case EffectType::XVolumeSlide:
+						if (!isSetXVolSldSSG[uch]) {
+							isSetXVolSldSSG[uch] = true;
+							if (isPrevPos) {
+								int factor = (eff.value >> 4) - (eff.value & 0x0f);
+								opnaCtrl_->setXVolumeSlideSSG(ch, factor);
+							}
 						}
 						break;
 					default:
@@ -2187,6 +2226,15 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetFiDtnADPCM) {
 							isSetFiDtnADPCM = true;
 							if (isPrevPos) opnaCtrl_->setFineDetuneADPCM(eff.value - 0x80);
+						}
+						break;
+					case EffectType::XVolumeSlide:
+						if (!isSetXVolSldADPCM) {
+							isSetXVolSldADPCM = true;
+							if (isPrevPos) {
+								int factor = (eff.value >> 4) - (eff.value & 0x0f);
+								opnaCtrl_->setXVolumeSlideADPCM(factor);
+							}
 						}
 						break;
 					default:
