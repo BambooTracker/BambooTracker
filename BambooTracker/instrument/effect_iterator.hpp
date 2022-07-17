@@ -98,5 +98,5 @@ public:
 private:
 	int mem_, sum_;
 	int factor_;
-	int count_, cycleCount_;
+	int cycleCount_;
 };
