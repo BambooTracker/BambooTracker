@@ -81,6 +81,8 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 
 	storeOnlyUsedSamples_ = config.lock()->getWriteOnlyUsedSamples();
 	volFMReversed_ = config.lock()->getReverseFMVolumeOrder();
+
+	makeNewModule();
 }
 
 BambooTracker::~BambooTracker() = default;
@@ -2024,6 +2026,11 @@ void BambooTracker::setMasterVolumeSSG(double dB)
 /*----- Module -----*/
 void BambooTracker::makeNewModule()
 {
+	makeNewModule(true);
+}
+
+void BambooTracker::makeNewModule(bool withInstrument)
+{
 	stopPlaySong();
 
 	clearAllInstrument();
@@ -2035,14 +2042,21 @@ void BambooTracker::makeNewModule()
 	tickCounter_->setInterruptRate(mod_->getTickFrequency());
 
 	setCurrentSongNumber(0);
-	curInstNum_ = -1;
+
+	if (withInstrument) {
+		addInstrument(0, InstrumentType::FM, u8"Instrument 00");
+		curInstNum_ = 0;
+	}
+	else {
+		curInstNum_ = -1;
+	}
 
 	clearCommandHistory();
 }
 
 void BambooTracker::loadModule(io::BinaryContainer& container)
 {
-	makeNewModule();
+	makeNewModule(false);
 
 	std::exception_ptr ep;
 	try {

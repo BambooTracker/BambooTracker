@@ -554,6 +554,9 @@ private:
 	bool isFollowPlay_;
 	bool storeOnlyUsedSamples_;
 
+	// Module details
+	void makeNewModule(bool withInstrument);
+
 	// Jam mode
 	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib, bool volumeSet,
 					  std::shared_ptr<AbstractInstrument> inst = nullptr);

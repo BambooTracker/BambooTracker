@@ -22,6 +22,7 @@
 - [#448] - Update Appveyor's macOS image to Catalina (thanks [@OPNA2608])
 - [#420] - Free memory after instrument editor is closed (thanks [@nyanpasu64])
 - [#442] - Don't focus main window spinboxes on mouse scroll (thanks [@nyanpasu64])
+- Prepare 1 new instrument in initializing a new module
 
 ### Fixed
 
