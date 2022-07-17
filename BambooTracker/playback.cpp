@@ -621,11 +621,12 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 
 	// Set instrument
 	if (step.hasInstrument()) {
-		auto inst = instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber());
-		if (inst->getType() == InstrumentType::ADPCM)
-			opnaCtrl_->setInstrumentADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(inst));
-		else if (inst->getType() == InstrumentType::Drumkit)
-			opnaCtrl_->setInstrumentDrumkit(std::dynamic_pointer_cast<InstrumentDrumkit>(inst));
+		if (auto inst = instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())) {
+			if (inst->getType() == InstrumentType::ADPCM)
+				opnaCtrl_->setInstrumentADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(inst));
+			else if (inst->getType() == InstrumentType::Drumkit)
+				opnaCtrl_->setInstrumentDrumkit(std::dynamic_pointer_cast<InstrumentDrumkit>(inst));
+		}
 	}
 
 	// Set effect

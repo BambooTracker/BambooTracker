@@ -48,6 +48,7 @@
 - [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
 - [#454] - Reduce misalignment of text in the status bar ([#415]; thanks [@OPNA2608])
 - [#422] - Fix crash when redoing pattern effect entry `0Bxx`, `0Cxx` and `0Dxx` (thanks [@nyanpasu64])
+- Fix crash when playing a non-existent instrument on ADPCM channel
 
 [@cxong]: https://github.com/cxong
 
