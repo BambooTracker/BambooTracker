@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,7 +55,7 @@ private:
 	// Application version
 	static constexpr unsigned int appMajor			= 0;
 	static constexpr unsigned int appMinor			= 5;
-	static constexpr unsigned int appRevision		= 0;
+	static constexpr unsigned int appRevision		= 1;
 
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;

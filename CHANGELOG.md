@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.5.1 (2022-07-23)
+
 ### Added
 
 - [#407] - Implement pattern/order editor DPI scaling (thanks [@nyanpasu64])
@@ -24,6 +26,7 @@
 - [#420] - Free memory after instrument editor is closed (thanks [@nyanpasu64])
 - [#442] - Don't focus main window spinboxes on mouse scroll (thanks [@nyanpasu64])
 - Prepare 1 new instrument in initializing a new module
+- [#458] - Update Nixpkgs version to 22.05 (thanks [@OPNA2608])
 - Update translation: ja
 
 ### Fixed
@@ -97,6 +100,7 @@
 [#442]: https://github.com/BambooTracker/BambooTracker/pull/442
 [#422]: https://github.com/BambooTracker/BambooTracker/issues/422
 [#441]: https://github.com/BambooTracker/BambooTracker/issues/441
+[#458]: https://github.com/BambooTracker/BambooTracker/pull/458
 
 ## v0.5.0 (2021-08-01)
 
