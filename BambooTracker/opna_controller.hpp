@@ -210,8 +210,6 @@ private:
 	void setMuteFMState(int ch, bool isMuteFM);
 	bool isMuteFM(int ch);
 
-	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
-
 	void updateFMVolume(FMChannel& fm);
 
 	void writeFMEnvelopeToRegistersFromInstrument(size_t inch);

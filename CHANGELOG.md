@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- [#459] - Fix volume effects in FM 3ch OP2,3,4 to work (thanks [@Zexxerd])
+
+[#459]: https://github.com/BambooTracker/BambooTracker/issues/459
+
 ## v0.5.1 (2022-07-23)
 
 ### Added

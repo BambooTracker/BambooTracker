@@ -410,6 +410,49 @@ constexpr FMLFOParameter PARAM_AM[4] = {
 
 constexpr uint32_t OP_OFFSET[4] = { 0u, 8u, 4u, 12u };
 
+uint32_t getFmChannelOffset(size_t inCh)
+{
+	switch (inCh) {
+	case 0:
+	case 1:
+	case 2:
+		return static_cast<uint32_t>(inCh);
+	case 3:
+	case 4:
+	case 5:
+		return static_cast<uint32_t>(0x100 + inCh % 3);
+	default:
+		return 0;
+	}
+}
+
+uint32_t getFmChannelOffsetForPitch(size_t ch, size_t inCh, SongType type)
+{
+	if (type == SongType::FM3chExpanded) {
+		switch (ch) {
+		case 0:
+		case 1:
+			return static_cast<uint32_t>(ch);
+		case 3:
+		case 4:
+		case 5:
+			return static_cast<uint32_t>(0x100 + ch % 3);
+		case 2:	// FM3-OP1
+			return 9;
+		case 6:	// FM3-OP2
+			return 10;
+		case 7:	// FM3-OP3
+			return 8;
+		case 8:	// FM3-OP4
+			return 2;
+		default:
+			return 0;
+		}
+	}
+
+	return getFmChannelOffset(inCh);
+}
+
 std::vector<int> getOperatorsInLevel(int level, int al)
 {
 	switch (level) {
@@ -1137,13 +1180,13 @@ void OPNAController::initFM()
 	}
 	opna_->setRegister(0x27, mode);
 
-	for (int inch = 0; inch < 6; ++inch) {
+	for (size_t inch = 0; inch < 6; ++inch) {
 		// Init envelope
 		envFM_[inch] = std::make_unique<EnvelopeFM>(-1);
 		refInstFM_[inch].reset();
 
 		// Init pan
-		uint32_t bch = getFMChannelOffset(inch);
+		uint32_t bch = getFmChannelOffset(inch);
 		panStateFM_[inch] = PanType::CENTER;
 		panItrFM_[inch].reset();
 		opna_->setRegister(0xb4 + bch, 0xc0);
@@ -1265,48 +1308,9 @@ bool OPNAController::isMuteFM(int ch)
 	return fm_[ch].isMute;
 }
 
-uint32_t OPNAController::getFMChannelOffset(int ch, bool forPitch) const
-{
-	if (mode_ == SongType::FM3chExpanded && forPitch) {
-		switch (ch) {
-		case 0:
-		case 1:
-			return static_cast<uint32_t>(ch);
-		case 3:
-		case 4:
-		case 5:
-			return static_cast<uint32_t>(0x100 + ch % 3);
-		case 2:	// FM3-OP1
-			return 9;
-		case 6:	// FM3-OP2
-			return 10;
-		case 7:	// FM3-OP3
-			return 8;
-		case 8:	// FM3-OP4
-			return 2;
-		default:
-			return 0;
-		}
-	}
-	else {
-		switch (fm_[ch].inCh) {
-		case 0:
-		case 1:
-		case 2:
-			return static_cast<uint32_t>(ch);
-		case 3:
-		case 4:
-		case 5:
-			return static_cast<uint32_t>(0x100 + ch % 3);
-		default:
-			return 0;
-		}
-	}
-}
-
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(size_t inch)
 {
-	uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
+	uint32_t bch = getFmChannelOffset(inch);	// Bank and channel offset
 	uint8_t data1, data2;
 	int al;
 	auto& inst = refInstFM_[inch];
@@ -1385,7 +1389,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(size_t inch)
 
 void OPNAController::writeFMEnveropeParameterToRegister(size_t inch, FMEnvelopeParameter param, int value)
 {
-	uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
+	uint32_t bch = getFmChannelOffset(inch);	// Bank and channel offset
 	uint8_t data;
 	int tmp;
 	auto& env = envFM_[inch];
@@ -1638,7 +1642,7 @@ void OPNAController::restoreFMEnvelopeFromReset(int ch)
 void OPNAController::writeFMLFOAllRegisters(size_t inch)
 {
 	if (!refInstFM_[inch]->getLFOEnabled() || lfoStartCntFM_[inch] > 0) {	// Clear data
-		uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
+		uint32_t bch = getFmChannelOffset(inch);	// Bank and channel offset
 		opna_->setRegister(0xb4 + bch, static_cast<uint8_t>(panStateFM_[inch] << 6));
 		for (size_t op = 0; op < 4; ++op)
 			opna_->setRegister(0x60 + bch + OP_OFFSET[op],
@@ -1656,7 +1660,7 @@ void OPNAController::writeFMLFOAllRegisters(size_t inch)
 
 void OPNAController::writeFMLFORegister(size_t inch, FMLFOParameter param)
 {
-	uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
+	uint32_t bch = getFmChannelOffset(inch);	// Bank and channel offset
 	uint8_t data;
 
 	switch (param) {
@@ -1873,8 +1877,6 @@ void OPNAController::checkOperatorSequenceFM(FMChannel& fm, int type)
 
 void OPNAController::checkVolumeEffectFM(FMChannel& fm)
 {
-	int v = fm.volSldSum + fm.xvolSldSum;
-
 	bool isChangedBase = false;
 	if (auto& xVolSldItr = fm.xVolSldItr) {
 		int xslided = fm.xvolSldSum + xVolSldItr->data().data;
@@ -1888,6 +1890,8 @@ void OPNAController::checkVolumeEffectFM(FMChannel& fm)
 		isChangedBase = (std::exchange(fm.xvolSldSum, newSum) != newSum);
 	}
 
+	int v = fm.xvolSldSum;
+
 	if (auto& treItr = fm.treItr) {
 		v += treItr->data().data + fm.volSldSum;
 	}
@@ -1896,7 +1900,7 @@ void OPNAController::checkVolumeEffectFM(FMChannel& fm)
 		else if (!isChangedBase) return;
 	}
 
-	uint32_t bch = getFMChannelOffset(fm.ch);
+	uint32_t bch = getFmChannelOffset(fm.inCh);	// Bank and channel offset
 	switch (fm.opType) {
 	case FMOperatorType::All:
 	{
@@ -1968,7 +1972,7 @@ void OPNAController::writePanFM(FMChannel& fm, int pos)
 
 	panStateFM_[fm.inCh] = v;
 
-	uint32_t bch = getFMChannelOffset(fm.ch);	// Bank and channel offset
+	uint32_t bch = getFmChannelOffset(fm.inCh);	// Bank and channel offset
 	uint8_t data = static_cast<uint8_t>(v << 6);
 	auto& inst = refInstFM_[fm.inCh];
 	if (inst && inst->getLFOEnabled()) {
@@ -1988,7 +1992,7 @@ void OPNAController::writePitchFM(FMChannel& fm)
 								 + fm.nsSum
 								 + fm.transpose);
 	uint16_t p = note_utils::calculateFNumber(note.getAbsolutePicth(), fm.fdetune);
-	uint32_t offset = getFMChannelOffset(fm.ch, true);
+	uint32_t offset = getFmChannelOffsetForPitch(fm.ch, fm.inCh, mode_);
 	opna_->setRegister(0xa4 + offset, p >> 8);
 	opna_->setRegister(0xa0 + offset, p & 0x00ff);
 
