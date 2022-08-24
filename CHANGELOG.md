@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.5.2 (2022-08-24)
+
 ### Fixed
 
 - [#459] - Fix volume effects in FM 3ch OP2,3,4 to work (thanks [@Zexxerd])
