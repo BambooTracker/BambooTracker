@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### FIxed
+
+- [#460] - Fix the maximum value of progress bar in WAV export dialog (thanks [@Drillimation])
+
+[#460]: https://github.com/BambooTracker/BambooTracker/issues/460
+
 ## v0.5.2 (2022-08-24)
 
 ### Fixed

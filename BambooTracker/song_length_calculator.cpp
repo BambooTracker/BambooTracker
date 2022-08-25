@@ -195,12 +195,7 @@ void SongLengthCalculator::totalStepCount(size_t &introSize, size_t &loopSize) c
 					loopSize = 0;
 					return;
 				case EffectType::PatternBreak:
-					if (curOrder == lastOrder
-							&& eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(0))) {
-						curOrder = 0;
-						curStep = eff.value;
-					}
-					else if (eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder))) {
+					if (eff.value < static_cast<int>(song.getPatternSizeFromOrderNumber(curOrder))) {
 						curStep = eff.value;
 					}
 					break;
