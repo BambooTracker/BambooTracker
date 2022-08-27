@@ -69,7 +69,7 @@
 - [#437] - Keep SSG silent when using `0Hxy` in a muted track (thanks [@Zexxerd])
 - [#443] - Fix song length estimation to handle tempo/speed change correctly (thanks [@Drillimation])
 - [#444] - Fix unexpected envelope reset of FM3-OP4 (thanks [@Zexxerd])
-- [#448] - Check if the read/write position of the binary container is valid (thanks [@OPNA2608])
+- [#447] - Check if the read/write position of the binary container is valid (thanks [@OPNA2608])
 - [#425] - Fix improper sequence property execution of `0Gxx` that skips the first sequence data (thanks [@Zexxerd])
 - [#452] - Fix icon image corruptions in About and Welcome dialogs ([#451]; thanks [@OPNA2608])
 - [#454] - Reduce misalignment of text in the status bar ([#415]; thanks [@OPNA2608])
@@ -79,7 +79,6 @@
 [@cxong]: https://github.com/cxong
 
 [#398]: https://github.com/BambooTracker/BambooTracker/pull/398
-[#216]: https://github.com/BambooTracker/BambooTracker/issues/216
 [#399]: https://github.com/BambooTracker/BambooTracker/issues/399
 [#401]: https://github.com/BambooTracker/BambooTracker/issues/401
 [#404]: https://github.com/BambooTracker/BambooTracker/pull/404
@@ -108,6 +107,7 @@
 [#437]: https://github.com/BambooTracker/BambooTracker/issues/437
 [#443]: https://github.com/BambooTracker/BambooTracker/issues/443
 [#444]: https://github.com/BambooTracker/BambooTracker/issues/444
+[#447]: https://github.com/BambooTracker/BambooTracker/issues/447
 [#425]: https://github.com/BambooTracker/BambooTracker/issues/425
 [#449]: https://github.com/BambooTracker/BambooTracker/issues/449
 [#450]: https://github.com/BambooTracker/BambooTracker/pull/450
@@ -456,6 +456,7 @@
 [#213]: https://github.com/BambooTracker/BambooTracker/issues/213
 [#214]: https://github.com/BambooTracker/BambooTracker/issues/214
 [#217]: https://github.com/BambooTracker/BambooTracker/pull/217
+[#216]: https://github.com/BambooTracker/BambooTracker/issues/216
 [#218]: https://github.com/BambooTracker/BambooTracker/issues/218
 [#210]: https://github.com/BambooTracker/BambooTracker/issues/210
 [#220]: https://github.com/BambooTracker/BambooTracker/issues/220
@@ -1093,7 +1094,6 @@
 [#53]: https://github.com/BambooTracker/BambooTracker/issues/53
 
 [@ImATrackMan]: https://github.com/ImATrackMan
-[@scarletbullgon]: https://github.com/scarletbullgon
 [@emninem]: https://github.com/emninem
 
 ## v0.1.5 (2019-02-11)
@@ -1141,6 +1141,7 @@
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1
 [@djtuBIG-MaliceX]: https://github.com/djtuBIG-MaliceX
+[@scarletbullgon]: https://github.com/scarletbullgon
 
 ## v0.1.4 (2019-01-01)
 
@@ -1236,7 +1237,7 @@
 
 - Fix module load error by missing pattern size initialization (thanks [@maakmusic])
 - [#10] - Rearrange tab stops for better keyboard navigation (thanks [@Pigu-A])
-- [#11] - Change envelope reset behavior (thanks [@Pigu-A])
+- [#16] - Change envelope reset behavior (thanks [@Pigu-A])
 - Fix instrument property used/unused inheritance by cloning
 - [#20] - Split FM envelope copy/paste to multiple lines (thanks [@jimbo1qaz])
 - [#21] - Fix selection range in pattern editor (thanks [@jimbo1qaz])
@@ -1248,6 +1249,7 @@
 - Fix clone order to assign first free patterns
 
 [#10]: https://github.com/BambooTracker/BambooTracker/pull/10
+[#16]: https://github.com/BambooTracker/BambooTracker/pull/16
 [#20]: https://github.com/BambooTracker/BambooTracker/pull/20
 [#21]: https://github.com/BambooTracker/BambooTracker/issues/21
 [#1]: https://github.com/BambooTracker/BambooTracker/issues/1
