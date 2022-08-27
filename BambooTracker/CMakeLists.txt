@@ -125,6 +125,7 @@ set (BT_SOURCES
 	gui/event_guard.cpp
 	gui/file_history.cpp
 	gui/file_io_error_message_box.cpp
+	gui/font_info_widget.cpp
 	gui/fm_envelope_set_edit_dialog.cpp
 	gui/go_to_dialog.cpp
 	gui/groove_settings_dialog.cpp
@@ -226,6 +227,7 @@ set (BT_FORMS
 	gui/comment_edit_dialog.ui
 	gui/configuration_dialog.ui
 	gui/effect_list_dialog.ui
+	gui/font_info_widget.ui
 	gui/fm_envelope_set_edit_dialog.ui
 	gui/go_to_dialog.ui
 	gui/groove_settings_dialog.ui
