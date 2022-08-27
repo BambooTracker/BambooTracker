@@ -393,14 +393,11 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Appearance //
 	ui->colorsTreeWidget->setColumnWidth(0, 250);
 	updateColorTreeFrom(palette.lock().get());
-	ui->ptnHdFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorHeaderFont())));
-	ui->ptnHdFontSizeComboBox->setCurrentText(QString::number(configLocked->getPatternEditorHeaderFontSize()));
-	ui->ptnRowFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorRowsFont())));
-	ui->ptnRowFontSizeComboBox->setCurrentText(QString::number(configLocked->getPatternEditorRowsFontSize()));
-	ui->odrHdFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getOrderListHeaderFont())));
-	ui->odrHdFontSizeComboBox->setCurrentText(QString::number(configLocked->getOrderListHeaderFontSize()));
-	ui->odrRowFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getOrderListRowsFont())));
-	ui->odrRowFontSizeComboBox->setCurrentText(QString::number(configLocked->getOrderListRowsFontSize()));
+
+	ui->ptnHdFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorHeaderFont())));
+	ui->ptnRowFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorRowsFont())));
+	ui->odrHdFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getOrderListHeaderFont())));
+	ui->odrRowFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getOrderListRowsFont())));
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -487,14 +484,10 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 
 	// Appearance //
 	setPaletteFromColorTree(refPalette_.lock().get());
-	configLocked->setPatternEditorHeaderFont(ui->ptnHdFontComboBox->currentFont().family().toStdString());
-	configLocked->setPatternEditorHeaderFontSize(ui->ptnHdFontSizeComboBox->currentText().toInt());
-	configLocked->setPatternEditorRowsFont(ui->ptnRowFontComboBox->currentFont().family().toStdString());
-	configLocked->setPatternEditorRowsFontSize(ui->ptnRowFontSizeComboBox->currentText().toInt());
-	configLocked->setOrderListHeaderFont(ui->odrHdFontComboBox->currentFont().family().toStdString());
-	configLocked->setOrderListHeaderFontSize(ui->odrHdFontSizeComboBox->currentText().toInt());
-	configLocked->setOrderListRowsFont(ui->odrRowFontComboBox->currentFont().family().toStdString());
-	configLocked->setOrderListRowsFontSize(ui->odrRowFontSizeComboBox->currentText().toInt());
+	configLocked->setPatternEditorHeaderFont(ui->ptnHdFontInfoWidget->getFontInfo().toString().toStdString());
+	configLocked->setPatternEditorRowsFont(ui->ptnRowFontInfoWidget->getFontInfo().toString().toStdString());
+	configLocked->setOrderListHeaderFont(ui->odrHdFontInfoWidget->getFontInfo().toString().toStdString());
+	configLocked->setOrderListRowsFont(ui->odrRowFontInfoWidget->getFontInfo().toString().toStdString());
 
 	if (changedEmu) {
 		QMessageBox::information(this, tr("Configuration"), tr("The change of emulator will be effective after restarting the program."));

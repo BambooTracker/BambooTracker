@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -163,29 +163,29 @@ void PatternEditor::unfreeze()
 	setUpdatesEnabled(true);
 }
 
-QString PatternEditor::getHeaderFont() const
+QFont PatternEditor::getHeaderFont() const
 {
 	return ui->panel->getHeaderFont();
 }
 
-int PatternEditor::getHeaderFontSize() const
-{
-	return ui->panel->getHeaderFontSize();
-}
-
-QString PatternEditor::getRowsFont() const
+QFont PatternEditor::getRowsFont() const
 {
 	return ui->panel->getRowsFont();
 }
 
-int PatternEditor::getRowsFontSize() const
+QFont PatternEditor::getDefaultHeaderFont() const
 {
-	return ui->panel->getRowsFontSize();
+	return ui->panel->getDefaultHeaderFont();
 }
 
-void PatternEditor::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+QFont PatternEditor::getDefaultRowsFont() const
 {
-	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
+	return ui->panel->getDefaultRowsFont();
+}
+
+void PatternEditor::setFonts(const QFont& headerFont, const QFont& rowsFont)
+{
+	ui->panel->setFonts(headerFont, rowsFont);
 }
 
 void PatternEditor::setHorizontalScrollMode(bool cellBased, bool refresh)

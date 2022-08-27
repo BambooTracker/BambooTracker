@@ -2,11 +2,18 @@
 
 ## Unreleased
 
-### FIxed
+### Changed
+
+- [#461] - Enhance font settings (thanks [@NEO-SPECTRUMAN])
+
+### Fixed
 
 - [#460] - Fix the maximum value of progress bar in WAV export dialog (thanks [@Drillimation])
 
+[@NEO-SPECTRUMAN]: https://github.com/NEO-SPECTRUMAN
+
 [#460]: https://github.com/BambooTracker/BambooTracker/issues/460
+[#461]: https://github.com/BambooTracker/BambooTracker/issues/461
 
 ## v0.5.2 (2022-08-24)
 
@@ -101,7 +108,6 @@
 [#437]: https://github.com/BambooTracker/BambooTracker/issues/437
 [#443]: https://github.com/BambooTracker/BambooTracker/issues/443
 [#444]: https://github.com/BambooTracker/BambooTracker/issues/444
-[#447]: https://github.com/BambooTracker/BambooTracker/issues/447
 [#425]: https://github.com/BambooTracker/BambooTracker/issues/425
 [#449]: https://github.com/BambooTracker/BambooTracker/issues/449
 [#450]: https://github.com/BambooTracker/BambooTracker/pull/450
@@ -209,7 +215,6 @@
 [#366]: https://github.com/BambooTracker/BambooTracker/issues/366
 [#368]: https://github.com/BambooTracker/BambooTracker/pull/368
 [#367]: https://github.com/BambooTracker/BambooTracker/issues/367
-[#346]: https://github.com/BambooTracker/BambooTracker/pull/346
 [#314]: https://github.com/BambooTracker/BambooTracker/issues/314
 [#345]: https://github.com/BambooTracker/BambooTracker/issues/345
 [#373]: https://github.com/BambooTracker/BambooTracker/pull/373
@@ -283,7 +288,6 @@
 [#299]: https://github.com/BambooTracker/BambooTracker/issues/299
 [#296]: https://github.com/BambooTracker/BambooTracker/issues/296
 [#263]: https://github.com/BambooTracker/BambooTracker/issues/263
-[#288]: https://github.com/BambooTracker/BambooTracker/pull/288
 [#294]: https://github.com/BambooTracker/BambooTracker/pull/294
 [#303]: https://github.com/BambooTracker/BambooTracker/issues/303
 [#307]: https://github.com/BambooTracker/BambooTracker/pull/307
@@ -452,7 +456,6 @@
 [#213]: https://github.com/BambooTracker/BambooTracker/issues/213
 [#214]: https://github.com/BambooTracker/BambooTracker/issues/214
 [#217]: https://github.com/BambooTracker/BambooTracker/pull/217
-[#216]: https://github.com/BambooTracker/BambooTracker/issues/216
 [#218]: https://github.com/BambooTracker/BambooTracker/issues/218
 [#210]: https://github.com/BambooTracker/BambooTracker/issues/210
 [#220]: https://github.com/BambooTracker/BambooTracker/issues/220
@@ -1138,7 +1141,6 @@
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1
 [@djtuBIG-MaliceX]: https://github.com/djtuBIG-MaliceX
-[@scarletbullgon]: https://github.com/scarletbullgon
 
 ## v0.1.4 (2019-01-01)
 
@@ -1246,7 +1248,6 @@
 - Fix clone order to assign first free patterns
 
 [#10]: https://github.com/BambooTracker/BambooTracker/pull/10
-[#11]: https://github.com/BambooTracker/BambooTracker/pull/16
 [#20]: https://github.com/BambooTracker/BambooTracker/pull/20
 [#21]: https://github.com/BambooTracker/BambooTracker/issues/21
 [#1]: https://github.com/BambooTracker/BambooTracker/issues/1

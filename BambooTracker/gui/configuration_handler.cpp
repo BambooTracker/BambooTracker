@@ -289,13 +289,9 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 
 		settings.beginGroup("Appearance");
 		settings.setValue("patternEditorHeaderFont", QString::fromStdString(configLocked->getPatternEditorHeaderFont()));
-		settings.setValue("patternEditorHeaderFontSize", configLocked->getPatternEditorHeaderFontSize());
 		settings.setValue("patternEditorRowsFont", QString::fromStdString(configLocked->getPatternEditorRowsFont()));
-		settings.setValue("patternEditorRowsFontSize", configLocked->getPatternEditorRowsFontSize());
 		settings.setValue("orderListHeaderFont", QString::fromStdString(configLocked->getOrderListHeaderFont()));
-		settings.setValue("orderListHeaderFontSize", configLocked->getOrderListHeaderFontSize());
 		settings.setValue("orderListRowsFont", QString::fromStdString(configLocked->getOrderListRowsFont()));
-		settings.setValue("orderListRowsFontSize", configLocked->getOrderListRowsFontSize());
 		settings.endGroup();
 
 		return true;
@@ -482,13 +478,9 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		// Appearance
 		settings.beginGroup("Appearance");
 		configLocked->setPatternEditorHeaderFont(settings.value("patternEditorHeaderFont", QString::fromStdString(configLocked->getPatternEditorHeaderFont())).toString().toStdString());
-		configLocked->setPatternEditorHeaderFontSize(settings.value("patternEditorHeaderFontSize", configLocked->getPatternEditorHeaderFontSize()).toInt());
 		configLocked->setPatternEditorRowsFont(settings.value("patternEditorRowsFont", QString::fromStdString(configLocked->getPatternEditorRowsFont())).toString().toStdString());
-		configLocked->setPatternEditorRowsFontSize(settings.value("patternEditorRowsFontSize", configLocked->getPatternEditorRowsFontSize()).toInt());
 		configLocked->setOrderListHeaderFont(settings.value("orderListHeaderFont", QString::fromStdString(configLocked->getOrderListHeaderFont())).toString().toStdString());
-		configLocked->setOrderListHeaderFontSize(settings.value("orderListHeaderFontSize", configLocked->getOrderListHeaderFontSize()).toInt());
 		configLocked->setOrderListRowsFont(settings.value("orderListRowsFont", QString::fromStdString(configLocked->getOrderListRowsFont())).toString().toStdString());
-		configLocked->setOrderListRowsFontSize(settings.value("orderListRowsFontSize", configLocked->getOrderListRowsFontSize()).toInt());
 		settings.endGroup();
 
 		return true;

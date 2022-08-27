@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -334,23 +334,14 @@ public:
 public:
 	void setPatternEditorHeaderFont(const std::string& font) { ptnHdFont_ = font; }
 	std::string getPatternEditorHeaderFont() const { return ptnHdFont_; }
-	void setPatternEditorHeaderFontSize(int size) { ptnHdFontSize_ = size; }
-	int getPatternEditorHeaderFontSize() const { return ptnHdFontSize_; }
 	void setPatternEditorRowsFont(const std::string& font) { ptnRowFont_ = font; }
 	std::string getPatternEditorRowsFont() const { return ptnRowFont_; }
-	void setPatternEditorRowsFontSize(int size) { ptnRowFontSize_ = size; }
-	int getPatternEditorRowsFontSize() const { return ptnRowFontSize_; }
 	void setOrderListHeaderFont(const std::string& font) { odrHdFont_ = font; }
 	std::string getOrderListHeaderFont() const { return odrHdFont_; }
-	void setOrderListHeaderFontSize(int size) { odrHdFontSize_ = size; }
-	int getOrderListHeaderFontSize() const { return odrHdFontSize_; }
 	void setOrderListRowsFont(const std::string& font) { odrRowFont_ = font; }
 	std::string getOrderListRowsFont() const { return odrRowFont_; }
-	void setOrderListRowsFontSize(int size) { odrRowFontSize_ = size; }
-	int getOrderListRowsFontSize() const { return odrRowFontSize_; }
 private:
 	std::string ptnHdFont_, ptnRowFont_, odrHdFont_, odrRowFont_;
-	int ptnHdFontSize_, ptnRowFontSize_, odrHdFontSize_, odrRowFontSize_;
 
 private:
 	std::vector<FMEnvelopeText> fmEnvelopeTexts_;

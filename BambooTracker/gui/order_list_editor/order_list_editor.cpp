@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -146,29 +146,29 @@ void OrderListEditor::unfreeze()
 	setUpdatesEnabled(true);
 }
 
-QString OrderListEditor::getHeaderFont() const
+QFont OrderListEditor::getHeaderFont() const
 {
 	return ui->panel->getHeaderFont();
 }
 
-int OrderListEditor::getHeaderFontSize() const
-{
-	return ui->panel->getHeaderFontSize();
-}
-
-QString OrderListEditor::getRowsFont() const
+QFont OrderListEditor::getRowsFont() const
 {
 	return ui->panel->getRowsFont();
 }
 
-int OrderListEditor::getRowsFontSize() const
+QFont OrderListEditor::getDefaultHeaderFont() const
 {
-	return ui->panel->getRowsFontSize();
+	return ui->panel->getDefaultHeaderFont();
 }
 
-void OrderListEditor::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+QFont OrderListEditor::getDefaultRowsFont() const
 {
-	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
+	return ui->panel->getDefaultRowsFont();
+}
+
+void OrderListEditor::setFonts(const QFont& headerFont, const QFont& rowsFont)
+{
+	ui->panel->setFonts(headerFont, rowsFont);
 }
 
 void OrderListEditor::setHorizontalScrollMode(bool cellBased, bool refresh)

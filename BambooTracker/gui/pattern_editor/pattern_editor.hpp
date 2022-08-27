@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -62,11 +62,11 @@ public:
 	void freeze();
 	void unfreeze();
 
-	QString getHeaderFont() const;
-	int getHeaderFontSize() const;
-	QString getRowsFont() const;
-	int getRowsFontSize() const;
-	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
+	QFont getHeaderFont() const;
+	QFont getRowsFont() const;
+	QFont getDefaultHeaderFont() const;
+	QFont getDefaultRowsFont() const;
+	void setFonts(const QFont& headerFont, const QFont& rowsFont);
 
 	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
 	void setVisibleTracks(std::vector<int> tracks);

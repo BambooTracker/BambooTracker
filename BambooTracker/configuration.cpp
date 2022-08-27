@@ -727,13 +727,9 @@ Configuration::Configuration()
 
 	// Appearance
 	ptnHdFont_ = u8"";
-	ptnHdFontSize_ = 10;
 	ptnRowFont_ = u8"";
-	ptnRowFontSize_ = 10;
 	odrHdFont_ = u8"";
-	odrHdFontSize_ = 10;
 	odrRowFont_ = u8"";
-	odrRowFontSize_ = 10;
 }
 
 // Keys

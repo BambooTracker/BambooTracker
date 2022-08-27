@@ -179,18 +179,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	ui->action_Wave_View->setChecked(config.lock()->getVisibleWaveView());
 	ui->waveVisual->setVisible(config.lock()->getVisibleWaveView());
 	bt_->setFollowPlay(config.lock()->getFollowMode());
-	if (config.lock()->getPatternEditorHeaderFont().empty()) {
-		config.lock()->setPatternEditorHeaderFont(ui->patternEditor->getHeaderFont().toStdString());
-	}
-	if (config.lock()->getPatternEditorRowsFont().empty()) {
-		config.lock()->setPatternEditorRowsFont(ui->patternEditor->getRowsFont().toStdString());
-	}
-	if (config.lock()->getOrderListHeaderFont().empty()) {
-		config.lock()->setOrderListHeaderFont(ui->orderList->getHeaderFont().toStdString());
-	}
-	if (config.lock()->getOrderListRowsFont().empty()) {
-		config.lock()->setOrderListRowsFont(ui->orderList->getRowsFont().toStdString());
-	}
 	NoteNameManager::getManager().setNotationSystem(config.lock()->getNotationSystem());
 	ui->patternEditor->setConfiguration(config_.lock());
 	ui->orderList->setConfiguration(config_.lock());
@@ -2490,16 +2478,27 @@ void MainWindow::setMidiConfiguration()
 
 void MainWindow::updateFonts()
 {
-	ui->patternEditor->setFonts(
-				gui_utils::utf8ToQString(config_.lock()->getPatternEditorHeaderFont()),
-				config_.lock()->getPatternEditorHeaderFontSize(),
-				gui_utils::utf8ToQString(config_.lock()->getPatternEditorRowsFont()),
-				config_.lock()->getPatternEditorRowsFontSize());
-	ui->orderList->setFonts(
-				gui_utils::utf8ToQString(config_.lock()->getOrderListHeaderFont()),
-				config_.lock()->getOrderListHeaderFontSize(),
-				gui_utils::utf8ToQString(config_.lock()->getOrderListRowsFont()),
-				config_.lock()->getOrderListRowsFontSize());
+	QFont ptnHeader, ptnRows, odrHeader, odrRows;
+
+	if (!ptnHeader.fromString(gui_utils::utf8ToQString(config_.lock()->getPatternEditorHeaderFont()))) {
+		ptnHeader = ui->patternEditor->getDefaultHeaderFont();
+		config_.lock()->setPatternEditorHeaderFont(ptnHeader.toString().toUtf8().toStdString());
+	}
+	if (!ptnRows.fromString(gui_utils::utf8ToQString(config_.lock()->getPatternEditorRowsFont()))) {
+		ptnRows = ui->patternEditor->getDefaultRowsFont();
+		config_.lock()->setPatternEditorRowsFont(ptnRows.toString().toUtf8().toStdString());
+	}
+	if (!odrHeader.fromString(gui_utils::utf8ToQString(config_.lock()->getOrderListHeaderFont()))) {
+		odrHeader = ui->orderList->getDefaultHeaderFont();
+		config_.lock()->setOrderListHeaderFont(odrHeader.toString().toUtf8().toStdString());
+	}
+	if (!odrRows.fromString(gui_utils::utf8ToQString(config_.lock()->getOrderListRowsFont()))) {
+		odrRows = ui->orderList->getDefaultRowsFont();
+		config_.lock()->setOrderListRowsFont(odrRows.toString().toUtf8().toStdString());
+	}
+
+	ui->patternEditor->setFonts(ptnHeader, ptnRows);
+	ui->orderList->setFonts(odrHeader, odrRows);
 }
 
 /********** History change **********/

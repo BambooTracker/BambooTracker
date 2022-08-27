@@ -536,33 +536,7 @@
          <property name="title">
           <string>Font and size</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_19">
-          <item row="1" column="1">
-           <widget class="QFontComboBox" name="ptnRowFontComboBox"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QFontComboBox" name="ptnHdFontComboBox"/>
-          </item>
-          <item row="2" column="1">
-           <widget class="QFontComboBox" name="odrHdFontComboBox"/>
-          </item>
-          <item row="3" column="1">
-           <widget class="QFontComboBox" name="odrRowFontComboBox"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="odrRowFontLabel">
-            <property name="text">
-             <string>Order list rows</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="ptnRowFontLabel">
-            <property name="text">
-             <string>Pattern editor rows</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QFormLayout" name="formLayout">
           <item row="0" column="0">
            <widget class="QLabel" name="ptnHdFontLabel">
             <property name="text">
@@ -570,212 +544,38 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="1">
+           <widget class="FontInfoWidget" name="ptnHdFontInfoWidget" native="true"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="ptnRowFontTitleLabel">
+            <property name="text">
+             <string>Pattern editor rows</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="FontInfoWidget" name="ptnRowFontInfoWidget" native="true"/>
+          </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="odrHdFontLabel">
+           <widget class="QLabel" name="odrHdFontTitleLabel">
             <property name="text">
              <string>Order list header</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QComboBox" name="ptnHdFontSizeComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="2" column="1">
+           <widget class="FontInfoWidget" name="odrHdFontInfoWidget" native="true"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="odrRowFontTitleLabel">
+            <property name="text">
+             <string>Order list rows</string>
             </property>
-            <item>
-             <property name="text">
-              <string notr="true">10</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">11</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">12</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">14</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">16</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">18</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">20</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">22</string>
-             </property>
-            </item>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QComboBox" name="ptnRowFontSizeComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <item>
-             <property name="text">
-              <string notr="true">10</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">11</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">12</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">14</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">16</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">18</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">20</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">22</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QComboBox" name="odrHdFontSizeComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <item>
-             <property name="text">
-              <string notr="true">10</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">11</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">12</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">14</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">16</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">18</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">20</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">22</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QComboBox" name="odrRowFontSizeComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <item>
-             <property name="text">
-              <string notr="true">10</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">11</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">12</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">14</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">16</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">18</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">20</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string notr="true">22</string>
-             </property>
-            </item>
-           </widget>
+          <item row="3" column="1">
+           <widget class="FontInfoWidget" name="odrRowFontInfoWidget" native="true"/>
           </item>
          </layout>
         </widget>
@@ -1371,7 +1171,6 @@
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1406,7 +1205,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1438,7 +1236,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1470,7 +1267,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1496,7 +1292,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1522,7 +1317,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1548,7 +1342,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1574,7 +1367,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <italic>false</italic>
                   <bold>true</bold>
                  </font>
@@ -1601,7 +1393,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1627,7 +1418,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1653,7 +1443,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1679,7 +1468,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1721,7 +1509,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1747,7 +1534,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1773,7 +1559,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2046,7 +1831,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2072,7 +1856,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2137,7 +1920,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2189,7 +1971,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2267,7 +2048,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2299,7 +2079,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <italic>false</italic>
                   <bold>true</bold>
                  </font>
@@ -2352,7 +2131,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2378,7 +2156,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2404,7 +2181,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2430,7 +2206,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2469,7 +2244,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2501,7 +2275,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2527,7 +2300,6 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2571,7 +2343,6 @@ color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2607,7 +2378,6 @@ color: rgb(0, 0, 0);
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2669,6 +2439,12 @@ color: rgb(255, 255, 255);</string>
    <header>gui/labeled_vertical_slider.hpp</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>FontInfoWidget</class>
+   <extends>QWidget</extends>
+   <header>gui/font_info_widget.hpp</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
@@ -2690,14 +2466,6 @@ color: rgb(255, 255, 255);</string>
   <tabstop>colorLoadPushButton</tabstop>
   <tabstop>colorSavePushButton</tabstop>
   <tabstop>colorEditPushButton</tabstop>
-  <tabstop>ptnHdFontComboBox</tabstop>
-  <tabstop>ptnHdFontSizeComboBox</tabstop>
-  <tabstop>ptnRowFontComboBox</tabstop>
-  <tabstop>ptnRowFontSizeComboBox</tabstop>
-  <tabstop>odrHdFontComboBox</tabstop>
-  <tabstop>odrHdFontSizeComboBox</tabstop>
-  <tabstop>odrRowFontComboBox</tabstop>
-  <tabstop>odrRowFontSizeComboBox</tabstop>
   <tabstop>envelopeTypeListWidget</tabstop>
   <tabstop>envelopeSetNameLineEdit</tabstop>
   <tabstop>addEnvelopeSetPushButton</tabstop>

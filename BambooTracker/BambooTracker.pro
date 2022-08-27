@@ -65,6 +65,7 @@ SOURCES += \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
     gui/file_io_error_message_box.cpp \
+    gui/font_info_widget.cpp \
     gui/go_to_dialog.cpp \
     gui/gui_utils.cpp \
     gui/hide_tracks_dialog.cpp \
@@ -246,6 +247,7 @@ HEADERS += \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
     gui/file_io_error_message_box.hpp \
+    gui/font_info_widget.hpp \
     gui/go_to_dialog.hpp \
     gui/gui_utils.hpp \
     gui/hide_tracks_dialog.hpp \
@@ -408,6 +410,7 @@ HEADERS += \
 FORMS += \
     gui/bookmark_manager_form.ui \
     gui/effect_list_dialog.ui \
+    gui/font_info_widget.ui \
     gui/go_to_dialog.ui \
     gui/hide_tracks_dialog.ui \
     gui/instrument_editor/adpcm_drumkit_editor.ui \

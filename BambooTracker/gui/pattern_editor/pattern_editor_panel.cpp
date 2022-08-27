@@ -162,11 +162,22 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Initialize font
-	headerFont_ = QApplication::font();
-	headerFont_.setPointSize(10);
-	stepFont_ = QFont("Monospace", 10);
-	stepFont_.setStyleHint(QFont::TypeWriter);
-	stepFont_.setStyleStrategy(QFont::PreferMatch);
+	headerFontDef_ = [] {
+		auto font = QApplication::font();
+		font.setPointSize(10);
+		return font;
+	}();
+	headerFont_ = headerFontDef_;
+
+	stepFontDef_ = [] {
+		QFont font("Monospace", 10);
+		font.setStyleHint(QFont::TypeWriter);
+		font.setStyleStrategy(QFont::PreferMatch);
+		// Get actually used font
+		QFontInfo info(font);
+		return QFont(info.family(), info.pointSize());
+	}();
+	stepFont_ = stepFontDef_;
 
 	updateSizes();
 
@@ -397,30 +408,30 @@ void PatternEditorPanel::waitPaintFinish()
 	}
 }
 
-QString PatternEditorPanel::getHeaderFont() const
+QFont PatternEditorPanel::getHeaderFont() const
 {
-	return QFontInfo(headerFont_).family();
+	return headerFont_;
 }
 
-int PatternEditorPanel::getHeaderFontSize() const
+QFont PatternEditorPanel::getRowsFont() const
 {
-	return QFontInfo(headerFont_).pointSize();
+	return stepFont_;
 }
 
-QString PatternEditorPanel::getRowsFont() const
+QFont PatternEditorPanel::getDefaultHeaderFont() const
 {
-	return QFontInfo(stepFont_).family();
+	return headerFontDef_;
 }
 
-int PatternEditorPanel::getRowsFontSize() const
+QFont PatternEditorPanel::getDefaultRowsFont() const
 {
-	return QFontInfo(stepFont_).pointSize();
+	return stepFontDef_;
 }
 
-void PatternEditorPanel::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+void PatternEditorPanel::setFonts(const QFont& headerFont, const QFont& rowsFont)
 {
-	headerFont_ = QFont(headerFont, headerSize);
-	stepFont_ = QFont(rowsFont, rowsSize);
+	headerFont_ = headerFont;
+	stepFont_ = rowsFont;
 
 	updateSizes();
 	updateTracksWidthFromLeftToEnd();

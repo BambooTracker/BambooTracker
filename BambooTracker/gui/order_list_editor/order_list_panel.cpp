@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -109,11 +109,22 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Initialize font
-	headerFont_ = QApplication::font();
-	headerFont_.setPointSize(10);
-	rowFont_ = QFont("Monospace", 10);
-	rowFont_.setStyleHint(QFont::TypeWriter);
-	rowFont_.setStyleStrategy(QFont::PreferMatch);
+	headerFontDef_ = [] {
+		auto font = QApplication::font();
+		font.setPointSize(10);
+		return font;
+	}();
+	headerFont_ = headerFontDef_;
+
+	rowFontDef_ = [] {
+		QFont font("Monospace", 10);
+		font.setStyleHint(QFont::TypeWriter);
+		font.setStyleStrategy(QFont::PreferMatch);
+		// Get actually used font
+		QFontInfo info(font);
+		return QFont(info.family(), info.pointSize());
+	}();
+	rowFont_ = rowFontDef_;
 
 	updateSizes();
 
@@ -170,29 +181,30 @@ void OrderListPanel::waitPaintFinish()
 	}
 }
 
-QString OrderListPanel::getHeaderFont() const
+QFont OrderListPanel::getHeaderFont() const
 {
-	return QFontInfo(headerFont_).family();
+	return headerFont_;
 }
 
-int OrderListPanel::getHeaderFontSize() const
+QFont OrderListPanel::getRowsFont() const
 {
-	return QFontInfo(headerFont_).pointSize();
+	return rowFont_;
 }
 
-QString OrderListPanel::getRowsFont() const
+QFont OrderListPanel::getDefaultHeaderFont() const
 {
-	return QFontInfo(rowFont_).family();
-}
-int OrderListPanel::getRowsFontSize() const
-{
-	return QFontInfo(rowFont_).pointSize();
+	return headerFontDef_;
 }
 
-void OrderListPanel::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+QFont OrderListPanel::getDefaultRowsFont() const
 {
-	headerFont_ = QFont(headerFont, headerSize);
-	rowFont_ = QFont(rowsFont, rowsSize);
+	return rowFontDef_;
+}
+
+void OrderListPanel::setFonts(const QFont& headerFont, const QFont& rowsFont)
+{
+	headerFont_ = headerFont;
+	rowFont_ = rowsFont;
 
 	updateSizes();
 	updateTracksWidthFromLeftToEnd();

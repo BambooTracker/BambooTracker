@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -78,11 +78,11 @@ public:
 
 	void waitPaintFinish();
 
-	QString getHeaderFont() const;
-	int getHeaderFontSize() const;
-	QString getRowsFont() const;
-	int getRowsFontSize() const;
-	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
+	QFont getHeaderFont() const;
+	QFont getRowsFont() const;
+	QFont getDefaultHeaderFont() const;
+	QFont getDefaultRowsFont() const;
+	void setFonts(const QFont& headerFont, const QFont& rowsFont);
 
 	void setVisibleTracks(std::vector<int> tracks);
 
@@ -143,6 +143,7 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont rowFont_, headerFont_;
+	QFont rowFontDef_, headerFontDef_;
 	std::unique_ptr<QFontMetrics> hdFontMets_;
 	int rowFontWidth_, rowFontHeight_, rowFontAscent_, rowFontLeading_;
 	int headerFontAscent_;
