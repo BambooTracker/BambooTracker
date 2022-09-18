@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.5.3 (2022-09-18)
+
 ### Changed
 
 - [#461] - Enhance font settings (thanks [@NEO-SPECTRUMAN])
