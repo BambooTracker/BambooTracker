@@ -7,6 +7,7 @@
 ### Changed
 
 - [#461] - Enhance font settings (thanks [@NEO-SPECTRUMAN])
+- [#463] - Raise macOS version of GitHub Actions workflow to 11
 
 ### Fixed
 
@@ -16,6 +17,7 @@
 
 [#460]: https://github.com/BambooTracker/BambooTracker/issues/460
 [#461]: https://github.com/BambooTracker/BambooTracker/issues/461
+[#463]: https://github.com/BambooTracker/BambooTracker/pull/463
 
 ## v0.5.2 (2022-08-24)
 

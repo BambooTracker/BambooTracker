@@ -30,7 +30,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
 
     steps:
       - name: Identify build type.
@@ -70,16 +70,16 @@ jobs:
       ## macOS-specific steps
 
       - name: Pin Xcode version
-        run: sudo xcode-select -s "/Applications/Xcode_12.1.1.app"
+        run: sudo xcode-select -s "/Applications/Xcode_13.2.1.app"
 
       - name: Installing dependencies.
         run: |
           export HOMEBREW_NO_INSTALL_CLEANUP=1
           brew update
-          # JACK implies brew link python-3.9, fails due to shipped python binaries
-          brew unlink python@3.9
-          brew link --overwrite python@3.9
-          brew upgrade --force python@3.9
+          # JACK implies brew link python-3.10, fails due to shipped python binaries
+          brew unlink python@3.10
+          brew link --overwrite python@3.10
+          brew upgrade --force python@3.10
           brew install qt@5 pkg-config jack coreutils
           brew link --force qt@5
 
