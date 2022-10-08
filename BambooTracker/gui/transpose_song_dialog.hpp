@@ -42,7 +42,7 @@ public:
 	explicit TransposeSongDialog(QWidget *parent = nullptr);
 	~TransposeSongDialog() override;
 
-	int getTransposeSeminotes() const;
+	int getTransposeSemitones() const;
 	std::vector<int> getExcludeInstruments() const;
 
 private:

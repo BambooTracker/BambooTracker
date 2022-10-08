@@ -67,7 +67,7 @@ private:
 class NoteSlideEffectIterator : public SequenceIteratorInterface<InstrumentSequenceBaseUnit>
 {
 public:
-	NoteSlideEffectIterator(int speed, int seminote);
+	NoteSlideEffectIterator(int speed, int semitone);
 	SequenceType type() const noexcept override { return SequenceType::AbsoluteSequence; }
 
 	InstrumentSequenceBaseUnit data() const override;

@@ -120,14 +120,14 @@ Pattern Pattern::clone(int asNumber)
 	return Pattern(asNumber, size_, steps_);
 }
 
-void Pattern::transpose(int seminotes, const std::vector<int>& excludeInsts)
+void Pattern::transpose(int semitones, const std::vector<int>& excludeInsts)
 {
 	for (size_t i = 0; i < size_; ++i) {
 		Step& step = steps_.at(i);
 		int note = step.getNoteNumber();
 		if (step.hasGeneralNote() && std::none_of(excludeInsts.begin(), excludeInsts.end(),
 									  [a = step.getInstrumentNumber()](int b) { return a == b; })) {
-			step.setNoteNumber(utils::clamp(note + seminotes, 0, Note::NOTE_NUMBER_RANGE - 1));
+			step.setNoteNumber(utils::clamp(note + semitones, 0, Note::NOTE_NUMBER_RANGE - 1));
 		}
 	}
 }

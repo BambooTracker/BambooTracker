@@ -3913,7 +3913,7 @@ void MainWindow::on_action_Transpose_Song_triggered()
 			lockWidgets(false);
 
 			bt_->transposeSong(bt_->getCurrentSongNumber(),
-							   dialog.getTransposeSeminotes(), dialog.getExcludeInstruments());
+							   dialog.getTransposeSemitones(), dialog.getExcludeInstruments());
 			ui->patternEditor->onPatternDataGlobalChanged();
 
 			bt_->clearCommandHistory();

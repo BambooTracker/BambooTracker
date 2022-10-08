@@ -1998,12 +1998,12 @@ PatternEditorPanel::PatternCells PatternEditorPanel::compandPasteCells(const Pat
 	return newCells;
 }
 
-void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote)
+void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int semitone)
 {
 	int beginTrackIdx = (startPos.colInTrack == 0) ? startPos.trackVisIdx : startPos.trackVisIdx + 1;
 	if (beginTrackIdx <= endPos.trackVisIdx) {
 		bt_->transposeNoteInPattern(curSongNum_, visTracks_.at(beginTrackIdx), startPos.order, startPos.step,
-									visTracks_.at(endPos.trackVisIdx), endPos.step, seminote);
+									visTracks_.at(endPos.trackVisIdx), endPos.step, semitone);
 		comStack_.lock()->push(new TransposeNoteInPatternQtCommand(this));
 	}
 }
@@ -2579,14 +2579,14 @@ void PatternEditorPanel::onSelectPressed(int type)
 	}
 }
 
-void PatternEditorPanel::onNoteTransposePressed(int seminote)
+void PatternEditorPanel::onNoteTransposePressed(int semitone)
 {
 	if (bt_->isJamMode()) return;
 
 	if (selLeftAbovePos_.order != -1)
-		transposeNote(selLeftAbovePos_, selRightBelowPos_, seminote);
+		transposeNote(selLeftAbovePos_, selRightBelowPos_, semitone);
 	else
-		transposeNote(curPos_, curPos_, seminote);
+		transposeNote(curPos_, curPos_, semitone);
 }
 
 void PatternEditorPanel::onToggleTrackPressed()

@@ -1046,21 +1046,21 @@ void OPNAController::setFineDetuneFM(int ch, int pitch)
 	fm.shouldSetTone = true;
 }
 
-void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
+void OPNAController::setNoteSlideFM(int ch, int speed, int semitone)
 {
 	auto& fm = fm_[ch];
-	if (seminote) {
-		fm.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+	if (semitone) {
+		fm.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
 		fm.hasSetNs = true;
 	}
 	else fm.nsItr.reset();
 }
 
 
-void OPNAController::setTransposeEffectFM(int ch, int seminote)
+void OPNAController::setTransposeEffectFM(int ch, int semitone)
 {
 	auto& fm = fm_[ch];
-	fm.transpose += (seminote * Note::SEMINOTE_PITCH);
+	fm.transpose += (semitone * Note::SEMITONE_PITCH);
 	fm.shouldSetTone = true;
 }
 
@@ -2263,20 +2263,20 @@ void OPNAController::setFineDetuneSSG(int ch, int pitch)
 	ssg.shouldSetTone = true;
 }
 
-void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
+void OPNAController::setNoteSlideSSG(int ch, int speed, int semitone)
 {
 	auto& ssg = ssg_[ch];
-	if (seminote) {
-		ssg.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+	if (semitone) {
+		ssg.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
 		ssg.hasSetNs = true;
 	}
 	else ssg.nsItr.reset();
 }
 
-void OPNAController::setTransposeEffectSSG(int ch, int seminote)
+void OPNAController::setTransposeEffectSSG(int ch, int semitone)
 {
 	auto& ssg = ssg_[ch];
-	ssg.transpose += (seminote * Note::SEMINOTE_PITCH);
+	ssg.transpose += (semitone * Note::SEMITONE_PITCH);
 	ssg.shouldSetTone = true;
 }
 
@@ -3415,7 +3415,7 @@ namespace
 {
 int calculateCurrentKeyOfDrumkit(int noteNum, int transpose)
 {
-	return utils::clamp(noteNum + transpose / Note::SEMINOTE_PITCH, 0, Note::NOTE_NUMBER_RANGE - 1);
+	return utils::clamp(noteNum + transpose / Note::SEMITONE_PITCH, 0, Note::NOTE_NUMBER_RANGE - 1);
 }
 }
 
@@ -3723,20 +3723,20 @@ void OPNAController::setFineDetuneADPCM(int pitch)
 	shouldSetToneADPCM_ = true;
 }
 
-void OPNAController::setNoteSlideADPCM(int speed, int seminote)
+void OPNAController::setNoteSlideADPCM(int speed, int semitone)
 {
 	if (refInstKit_) return;
 
-	if (seminote) {
-		nsItADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+	if (semitone) {
+		nsItADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
 		hasSetNsADPCM_ = true;
 	}
 	else nsItADPCM_.reset();
 }
 
-void OPNAController::setTransposeEffectADPCM(int seminote)
+void OPNAController::setTransposeEffectADPCM(int semitone)
 {
-	transposeADPCM_ += (seminote * Note::SEMINOTE_PITCH);
+	transposeADPCM_ += (semitone * Note::SEMITONE_PITCH);
 	shouldSetToneADPCM_ = true;
 }
 
@@ -4078,13 +4078,13 @@ void OPNAController::writePitchADPCM()
 								   + detuneADPCM_
 								   + nsSumADPCM_
 								   + transposeADPCM_)).getAbsolutePicth();
-		int diff = p - Note::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
+		int diff = p - Note::SEMITONE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
 		int key = calculateCurrentKeyOfDrumkit(baseNoteADPCM_.getNoteNumber(), transposeADPCM_);
 		if (refInstKit_->getSampleEnabled(key)) {
-			int diff = Note::SEMINOTE_PITCH * refInstKit_->getPitch(key);
+			int diff = Note::SEMITONE_PITCH * refInstKit_->getPitch(key);
 			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));
 			hasStartRequestedKit_ = true;
 		}

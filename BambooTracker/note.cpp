@@ -1119,7 +1119,7 @@ Note::Note(int noteNum)
 	if (octave_ > OCTAVE_RANGE - 1) {
 		octave_ = OCTAVE_RANGE - 1;
 		name_ = NoteName::B;
-		pitch_ = SEMINOTE_PITCH - 1;
+		pitch_ = SEMITONE_PITCH - 1;
 		return;
 	}
 
@@ -1129,8 +1129,8 @@ Note::Note(int noteNum)
 
 void Note::evaluateState(int octave, int note, int pitch)
 {
-	pitch_ = pitch % SEMINOTE_PITCH;
-	note += pitch / SEMINOTE_PITCH;
+	pitch_ = pitch % SEMITONE_PITCH;
+	note += pitch / SEMITONE_PITCH;
 	name_ = ((note % 12) + 12) % 12;;
 	octave_ = (int)(octave + std::floor(note / 12.));
 	if (octave_ < 0 || (!octave_ && !name_ && pitch_ < 0)) {
@@ -1141,7 +1141,7 @@ void Note::evaluateState(int octave, int note, int pitch)
 	else if (OCTAVE_RANGE <= octave_) {
 		octave_ = OCTAVE_RANGE - 1;
 		name_ = NoteName::B;
-		pitch_ = SEMINOTE_PITCH - 1;
+		pitch_ = SEMITONE_PITCH - 1;
 	}
 	request_eval_ = false;
 }

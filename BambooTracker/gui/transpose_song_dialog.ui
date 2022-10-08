@@ -17,9 +17,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="seminotesLabel">
+      <widget class="QLabel" name="semitonesLabel">
        <property name="text">
-        <string>Seminotes</string>
+        <string>Semitones</string>
        </property>
       </widget>
      </item>

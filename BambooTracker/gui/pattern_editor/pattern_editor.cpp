@@ -350,8 +350,8 @@ void PatternEditor::onSelectPressed(int type)
 
 void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 {
-	int seminote = isOctave ? (isIncreased ? 12 : -12) : (isIncreased ? 1 : -1);
-	ui->panel->onNoteTransposePressed(seminote);
+	int semitone = isOctave ? (isIncreased ? 12 : -12) : (isIncreased ? 1 : -1);
+	ui->panel->onNoteTransposePressed(semitone);
 }
 
 void PatternEditor::onChangeValuesPressed(bool isCoarse, bool isIncreased)

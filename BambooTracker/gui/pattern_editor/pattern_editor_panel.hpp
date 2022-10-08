@@ -120,7 +120,7 @@ public slots:
 	/// 4: Pattern
 	/// 5: Order
 	void onSelectPressed(int type);
-	void onNoteTransposePressed(int seminote);
+	void onNoteTransposePressed(int semitone);
 	void onToggleTrackPressed();
 	void onSoloTrackPressed();
 	void onUnmuteAllPressed();
@@ -306,7 +306,7 @@ private:
 			int pasteCol, const PatternPosition& cursorPos, size_t cellW) const;
 	PatternCells compandPasteCells(const PatternPosition& laPos, const PatternCells& cells);
 
-	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
+	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int semitone);
 	void changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value);
 
 	void toggleTrack(int trackIdx);

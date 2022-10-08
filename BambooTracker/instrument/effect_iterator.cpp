@@ -125,11 +125,11 @@ int WavingEffectIterator::end()
 	return END_SEQ_POS;
 }
 
-NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
+NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int semitone)
 	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0),
 	  started_(false)
 {
-	int d = seminote * Note::SEMINOTE_PITCH;
+	int d = semitone * Note::SEMITONE_PITCH;
 	if (speed) {
 		int prev = 0;
 		for (int i = 0; i <= speed; ++i) {

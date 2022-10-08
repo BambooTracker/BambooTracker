@@ -35,7 +35,7 @@ class TransposeNoteInPatternCommand final : public AbstractCommand
 public:
 	TransposeNoteInPatternCommand(std::weak_ptr<Module> mod, int songNum,
 								  int beginTrack, int beginOrder, int beginStep,
-								  int endTrack, int endStep, int seminote);
+								  int endTrack, int endStep, int semitone);
 	void redo() override;
 	void undo() override;
 
@@ -44,6 +44,6 @@ private:
 	int song_;
 	int bTrack_, order_, bStep_;
 	int eTrack_, eStep_;
-	int seminote_;
+	int semitone_;
 	std::vector<int> prevKeys_;
 };

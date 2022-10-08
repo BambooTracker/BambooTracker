@@ -2307,9 +2307,9 @@ void BambooTracker::sortSongs(const std::vector<int>& numbers)
 	mod_->sortSongs(std::move(numbers));
 }
 
-void BambooTracker::transposeSong(int songNum, int seminotes, const std::vector<int>& excludeInsts)
+void BambooTracker::transposeSong(int songNum, int semitones, const std::vector<int>& excludeInsts)
 {
-	mod_->getSong(songNum).transpose(seminotes, excludeInsts);
+	mod_->getSong(songNum).transpose(semitones, excludeInsts);
 }
 
 void BambooTracker::swapTracks(int songNum, int track1, int track2)
@@ -2693,10 +2693,10 @@ void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColm
 }
 
 void BambooTracker::transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-										   int endTrack, int endStep, int seminote)
+										   int endTrack, int endStep, int semitone)
 {
 	comMan_.invoke(std::make_unique<TransposeNoteInPatternCommand>(
-					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, seminote));
+					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, semitone));
 }
 
 void BambooTracker::changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder,

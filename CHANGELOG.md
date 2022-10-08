@@ -6,6 +6,10 @@
 
 - [#464] - Raise Qt6 version on GitHub Actions to 6.4.0
 
+### Fixed
+
+- Fix misspelled words (thanks [@wildmatsu])
+
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 
 ## v0.5.3 (2022-09-18)

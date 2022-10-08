@@ -54,7 +54,7 @@ TransposeSongDialog::~TransposeSongDialog()
 	delete ui;
 }
 
-int TransposeSongDialog::getTransposeSeminotes() const
+int TransposeSongDialog::getTransposeSemitones() const
 {
 	return ui->spinBox->value();
 }

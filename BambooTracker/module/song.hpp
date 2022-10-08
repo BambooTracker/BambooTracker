@@ -124,7 +124,7 @@ public:
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map);
 
-	void transpose(int seminotes, const std::vector<int>& excludeInsts);
+	void transpose(int semitones, const std::vector<int>& excludeInsts);
 	void swapTracks(int track1, int track2);
 
 	// Bookmark

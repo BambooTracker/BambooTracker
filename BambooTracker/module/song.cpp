@@ -222,9 +222,9 @@ void Song::replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, i
 	for (Track& track : tracks_) track.replaceDuplicateInstrumentsInPatterns(map);
 }
 
-void Song::transpose(int seminotes, const std::vector<int>& excludeInsts)
+void Song::transpose(int semitones, const std::vector<int>& excludeInsts)
 {
-	for (Track& track : tracks_) track.transpose(seminotes, excludeInsts);
+	for (Track& track : tracks_) track.transpose(semitones, excludeInsts);
 }
 
 void Song::swapTracks(int track1, int track2)

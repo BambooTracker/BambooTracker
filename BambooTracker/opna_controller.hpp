@@ -139,8 +139,8 @@ public:
 	void setXVolumeSlideFM(int ch, int factor);
 	void setDetuneFM(int ch, int pitch);
 	void setFineDetuneFM(int ch, int pitch);
-	void setNoteSlideFM(int ch, int speed, int seminote);
-	void setTransposeEffectFM(int ch, int seminote);
+	void setNoteSlideFM(int ch, int speed, int semitone);
+	void setTransposeEffectFM(int ch, int semitone);
 	void setFBControlFM(int ch, int value);
 	void setTLControlFM(int ch, int op, int value);
 	void setMLControlFM(int ch, int op, int value);
@@ -266,8 +266,8 @@ public:
 	void setXVolumeSlideSSG(int ch, int factor);
 	void setDetuneSSG(int ch, int pitch);
 	void setFineDetuneSSG(int ch, int pitch);
-	void setNoteSlideSSG(int ch, int speed, int seminote);
-	void setTransposeEffectSSG(int ch, int seminote);
+	void setNoteSlideSSG(int ch, int speed, int semitone);
+	void setTransposeEffectSSG(int ch, int semitone);
 	void setToneNoiseMixSSG(int ch, int value);
 	void setNoisePitchSSG(int ch, int pitch);
 	void setHardEnvelopePeriod(int ch, bool high, int period);
@@ -418,8 +418,8 @@ public:
 	void setXVolumeSlideADPCM(int factor);
 	void setDetuneADPCM(int pitch);
 	void setFineDetuneADPCM(int pitch);
-	void setNoteSlideADPCM(int speed, int seminote);
-	void setTransposeEffectADPCM(int seminote);
+	void setNoteSlideADPCM(int speed, int semitone);
+	void setTransposeEffectADPCM(int semitone);
 
 	// For state retrieve
 	void haltSequencesADPCM();

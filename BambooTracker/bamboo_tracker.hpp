@@ -430,7 +430,7 @@ public:
 	size_t getSongCount() const;
 	void addSong(SongType songType, const std::string& title);
 	void sortSongs(const std::vector<int>& numbers);
-	void transposeSong(int songNum, int seminotes, const std::vector<int>& excludeInsts);
+	void transposeSong(int songNum, int semitones, const std::vector<int>& excludeInsts);
 	void swapTracks(int songNum, int track1, int track2);
 	double estimateSongLength(int songNum) const;
 	size_t getTotalStepCount(int songNum, size_t loopCnt) const;
@@ -510,7 +510,7 @@ public:
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-								int endTrack, int endStep, int seminote);
+								int endTrack, int endStep, int semitone);
 	void changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder,
 							   int beginStep, int endTrack, int endColumn, int endStep, int value);
 	void expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

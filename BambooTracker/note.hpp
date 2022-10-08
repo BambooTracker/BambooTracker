@@ -47,8 +47,8 @@ public:
 	static constexpr int DEFAULT_OCTAVE = 4;
 	static constexpr int NOTE_NUMBER_RANGE = OCTAVE_RANGE * 12;		// 96
 	static constexpr int DEFAULT_NOTE_NUM = DEFAULT_OCTAVE * 12;	// C4
-	static constexpr int SEMINOTE_PITCH = 32;
-	static constexpr int ABS_PITCH_RANGE = NOTE_NUMBER_RANGE * SEMINOTE_PITCH;	// 3072
+	static constexpr int SEMITONE_PITCH = 32;
+	static constexpr int ABS_PITCH_RANGE = NOTE_NUMBER_RANGE * SEMITONE_PITCH;	// 3072
 
 	Note(int octave, NoteName name, int pitch = 0);
 	explicit Note(int noteNum = DEFAULT_NOTE_NUM);
@@ -140,7 +140,7 @@ inline int Note::getPitch()
 inline int Note::getAbsolutePicth()
 {
 	if (request_eval_) evaluateState();
-	return pitch_ + SEMINOTE_PITCH * (name_ + 12 * octave_);
+	return pitch_ + SEMITONE_PITCH * (name_ + 12 * octave_);
 }
 
 inline int Note::getNoteNumber()

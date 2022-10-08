@@ -78,7 +78,7 @@ public:
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map);
 
-	void transpose(int seminotes, const std::vector<int>& excludeInsts);
+	void transpose(int semitones, const std::vector<int>& excludeInsts);
 
 private:
 	TrackAttribute attrib_;

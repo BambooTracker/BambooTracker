@@ -30,7 +30,7 @@
 
 TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(
 		std::weak_ptr<Module> mod, int songNum, int beginTrack,
-		int beginOrder, int beginStep, int endTrack, int endStep, int seminote)
+		int beginOrder, int beginStep, int endTrack, int endStep, int semitone)
 	: AbstractCommand(CommandId::TransposeNoteInPattern),
 	  mod_(mod),
 	  song_(songNum),
@@ -39,7 +39,7 @@ TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(
 	  bStep_(beginStep),
 	  eTrack_(endTrack),
 	  eStep_(endStep),
-	  seminote_(seminote)
+	  semitone_(semitone)
 {
 	auto& sng = mod.lock()->getSong(songNum);
 
@@ -60,7 +60,7 @@ void TransposeNoteInPatternCommand::redo()
 			Step& st = command_utils::getStep(sng, track, order_, step);
 			int n = st.getNoteNumber();
 			if (st.hasGeneralNote()) {
-				st.setNoteNumber(utils::clamp(n + seminote_, 0, Note::NOTE_NUMBER_RANGE - 1));
+				st.setNoteNumber(utils::clamp(n + semitone_, 0, Note::NOTE_NUMBER_RANGE - 1));
 			}
 		}
 	}

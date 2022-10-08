@@ -56,7 +56,7 @@ public:
 
 	Pattern clone(int asNumber);
 
-	void transpose(int seminotes, const std::vector<int>& excludeInsts);
+	void transpose(int semitones, const std::vector<int>& excludeInsts);
 
 	void clear();
 
