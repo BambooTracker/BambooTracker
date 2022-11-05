@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Add toolbar items of importing/exporting a bank file to the instrument list
+
 ### Changed
 
 - [#464] - Raise Qt6 version on GitHub Actions to 6.4.0

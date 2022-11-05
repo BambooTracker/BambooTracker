@@ -439,22 +439,29 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	});
 
 	/* Instrument list */
-	auto instToolBar = new QToolBar();
-	instToolBar->setIconSize(QSize(16, 16));
-	auto addMenu = new QMenu();
-	addMenu->addActions({ ui->actionNew_Instrument, ui->actionNew_Drumki_t });
-	auto addTB = new QToolButton();
-	addTB->setPopupMode(QToolButton::MenuButtonPopup);
-	addTB->setMenu(addMenu);
-	addTB->setDefaultAction(ui->actionNew_Instrument);
-	instToolBar->addWidget(addTB);
-	instToolBar->addActions({ ui->actionRemove_Instrument, ui->actionClone_Instrument });
-	instToolBar->addSeparator();
-	instToolBar->addActions({ ui->actionLoad_From_File, ui->actionSave_To_File });
-	instToolBar->addSeparator();
-	instToolBar->addAction(ui->actionEdit);
-	instToolBar->addSeparator();
-	instToolBar->addAction(ui->actionRename_Instrument);
+	auto instToolBar = [&] {
+		auto subMenu = [](const QList<QAction*>& actions) {
+			auto menu = new QMenu();
+			menu->addActions(actions);
+			auto btn = new QToolButton();
+			btn->setPopupMode(QToolButton::MenuButtonPopup);
+			btn->setMenu(menu);
+			btn->setDefaultAction(actions.front());
+			return btn;
+		};
+		auto tb = new QToolBar();
+		tb->setIconSize(QSize(16, 16));
+		tb->addWidget(subMenu({ ui->actionNew_Instrument, ui->actionNew_Drumki_t }));
+		tb->addActions({ ui->actionRemove_Instrument, ui->actionClone_Instrument });
+		tb->addSeparator();
+		tb->addWidget(subMenu({ ui->actionLoad_From_File, ui->actionImport_From_Bank_File }));
+		tb->addWidget(subMenu({ ui->actionSave_To_File, ui->actionExport_To_Bank_File }));
+		tb->addSeparator();
+		tb->addAction(ui->actionEdit);
+		tb->addSeparator();
+		tb->addAction(ui->actionRename_Instrument);
+		return tb;
+	}();
 	ui->instrumentListGroupBox->layout()->addWidget(instToolBar);
 	ui->instrumentList->installEventFilter(this);
 	QObject::connect(ui->instrumentList, &DropDetectListWidget::itemDroppedAtItemIndex,
