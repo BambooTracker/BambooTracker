@@ -14,6 +14,7 @@
 ### Fixed
 
 - Fix misspelled words (thanks [@wildmatsu])
+- Fix action to create a new module without saving
 
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386

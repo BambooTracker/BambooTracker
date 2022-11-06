@@ -3129,6 +3129,9 @@ void MainWindow::on_actionNew_triggered()
 		case QMessageBox::Yes:
 			if (!on_actionSave_triggered()) return;
 			break;
+		case QMessageBox::No:
+			break;
+		case QMessageBox::Cancel:
 		default:
 			return;
 		}
