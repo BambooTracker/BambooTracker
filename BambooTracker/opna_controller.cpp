@@ -342,6 +342,8 @@ void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequen
 {
 	if (ptItr->hasEnded()) return;
 
+	int tmp = sumPitch;
+
 	switch (ptItr->type()) {
 	case SequenceType::AbsoluteSequence:
 		sumPitch = ptItr->data().data - SEQ_PITCH_CENTER;
@@ -353,7 +355,7 @@ void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequen
 		return;
 	}
 
-	shouldSetTone = true;
+	shouldSetTone |= (sumPitch != tmp);
 }
 
 //---------- FM ----------//
