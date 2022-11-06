@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1269,6 +1269,18 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 								break;
 							case 0x01:	// Fixed
 								instManLocked->setArpeggioFMType(arpNum, SequenceType::FixedSequence);
+								if (bankVersion < Version::toBCD(1, 3, 1)) {
+									// Add infinity loop to the last data, to keep compatibility
+									auto loopRt = instManLocked->getArpeggioFMLoopRoot(arpNum).getAllLoops();
+									if (std::none_of(loopRt.begin(), loopRt.end(), [](InstrumentSequenceLoop& loop) { return loop.isInfinite(); })) {
+										auto seq = instManLocked->getArpeggioFMSequence(arpNum);
+										if (!seq.empty()) {
+											size_t pos = seq.size();
+											instManLocked->addArpeggioFMSequenceData(arpNum, seq.back().data);
+											instManLocked->addArpeggioFMLoop(arpNum, InstrumentSequenceLoop(pos, pos, InstrumentSequenceLoop::INFINITE_LOOP));
+										}
+									}
+								}
 								break;
 							case 0x02:	// Relative
 								instManLocked->setArpeggioFMType(arpNum, SequenceType::RelativeSequence);
@@ -1744,6 +1756,18 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					case 0x01:	// Fixed
 						instManLocked->setArpeggioSSGType(arpNum, SequenceType::FixedSequence);
+						if (bankVersion < Version::toBCD(1, 3, 1)) {
+							// Add infinity loop to the last data, to keep compatibility
+							auto loopRt = instManLocked->getArpeggioSSGLoopRoot(arpNum).getAllLoops();
+							if (std::none_of(loopRt.begin(), loopRt.end(), [](InstrumentSequenceLoop& loop) { return loop.isInfinite(); })) {
+								auto seq = instManLocked->getArpeggioSSGSequence(arpNum);
+								if (!seq.empty()) {
+									size_t pos = seq.size();
+									instManLocked->addArpeggioSSGSequenceData(arpNum, seq.back().data);
+									instManLocked->addArpeggioSSGLoop(arpNum, InstrumentSequenceLoop(pos, pos, InstrumentSequenceLoop::INFINITE_LOOP));
+								}
+							}
+						}
 						break;
 					case 0x02:	// Relative
 						instManLocked->setArpeggioSSGType(arpNum, SequenceType::RelativeSequence);
@@ -2005,6 +2029,18 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					case 0x01:	// Fixed
 						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::FixedSequence);
+						if (bankVersion < Version::toBCD(1, 3, 1)) {
+							// Add infinity loop to the last data, to keep compatibility
+							auto loopRt = instManLocked->getArpeggioADPCMLoopRoot(arpNum).getAllLoops();
+							if (std::none_of(loopRt.begin(), loopRt.end(), [](InstrumentSequenceLoop& loop) { return loop.isInfinite(); })) {
+								auto seq = instManLocked->getArpeggioADPCMSequence(arpNum);
+								if (!seq.empty()) {
+									size_t pos = seq.size();
+									instManLocked->addArpeggioADPCMSequenceData(arpNum, seq.back().data);
+									instManLocked->addArpeggioADPCMLoop(arpNum, InstrumentSequenceLoop(pos, pos, InstrumentSequenceLoop::INFINITE_LOOP));
+								}
+							}
+						}
 						break;
 					case 0x02:	// Relative
 						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RelativeSequence);

@@ -9,12 +9,14 @@
 ### Changed
 
 - [#464] - Raise Qt6 version on GitHub Actions to 6.4.0
+- [#386] - Restore note pitch at the end of "Fixed" arpeggio sequence (thanks [@djmaximum17])
 
 ### Fixed
 
 - Fix misspelled words (thanks [@wildmatsu])
 
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
+[#386]: https://github.com/BambooTracker/BambooTracker/issues/386
 
 ## v0.5.3 (2022-09-18)
 

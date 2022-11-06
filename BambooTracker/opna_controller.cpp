@@ -282,11 +282,12 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpItr
 											 const EchoBuffer& echoBuf, Note& baseNote,
 											 bool& shouldSetTone)
 {
-	if (arpItr->hasEnded()) return;
+	Note tmp = baseNote;
 
 	switch (arpItr->type()) {
 	case SequenceType::AbsoluteSequence:
 	{
+		if (arpItr->hasEnded()) return;
 		Note ln = echoBuf.latest();
 		ln.addNoteNumber(arpItr->data().data - Note::DEFAULT_NOTE_NUM);
 		baseNote = std::move(ln);
@@ -294,19 +295,21 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpItr
 	}
 	case SequenceType::FixedSequence:
 	{
-		baseNote = Note(arpItr->data().data);
+		// Set original note when an iterator reached the end, otherwise set iterator data
+		baseNote = arpItr->hasEnded() ? echoBuf.latest() : Note(arpItr->data().data);
 		break;
 	}
 	case SequenceType::RelativeSequence:
 	{
+		if (arpItr->hasEnded()) return;
 		baseNote.addNoteNumber(arpItr->data().data - Note::DEFAULT_NOTE_NUM);
 		break;
 	}
 	default:
-		return ;
+		return;
 	}
 
-	shouldSetTone = true;
+	shouldSetTone |= (tmp != baseNote);
 }
 
 void OPNAController::checkPortamento(const ArpeggioIterInterface& arpItr,

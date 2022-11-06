@@ -5,6 +5,10 @@
 The following changes affect module playback critically.
 In some cases, you need to modify modules.
 
+### v0.5.4
+
+- When the instrument sequence type of an arpeggio is "Fixed", the original pitch of the note on is restored at the tick immediately after the last data in the sequence is executed. Data created before v0.5.3 is automatically modified when the file is loaded to maintain compatibility.
+
 ### v0.5.1
 
 - A bug has been fixed that caused sequence properties such as envelope sequence to skip the first count when a note is turned on by the note delay effect. The behavior of sequence properties for modules created in the past may change.
