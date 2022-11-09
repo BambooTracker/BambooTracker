@@ -1516,7 +1516,7 @@ bool PlaybackManager::checkRhythmDelayEventsInTick(const Step& step, int ch)
 		opnaCtrl_->setOneshotVolumeRhythm(ch, volDlyValueRhythm_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntRhythm_.at(uch))
-		opnaCtrl_->setKeyOnFlagRhythm(ch);
+		opnaCtrl_->setKeyOffFlagRhythm(ch);
 	// Check retrigger
 	if (!rtrgCntRhythm_.at(uch))
 		opnaCtrl_->retriggerKeyOnFlagRhythm(ch, rtrgVolValueRhythm_.at(uch));
