@@ -141,7 +141,7 @@ void Song::changeType(SongType type)
 			const auto attrib = tracks_[i].getAttribute();
 			tracks_[i].setAttribute(static_cast<int>(i), attrib.source, attrib.channelInSource);
 		}
-		tracks_[3].setVisibility(vis3ch);
+		tracks_[2].setVisibility(vis3ch);
 		break;
 	}
 	case SongType::FM3chExpanded:	// Previous type: Standard

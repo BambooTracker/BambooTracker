@@ -16,6 +16,7 @@
 - Fix misspelled words (thanks [@wildmatsu])
 - Fix action to create a new module without saving
 - Fix incorrect `0sxx` note cut effect in ryhtm channels (thanks [@Mugenri])
+- Fix visibility of FM 3,4ch when song mode is changed from expanded to standard (thanks TotO)
 
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386
