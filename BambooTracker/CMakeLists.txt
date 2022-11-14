@@ -60,9 +60,10 @@ set (BT_SOURCES
 	chip/nuked/ym3438.c
 	chip/opna.cpp
 	chip/register_write_logger.cpp
+	chip/ymfm/ymfm_2608.cpp
 	chip/ymfm/ymfm_adpcm.cpp
-    chip/ymfm/ymfm_opn.cpp
-    chip/ymfm/ymfm_ssg.cpp
+	chip/ymfm/ymfm_opn.cpp
+	chip/ymfm/ymfm_ssg.cpp
 	chip/resampler.cpp
 	command/command_manager.cpp
 	command/instrument/add_instrument_command.cpp

@@ -40,6 +40,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -354,10 +355,10 @@ public:
 
 			// make the wav file header
 			uint8_t header[44];
-			memcpy(&header[0], "RIFF", 4);
+			std::memcpy(&header[0], "RIFF", 4);
 			*(uint32_t *)&header[4] = m_buffer.size() * 2 + 44 - 8;
-			memcpy(&header[8], "WAVE", 4);
-			memcpy(&header[12], "fmt ", 4);
+			std::memcpy(&header[8], "WAVE", 4);
+			std::memcpy(&header[12], "fmt ", 4);
 			*(uint32_t *)&header[16] = 16;
 			*(uint16_t *)&header[20] = 1;
 			*(uint16_t *)&header[22] = _Channels;
@@ -365,7 +366,7 @@ public:
 			*(uint32_t *)&header[28] = m_samplerate * 2 * _Channels;
 			*(uint16_t *)&header[32] = 2 * _Channels;
 			*(uint16_t *)&header[34] = 16;
-			memcpy(&header[36], "data", 4);
+			std::memcpy(&header[36], "data", 4);
 			*(uint32_t *)&header[40] = m_buffer.size() * 2 + 44 - 44;
 
 			// write header then data
