@@ -86,7 +86,7 @@ public:
 	// map channel number to register offset
 	static constexpr uint32_t channel_offset(uint32_t chnum)
 	{
-		assert(chnum < CHANNELS);
+		/*assert(chnum < CHANNELS);*/
 		return chnum;
 	}
 
