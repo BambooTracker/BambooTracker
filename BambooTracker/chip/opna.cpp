@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +30,7 @@
 #include "register_write_logger.hpp"
 #include "mame/mame_2608.hpp"
 #include "nuked/nuked_2608.hpp"
+#include "ymfm/ymfm_2608.hpp"
 
 #ifdef USE_REAL_CHIP
 #include "scci/scci_wrapper.hpp"
@@ -72,6 +73,10 @@ OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dra
 	case OpnaEmulator::Nuked:
 		fprintf(stderr, "Using emulator: Nuked OPN-Mod\n");
 		intf_ = std::make_unique<Nuked2608>();
+		break;
+	case OpnaEmulator::Ymfm:
+		fprintf(stderr, "Using emulator: ymfm\n");
+		intf_ = std::make_unique<Ymfm2608>();
 		break;
 	}
 

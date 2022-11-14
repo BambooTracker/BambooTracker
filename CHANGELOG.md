@@ -5,6 +5,7 @@
 ### Added
 
 - Add toolbar items of importing/exporting a bank file to the instrument list
+- [#262] - Add ymfm emulation (thanks [@OPNA2608], [@freq-mod])
 
 ### Changed
 
@@ -20,6 +21,7 @@
 
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386
+[#262]: https://github.com/BambooTracker/BambooTracker/issues/262
 
 ## v0.5.3 (2022-09-18)
 

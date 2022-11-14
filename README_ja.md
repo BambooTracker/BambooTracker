@@ -424,4 +424,5 @@ make install clean
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん
 - ポーランド語翻訳に関してfreq-modさん、Midoriさん
 - ADPCMエンコーダ/デコーダに関してIan Karlssonさん
+- ymfmに関してAaron Gilesさん
 - そしてこのプロジェクトに手助けしてくださるみなさん!

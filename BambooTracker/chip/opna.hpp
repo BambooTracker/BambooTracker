@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,8 +37,9 @@ enum class OpnaEmulator
 {
 	Mame,
 	Nuked,
+	Ymfm,
 	First = Mame,
-	Last = Nuked,
+	Last = Ymfm,
 };
 
 class OPNA final : public Chip

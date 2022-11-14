@@ -3027,7 +3027,8 @@ void MainWindow::on_actionAbout_triggered()
 		tr("SCCI by (C) gasshi (SCCI License)"),
 	#endif
 		tr("Silk icons by (C) Mark James (CC BY 2.5 or 3.0)"),
-		tr("ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)")
+		tr("ymdeltat by (C) Tatsuyuki Satoh, Jarek Burczynski, ValleyBell (GPL v2+)"),
+		tr("ymfm by (C) Aaron Giles (BSD 3-Clause)")
 	};
 
 	static const QString FORMATTED_TEXT =

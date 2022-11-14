@@ -424,4 +424,5 @@ I would like to thank the following people for making it:
 - Jean Pierre Cimalando and Olivier Humbert for French translation
 - freq-mod and Midori for Polish translation
 - Ian Karlsson for ADPCM encoder/decoder
+- Aaron Giles for ymfm
 - And everyone who helps this project!

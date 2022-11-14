@@ -29,6 +29,8 @@
   - BambooTracker/resources/icon/iconfinder_*.png
 - ymdeltat by Tatsuyuki Satoh, Jarek Burczynski and ValleyBell - GPL v2+
   - BambooTracker/chip/mame/ymdeltat.*
+- [ymfm](https://github.com/aaronsgiles/ymfm) by Aaron Giles - BSD 3-Clause
+  - BambooTracker/chip/ymfm/* (excepts ymfm_2608.\*)
 
 ## Other Parts
 
@@ -37,7 +39,8 @@
   - BambooTracker/audio/*.{hpp,cpp}
   - BambooTracker/chip/*.{hpp,h,cpp}
   - BambooTracker/chip/mame/mame_2608.*
-  - BambooTracker/chip/mame/nuked_2608.*
+  - BambooTracker/chip/nuked/nuked_2608.*
+  - BambooTracker/chip/ymfm/ymfm_2608.*
   - BambooTracker/command/*
   - BambooTracker/gui/*
   - BambooTracker/instrument/*

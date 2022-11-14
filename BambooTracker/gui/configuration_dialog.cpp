@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -294,6 +294,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Emulation //
 	ui->emulatorComboBox->addItem("MAME YM2608", static_cast<int>(chip::OpnaEmulator::Mame));
 	ui->emulatorComboBox->addItem("Nuked OPN-Mod", static_cast<int>(chip::OpnaEmulator::Nuked));
+	ui->emulatorComboBox->addItem("ymfm", static_cast<int>(chip::OpnaEmulator::Ymfm));
 	ui->emulatorComboBox->setCurrentIndex(ui->emulatorComboBox->findData(configLocked->getEmulator()));
 
 	// Sound //

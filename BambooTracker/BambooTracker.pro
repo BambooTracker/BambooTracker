@@ -51,6 +51,10 @@ SOURCES += \
     chip/mame/ymdeltat.c \
     chip/nuked/nuked_2608.cpp \
     chip/register_write_logger.cpp \
+    chip/ymfm/ymfm_2608.cpp \
+    chip/ymfm/ymfm_adpcm.cpp \
+    chip/ymfm/ymfm_opn.cpp \
+    chip/ymfm/ymfm_ssg.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
     command/pattern/paste_insert_copied_data_to_pattern_command.cpp \
@@ -227,6 +231,13 @@ HEADERS += \
     chip/nuked/nuked_2608.hpp \
     chip/real_chip_interface.hpp \
     chip/register_write_logger.hpp \
+    chip/ymfm/ymfm.h \
+    chip/ymfm/ymfm_2608.hpp \
+    chip/ymfm/ymfm_adpcm.h \
+    chip/ymfm/ymfm_fm.h \
+    chip/ymfm/ymfm_fm.ipp \
+    chip/ymfm/ymfm_opn.h \
+    chip/ymfm/ymfm_ssg.h \
     command/command_id.hpp \
     command/instrument/swap_instruments_command.hpp \
     command/pattern/change_values_in_pattern_command.hpp \
