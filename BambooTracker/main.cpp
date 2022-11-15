@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -65,6 +65,9 @@ int main(int argc, char* argv[])
 		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
 
 		MainWindow w(config, filePath, !hasSuccessed);
+
+		QObject::connect(&a, &QApplication::applicationStateChanged, &w, &MainWindow::onApplicationStateChanged);
+
 		w.show();
 		int ret = a.exec();
 

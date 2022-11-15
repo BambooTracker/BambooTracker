@@ -1493,6 +1493,39 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 	}
 }
 
+void BambooTracker::jamkeyOffAll()
+{
+	std::vector<JamKeyInfo>&& onList = jamMan_->reset();
+	for (auto& info : onList) {
+		if (info.channelInSource > -1) {	// Key still sound
+			switch (info.source) {
+			case SoundSource::FM:
+				if (songStyle_.type == SongType::FM3chExpanded && info.channelInSource == 2) {
+					opnaCtrl_->keyOffFM(2, true);
+					opnaCtrl_->keyOffFM(6, true);
+					opnaCtrl_->keyOffFM(7, true);
+					opnaCtrl_->keyOffFM(8, true);
+				}
+				else {
+					opnaCtrl_->keyOffFM(info.channelInSource, true);
+				}
+				break;
+			case SoundSource::SSG:
+				opnaCtrl_->keyOffSSG(info.channelInSource, true);
+				break;
+			case SoundSource::ADPCM:
+				opnaCtrl_->keyOffADPCM(true);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < 6; ++i) opnaCtrl_->setKeyOffFlagRhythm(i);
+	opnaCtrl_->updateRegisterStates();
+}
+
 bool BambooTracker::assignADPCMBeforeForcedJamKeyOn(
 		std::shared_ptr<AbstractInstrument> inst, std::unordered_map<int, std::array<size_t, 2>>& sampAddrs)
 {

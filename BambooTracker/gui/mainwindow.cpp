@@ -841,6 +841,18 @@ MainWindow::~MainWindow()
 	stream_->shutdown();
 }
 
+void MainWindow::onApplicationStateChanged(Qt::ApplicationState state)
+{
+	switch (state) {
+	case Qt::ApplicationHidden:
+	case Qt::ApplicationInactive:
+		if (bt_) bt_->jamkeyOffAll();
+		break;
+	default:
+		break;
+	}
+}
+
 bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 {
 	if (auto fmForm = qobject_cast<FmInstrumentEditor*>(watched)) {

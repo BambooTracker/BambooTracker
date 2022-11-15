@@ -87,6 +87,9 @@ public:
 
 	void assignADPCMSamples();
 
+public slots:
+	void onApplicationStateChanged(Qt::ApplicationState state);
+
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 	void showEvent(QShowEvent*) override;

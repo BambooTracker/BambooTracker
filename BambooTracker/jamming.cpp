@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -178,9 +178,9 @@ JamKeyInfo JamManager::keyOff(JamKey key, int keyNum)
 	return keyData;
 }
 
-void JamManager::reset()
+std::vector<JamKeyInfo> JamManager::reset()
 {
-	if (isPoly_) {
+	if (isPoly_) {	
 		unusedCh_[SoundSource::FM] = std::deque<int>(6);
 		unusedCh_[SoundSource::SSG] = std::deque<int>(3);
 		unusedCh_[SoundSource::ADPCM] = std::deque<int>(1);
@@ -189,4 +189,9 @@ void JamManager::reset()
 	else {
 		for (auto& pair : unusedCh_) pair.second.resize(1);
 	}
+
+	auto on = keyOnTable_;
+	keyOnTable_.clear();
+
+	return on;
 }

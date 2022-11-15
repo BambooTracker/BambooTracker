@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -64,7 +64,7 @@ public:
 	void polyphonic(bool flag);
 	std::vector<JamKeyInfo> keyOn(JamKey key, int channel, SoundSource source, int keyNum);
 	JamKeyInfo keyOff(JamKey key, int keyNum);
-	void reset();
+	std::vector<JamKeyInfo> reset();
 
 private:
 	bool isJamMode_;

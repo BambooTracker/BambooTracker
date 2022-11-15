@@ -325,6 +325,7 @@ public:
 	void jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void jamKeyOffForced(JamKey key, SoundSource src);
 	void jamKeyOffForced(int keyNum, SoundSource src);
+	void jamkeyOffAll();
 	bool assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst,
 										 std::unordered_map<int, std::array<size_t, 2>>& sampAddrs);
 
