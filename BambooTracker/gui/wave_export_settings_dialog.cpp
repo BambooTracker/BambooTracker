@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,9 +38,14 @@ WaveExportSettingsDialog::WaveExportSettingsDialog(const std::vector<int> defUnm
 
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-	ui->sampleRateComboBox->addItem("44100Hz", 44100);
-	ui->sampleRateComboBox->addItem("48000Hz", 48000);
-	ui->sampleRateComboBox->addItem("55466Hz", 55466);
+	constexpr uint32_t SAMPLE_RATES[] = { 8000, 16000, 22050, 32000, 44100, 48000, 55466, 96000, 110933, 192000 };
+	constexpr uint32_t DEFAULT_RATE = 44100;
+	for (auto rate : SAMPLE_RATES) {
+		ui->sampleRateComboBox->addItem(QString("%1Hz").arg(rate), rate);
+		if (rate == DEFAULT_RATE) {
+			ui->sampleRateComboBox->setCurrentIndex(ui->sampleRateComboBox->count() - 1);
+		}
+	}
 
 	struct Pair
 	{

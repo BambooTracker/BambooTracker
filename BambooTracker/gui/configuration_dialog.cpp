@@ -342,14 +342,16 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	onMidiApiChanged(ui->midiApiComboBox->currentText(), false);
 	ui->midiInputGroupBox->setChecked(configLocked->getMidiEnabled());
 
-	ui->sampleRateComboBox->addItem("44100Hz", 44100);
-	ui->sampleRateComboBox->addItem("48000Hz", 48000);
-	ui->sampleRateComboBox->addItem("55466Hz", 55466);
-	switch (configLocked->getSampleRate()) {
-	default:	// Fall through
-	case 44100:	ui->sampleRateComboBox->setCurrentIndex(0);	break;
-	case 48000:	ui->sampleRateComboBox->setCurrentIndex(1);	break;
-	case 55466:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
+	constexpr uint32_t SAMPLE_RATES[] = { 8000, 16000, 22050, 32000, 44100, 48000, 55466, 96000, 110933, 192000 };
+	constexpr size_t N_SAMPLE_RATES = sizeof(SAMPLE_RATES) / sizeof(SAMPLE_RATES[0]);
+	for (auto rate : SAMPLE_RATES) {
+		ui->sampleRateComboBox->addItem(QString("%1Hz").arg(rate), rate);
+	}
+	ui->sampleRateComboBox->setCurrentIndex(0);
+	for (size_t i = 0; i < N_SAMPLE_RATES; ++i) {
+		if (SAMPLE_RATES[i] == configLocked->getSampleRate()) {
+			ui->sampleRateComboBox->setCurrentIndex(i);
+		}
 	}
 
 	ui->resamplerComboBox->addItem(QString("Linear (%1)").arg(tr("old, deprecated")), static_cast<int>(chip::ResamplerType::Linear));
