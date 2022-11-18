@@ -356,7 +356,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->resamplerComboBox->addItem("blip_buf", static_cast<int>(chip::ResamplerType::BlipBuf));
 	ui->resamplerComboBox->addItem(QString("blip_buf (%1)").arg(tr("fast")), static_cast<int>(chip::ResamplerType::FastBlipBuf));
 	for (int i = 0; i < ui->resamplerComboBox->count(); ++i) {
-		if (ui->resamplerComboBox->itemData(i).value<chip::ResamplerType>() == configLocked->getResamplerType()) {
+		if (static_cast<chip::ResamplerType>(ui->resamplerComboBox->itemData(i).toInt()) == configLocked->getResamplerType()) {
 			ui->resamplerComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -482,7 +482,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setMidiInputPort(ui->midiInputDeviceComboBox->currentData().toString().toUtf8().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
-	configLocked->setResamplerType(ui->resamplerComboBox->currentData().value<chip::ResamplerType>());
+	configLocked->setResamplerType(static_cast<chip::ResamplerType>(ui->resamplerComboBox->currentData().toInt()));
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
 
 	// Mixer //
