@@ -3025,6 +3025,7 @@ void MainWindow::on_actionAbout_triggered()
 	static const QString ACKNOWLEGEMENT = tr("Thank you to everyone who reports bugs, makes suggestions, and contributes to this project!");
 
 	static const QStringList LIBS = {
+		tr("blip_buf by (C) Shay Green (LGPL v2.1)"),
 	#ifdef USE_REAL_CHIP
 		tr("C86CTL by (C) honet (BSD 3-Clause)"),
 	#endif

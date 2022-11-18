@@ -71,16 +71,25 @@ const std::unordered_map<FMOperatorType, std::vector<FMEnvelopeParameter>> FM_EN
 		  FMEnvelopeParameter::DT4
 	  }}
 };
+
+std::unique_ptr<chip::AbstractResampler> generateResampler(chip::ResamplerType type)
+{
+	switch (type) {
+	default:
+	case chip::ResamplerType::BlipBuf:		return std::make_unique<chip::BlipResampler>(false);
+	case chip::ResamplerType::FastBlipBuf:	return std::make_unique<chip::BlipResampler>(true);
+	case chip::ResamplerType::Linear:		return std::make_unique<chip::LinearResampler>();
+	}
+}
 }
 
-OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration)
+OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration, chip::ResamplerType resampler)
 	: mode_(SongType::Standard),
 	  storePointADPCM_(0)
 {
 	constexpr size_t DRAM_SIZE = 262144;	// 256KiB
 	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, DRAM_SIZE,
-										 std::make_unique<chip::LinearResampler>(),
-										 std::make_unique<chip::LinearResampler>());
+										 generateResampler(resampler), generateResampler(resampler));
 
 	for (size_t inch = 0; inch < 6; ++inch) {
 		fmOpEnables_[inch] = 0xf;
@@ -265,6 +274,12 @@ int OPNAController::getDuration() const
 void OPNAController::setDuration(int duration)
 {
 	opna_->setMaxDuration(static_cast<size_t>(duration));
+}
+
+void OPNAController::setResampler(chip::ResamplerType type)
+{
+	opna_->setFmResampler(generateResampler(type));
+	opna_->setSsgResampler(generateResampler(type));
 }
 
 void OPNAController::setMasterVolume(int percentage)

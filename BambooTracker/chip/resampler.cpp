@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,6 +24,9 @@
  */
 
 #include "resampler.hpp"
+#include <algorithm>
+#include <iterator>
+#include "./blip_buf/blip_buf.h"
 
 namespace chip
 {
@@ -49,12 +52,6 @@ void AbstractResampler::init(int srcRate, int destRate, size_t maxDuration)
 	updateRateRatio();
 }
 
-void AbstractResampler::setDestributionRate(int destRate)
-{
-	destRate_ = destRate;
-	updateRateRatio();
-}
-
 void AbstractResampler::setMaxDuration(size_t maxDuration) noexcept
 {
 	maxDuration_ = maxDuration;
@@ -76,6 +73,69 @@ sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t)
 				destBuf_[pan][n] = src[pan][curni];
 			}
 		}
+	}
+
+	return destBuf_;
+}
+
+/****************************************/
+BlipResampler::BlipResampler(bool fast)
+{
+	addDelta = fast ? blip_add_delta_fast : blip_add_delta;
+
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		ch_[pan].blipBuf_ = blip_new(CHIP_SMPL_BUF_SIZE_);
+	}
+}
+
+BlipResampler::~BlipResampler()
+{
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		blip_delete(ch_[pan].blipBuf_);
+	}
+}
+
+void BlipResampler::init(int srcRate, int destRate, size_t maxDuration)
+{
+	AbstractResampler::init(srcRate, destRate, maxDuration);
+
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		auto& ch = ch_[pan];
+		blip_clear(ch.blipBuf_);
+		blip_set_rates(ch.blipBuf_, srcRate, destRate);
+		ch.prevSample_ = 0;
+	}
+}
+
+void BlipResampler::reset()
+{
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		blip_clear(ch_[pan].blipBuf_);
+	}
+}
+
+size_t BlipResampler::calculateInternalSampleSize(size_t nSamples)
+{
+	return blip_clocks_needed(ch_[0].blipBuf_, nSamples - blip_samples_avail(ch_[0].blipBuf_));
+}
+
+sample** BlipResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
+{
+	short tmpBuf[CHIP_SMPL_BUF_SIZE_];
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		auto& ch = ch_[pan];
+		if (ch.blipBuf_ == nullptr) continue;
+
+		auto srcBuf = src[pan];
+		for (size_t i = 0; i < intrSize; ++i) {
+			addDelta(ch.blipBuf_, i, srcBuf[i] - ch.prevSample_);
+			ch.prevSample_ = srcBuf[i];
+		}
+		blip_end_frame(ch.blipBuf_, intrSize);
+
+		size_t size = std::min<size_t>(nSamples, blip_samples_avail(ch.blipBuf_));
+		blip_read_samples(ch.blipBuf_, tmpBuf, size, 0);
+		std::copy_n(std::begin(tmpBuf), size, destBuf_[pan]);
 	}
 
 	return destBuf_;

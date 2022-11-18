@@ -11,6 +11,7 @@
 
 - [#464] - Raise Qt6 version on GitHub Actions to 6.4.0
 - [#386] - Restore note pitch at the end of "Fixed" arpeggio sequence (thanks [@djmaximum17])
+- [#347] - Change resampling method (thanks [@freq-mod])
 
 ### Fixed
 
@@ -22,6 +23,7 @@
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386
 [#262]: https://github.com/BambooTracker/BambooTracker/issues/262
+[#347]: https://github.com/BambooTracker/BambooTracker/issues/347
 
 ## v0.5.3 (2022-09-18)
 

@@ -6,6 +6,8 @@
 
 - [adpcm](https://github.com/superctr/adpcm) by Ian Karlsson (superctr) - Public domain
   - BambooTracker/chip/codec/*
+- [blip_buf](https://code.google.com/archive/p/blip-buf/) by Shay Green - LGPL v2.1
+  - BambooTracker/chip/blip_buf/*
 - [C86CTL](https://github.com/honet/c86ctl) by honet - [BSD 3-Clause](./c86ctl_lisence.txt)
   - BambooTracker/chip/c86ctl/*
 - [emu2149](https://github.com/digital-sound-antiques/emu2149) by Mitsutaka Okazaki - MIT

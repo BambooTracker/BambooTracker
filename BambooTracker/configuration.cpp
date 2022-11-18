@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "configuration.hpp"
 #include "jamming.hpp"
 #include "chip/real_chip_interface.hpp"
+#include "chip/resampler.hpp"
 
 namespace
 {
@@ -289,6 +290,7 @@ Configuration::Configuration()
 	emulator_ = 1;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
+	resamplerType_ = chip::ResamplerType::BlipBuf;
 
 	// Midi //
 	midiEnabled_ = false;

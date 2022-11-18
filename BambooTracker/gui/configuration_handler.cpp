@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -256,6 +256,7 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 		settings.setValue("emulator",		configLocked->getEmulator());
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
+		settings.setValue("resamplerType", static_cast<int>(configLocked->getResamplerType()));
 		settings.endGroup();
 
 		// Midi //
@@ -441,6 +442,8 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		QVariant bufferLengthWorkaround;
 		bufferLengthWorkaround.setValue(configLocked->getBufferLength());
 		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", bufferLengthWorkaround).toInt()));
+		configLocked->setResamplerType(static_cast<chip::ResamplerType>(
+										   settings.value("resamplerType", static_cast<int>(configLocked->getResamplerType())).toInt()));
 		settings.endGroup();
 
 		// Midi //

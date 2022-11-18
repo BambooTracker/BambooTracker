@@ -48,18 +48,20 @@ public:
 	// [rate]
 	// 0 = rate is 55466 (FM synthesis rate when clock is 3993600 * 2)
 	OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dramSize,
-		 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<LinearResampler>(),
-		 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<LinearResampler>(),
+		 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<BlipResampler>(),
+		 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<BlipResampler>(),
 		 std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);
 	~OPNA() override;
 
-	void reset() override;
 	void setRegister(uint32_t offset, uint8_t value) override;
 	uint8_t getRegister(uint32_t offset) const override;
 	void setVolumeFM(double dB);
 	void setVolumeSSG(double dB);
 	size_t getDRAMSize() const noexcept;
 	void mix(int16_t* stream, size_t nSamples) override;
+
+	void setFmResampler(std::unique_ptr<AbstractResampler> resampler);
+	void setSsgResampler(std::unique_ptr<AbstractResampler> resampler);
 
 	void connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f);
 	RealChipInterfaceType getRealChipInterfaceType() const;
@@ -72,5 +74,7 @@ private:
 	size_t dramSize_;
 
 	std::unique_ptr<SimpleRealChipInterface> rcIntf_;
+
+	void resetSpecific() override;
 };
 }

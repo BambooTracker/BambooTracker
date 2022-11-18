@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -67,6 +67,17 @@ void Chip::initResampler()
 	}
 }
 
+void Chip::reset()
+{
+	std::lock_guard<std::mutex> lg(mutex_);
+
+	for (int snd = 0; snd < 2; ++snd) {
+		resampler_[snd]->reset();
+	}
+
+	resetSpecific();
+}
+
 void Chip::setRate(int rate)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
@@ -83,14 +94,16 @@ void Chip::funcSetRate(int rate) noexcept
 	rate_ = rate ? rate : autoRate_;
 }
 
-int Chip::getClock() const noexcept
+void Chip::updateVolumeRatio()
 {
-	return clock_;
+	for (int i = 0; i < 2; ++i) {
+		updateVolumeRatio(i);
+	}
 }
 
-int Chip::getRate() const noexcept
+void Chip::updateVolumeRatio(int i)
 {
-	return rate_;
+	volumeRatio_[i] = busVolumeRatio_[i] * masterVolumeRatio_;
 }
 
 void Chip::setMaxDuration(size_t maxDuration)
@@ -101,11 +114,6 @@ void Chip::setMaxDuration(size_t maxDuration)
 	}
 }
 
-size_t Chip::getMaxDuration() const noexcept
-{
-	return maxDuration_;
-}
-
 void Chip::setRegisterWriteLogger(std::shared_ptr<AbstractRegisterWriteLogger> logger)
 {
 	logger_ = logger;
@@ -114,5 +122,6 @@ void Chip::setRegisterWriteLogger(std::shared_ptr<AbstractRegisterWriteLogger> l
 void Chip::setMasterVolume(int percentage)
 {
 	masterVolumeRatio_ = percentage / 100.0;
+	updateVolumeRatio();
 }
 }

@@ -411,7 +411,7 @@ make install clean
 - トラッカーのアイコンに関してDecidettoさん
 - その他のアイコンに用いているSilk iconsに関してMark Jamesさん
 - VGMファイルのフォーマットのドキュメントに関してVGMRipsチームの方々
-- トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
+- トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん、Furnace Trackerのtildearrowさん
 - サンプル曲を提供してくださったmaakさん、SuperJet Spadeさん、Dippyさん、RigidatoMSさん、ImATrackManさん
 - サンプルインストゥルメントを提供してくださったpapiezakさん、阿保　剛さん
 - サンプルカラースキームを提供してくださったYuzu4Kさん
@@ -425,4 +425,5 @@ make install clean
 - ポーランド語翻訳に関してfreq-modさん、Midoriさん
 - ADPCMエンコーダ/デコーダに関してIan Karlssonさん
 - ymfmに関してAaron Gilesさん
+- リサンプリングライブラリに関してShay Greenさん
 - そしてこのプロジェクトに手助けしてくださるみなさん!

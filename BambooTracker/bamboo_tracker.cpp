@@ -69,7 +69,8 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 					static_cast<chip::OpnaEmulator>(config.lock()->getEmulator()),
 					CHIP_CLOCK,
 					config.lock()->getSampleRate(),
-					config.lock()->getBufferLength());
+					config.lock()->getBufferLength(),
+					config.lock()->getResamplerType());
 	setMasterVolume(config.lock()->getMixerVolumeMaster());
 	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
 	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
@@ -92,6 +93,7 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 {
 	setStreamRate(static_cast<int>(config.lock()->getSampleRate()));
 	setStreamDuration(static_cast<int>(config.lock()->getBufferLength()));
+	opnaCtrl_->setResampler(config.lock()->getResamplerType());
 	setMasterVolume(config.lock()->getMixerVolumeMaster());
 	if (mod_->getMixerType() == MixerType::UNSPECIFIED) {
 		setMasterVolumeFM(config.lock()->getMixerVolumeFM());

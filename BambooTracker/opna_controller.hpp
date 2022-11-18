@@ -40,7 +40,7 @@
 class OPNAController
 {
 public:
-	OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration);
+	OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration, chip::ResamplerType resampler);
 
 	// Reset and initialize
 	void reset();
@@ -79,6 +79,7 @@ public:
 	void setRate(int rate);
 	int getDuration() const;
 	void setDuration(int duration);
+	void setResampler(chip::ResamplerType type);
 	void setMasterVolume(int percentage);
 
 	// Export

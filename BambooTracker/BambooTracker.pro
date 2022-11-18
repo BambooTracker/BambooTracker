@@ -46,6 +46,7 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
+    chip/blip_buf/blip_buf.c \
     chip/mame/fmopn.c \
     chip/mame/mame_2608.cpp \
     chip/mame/ymdeltat.c \
@@ -221,6 +222,7 @@ SOURCES += \
 HEADERS += \
     bamboo_tracker_defs.hpp \
     chip/2608_interface.hpp \
+    chip/blip_buf/blip_buf.h \
     chip/chip_defs.h \
     chip/codec/ymb_codec.hpp \
     chip/mame/fmopn.h \

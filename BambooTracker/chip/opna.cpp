@@ -49,6 +49,14 @@ inline double clamp(double value, double low, double high)
 {
 	return std::min<double>(std::max<double>(value, low), high);
 }
+
+void gainSamples(sample** samples, size_t nSamples, double gain)
+{
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		std::transform(samples[pan], samples[pan] + nSamples, samples[pan],
+					   [gain](sample s) { return static_cast<sample>(s * gain); });
+	}
+}
 }
 
 size_t OPNA::count_ = 0;
@@ -98,9 +106,8 @@ OPNA::~OPNA()
 	--count_;
 }
 
-void OPNA::reset()
+void OPNA::resetSpecific()
 {
-	std::lock_guard<std::mutex> lg(mutex_);
 	intf_->resetDevice();
 	rcIntf_->reset();
 }
@@ -137,13 +144,15 @@ uint8_t OPNA::getRegister(uint32_t offset) const
 void OPNA::setVolumeFM(double dB)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-	volumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
+	busVolumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
+	updateVolumeRatio(FM);
 }
 
 void OPNA::setVolumeSSG(double dB)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-	volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
+	busVolumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
+	updateVolumeRatio(SSG);
 
 	rcIntf_->setSSGVolume(dB);
 }
@@ -162,31 +171,49 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	// Set FM buffer
 	if (internalRate_[FM] == rate_) {
 		intf_->updateStream(buffer_[FM], nSamples);
+		gainSamples(buffer_[FM], nSamples, volumeRatio_[FM]);
 		bufFM = buffer_[FM];
 	}
 	else {
 		size_t intrSize = resampler_[FM]->calculateInternalSampleSize(nSamples);
 		intf_->updateStream(buffer_[FM], intrSize);
+		gainSamples(buffer_[FM], intrSize, volumeRatio_[FM]);
 		bufFM = resampler_[FM]->interpolate(buffer_[FM], nSamples, intrSize);
 	}
 
 	// Set SSG buffer
 	if (internalRate_[SSG] == rate_) {
 		intf_->updateSsgStream(buffer_[SSG], nSamples);
+		gainSamples(buffer_[SSG], nSamples, volumeRatio_[SSG]);
 		bufSSG = buffer_[SSG];
 	}
 	else {
 		size_t intrSize = resampler_[SSG]->calculateInternalSampleSize(nSamples);
 		intf_->updateSsgStream(buffer_[SSG], intrSize);
+		gainSamples(buffer_[SSG], intrSize, volumeRatio_[SSG]);
 		bufSSG = resampler_[SSG]->interpolate(buffer_[SSG], nSamples, intrSize);
 	}
+
 	int16_t* p = stream;
 	for (size_t i = 0; i < nSamples; ++i) {
 		for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
-			double s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
-			*p++ = static_cast<int16_t>(clamp(s * masterVolumeRatio_, -32768.0, 32767.0));
+			*p++ = static_cast<int16_t>(clamp(bufFM[pan][i] + bufSSG[pan][i], -32768, 32767));
 		}
 	}
+}
+
+void OPNA::setFmResampler(std::unique_ptr<AbstractResampler> resampler)
+{
+	std::lock_guard<std::mutex> lg(mutex_);
+	resampler_[FM] = std::move(resampler);
+	initResampler();
+}
+
+void OPNA::setSsgResampler(std::unique_ptr<AbstractResampler> resampler)
+{
+	std::lock_guard<std::mutex> lg(mutex_);
+	resampler_[SSG] = std::move(resampler);
+	initResampler();
 }
 
 void OPNA::connectToRealChip(RealChipInterfaceType type, RealChipInterfaceGeneratorFunc* f)

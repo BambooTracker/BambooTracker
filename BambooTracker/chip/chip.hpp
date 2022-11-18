@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,17 +45,17 @@ public:
 		 std::shared_ptr<AbstractRegisterWriteLogger> logger);
 	virtual ~Chip();
 
-	virtual void reset() = 0;
+	void reset();
 	virtual void setRegister(uint32_t offset, uint8_t value) = 0;
 	virtual uint8_t getRegister(uint32_t offset) const = 0;
 
 	virtual void setRate(int rate);
-	int getRate() const noexcept;
+	int getRate() const noexcept { return rate_; }
 
-	int getClock() const noexcept;
+	int getClock() const noexcept { return clock_; }
 
 	void setMaxDuration(size_t maxDuration);
-	size_t getMaxDuration() const noexcept;
+	size_t getMaxDuration() const noexcept { return maxDuration_; }
 
 	void setRegisterWriteLogger(std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);
 
@@ -73,6 +73,7 @@ protected:
 	size_t maxDuration_;
 
 	double masterVolumeRatio_;
+	double busVolumeRatio_[2];
 	double volumeRatio_[2];
 
 	sample* buffer_[2][2];
@@ -82,6 +83,11 @@ protected:
 
 	void initResampler();
 
+	virtual void resetSpecific() = 0;
+
 	void funcSetRate(int rate) noexcept;
+
+	void updateVolumeRatio();
+	void updateVolumeRatio(int i);
 };
 }

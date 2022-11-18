@@ -52,6 +52,7 @@ set (BT_SOURCES
 	audio/audio_stream.cpp
 	audio/audio_stream_rtaudio.cpp
 	bamboo_tracker.cpp
+	chip/blip_buf/blip_buf.c
 	chip/chip.cpp
 	chip/mame/fmopn.c
 	chip/mame/mame_2608.cpp

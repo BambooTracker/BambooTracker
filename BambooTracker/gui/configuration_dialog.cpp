@@ -351,6 +351,17 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	case 48000:	ui->sampleRateComboBox->setCurrentIndex(1);	break;
 	case 55466:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
 	}
+
+	ui->resamplerComboBox->addItem(QString("Linear (%1)").arg(tr("old, deprecated")), static_cast<int>(chip::ResamplerType::Linear));
+	ui->resamplerComboBox->addItem("blip_buf", static_cast<int>(chip::ResamplerType::BlipBuf));
+	ui->resamplerComboBox->addItem(QString("blip_buf (%1)").arg(tr("fast")), static_cast<int>(chip::ResamplerType::FastBlipBuf));
+	for (int i = 0; i < ui->resamplerComboBox->count(); ++i) {
+		if (ui->resamplerComboBox->itemData(i).value<chip::ResamplerType>() == configLocked->getResamplerType()) {
+			ui->resamplerComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
+
 	ui->bufferLengthHorizontalSlider->setStyle(SliderStyle::instance());
 	QObject::connect(ui->bufferLengthHorizontalSlider, &QSlider::valueChanged,
 					 this, [&](int value) {
@@ -471,6 +482,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setMidiInputPort(ui->midiInputDeviceComboBox->currentData().toString().toUtf8().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
+	configLocked->setResamplerType(ui->resamplerComboBox->currentData().value<chip::ResamplerType>());
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
 
 	// Mixer //

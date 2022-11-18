@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,19 +29,34 @@
 #include <cmath>
 #include <cstddef>
 
+struct blip_t;
+
 namespace chip
 {
+enum class ResamplerType : int
+{
+	Linear = 0,
+	BlipBuf,
+	FastBlipBuf,
+};
+
 class AbstractResampler
 {
 public:
 	AbstractResampler();
 	virtual ~AbstractResampler();
 	virtual void init(int srcRate, int destRate, size_t maxDuration);
-	virtual void setDestributionRate(int destRate);
+	virtual void reset() {}
+
+	virtual void setDestributionRate(int destRate)
+	{
+		init(srcRate_, destRate, maxDuration_);
+	}
+
 	virtual void setMaxDuration(size_t maxDuration) noexcept;
 	virtual sample** interpolate(sample** src, size_t nSamples, size_t intrSize) = 0;
 
-	inline size_t calculateInternalSampleSize(size_t nSamples)
+	virtual size_t calculateInternalSampleSize(size_t nSamples)
 	{
 		return static_cast<size_t>(std::ceil(nSamples * rateRatio_));
 	}
@@ -52,16 +67,41 @@ protected:
 	float rateRatio_;
 	sample* destBuf_[2];
 
-	inline void updateRateRatio()
+	void updateRateRatio()
 	{
 		rateRatio_ = static_cast<float>(srcRate_) / destRate_;
 	}
 };
 
-
 class LinearResampler final : public AbstractResampler
 {
 public:
 	sample** interpolate(sample** src, size_t nSamples, size_t) override;
+};
+
+class BlipResampler final : public AbstractResampler
+{
+public:
+	BlipResampler(bool fast = false);
+	~BlipResampler();
+	void init(int srcRate, int destRate, size_t maxDuration) override;
+	void reset() override;
+
+	void setDestributionRate(int destRate) override
+	{
+		init(srcRate_, destRate, maxDuration_);
+	}
+
+	size_t calculateInternalSampleSize(size_t nSamples) override;
+	sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
+
+private:
+	struct Channel
+	{
+		blip_t* blipBuf_;
+		short prevSample_;
+	} ch_[2];
+
+	void (*addDelta)(blip_t*, unsigned int, int);
 };
 }

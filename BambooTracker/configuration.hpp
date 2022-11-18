@@ -56,6 +56,11 @@ enum class NoteNotationSystem : int
 	GERMAN = 1
 };
 
+namespace chip
+{
+enum class ResamplerType : int;
+}
+
 class Configuration
 {
 public:
@@ -294,12 +299,16 @@ public:
 	uint32_t getSampleRate() const { return sampleRate_; }
 	void setBufferLength(size_t length) { bufferLength_ = length; }
 	size_t getBufferLength() const { return bufferLength_; }
+	void setResamplerType(chip::ResamplerType type) { resamplerType_ = type; }
+	chip::ResamplerType getResamplerType() const { return resamplerType_; }
+
 private:
 	std::string sndAPI_, sndDevice_;
 	RealChipInterfaceType realChip_;
 	int emulator_;
 	uint32_t sampleRate_;
 	size_t bufferLength_;
+	chip::ResamplerType resamplerType_;
 
 	// Midi //
 public:
