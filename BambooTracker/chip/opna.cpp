@@ -43,6 +43,9 @@ namespace
 {
 constexpr double VOL_REDUC_ = 7.5;
 
+// 55466Hz: FM internal rate
+constexpr int DEFAULT_AUTO_RATE = 55466;
+
 enum SoundSourceIndex : int { FM = 0, SSG = 1 };
 
 inline double clamp(double value, double low, double high)
@@ -64,8 +67,8 @@ size_t OPNA::count_ = 0;
 OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 		   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
 		   std::shared_ptr<AbstractRegisterWriteLogger> logger)
-	: Chip(count_++, clock, rate, 110933, maxDuration,
-		   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
+	: Chip(count_++, clock, rate, DEFAULT_AUTO_RATE, maxDuration,
+		   std::move(fmResampler), std::move(ssgResampler),
 		   logger),
 	  dramSize_(dramSize),
 	  rcIntf_(std::make_unique<SimpleRealChipInterface>())

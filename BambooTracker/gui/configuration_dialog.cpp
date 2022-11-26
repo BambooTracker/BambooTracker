@@ -342,7 +342,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	onMidiApiChanged(ui->midiApiComboBox->currentText(), false);
 	ui->midiInputGroupBox->setChecked(configLocked->getMidiEnabled());
 
-	constexpr uint32_t SAMPLE_RATES[] = { 8000, 16000, 22050, 32000, 44100, 48000, 55466, 96000, 110933, 192000 };
+	constexpr uint32_t SAMPLE_RATES[] = { 8000, 16000, 22050, 32000, 44100, 48000, 55466, 96000, 192000, 249600 };
 	constexpr size_t N_SAMPLE_RATES = sizeof(SAMPLE_RATES) / sizeof(SAMPLE_RATES[0]);
 	for (auto rate : SAMPLE_RATES) {
 		ui->sampleRateComboBox->addItem(QString("%1Hz").arg(rate), rate);

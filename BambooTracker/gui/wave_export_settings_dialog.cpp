@@ -38,7 +38,7 @@ WaveExportSettingsDialog::WaveExportSettingsDialog(const std::vector<int> defUnm
 
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-	constexpr uint32_t SAMPLE_RATES[] = { 8000, 16000, 22050, 32000, 44100, 48000, 55466, 96000, 110933, 192000 };
+	constexpr uint32_t SAMPLE_RATES[] = { 8000, 16000, 22050, 32000, 44100, 48000, 55466, 96000, 192000, 249600 };
 	constexpr uint32_t DEFAULT_RATE = 44100;
 	for (auto rate : SAMPLE_RATES) {
 		ui->sampleRateComboBox->addItem(QString("%1Hz").arg(rate), rate);
