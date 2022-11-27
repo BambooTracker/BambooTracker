@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
@@ -448,9 +448,23 @@
          <property name="title">
           <string>Emulation core</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QComboBox" name="emulatorComboBox"/>
+           <widget class="QComboBox" name="emulatorComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="zeroWaitWriteCheckBox">
+            <property name="text">
+             <string>Zero-wait write</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -7,6 +7,7 @@
 - Add toolbar items of importing/exporting a bank file to the instrument list
 - [#262] - Add ymfm emulation (thanks [@OPNA2608], [@freq-mod])
 - Add more sample rate choices
+- Add wait-write mode
 
 ### Changed
 

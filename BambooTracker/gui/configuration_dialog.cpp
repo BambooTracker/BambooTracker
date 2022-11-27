@@ -291,13 +291,14 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	}
 	updateNoteNames();
 
-	// Emulation //
+	// Sound //
 	ui->emulatorComboBox->addItem("MAME YM2608", static_cast<int>(chip::OpnaEmulator::Mame));
 	ui->emulatorComboBox->addItem("Nuked OPN-Mod", static_cast<int>(chip::OpnaEmulator::Nuked));
 	ui->emulatorComboBox->addItem("ymfm", static_cast<int>(chip::OpnaEmulator::Ymfm));
 	ui->emulatorComboBox->setCurrentIndex(ui->emulatorComboBox->findData(configLocked->getEmulator()));
 
-	// Sound //
+	ui->zeroWaitWriteCheckBox->setChecked(configLocked->getImmediateWriteModeEnabled());
+
 	{
 		QSignalBlocker blocker(ui->audioApiComboBox);
 		int sndApiRow = -1;
@@ -467,7 +468,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	}
 	configLocked->setCustomLayoutKeys(customLayoutNewKeys);
 
-	// Emulation //
+	// Sound //
 	int emu = ui->emulatorComboBox->currentData().toInt();
 	bool changedEmu = false;
 	if (emu != configLocked->getEmulator()) {
@@ -475,7 +476,8 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 		changedEmu = true;
 	}
 
-	// Sound //
+	configLocked->setImmediateWriteModeEnabled(ui->zeroWaitWriteCheckBox->isChecked());
+
 	configLocked->setSoundDevice(ui->audioDeviceComboBox->currentText().toUtf8().toStdString());
 	configLocked->setSoundAPI(ui->audioApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setRealChipInterface(static_cast<RealChipInterfaceType>(

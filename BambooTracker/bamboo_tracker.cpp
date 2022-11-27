@@ -93,6 +93,7 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 {
 	setStreamRate(static_cast<int>(config.lock()->getSampleRate()));
 	setStreamDuration(static_cast<int>(config.lock()->getBufferLength()));
+	opnaCtrl_->setImmediateWriteMode(config.lock()->getImmediateWriteModeEnabled());
 	opnaCtrl_->setResampler(config.lock()->getResamplerType());
 	setMasterVolume(config.lock()->getMixerVolumeMaster());
 	if (mod_->getMixerType() == MixerType::UNSPECIFIED) {
@@ -1345,7 +1346,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		if (volumeSet)
 			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, bt_defs::NSTEP_RHYTHM_VOLUME - 1));
 		opnaCtrl_->setKeyOnFlagRhythm(attrib.channelInSource);
-		opnaCtrl_->updateRegisterStates();
+		opnaCtrl_->updateKeyOnOffStatusRhythm(true);
 	}
 	else {
 		std::vector<JamKeyInfo>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source, keyNum);
@@ -1464,7 +1465,7 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 {
 	if (attrib.source == SoundSource::RHYTHM) {
 		opnaCtrl_->setKeyOffFlagRhythm(attrib.channelInSource);
-		opnaCtrl_->updateRegisterStates();
+		opnaCtrl_->updateKeyOnOffStatusRhythm(true);
 	}
 	else {
 		JamKeyInfo&& info = jamMan_->keyOff(key, keyNum);

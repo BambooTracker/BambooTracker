@@ -301,6 +301,8 @@ public:
 	size_t getBufferLength() const { return bufferLength_; }
 	void setResamplerType(chip::ResamplerType type) { resamplerType_ = type; }
 	chip::ResamplerType getResamplerType() const { return resamplerType_; }
+	void setImmediateWriteModeEnabled(bool enabled) { isImmediateWriteMode_ = enabled; }
+	bool getImmediateWriteModeEnabled() const { return isImmediateWriteMode_; }
 
 private:
 	std::string sndAPI_, sndDevice_;
@@ -309,6 +311,7 @@ private:
 	uint32_t sampleRate_;
 	size_t bufferLength_;
 	chip::ResamplerType resamplerType_;
+	bool isImmediateWriteMode_;
 
 	// Midi //
 public:

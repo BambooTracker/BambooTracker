@@ -60,6 +60,8 @@ void AbstractResampler::setMaxDuration(size_t maxDuration) noexcept
 /****************************************/
 sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t)
 {
+	if (srcRate_ == destRate_) return src;
+
 	// Linear interplation
 	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		for (size_t n = 0; n < nSamples; ++n) {
@@ -116,11 +118,13 @@ void BlipResampler::reset()
 
 size_t BlipResampler::calculateInternalSampleSize(size_t nSamples)
 {
-	return blip_clocks_needed(ch_[0].blipBuf_, nSamples - blip_samples_avail(ch_[0].blipBuf_));
+	return ((srcRate_ == destRate_) ? nSamples : blip_clocks_needed(ch_[0].blipBuf_, nSamples - blip_samples_avail(ch_[0].blipBuf_)));
 }
 
 sample** BlipResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
 {
+	if (srcRate_ == destRate_) return src;
+
 	short tmpBuf[CHIP_SMPL_BUF_SIZE_];
 	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		auto& ch = ch_[pan];

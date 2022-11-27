@@ -121,7 +121,7 @@ void OPNAController::resetState()
 {
 	opna_->setRegister(0x29, 0x80);		// Init interrupt / YM2608 mode
 
-	registerSetBuf_.clear();
+	registerDirectSetBuf_.clear();
 
 	initFM();
 	initSSG();
@@ -143,7 +143,7 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 /********** Direct register set **********/
 void OPNAController::sendRegister(int address, int value)
 {
-	registerSetBuf_.push_back(std::make_pair(address, value));
+	registerDirectSetBuf_.push_back({ static_cast<uint32_t>(address), static_cast<uint8_t>(value) });
 }
 
 /********** DRAM **********/
@@ -158,11 +158,11 @@ void OPNAController::updateRegisterStates()
 	updateKeyOnOffStatusRhythm();
 
 	// Check direct register set
-	if (!registerSetBuf_.empty()) {
-		for (auto& unit : registerSetBuf_) {
-			opna_->setRegister(static_cast<uint32_t>(unit.first), static_cast<uint8_t>(unit.second));
+	if (!registerDirectSetBuf_.empty()) {
+		for (auto& unit : registerDirectSetBuf_) {
+			opna_->setRegister(unit.address, unit.data);
 		}
-		registerSetBuf_.clear();
+		registerDirectSetBuf_.clear();
 	}
 }
 
@@ -231,6 +231,11 @@ void OPNAController::setMode(SongType mode)
 {
 	mode_ = mode;
 	reset();
+}
+
+void OPNAController::setImmediateWriteMode(bool enabled) noexcept
+{
+	opna_->setImmediateWriteMode(enabled);
 }
 
 /********** Mute **********/
@@ -563,6 +568,8 @@ void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 
 	if (fm.isMute) return;
 
+	opna_->setForcedWriteMode(isJam);
+
 	fm.echoBuf.push(note);
 
 	bool isTonePrtm = fm.isTonePrtm && fm.hasKeyOnBefore;
@@ -630,6 +637,7 @@ void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 	}
 
 	fm.hasKeyOnBefore = true;
+	opna_->setForcedWriteMode(false);
 }
 
 void OPNAController::keyOnFM(int ch, int echoBuf)
@@ -647,6 +655,9 @@ void OPNAController::keyOffFM(int ch, bool isJam)
 		tickEventFM(fm);
 		return;
 	}
+
+	opna_->setForcedWriteMode(isJam);
+
 	releaseStartFMSequences(fm);
 	fm.hasPreSetTickEvent = isJam;
 
@@ -666,6 +677,8 @@ void OPNAController::keyOffFM(int ch, bool isJam)
 		break;
 	}
 	}
+
+	opna_->setForcedWriteMode(false);
 }
 
 void OPNAController::retriggerKeyOnFM(int ch, int volDiff)
@@ -2057,6 +2070,8 @@ void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 	auto& ssg = ssg_[ch];
 	if (ssg.isMute) return;
 
+	opna_->setForcedWriteMode(isJam);
+
 	ssg.echoBuf.push(note);
 
 	if (ssg.isTonePrtm && ssg.hasKeyOnBefore) {
@@ -2086,6 +2101,8 @@ void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 	ssg.shouldSkip1stTickExec = isJam;
 	ssg.isKeyOn = true;
 	ssg.hasKeyOnBefore = true;
+
+	opna_->setForcedWriteMode(false);
 }
 
 void OPNAController::keyOnSSG(int ch, int echoBuf)
@@ -2102,9 +2119,14 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 		tickEventSSG(ssg);
 		return;
 	}
+
+	opna_->setForcedWriteMode(isJam);
+
 	releaseStartSSGSequences(ssg);
 	ssg.shouldSkip1stTickExec = isJam;
 	ssg.isKeyOn = false;
+
+	opna_->setForcedWriteMode(false);
 }
 
 void OPNAController::retriggerKeyOnSSG(int ch, int volDiff)
@@ -3417,8 +3439,10 @@ bool OPNAController::isMuteRhythm(int ch)
 	return rhythm_[ch].isMute;
 }
 
-void OPNAController::updateKeyOnOffStatusRhythm()
+void OPNAController::updateKeyOnOffStatusRhythm(bool isJam)
 {
+	opna_->setForcedWriteMode(isJam);
+
 	if (keyOnRequestFlagsRhythm_) {
 		opna_->setRegister(0x10, keyOnRequestFlagsRhythm_);
 		keyOnRequestFlagsRhythm_ = 0;
@@ -3427,6 +3451,8 @@ void OPNAController::updateKeyOnOffStatusRhythm()
 		opna_->setRegister(0x10, 0x80 | keyOffRequestFlagsRhythm_);
 		keyOffRequestFlagsRhythm_ = 0;
 	}
+
+	opna_->setForcedWriteMode(false);
 }
 
 //---------- ADPCM ----------//
@@ -3443,6 +3469,8 @@ int calculateCurrentKeyOfDrumkit(int noteNum, int transpose)
 void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
+
+	opna_->setForcedWriteMode(isJam);
 
 	echoBufADPCM_.push(note);
 
@@ -3489,6 +3517,8 @@ void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 	}
 
 	hasKeyOnBeforeADPCM_ = true;
+
+	opna_->setForcedWriteMode(false);
 }
 
 void OPNAController::keyOnADPCM(int echoBuf)
@@ -3503,9 +3533,14 @@ void OPNAController::keyOffADPCM(bool isJam)
 		tickEventADPCM();
 		return;
 	}
+
+	opna_->setForcedWriteMode(isJam);
+
 	releaseStartADPCMSequences();
 	shouldSkip1stTickExecADPCM_ = isJam;
 	isKeyOnADPCM_ = false;
+
+	opna_->setForcedWriteMode(false);
 }
 
 void OPNAController::retriggerKeyOnADPCM(int volDiff)

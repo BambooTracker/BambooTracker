@@ -291,6 +291,7 @@ Configuration::Configuration()
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
 	resamplerType_ = chip::ResamplerType::BlipBuf;
+	isImmediateWriteMode_ = false;
 
 	// Midi //
 	midiEnabled_ = false;

@@ -27,6 +27,7 @@
 
 #include "chip.hpp"
 #include <memory>
+#include <deque>
 #include "resampler.hpp"
 #include "2608_interface.hpp"
 #include "real_chip_interface.hpp"
@@ -53,6 +54,8 @@ public:
 		 std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);
 	~OPNA() override;
 
+	void setImmediateWriteMode(bool enabled) noexcept;
+	void setForcedWriteMode(bool enabled) noexcept { isForcedRegWrite_ = enabled; }
 	void setRegister(uint32_t offset, uint8_t value) override;
 	uint8_t getRegister(uint32_t offset) const override;
 	void setVolumeFM(double dB);
@@ -76,5 +79,34 @@ private:
 	std::unique_ptr<SimpleRealChipInterface> rcIntf_;
 
 	void resetSpecific() override;
+
+	struct RegisterWrite
+	{
+		uint32_t address;
+		uint8_t data;
+		bool isPortA_;
+	};
+
+	bool shouldWriteNow_, isForcedRegWrite_;
+	std::deque<RegisterWrite> regWrites_, forcedRegWrites_;
+
+	void enqueueData(uint32_t offset, uint8_t value);
+	void writeDataImmediately(uint32_t offset, uint8_t value);
+
+	size_t dequeueData();
+
+	size_t waitRestFm_, waitRestSsg2_;
+	size_t rate2_;
+	sample* tmpBuf_[2];
+	void storeBufferForImmediate(size_t nSamples, size_t& pointFm, size_t& pointSsg);
+	void storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg);
+	void flushWait(size_t& pointFm, size_t maxFm, size_t& pointSsg2, size_t maxSsg2);
+
+	struct WriteModeFuncs
+	{
+		void (OPNA::*setRegister)(uint32_t, uint8_t);
+		void (OPNA::*storeBuffer)(size_t, size_t&, size_t&);
+	} writeFuncs[2];
+	WriteModeFuncs* writeFunc;
 };
 }

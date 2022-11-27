@@ -257,6 +257,7 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
 		settings.setValue("resamplerType", static_cast<int>(configLocked->getResamplerType()));
+		settings.setValue("immediateWriteModeEnabled", configLocked->getImmediateWriteModeEnabled());
 		settings.endGroup();
 
 		// Midi //
@@ -444,6 +445,7 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", bufferLengthWorkaround).toInt()));
 		configLocked->setResamplerType(static_cast<chip::ResamplerType>(
 										   settings.value("resamplerType", static_cast<int>(configLocked->getResamplerType())).toInt()));
+		configLocked->setImmediateWriteModeEnabled(settings.value("immediateWriteModeEnabled", configLocked->getImmediateWriteModeEnabled()).toBool());
 		settings.endGroup();
 
 		// Midi //

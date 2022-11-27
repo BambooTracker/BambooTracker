@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <deque>
 #include "song.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
@@ -69,6 +70,7 @@ public:
 	// Chip mode
 	void setMode(SongType mode);
 	SongType getMode() const noexcept;
+	void setImmediateWriteMode(bool enabled) noexcept;
 
 	// Mute
 	void setMuteState(SoundSource src, int chInSrc, bool isMute);
@@ -89,7 +91,13 @@ private:
 	std::unique_ptr<chip::OPNA> opna_;
 	SongType mode_;
 
-	std::vector<std::pair<int, int>> registerSetBuf_;
+	struct RegisterWrite
+	{
+		uint32_t address;
+		uint8_t data;
+	};
+
+	std::deque<RegisterWrite> registerDirectSetBuf_;
 
 	void resetState();
 
@@ -360,6 +368,7 @@ public:
 	void setKeyOnFlagRhythm(int ch);
 	void setKeyOffFlagRhythm(int ch);
 	void retriggerKeyOnFlagRhythm(int ch, int volDiff);
+	void updateKeyOnOffStatusRhythm(bool isJam = false);
 
 	// Set volume
 	void setVolumeRhythm(int ch, int volume);
@@ -385,8 +394,6 @@ private:
 
 	void setMuteRhythmState(int ch, bool isMute);
 	bool isMuteRhythm(int ch);
-
-	void updateKeyOnOffStatusRhythm();
 
 	/*----- ADPCM/Drumkit -----*/
 public:
