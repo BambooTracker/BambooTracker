@@ -643,8 +643,12 @@ void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 void OPNAController::keyOnFM(int ch, int echoBuf)
 {
 	auto& fm = fm_[ch];
-	if (static_cast<size_t>(echoBuf) < fm.echoBuf.size())
+	if (static_cast<size_t>(echoBuf) < fm.echoBuf.size()) {
 		keyOnFM(ch, fm.echoBuf[echoBuf]);
+	}
+	else {
+		tickEventFM(fm);
+	}
 }
 
 void OPNAController::keyOffFM(int ch, bool isJam)
@@ -2111,6 +2115,9 @@ void OPNAController::keyOnSSG(int ch, int echoBuf)
 	if (static_cast<size_t>(echoBuf) < ssg.echoBuf.size()) {
 		keyOnSSG(ch, ssg.echoBuf[echoBuf]);
 	}
+	else {
+		tickEventSSG(ssg);
+	}
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
@@ -3524,8 +3531,12 @@ void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 
 void OPNAController::keyOnADPCM(int echoBuf)
 {
-	if (static_cast<size_t>(echoBuf) < echoBufADPCM_.size())
+	if (static_cast<size_t>(echoBuf) < echoBufADPCM_.size()) {
 		keyOnADPCM(echoBufADPCM_[echoBuf]);
+	}
+	else {
+		tickEventADPCM();
+	}
 }
 
 void OPNAController::keyOffADPCM(bool isJam)

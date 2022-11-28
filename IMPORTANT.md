@@ -8,6 +8,7 @@ In some cases, you need to modify modules.
 ### v0.5.4
 
 - When the instrument sequence type of an arpeggio is "Fixed", the original pitch of the note on is restored at the tick immediately after the last data in the sequence is executed. Data created before v0.5.3 is automatically modified when the file is loaded to maintain compatibility.
+- A bug is fixed that sequence macro not running when echo buffer is empty and note is on. Also, redundant volume changes in the volume column and envelope macros have been removed.
 
 ### v0.5.1
 
