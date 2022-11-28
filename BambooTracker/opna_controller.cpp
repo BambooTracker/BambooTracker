@@ -2108,8 +2108,9 @@ void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 void OPNAController::keyOnSSG(int ch, int echoBuf)
 {
 	auto& ssg = ssg_[ch];
-	if (static_cast<size_t>(echoBuf) < ssg.echoBuf.size())
+	if (static_cast<size_t>(echoBuf) < ssg.echoBuf.size()) {
 		keyOnSSG(ch, ssg.echoBuf[echoBuf]);
+	}
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
@@ -2200,7 +2201,7 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 		ssg.baseVol = volume;
 		ssg.oneshotVol = UNUSED_VALUE;
 
-		if (ssg.isKeyOn) setRealVolumeSSG(ssg);
+		if (ssg.isKeyOn) ssg.shouldSetEnv = true;
 	}
 }
 
@@ -2210,7 +2211,7 @@ void OPNAController::setOneshotVolumeSSG(int ch, int volume)
 		auto& ssg = ssg_[ch];
 		ssg.oneshotVol = volume;
 
-		if (ssg.isKeyOn) setRealVolumeSSG(ssg);
+		if (ssg.isKeyOn) ssg.shouldSetEnv = true;
 	}
 }
 
@@ -3676,7 +3677,7 @@ void OPNAController::setVolumeADPCM(int volume)
 		baseVolADPCM_ = volume;
 		oneshotVolADPCM_ = UNUSED_VALUE;
 
-		if (isKeyOnADPCM_) setRealVolumeADPCM();
+		if (isKeyOnADPCM_) shouldWriteEnvADPCM_ = true;
 	}
 }
 
@@ -3685,7 +3686,7 @@ void OPNAController::setOneshotVolumeADPCM(int volume)
 	if (volume < bt_defs::NSTEP_ADPCM_VOLUME) {
 		oneshotVolADPCM_ = volume;
 
-		if (isKeyOnADPCM_) setRealVolumeADPCM();
+		if (isKeyOnADPCM_) shouldWriteEnvADPCM_ = true;
 	}
 }
 

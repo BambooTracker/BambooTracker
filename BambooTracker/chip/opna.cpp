@@ -74,7 +74,6 @@ OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dra
 		   logger),
 	  dramSize_(dramSize),
 	  rcIntf_(std::make_unique<SimpleRealChipInterface>()),
-	  shouldWriteNow_(false),
 	  isForcedRegWrite_(false),
 	  waitRestFm_(0),
 	  waitRestSsg2_(0),

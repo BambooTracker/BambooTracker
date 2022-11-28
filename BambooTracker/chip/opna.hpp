@@ -87,7 +87,7 @@ private:
 		bool isPortA_;
 	};
 
-	bool shouldWriteNow_, isForcedRegWrite_;
+	bool isForcedRegWrite_;
 	std::deque<RegisterWrite> regWrites_, forcedRegWrites_;
 
 	void enqueueData(uint32_t offset, uint8_t value);

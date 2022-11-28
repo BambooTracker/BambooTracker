@@ -14,6 +14,7 @@
 - [#464] - Raise Qt6 version on GitHub Actions to 6.4.0
 - [#386] - Restore note pitch at the end of "Fixed" arpeggio sequence (thanks [@djmaximum17])
 - [#347] - Change resampling method (thanks [@freq-mod])
+- Remove redundant volume change
 
 ### Fixed
 
