@@ -343,7 +343,6 @@ public:
 		explicit Iterator(const InstrumentSequenceProperty* seqProp)
 			: SequenceIteratorInterface<T>(0),
 			  seqProp_(seqProp),
-			  started_(false),
 			  loopStack_(seqProp->loop_),
 			  isRelease_(false),
 			  relReleaseRate_(1.)
@@ -367,8 +366,7 @@ public:
 		{
 			if (this->hasEnded()) return this->END_SEQ_POS;
 
-			if (!started_) {
-				started_ = true;
+			if (this->state_ == SequenceIteratorState::NotBegin) {
 				return this->pos_;
 			}
 
@@ -386,7 +384,7 @@ public:
 
 		int front() override
 		{
-			started_ = true;
+			this->state_ = SequenceIteratorState::Run;
 			loopStack_.clear();
 			isRelease_ = false;
 			relReleaseRate_ = 1.;
@@ -453,7 +451,13 @@ public:
 			}
 			this->pos_ = next;
 
-			if (next != this->END_SEQ_POS) loopStack_.pushLoopsAtPos(this->pos_);
+			if (next == this->END_SEQ_POS) {
+				this->state_ = SequenceIteratorState::End;
+			}
+			else {
+				this->state_ = SequenceIteratorState::RunRelease;
+				loopStack_.pushLoopsAtPos(this->pos_);
+			}
 
 			return this->pos_;
 		}
@@ -461,13 +465,12 @@ public:
 		int end() override
 		{
 			this->pos_ = this->END_SEQ_POS;
-			started_ = false;
+			this->state_ = SequenceIteratorState::End;
 			return this->END_SEQ_POS;
 		}
 
 	private:
 		const InstrumentSequenceProperty* seqProp_;
-		bool started_;
 		inst_utils::LoopStack loopStack_;
 		bool isRelease_;
 		double relReleaseRate_;

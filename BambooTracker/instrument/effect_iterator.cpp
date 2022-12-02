@@ -35,7 +35,6 @@ const InstrumentSequenceBaseUnit ARP_CENTER(Note::DEFAULT_NOTE_NUM);
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
 	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(2),
-	  started_(false),
 	  second_(second + ARP_CENTER.data),
 	  third_(third + ARP_CENTER.data)
 {
@@ -53,32 +52,26 @@ InstrumentSequenceBaseUnit ArpeggioEffectIterator::data() const noexcept
 
 int ArpeggioEffectIterator::next()
 {
-	if (started_) {
-		pos_ = (pos_ + 1) % 3;
-	}
-	else {
-		started_ = true;
-	}
-
+	state_ = SequenceIteratorState::Run;
+	pos_ = (pos_ + 1) % 3;
 	return pos_;
 }
 
 int ArpeggioEffectIterator::front()
 {
+	state_ = SequenceIteratorState::Run;
 	pos_ = 0;
-	started_ = true;
 	return 0;
 }
 
 int ArpeggioEffectIterator::end()
 {
+	state_ = SequenceIteratorState::End;
 	pos_ = END_SEQ_POS;
-	started_ = false;
 	return END_SEQ_POS;
 }
 
 WavingEffectIterator::WavingEffectIterator(int period, int depth)
-	: started_(false)
 {
 	for (int i = 0; i <= period; ++i) {
 		seq_.emplace_back(i * depth);
@@ -101,33 +94,27 @@ InstrumentSequenceBaseUnit WavingEffectIterator::data() const
 
 int WavingEffectIterator::next()
 {
-	if (started_) {
-		pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
-	}
-	else {
-		started_ = true;
-	}
-
+	state_ = SequenceIteratorState::Run;
+	pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
 	return pos_;
 }
 
 int WavingEffectIterator::front()
 {
+	state_ = SequenceIteratorState::Run;
 	pos_ = 0;
-	started_ = true;
 	return 0;
 }
 
 int WavingEffectIterator::end()
 {
+	state_ = SequenceIteratorState::End;
 	pos_ = END_SEQ_POS;
-	started_ = false;
 	return END_SEQ_POS;
 }
 
 NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int semitone)
-	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0),
-	  started_(false)
+	: SequenceIteratorInterface<InstrumentSequenceBaseUnit>(0)
 {
 	int d = semitone * Note::SEMITONE_PITCH;
 	if (speed) {
@@ -149,27 +136,31 @@ InstrumentSequenceBaseUnit NoteSlideEffectIterator::data() const
 }
 
 int NoteSlideEffectIterator::next()
-{
-	if (started_ && !hasEnded()) {
-		if (++pos_ >= static_cast<int>(seq_.size())) pos_ = END_SEQ_POS;
+{			
+	if (!hasEnded()) {
+		if (++pos_ >= static_cast<int>(seq_.size())) {
+			state_ = SequenceIteratorState::End;
+			pos_ = END_SEQ_POS;
+		}
+		else {
+			state_ = SequenceIteratorState::Run;
+		}
 	}
-	else {
-		started_ = true;
-	}
+
 	return pos_;
 }
 
 int NoteSlideEffectIterator::front()
 {
+	state_ = SequenceIteratorState::Run;
 	pos_ = 0;
-	started_ = true;
 	return 0;
 }
 
 int NoteSlideEffectIterator::end()
 {
+	state_ = SequenceIteratorState::End;
 	pos_ = END_SEQ_POS;
-	started_ = false;
 	return END_SEQ_POS;
 }
 
@@ -189,7 +180,8 @@ InstrumentSequenceBaseUnit XVolumeSlideEffectIterator::data() const noexcept
 
 int XVolumeSlideEffectIterator::next()
 {
-	if (hasEnded()) {
+	if (state_ != SequenceIteratorState::Run) {
+		state_ = SequenceIteratorState::Run;
 		pos_ = 0;
 		mem_ = 0;
 		sum_ = 0;
@@ -206,6 +198,7 @@ int XVolumeSlideEffectIterator::next()
 
 int XVolumeSlideEffectIterator::front()
 {
+	state_ = SequenceIteratorState::Run;
 	pos_ = 0;
 	mem_ = 0;
 	sum_ = 0;
@@ -214,6 +207,7 @@ int XVolumeSlideEffectIterator::front()
 
 int XVolumeSlideEffectIterator::end()
 {
+	state_ = SequenceIteratorState::End;
 	pos_ = END_SEQ_POS;
 	mem_ = 0;
 	sum_ = 0;

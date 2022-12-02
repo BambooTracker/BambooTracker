@@ -23,6 +23,7 @@
 - Fix incorrect `0sxx` note cut effect in ryhtm channels (thanks [@Mugenri])
 - Fix visibility of FM 3,4ch when song mode is changed from expanded to standard (thanks TotO)
 - Run tick process when echo buffer is empty
+- Reset `0Qxy`, `0Rxy` note slide in the next note on (thanks Getsuka-P)
 
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386

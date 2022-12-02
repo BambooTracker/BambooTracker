@@ -585,10 +585,9 @@ void OPNAController::keyOnFM(int ch, const Note& note, bool isJam)
 	if (fm.oneshotVol != UNUSED_VALUE) {
 		setVolumeFM(ch, fm.baseVol);
 	}
-	if (!fm.hasSetNs) {
+	if (fm.nsItr && fm.nsItr->state() != SequenceIteratorState::NotBegin) {
 		fm.nsItr.reset();
 	}
-	fm.hasSetNs = false;
 	fm.shouldSetTone = true;
 	fm.nsSum = 0;
 	fm.transpose = 0;
@@ -1088,7 +1087,6 @@ void OPNAController::setNoteSlideFM(int ch, int speed, int semitone)
 	auto& fm = fm_[ch];
 	if (semitone) {
 		fm.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
-		fm.hasSetNs = true;
 	}
 	else fm.nsItr.reset();
 }
@@ -1300,7 +1298,6 @@ void OPNAController::initFM()
 		fm.fdetune = 0;
 		fm.nsItr.reset();
 		fm.nsSum = 0;
-		fm.hasSetNs = false;
 		fm.transpose = 0;
 	}
 }
@@ -1789,7 +1786,10 @@ void OPNAController::setFrontFMSequences(FMChannel& fm)
 	}
 	if (auto& nsItr = fm.nsItr) {
 		nsItr->front();
-		if (!nsItr->hasEnded()) {
+		if (nsItr->hasEnded()) {
+			nsItr.reset();
+		}
+		else {
 			fm.nsSum += nsItr->data().data;
 			fm.shouldSetTone = true;
 		}
@@ -1833,7 +1833,10 @@ void OPNAController::releaseStartFMSequences(FMChannel& fm)
 	}
 	if (auto& nsItr = fm.nsItr) {
 		nsItr->release();
-		if (!nsItr->hasEnded()) {
+		if (nsItr->hasEnded()) {
+			nsItr.reset();
+		}
+		else {
 			fm.nsSum += nsItr->data().data;
 			fm.shouldSetTone = true;
 		}
@@ -1881,7 +1884,10 @@ void OPNAController::tickEventFM(FMChannel& fm)
 		}
 		if (auto& nsItr = fm.nsItr) {
 			nsItr->next();
-			if (!nsItr->hasEnded()) {
+			if (nsItr->hasEnded()) {
+				nsItr.reset();
+			}
+			else {
 				fm.nsSum += nsItr->data().data;
 				fm.shouldSetTone = true;
 			}
@@ -2088,10 +2094,9 @@ void OPNAController::keyOnSSG(int ch, const Note& note, bool isJam)
 		ssg.volSldSum = 0;
 		ssg.oneshotVol = UNUSED_VALUE;
 	}
-	if (!ssg.hasSetNs) {
+	if (ssg.nsItr && ssg.nsItr->state() != SequenceIteratorState::NotBegin) {
 		ssg.nsItr.reset();
 	}
-	ssg.hasSetNs = false;
 	ssg.shouldSetTone = true;
 	ssg.nsSum = 0;
 	ssg.transpose = 0;
@@ -2318,7 +2323,6 @@ void OPNAController::setNoteSlideSSG(int ch, int speed, int semitone)
 	auto& ssg = ssg_[ch];
 	if (semitone) {
 		ssg.nsItr = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
-		ssg.hasSetNs = true;
 	}
 	else ssg.nsItr.reset();
 }
@@ -2492,7 +2496,6 @@ void OPNAController::initSSG()
 		ssg.fdetune = 0;
 		ssg.nsItr.reset();
 		ssg.nsSum = 0;
-		ssg.hasSetNs = false;
 		ssg.transpose = 0;
 		ssg.hasRequestedTnEffSet = false;
 	}
@@ -3494,8 +3497,9 @@ void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 		oneshotVolADPCM_ = UNUSED_VALUE;
 	}
 
-	if (hasSetNsADPCM_) hasSetNsADPCM_ = false;
-	else nsItADPCM_.reset();
+	if (nsItrADPCM_ && nsItrADPCM_->state() != SequenceIteratorState::NotBegin) {
+		nsItrADPCM_.reset();
+	}
 
 	shouldSetToneADPCM_ = true;
 	nsSumADPCM_ = 0;
@@ -3795,10 +3799,9 @@ void OPNAController::setNoteSlideADPCM(int speed, int semitone)
 	if (refInstKit_) return;
 
 	if (semitone) {
-		nsItADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
-		hasSetNsADPCM_ = true;
+		nsItrADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, semitone);
 	}
-	else nsItADPCM_.reset();
+	else nsItrADPCM_.reset();
 }
 
 void OPNAController::setTransposeEffectADPCM(int semitone)
@@ -3815,7 +3818,7 @@ void OPNAController::haltSequencesADPCM()
 	if (arpItrADPCM_) arpItrADPCM_->end();
 	if (ptItrADPCM_) ptItrADPCM_->end();
 	if (vibItrADPCM_) vibItrADPCM_->end();
-	if (nsItADPCM_) nsItADPCM_->end();
+	if (nsItrADPCM_) nsItrADPCM_->end();
 	if (panItrADPCM_) panItrADPCM_->end();
 	if (xVolSldItrAdpcm_) xVolSldItrAdpcm_->end();
 }
@@ -3881,9 +3884,8 @@ void OPNAController::initADPCM()
 	xVolSldItrAdpcm_.reset();
 	detuneADPCM_ = 0;
 	fdetuneADPCM_ = 0;
-	nsItADPCM_.reset();
+	nsItrADPCM_.reset();
 	nsSumADPCM_ = 0;
-	hasSetNsADPCM_ = false;
 	transposeADPCM_ = 0;
 
 	opna_->setRegister(0x100, 0xa1);	// Stop synthesis
@@ -3946,10 +3948,10 @@ void OPNAController::setFrontADPCMSequences()
 		vibItrADPCM_->front();
 		/* shouldSetToneADPCM_ = true; */
 	}
-	if (nsItADPCM_) {
-		nsItADPCM_->front();
-		if (!nsItADPCM_->hasEnded()) {
-			nsSumADPCM_ += nsItADPCM_->data().data;
+	if (nsItrADPCM_) {
+		nsItrADPCM_->front();
+		if (!nsItrADPCM_->hasEnded()) {
+			nsSumADPCM_ += nsItrADPCM_->data().data;
 			/* shouldSetToneADPCM_ = true; */
 		}
 	}
@@ -4002,10 +4004,10 @@ void OPNAController::releaseStartADPCMSequences()
 		vibItrADPCM_->release();
 		shouldSetToneADPCM_ = true;
 	}
-	if (nsItADPCM_) {
-		nsItADPCM_->release();
-		if (!nsItADPCM_->hasEnded()) {
-			nsSumADPCM_ += nsItADPCM_->data().data;
+	if (nsItrADPCM_) {
+		nsItrADPCM_->release();
+		if (!nsItrADPCM_->hasEnded()) {
+			nsSumADPCM_ += nsItrADPCM_->data().data;
 			shouldSetToneADPCM_ = true;
 		}
 	}
@@ -4059,10 +4061,10 @@ void OPNAController::tickEventADPCM()
 			vibItrADPCM_->next();
 			shouldSetToneADPCM_ = true;
 		}
-		if (nsItADPCM_) {
-			nsItADPCM_->next();
-			if (!nsItADPCM_->hasEnded()) {
-				nsSumADPCM_ += nsItADPCM_->data().data;
+		if (nsItrADPCM_) {
+			nsItrADPCM_->next();
+			if (!nsItrADPCM_->hasEnded()) {
+				nsSumADPCM_ += nsItrADPCM_->data().data;
 				shouldSetToneADPCM_ = true;
 			}
 		}

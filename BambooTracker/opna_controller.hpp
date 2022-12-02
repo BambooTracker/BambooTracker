@@ -195,7 +195,6 @@ private:
 		int detune, fdetune;
 		std::unique_ptr<NoteSlideEffectIterator> nsItr;
 		int nsSum;
-		bool hasSetNs;
 		int transpose;
 		FMOperatorType opType;
 	};
@@ -326,7 +325,6 @@ private:
 		int detune, fdetune;
 		std::unique_ptr<NoteSlideEffectIterator> nsItr;
 		int nsSum;
-		bool hasSetNs;
 		int transpose;
 	} ssg_[3];
 	/// Flag "on" is key "off"
@@ -466,9 +464,8 @@ private:
 	int volSldADPCM_, volSldSumADPCM_;
 	std::unique_ptr<XVolumeSlideEffectIterator> xVolSldItrAdpcm_;
 	int detuneADPCM_, fdetuneADPCM_;
-	std::unique_ptr<NoteSlideEffectIterator> nsItADPCM_;
+	std::unique_ptr<NoteSlideEffectIterator> nsItrADPCM_;
 	int nsSumADPCM_;
-	bool hasSetNsADPCM_;
 	int transposeADPCM_;
 	bool hasStartRequestedKit_;
 

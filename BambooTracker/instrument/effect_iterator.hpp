@@ -42,7 +42,6 @@ public:
 	int end() override;
 
 private:
-	bool started_;
 	InstrumentSequenceBaseUnit second_, third_;
 };
 
@@ -60,7 +59,6 @@ public:
 	int end() override;
 
 private:
-	bool started_;
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
 
@@ -78,7 +76,6 @@ public:
 	int end() override;
 
 private:
-	bool started_;
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
 

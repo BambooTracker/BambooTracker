@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,6 +33,14 @@ enum class SequenceType
 	RelativeSequence
 };
 
+enum class SequenceIteratorState
+{
+	NotBegin,
+	Run,
+	RunRelease,
+	End,
+};
+
 template<class T>
 class SequenceIteratorInterface
 {
@@ -40,8 +48,9 @@ public:
 	virtual ~SequenceIteratorInterface() = default;
 
 	static constexpr int END_SEQ_POS = -1;
-	inline int pos() const noexcept { return pos_; }
-	inline bool hasEnded() const noexcept { return pos_ == END_SEQ_POS; }
+	int pos() const noexcept { return pos_; }
+	bool hasEnded() const noexcept { return pos_ == END_SEQ_POS; }
+	SequenceIteratorState state() const noexcept { return state_; }
 
 	virtual SequenceType type() const = 0;
 	virtual T data() const = 0;
@@ -52,6 +61,8 @@ public:
 	virtual int end() = 0;
 
 protected:
-	explicit SequenceIteratorInterface(int initPos = 0) : pos_(initPos) {}
+	explicit SequenceIteratorInterface(int initPos = 0)
+		: pos_(initPos), state_(SequenceIteratorState::NotBegin) {}
 	int pos_;
+	SequenceIteratorState state_;
 };
