@@ -71,6 +71,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 					config.lock()->getSampleRate(),
 					config.lock()->getBufferLength(),
 					config.lock()->getResamplerType());
+	opnaCtrl_->setImmediateWriteMode(config.lock()->getImmediateWriteModeEnabled());
 	setMasterVolume(config.lock()->getMixerVolumeMaster());
 	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
 	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
