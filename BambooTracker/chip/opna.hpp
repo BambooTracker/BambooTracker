@@ -55,6 +55,7 @@ public:
 	~OPNA() override;
 
 	void setImmediateWriteMode(bool enabled) noexcept;
+	bool isImmediateWriteMode() const noexcept;
 	void setForcedWriteMode(bool enabled) noexcept { isForcedRegWrite_ = enabled; }
 	void setRegister(uint32_t offset, uint8_t value) override;
 	uint8_t getRegister(uint32_t offset) const override;

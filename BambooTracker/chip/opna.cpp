@@ -147,6 +147,11 @@ void OPNA::setImmediateWriteMode(bool enabled) noexcept
 	writeFunc = &writeFuncs[enabled ? IMMEDIATE_MODE : WAIT_MODE];
 }
 
+bool OPNA::isImmediateWriteMode() const noexcept
+{
+	return writeFunc == &writeFuncs[IMMEDIATE_MODE];
+}
+
 void OPNA::setRegister(uint32_t offset, uint8_t value)
 {
 	std::lock_guard<std::mutex> lg(mutex_);

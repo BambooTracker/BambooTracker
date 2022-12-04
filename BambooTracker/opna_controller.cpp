@@ -111,8 +111,11 @@ OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int 
 /********** Reset and initialize **********/
 void OPNAController::reset()
 {
+	bool isImmediate = opna_->isImmediateWriteMode();
+	opna_->setImmediateWriteMode(true);
 	opna_->reset();
 	resetState();
+	opna_->setImmediateWriteMode(isImmediate);
 	std::fill(&outputHistory_[0], &outputHistory_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
 	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * bt_defs::OUTPUT_HISTORY_SIZE], 0);
 }
@@ -3651,6 +3654,10 @@ void OPNAController::clearSamplesADPCM()
 
 bool OPNAController::storeSampleADPCM(const std::vector<uint8_t>& sample, size_t& startAddr, size_t& stopAddr)
 {
+	// Turn on immediate-write mode to avoid suspending sample writes
+	bool isImmediate = opna_->isImmediateWriteMode();
+	opna_->setImmediateWriteMode(true);
+
 	opna_->setRegister(0x110, 0x80);
 	opna_->setRegister(0x100, 0x61);
 	opna_->setRegister(0x100, 0x60);
@@ -3681,6 +3688,8 @@ bool OPNAController::storeSampleADPCM(const std::vector<uint8_t>& sample, size_t
 
 	opna_->setRegister(0x100, 0x00);
 	opna_->setRegister(0x110, 0x80);
+
+	opna_->setImmediateWriteMode(isImmediate);
 
 	return stored;
 }
