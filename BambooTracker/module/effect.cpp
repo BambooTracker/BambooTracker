@@ -209,7 +209,7 @@ EffectType validateEffectId(SoundSource src, const std::string& id)
 		}
 	}
 	else if (id == "0S") {
-		return EffectType::NoteCut;
+		return EffectType::NoteRelease;
 	}
 	else if (id == "0T") {
 		switch (src) {

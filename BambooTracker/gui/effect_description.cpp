@@ -60,7 +60,7 @@ const std::unordered_map<EffectType, EffectDetail> DETAILS = {
 	{ EffectType::Detune, { "0Pxx", QT_TRANSLATE_NOOP("EffectDescription", "Detune, xx: pitch (00-FF)") } },
 	{ EffectType::NoteSlideUp, { "0Qxy", QT_TRANSLATE_NOOP("EffectDescription", "Note slide up, x: count (0-F), y: semitone (0-F)") } },
 	{ EffectType::NoteSlideDown, { "0Rxy", QT_TRANSLATE_NOOP("EffectDescription", "Note slide down, x: count (0-F), y: semitone (0-F)") } },
-	{ EffectType::NoteCut, { "0Sxx", QT_TRANSLATE_NOOP("EffectDescription", "Note cut, xx: count (00-FF)") } },
+	{ EffectType::NoteRelease, { "0Sxx", QT_TRANSLATE_NOOP("EffectDescription", "Note release, xx: count (00-FF)") } },
 	{ EffectType::TransposeDelay, { "0Txy", QT_TRANSLATE_NOOP("EffectDescription", "Transpose delay, x: count (0-7: up, 8-F: down), y: semitone (0-F)") } },
 	{ EffectType::ToneNoiseMix, { "0Vxx", QT_TRANSLATE_NOOP("EffectDescription", "Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone & noise") } },
 	{ EffectType::MasterVolume, { "0Vxx", QT_TRANSLATE_NOOP("EffectDescription", "Master volume, xx: volume (00-3F)") } },

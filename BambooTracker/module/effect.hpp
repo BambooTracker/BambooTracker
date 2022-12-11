@@ -34,7 +34,7 @@ enum class EffectType
 	NoEffect,
 	Arpeggio, PortamentoUp, PortamentoDown, TonePortamento, Vibrato, Tremolo, Pan, VolumeSlide, PositionJump,
 	SongEnd, PatternBreak, SpeedTempoChange, NoteDelay, Groove, Detune, NoteSlideUp, NoteSlideDown,
-	NoteCut, TransposeDelay, MasterVolume, VolumeDelay, ToneNoiseMix, NoisePitch, HardEnvHighPeriod,
+	NoteRelease, TransposeDelay, MasterVolume, VolumeDelay, ToneNoiseMix, NoisePitch, HardEnvHighPeriod,
 	HardEnvLowPeriod, AutoEnvelope, FBControl, TLControl, MLControl, ARControl, DRControl, RRControl,
 	RegisterAddress0, RegisterAddress1, RegisterValue, Brightness, FineDetune, EnvelopeReset, Retrigger, XVolumeSlide
 };

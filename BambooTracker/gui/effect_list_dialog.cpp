@@ -60,7 +60,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::Detune, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
 	addRow(EffectType::NoteSlideUp, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
 	addRow(EffectType::NoteSlideDown, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
-	addRow(EffectType::NoteCut, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
+	addRow(EffectType::NoteRelease, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
 	addRow(EffectType::TransposeDelay, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
 	addRow(EffectType::ToneNoiseMix, { SoundSource::SSG });
 	addRow(EffectType::MasterVolume, { SoundSource::RHYTHM });
