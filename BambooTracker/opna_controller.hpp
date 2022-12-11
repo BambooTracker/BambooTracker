@@ -280,6 +280,7 @@ public:
 	void setNoisePitchSSG(int ch, int pitch);
 	void setHardEnvelopePeriod(int ch, bool high, int period);
 	void setAutoEnvelopeSSG(int ch, int shift, int shape);
+	void setNoteCutSSG(int ch);
 
 	void haltSequencesSSG(int ch);
 
@@ -334,11 +335,13 @@ private:
 
 	void initSSG();
 
+	void keyOffSSG(int ch, bool isJam, bool forceSilence);
+
 	void setMuteSSGState(int ch, bool isMuteFM);
 	bool isMuteSSG(int ch);
 
 	void setFrontSSGSequences(SSGChannel& ssg);
-	void releaseStartSSGSequences(SSGChannel& ssg);
+	void releaseStartSSGSequences(SSGChannel& ssg, bool forceSilince);
 	void tickEventSSG(SSGChannel& ssg);
 
 	void writeWaveformSSGToRegister(SSGChannel& ssg);
@@ -426,6 +429,7 @@ public:
 	void setFineDetuneADPCM(int pitch);
 	void setNoteSlideADPCM(int speed, int semitone);
 	void setTransposeEffectADPCM(int semitone);
+	void setNoteCutADPCM();
 
 	// For state retrieve
 	void haltSequencesADPCM();
@@ -471,11 +475,13 @@ private:
 
 	void initADPCM();
 
+	void keyOffADPCM(bool isJam, bool forceSilence);
+
 	void setMuteADPCMState(bool isMuteFM);
 	bool isMuteADPCM();
 
 	void setFrontADPCMSequences();
-	void releaseStartADPCMSequences();
+	void releaseStartADPCMSequences(bool forceSilence);
 	void tickEventADPCM();
 
 	void xslideVolumeAdpcm();
@@ -543,6 +549,11 @@ inline void OPNAController::checkRealToneSSGByPitch(OPNAController::SSGChannel& 
 	checkRealToneByPitch(ssg.ptItr, ssg.ptSum, ssg.shouldSetTone);
 }
 
+inline void OPNAController::keyOffSSG(int ch, bool isJam)
+{
+	keyOffSSG(ch, isJam, false);
+}
+
 /*----- ADPCM/Drumkit -----*/
 inline void OPNAController::checkRealToneADPCMByArpeggio()
 {
@@ -558,4 +569,9 @@ inline void OPNAController::checkPortamentoADPCM()
 inline void OPNAController::checkRealToneADPCMByPitch()
 {
 	checkRealToneByPitch(ptItrADPCM_, ptSumADPCM_, shouldSetToneADPCM_);
+}
+
+inline void OPNAController::keyOffADPCM(bool isJam)
+{
+	keyOffADPCM(isJam, false);
 }

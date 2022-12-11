@@ -72,7 +72,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::Brightness, { SoundSource::FM });
 	addRow(EffectType::DRControl, { SoundSource::FM });
 	addRow(EffectType::XVolumeSlide, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
-	addRow(EffectType::EnvelopeReset, { SoundSource::FM });
+	addRow(EffectType::NoteCut, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
 	addRow(EffectType::FBControl, { SoundSource::FM });
 	addRow(EffectType::FineDetune, { SoundSource::FM, SoundSource::SSG, SoundSource::ADPCM });
 	addRow(EffectType::VolumeDelay, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });

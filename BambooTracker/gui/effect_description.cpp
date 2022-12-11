@@ -72,7 +72,7 @@ const std::unordered_map<EffectType, EffectDetail> DETAILS = {
 	{ EffectType::Brightness, { "B0xx", QT_TRANSLATE_NOOP("EffectDescription", "Brightness, xx: relative value (01-FF)") } },
 	{ EffectType::DRControl, { "Dxyy", QT_TRANSLATE_NOOP("EffectDescription", "DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
 	{ EffectType::XVolumeSlide, { "EAxy", QT_TRANSLATE_NOOP("EffectDescription", "Extended volume slide, x: up (0-F), y: down (0-F)") } },
-	{ EffectType::EnvelopeReset, { "ESxx", QT_TRANSLATE_NOOP("EffectDescription", "Envelope reset, xx: count (00-FF)") } },
+	{ EffectType::NoteCut, { "ESxx", QT_TRANSLATE_NOOP("EffectDescription", "Note cut, xx: count (00-FF)") } },
 	{ EffectType::FBControl, { "FBxx", QT_TRANSLATE_NOOP("EffectDescription", "FB control, xx: feedback value (00-07)") } },
 	{ EffectType::FineDetune, { "FPxx", QT_TRANSLATE_NOOP("EffectDescription", "Fine detune, xx: pitch (00-FF)") } },
 	{ EffectType::MLControl, { "MLxy", QT_TRANSLATE_NOOP("EffectDescription", "ML control, x: operator (1-4), y: multiple (0-F)") } },

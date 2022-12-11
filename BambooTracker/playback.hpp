@@ -209,10 +209,10 @@ private:
 	 */
 	bool checkADPCMDelayEventsInTick(const Step& step);
 
-	std::vector<int> ntDlyCntFM_, ntReleaseDlyCntFM_, volDlyCntFM_, envRstDlyCntFM_, rtrgCntFM_;
-	std::vector<int> ntDlyCntSSG_, ntReleaseDlyCntSSG_, volDlyCntSSG_, rtrgCntSSG_;
-	std::vector<int> ntDlyCntRhythm_, ntReleaseDlyCntRhythm_, volDlyCntRhythm_, rtrgCntRhythm_;
-	int ntDlyCntADPCM_, ntReleaseDlyCntADPCM_, volDlyCntADPCM_, rtrgCntADPCM_;
+	std::vector<int> ntDlyCntFM_, ntReleaseDlyCntFM_, volDlyCntFM_, ntCutDlyCntFM_, rtrgCntFM_;
+	std::vector<int> ntDlyCntSSG_, ntReleaseDlyCntSSG_, volDlyCntSSG_, ntCutDlyCntSSG_, rtrgCntSSG_;
+	std::vector<int> ntDlyCntRhythm_, ntReleaseDlyCntRhythm_, volDlyCntRhythm_, ntCutDlyCntRhythm_, rtrgCntRhythm_;
+	int ntDlyCntADPCM_, ntReleaseDlyCntADPCM_, volDlyCntADPCM_, ntCutDlyCntADPCM_, rtrgCntADPCM_;
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueRhythm_;
 	int volDlyValueADPCM_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;

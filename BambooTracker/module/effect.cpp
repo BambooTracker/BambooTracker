@@ -267,12 +267,7 @@ EffectType validateEffectId(SoundSource src, const std::string& id)
 		}
 	}
 	else if (id == "ES") {
-		switch (src) {
-		case SoundSource::FM:
-			return EffectType::EnvelopeReset;
-		default:
-			return EffectType::NoEffect;
-		}
+		return EffectType::NoteCut;
 	}
 	else if (id == "FB") {
 		switch (src) {

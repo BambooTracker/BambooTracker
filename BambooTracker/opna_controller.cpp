@@ -2128,7 +2128,7 @@ void OPNAController::keyOnSSG(int ch, int echoBuf)
 	}
 }
 
-void OPNAController::keyOffSSG(int ch, bool isJam)
+void OPNAController::keyOffSSG(int ch, bool isJam, bool forceSilence)
 {
 	auto& ssg = ssg_[ch];
 	if (!ssg.isKeyOn) {
@@ -2138,7 +2138,7 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 
 	opna_->setForcedWriteMode(isJam);
 
-	releaseStartSSGSequences(ssg);
+	releaseStartSSGSequences(ssg, forceSilence);
 	ssg.shouldSkip1stTickExec = isJam;
 	ssg.isKeyOn = false;
 
@@ -2412,6 +2412,11 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 	ssg.envItr.reset();
 }
 
+void OPNAController::setNoteCutSSG(int ch)
+{
+	keyOffSSG(ch, false, true);
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesSSG(int ch)
 {
@@ -2582,7 +2587,7 @@ void OPNAController::setFrontSSGSequences(SSGChannel& ssg)
 	writePitchSSG(ssg);
 }
 
-void OPNAController::releaseStartSSGSequences(SSGChannel& ssg)
+void OPNAController::releaseStartSSGSequences(SSGChannel& ssg, bool forceSilince)
 {
 	if (ssg.isMute) return;
 
@@ -2605,8 +2610,9 @@ void OPNAController::releaseStartSSGSequences(SSGChannel& ssg)
 	}
 	if (auto& envItr = ssg.envItr) {
 		envItr->release();
-		if (envItr->hasEnded()) {
+		if (forceSilince || envItr->hasEnded()) {
 			// Silence
+			envItr->end();
 			opna_->setRegister(0x08 + ssg.ch, 0);
 			ssg.shouldSetEnv = false;
 			ssg.isHardEnv = false;
@@ -3546,7 +3552,7 @@ void OPNAController::keyOnADPCM(int echoBuf)
 	}
 }
 
-void OPNAController::keyOffADPCM(bool isJam)
+void OPNAController::keyOffADPCM(bool isJam, bool forceSilence)
 {
 	if (!isKeyOnADPCM_) {
 		tickEventADPCM();
@@ -3555,7 +3561,7 @@ void OPNAController::keyOffADPCM(bool isJam)
 
 	opna_->setForcedWriteMode(isJam);
 
-	releaseStartADPCMSequences();
+	releaseStartADPCMSequences(forceSilence);
 	shouldSkip1stTickExecADPCM_ = isJam;
 	isKeyOnADPCM_ = false;
 
@@ -3819,6 +3825,11 @@ void OPNAController::setTransposeEffectADPCM(int semitone)
 	shouldSetToneADPCM_ = true;
 }
 
+void OPNAController::setNoteCutADPCM()
+{
+	keyOffADPCM(false, true);
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesADPCM()
 {
@@ -3968,7 +3979,7 @@ void OPNAController::setFrontADPCMSequences()
 	writePitchADPCM();
 }
 
-void OPNAController::releaseStartADPCMSequences()
+void OPNAController::releaseStartADPCMSequences(bool forceSilence)
 {
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
@@ -3986,8 +3997,10 @@ void OPNAController::releaseStartADPCMSequences()
 	}
 	if (envItrADPCM_) {
 		envItrADPCM_->release();
-		if (envItrADPCM_->hasEnded()) {
-			opna_->setRegister(0x10b, 0);	// Silence
+		if (forceSilence || envItrADPCM_->hasEnded()) {
+			// Silence
+			envItrADPCM_->end();
+			opna_->setRegister(0x10b, 0);
 			shouldWriteEnvADPCM_ = false;
 		}
 		else writeEnvelopeADPCMToRegister();

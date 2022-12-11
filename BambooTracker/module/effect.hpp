@@ -36,7 +36,7 @@ enum class EffectType
 	SongEnd, PatternBreak, SpeedTempoChange, NoteDelay, Groove, Detune, NoteSlideUp, NoteSlideDown,
 	NoteRelease, TransposeDelay, MasterVolume, VolumeDelay, ToneNoiseMix, NoisePitch, HardEnvHighPeriod,
 	HardEnvLowPeriod, AutoEnvelope, FBControl, TLControl, MLControl, ARControl, DRControl, RRControl,
-	RegisterAddress0, RegisterAddress1, RegisterValue, Brightness, FineDetune, EnvelopeReset, Retrigger, XVolumeSlide
+	RegisterAddress0, RegisterAddress1, RegisterValue, Brightness, FineDetune, NoteCut, Retrigger, XVolumeSlide
 };
 
 struct Effect
