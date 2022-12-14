@@ -196,6 +196,7 @@ set (BT_SOURCES
 	io/module_io.cpp
 	io/opni_io.cpp
 	io/p86_io.cpp
+	io/pmb_io.cpp
 	io/ppc_io.cpp
 	io/pps_io.cpp
 	io/pvi_io.cpp

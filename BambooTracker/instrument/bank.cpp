@@ -35,6 +35,7 @@
 #include "io/pvi_io.hpp"
 #include "io/pzi_io.hpp"
 #include "io/dat_io.hpp"
+#include "io/pmb_io.hpp"
 #include "format/wopn_file.h"
 
 BtBank::BtBank(const std::vector<int>& ids, const std::vector<std::string>& names)
@@ -332,6 +333,37 @@ AbstractInstrument* Mucom88Bank::loadInstrument(size_t index, std::weak_ptr<Inst
 }
 
 void Mucom88Bank::setInstrumentName(size_t index, const std::string& name)
+{
+	names_.at(index) = name;
+}
+
+/******************************/
+PmbBank::PmbBank(const std::vector<int>& ids, const std::vector<std::string>& names, const std::vector<std::vector<uint8_t>>& samples)
+	: ids_(ids), names_(names), samples_(samples)
+{
+}
+
+size_t PmbBank::getNumInstruments() const
+{
+	return ids_.size();
+}
+
+std::string PmbBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string PmbBank::getInstrumentName(size_t index) const
+{
+	return names_.at(index);
+}
+
+AbstractInstrument* PmbBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return io::PmbIO::loadInstrument(samples_.at(index), names_.at(index), instMan, instNum);
+}
+
+void PmbBank::setInstrumentName(size_t index, const std::string& name)
 {
 	names_.at(index) = name;
 }
