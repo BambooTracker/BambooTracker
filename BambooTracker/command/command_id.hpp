@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -62,6 +62,7 @@ enum CommandId : int
 	ReplaceInstrumentInPattern			= 0x39,
 	PasteOverwriteCopiedDataToPattern	= 0x3a,
 	PasteInsertCopiedDataToPattern		= 0x3b,
+	SetKeyCutToStep						= 0x3c,
 
 	// 0x4*: Order list
 	SetPatternToOrder		= 0x40,

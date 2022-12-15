@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -50,6 +50,7 @@ using SetEffectIDToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommand
 using SetEffectValueToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawText<CommandId::SetEffectValueToStep>;
 using SetInstrumentToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawText<CommandId::SetInstrumentInStep>;
 using SetKeyOffToStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::SetKeyOffToStep>;
+using SetKeyCutToStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::SetKeyCutToStep>;
 using SetKeyOnToStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::SetKeyOnToStep>;
 using SetVolumeToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawText<CommandId::SetVolumeToStep>;
 using ShrinkPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::ShrinkPattern>;

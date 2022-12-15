@@ -234,7 +234,7 @@ private:
 	QShortcut upSc_, upWSSc_, dnSc_, dnWSSc_, pgUpSc_, pgUpWSSc_, pgDnSc_, pgDnWSSc_;
 	QShortcut homeSc_, homeWSSc_, endSc_, endWSSc_, hlUpSc_, hlUpWSSc_, hlDnSc_, hlDnWSSc_;
 	QShortcut ltSc_, ltWSSc_, rtSc_, rtWSSc_;
-	QShortcut keyOffSc_, echoBufSc_, stepMvUpSc_, stepMvDnSc_, expandColSc_, shrinkColSc_;
+	QShortcut keyOffSc_, keyCutSc_, echoBufSc_, stepMvUpSc_, stepMvDnSc_, expandColSc_, shrinkColSc_;
 
 	// Meta methods
 	int midiKeyEventMethod_;

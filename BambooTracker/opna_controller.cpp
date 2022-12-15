@@ -2131,7 +2131,7 @@ void OPNAController::keyOnSSG(int ch, int echoBuf)
 void OPNAController::keyOffSSG(int ch, bool isJam, bool forceSilence)
 {
 	auto& ssg = ssg_[ch];
-	if (!ssg.isKeyOn) {
+	if (!forceSilence && !ssg.isKeyOn) {
 		tickEventSSG(ssg);
 		return;
 	}
@@ -3554,7 +3554,7 @@ void OPNAController::keyOnADPCM(int echoBuf)
 
 void OPNAController::keyOffADPCM(bool isJam, bool forceSilence)
 {
-	if (!isKeyOnADPCM_) {
+	if (!forceSilence && !isKeyOnADPCM_) {
 		tickEventADPCM();
 		return;
 	}

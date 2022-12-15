@@ -2576,6 +2576,11 @@ void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int s
 	comMan_.invoke(std::make_unique<SetKeyOffToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
+void BambooTracker::setStepKeyCut(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	comMan_.invoke(std::make_unique<SetKeyCutToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+}
+
 void BambooTracker::setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum)
 {
 	comMan_.invoke(std::make_unique<SetEchoBufferAccessCommand>(mod_, songNum, trackNum, orderNum, stepNum, bufNum));

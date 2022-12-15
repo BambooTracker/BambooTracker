@@ -512,6 +512,9 @@ void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledB
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffFM(ch);
 		break;
+	case Step::NOTE_KEY_CUT:
+		opnaCtrl_->resetFMChannelEnvelope(ch);
+		break;
 	case Step::NOTE_ECHO0:
 		opnaCtrl_->keyOnFM(ch, 0);
 		break;
@@ -563,6 +566,9 @@ void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool called
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffSSG(ch);
 		break;
+	case Step::NOTE_KEY_CUT:
+		opnaCtrl_->setNoteCutSSG(ch);
+		break;
 	case Step::NOTE_ECHO0:
 		opnaCtrl_->keyOnSSG(ch, 0);
 		break;
@@ -604,6 +610,7 @@ void PlaybackManager::executeRhythmStepEvents(const Step& step, int ch, bool cal
 		opnaCtrl_->tickEvent(SoundSource::RHYTHM, ch);
 		break;
 	case Step::NOTE_KEY_OFF:
+	case Step::NOTE_KEY_CUT:
 		opnaCtrl_->setKeyOffFlagRhythm(ch);
 		break;
 	default:	// Key on & Echo
@@ -647,6 +654,9 @@ void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNote
 		break;
 	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffADPCM();
+		break;
+	case Step::NOTE_KEY_CUT:
+		opnaCtrl_->setNoteCutADPCM();
 		break;
 	case Step::NOTE_ECHO0:
 		opnaCtrl_->keyOnADPCM(0);

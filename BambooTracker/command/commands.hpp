@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -60,6 +60,7 @@
 #include "./pattern/paste_overwrite_copied_data_to_pattern_command.hpp"
 #include "./pattern/change_values_in_pattern_command.hpp"
 #include "./pattern/paste_insert_copied_data_to_pattern_command.hpp"
+#include "./pattern/set_key_cut_to_step_command.hpp"
 
 /********** Order edit **********/
 #include "./order/set_pattern_to_order_command.hpp"

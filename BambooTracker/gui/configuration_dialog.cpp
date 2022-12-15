@@ -27,7 +27,6 @@
 #include "ui_configuration_dialog.h"
 #include <algorithm>
 #include <functional>
-#include <map>
 #include <QPushButton>
 #include <QMenu>
 #include <QMessageBox>
@@ -40,6 +39,7 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QSignalBlocker>
+#include <QList>
 #include "chip/opna.hpp"
 #include "audio/audio_stream.hpp"
 #include "midi/midi.hpp"
@@ -160,8 +160,14 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Keys
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(1, QHeaderView::Fixed);
-	std::map<Configuration::ShortcutAction, QString> shortcutsActions = {
-		{ Configuration::ShortcutAction::KeyOff, tr("Key off") },
+	struct ActionPair
+	{
+		Configuration::ShortcutAction action;
+		QString text;
+	};
+	const ActionPair shortcutsActions[] = {
+		{ Configuration::ShortcutAction::KeyOff, tr("Key release") },
+		{ Configuration::ShortcutAction::KeyCut, tr("Key cut") },
 		{ Configuration::ShortcutAction::OctaveUp, tr("Octave up") },
 		{ Configuration::ShortcutAction::OctaveDown, tr("Octave down") },
 		{ Configuration::ShortcutAction::EchoBuffer, tr("Echo buffer") },
@@ -235,12 +241,12 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	for (const auto& pair : shortcutsActions) {
 		int row = ui->shortcutsTreeWidget->topLevelItemCount();
 		auto item = new QTreeWidgetItem();
-		item->setText(0, pair.second);
+		item->setText(0, pair.text);
 		ui->shortcutsTreeWidget->insertTopLevelItem(row, item);
 		auto widget = new QWidget();
 		widget->setLayout(new QHBoxLayout());
-		auto seq = new QKeySequenceEdit(gui_utils::utf8ToQString(shortcuts.at(pair.first)));
-		shortcutsMap_[pair.first] = seq;
+		auto seq = new QKeySequenceEdit(gui_utils::utf8ToQString(shortcuts.at(pair.action)));
+		shortcutsMap_[pair.action] = seq;
 		auto button = new QToolButton();
 		button->setIcon(QIcon(":/icon/remove_inst"));
 		QObject::connect(button, &QToolButton::clicked, seq, &QKeySequenceEdit::clear);

@@ -8,6 +8,7 @@
 - [#262] - Add ymfm emulation (thanks [@OPNA2608], [@freq-mod])
 - Add more sample rate choices
 - Add wait-write mode
+- [#433] - Add key cut note (thanks [@wildmatsu])
 
 ### Changed
 
@@ -15,12 +16,16 @@
 - [#386] - Restore note pitch at the end of "Fixed" arpeggio sequence (thanks [@djmaximum17])
 - [#347] - Change resampling method (thanks [@freq-mod])
 - Remove redundant volume change
+- [#433], [#434] - Rename 2 effects (thanks [@wildmatsu])
+  - `0Sxx`: Note release
+  - `ESxx`: Note cut
+- [#433] - Enable to use `ESxx` in SSG, RSS, ADPCM channels (thanks [@wildmatsu])
 
 ### Fixed
 
 - Fix misspelled words (thanks [@wildmatsu])
 - Fix action to create a new module without saving
-- Fix incorrect `0sxx` note cut effect in ryhtm channels (thanks [@Mugenri])
+- Fix incorrect behaviour of `0sxx` effect in RSS channels (thanks [@Mugenri])
 - Fix visibility of FM 3,4ch when song mode is changed from expanded to standard (thanks TotO)
 - Run tick process when echo buffer is empty
 - Reset `0Qxy`, `0Rxy` note slide in the next note on (thanks Getsuka-P)
@@ -29,6 +34,8 @@
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386
 [#262]: https://github.com/BambooTracker/BambooTracker/issues/262
 [#347]: https://github.com/BambooTracker/BambooTracker/issues/347
+[#433]: https://github.com/BambooTracker/BambooTracker/issues/433
+[#434]: https://github.com/BambooTracker/BambooTracker/issues/434
 
 ## v0.5.3 (2022-09-18)
 

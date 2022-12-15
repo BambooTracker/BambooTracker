@@ -49,6 +49,7 @@
 #include "command/pattern/set_effect_value_to_step_command.hpp"
 #include "jamming.hpp"
 #include "note.hpp"
+#include "step.hpp"
 #include "bamboo_tracker_defs.hpp"
 #include "gui/dpi.hpp"
 #include "gui/event_guard.hpp"
@@ -151,6 +152,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  rtSc_(Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  rtWSSc_(Qt::SHIFT | Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  keyOffSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  keyCutSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  echoBufSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  stepMvUpSc_(Qt::ALT | Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  stepMvDnSc_(Qt::ALT | Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
@@ -246,6 +248,13 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
 			bt_->setStepKeyOff(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 			comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
+		}
+	});
+	QObject::connect(&keyCutSc_, &QShortcut::activated, this, [&] {
+		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
+			bt_->setStepKeyCut(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
+			comStack_.lock()->push(new SetKeyCutToStepQtCommand(this));
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
 	});
@@ -929,27 +938,34 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 	if (textChanged_) {
 		int noteNum = bt_->getStepNoteNumber(curSongNum_, trackNum, orderNum, stepNum);
 		switch (noteNum) {
-		case -1:	// None
+		case Step::NOTE_NONE:
 			textPainter.setPen(textColor);
 			textPainter.drawText(offset, baseY, "---");
 			break;
-		case -2:	// Key off
+		case Step::NOTE_KEY_OFF:
+		{
+			int h = stepFontHeight_ / 7;
+			textPainter.fillRect(offset, rowY + stepFontHeight_ * 2 / 7, toneNameWidth_, h, palette_->ptnNoteColor);
+			textPainter.fillRect(offset, rowY + stepFontHeight_ * 4 / 7, toneNameWidth_, h, palette_->ptnNoteColor);
+			break;
+		}
+		case Step::NOTE_KEY_CUT:
 			textPainter.fillRect(offset, rowY + stepFontHeight_ * 2 / 5,
 								 toneNameWidth_, stepFontHeight_ / 5, palette_->ptnNoteColor);
 			break;
-		case -3:	// Echo 0
+		case Step::NOTE_ECHO0:
 			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^0");
 			break;
-		case -4:	// Echo 1
+		case Step::NOTE_ECHO1:
 			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^1");
 			break;
-		case -5:	// Echo 2
+		case Step::NOTE_ECHO2:
 			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^2");
 			break;
-		case -6:	// Echo 3
+		case Step::NOTE_ECHO3:
 			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^3");
 			break;
@@ -2369,6 +2385,7 @@ void PatternEditorPanel::onShortcutUpdated()
 	hlDnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::NextHighlighted)));
 	hlDnWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::ShortcutAction::NextHighlighted)));
 	keyOffSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::KeyOff)));
+	keyCutSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::KeyCut)));
 	echoBufSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::EchoBuffer)));
 	expandColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandEffect)));
 	shrinkColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkEffect)));

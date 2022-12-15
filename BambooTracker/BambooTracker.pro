@@ -60,6 +60,7 @@ SOURCES += \
     command/pattern/change_values_in_pattern_command.cpp \
     command/pattern/paste_insert_copied_data_to_pattern_command.cpp \
     command/pattern/pattern_command_utils.cpp \
+    command/pattern/set_key_cut_to_step_command.cpp \
     command/pattern/transpose_note_in_pattern_command.cpp \
     gui/bookmark_manager_form.cpp \
     gui/command/instrument/instrument_command_qt_utils.cpp \
@@ -245,6 +246,7 @@ HEADERS += \
     command/pattern/change_values_in_pattern_command.hpp \
     command/pattern/paste_insert_copied_data_to_pattern_command.hpp \
     command/pattern/pattern_command_utils.hpp \
+    command/pattern/set_key_cut_to_step_command.hpp \
     command/pattern/transpose_note_in_pattern_command.hpp \
     echo_buffer.hpp \
     enum_hash.hpp \

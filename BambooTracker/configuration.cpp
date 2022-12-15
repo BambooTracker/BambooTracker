@@ -24,6 +24,8 @@
  */
 
 #include "configuration.hpp"
+#include <algorithm>
+#include <set>
 #include "jamming.hpp"
 #include "chip/real_chip_interface.hpp"
 #include "chip/resampler.hpp"
@@ -212,6 +214,7 @@ Configuration::Configuration()
 	// Keys
 	shortcuts_ = {
 		{ ShortcutAction::KeyOff, u8"-" },
+		{ ShortcutAction::KeyCut, u8"" },
 		{ ShortcutAction::OctaveUp, u8"Num+*" },
 		{ ShortcutAction::OctaveDown, u8"Num+/" },
 		{ ShortcutAction::EchoBuffer, u8"^" },
@@ -736,6 +739,20 @@ Configuration::Configuration()
 }
 
 // Keys
+void Configuration::setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts)
+{
+	// Completment
+	std::set<ShortcutAction> orgActs, newActs, diffActs;
+	std::transform(shortcuts_.cbegin(), shortcuts_.cend(), std::inserter(orgActs, orgActs.end()), [](const auto& pair) { return pair.first; });
+	std::transform(shortcuts.cbegin(), shortcuts.cend(), std::inserter(newActs, newActs.end()), [](const auto& pair) { return pair.first; });
+	std::set_difference(orgActs.cbegin(), orgActs.cend(), newActs.cbegin(), newActs.cend(), std::inserter(diffActs, diffActs.end()));
+	for (auto& act : diffActs) {
+		shortcuts[act] = u8"";
+	}
+
+	shortcuts_ = shortcuts;
+}
+
 void Configuration::setCustomLayoutKeys(const std::unordered_map<std::string, JamKey>& mapping)
 {
 	mappingLayouts[KeyboardLayout::Custom] = mapping;

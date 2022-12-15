@@ -44,6 +44,7 @@ const QString APPLICATION = "BambooTracker";
 
 const std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP = {
 	{ Configuration::ShortcutAction::KeyOff, "keyOff" },
+	{ Configuration::ShortcutAction::KeyCut, "keyCut" },
 	{ Configuration::ShortcutAction::OctaveUp, "octaveUp" },
 	{ Configuration::ShortcutAction::OctaveDown, "octaveDown" },
 	{ Configuration::ShortcutAction::EchoBuffer, "echoBuffer" },

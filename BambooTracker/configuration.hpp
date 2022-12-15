@@ -261,9 +261,9 @@ public:
 		ExpandPattern, ShrinkPattern, FineDecreaseValues, FineIncreaseValues, CoarseDecreaseValues,
 		CoarseIncreaseValuse, ExpandEffect, ShrinkEffect, PrevHighlighted, NextHighlighted,
 		IncreasePatternSize, DecreasePatternSize, IncreaseEditStep, DecreaseEditStep, DisplayEffectList,
-		PreviousSong, NextSong, JamVolumeUp, JamVolumeDown
+		PreviousSong, NextSong, JamVolumeUp, JamVolumeDown, KeyCut
 	};
-	void setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts) { shortcuts_ = shortcuts; }
+	void setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts);
 	std::unordered_map<ShortcutAction, std::string> getShortcuts() const { return shortcuts_; }
 	enum class KeyboardLayout : int
 	{
