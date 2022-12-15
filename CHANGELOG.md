@@ -9,6 +9,7 @@
 - Add more sample rate choices
 - Add wait-write mode
 - [#433] - Add key cut note (thanks [@wildmatsu])
+- [#471] - Support FM Towns .pmb file import (thanks [@OPNA2608])
 
 ### Changed
 
@@ -36,6 +37,7 @@
 [#347]: https://github.com/BambooTracker/BambooTracker/issues/347
 [#433]: https://github.com/BambooTracker/BambooTracker/issues/433
 [#434]: https://github.com/BambooTracker/BambooTracker/issues/434
+[#471]: https://github.com/BambooTracker/BambooTracker/pull/471
 
 ## v0.5.3 (2022-09-18)
 

@@ -35,6 +35,7 @@ The tracker can load bank from the following files.
 - .pzi (FMP PZI file)
 - .p86 (PMD P86 file)
 - .pps (PMD PPS file)
+- .pmb (FM Towns PMB file)
 
 A bank is saved as a .btb file.
 
