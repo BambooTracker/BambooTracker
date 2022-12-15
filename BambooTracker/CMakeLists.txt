@@ -103,6 +103,7 @@ set (BT_SOURCES
 	command/pattern/set_effect_id_to_step_command.cpp
 	command/pattern/set_effect_value_to_step_command.cpp
 	command/pattern/set_instrument_to_step_command.cpp
+	command/pattern/set_key_cut_to_step_command.cpp
 	command/pattern/set_key_off_to_step_command.cpp
 	command/pattern/set_key_on_to_step_command.cpp
 	command/pattern/set_volume_to_step_command.cpp
