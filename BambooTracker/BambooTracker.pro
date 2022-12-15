@@ -107,6 +107,7 @@ SOURCES += \
     io/io_utils.cpp \
     io/opni_io.cpp \
     io/p86_io.cpp \
+    io/pmb_io.cpp \
     io/ppc_io.cpp \
     io/pps_io.cpp \
     io/pvi_io.cpp \
@@ -307,6 +308,7 @@ HEADERS += \
     io/io_utils.hpp \
     io/opni_io.hpp \
     io/p86_io.hpp \
+    io/pmb_io.hpp \
     io/ppc_io.hpp \
     io/pps_io.hpp \
     io/pvi_io.hpp \

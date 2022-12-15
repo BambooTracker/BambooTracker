@@ -35,6 +35,7 @@
 #include "pvi_io.hpp"
 #include "pzi_io.hpp"
 #include "dat_io.hpp"
+#include "pmb_io.hpp"
 
 namespace io
 {
@@ -68,6 +69,7 @@ BankIO::BankIO()
 	handler_.add(new PviIO);
 	handler_.add(new PziIO);
 	handler_.add(new DatIO);
+	handler_.add(new PmbIO);
 }
 
 BankIO& BankIO::getInstance()

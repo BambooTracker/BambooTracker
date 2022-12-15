@@ -199,3 +199,22 @@ private:
 	std::vector<std::string> names_;
 	std::vector<io::BinaryContainer> instCtrs_;
 };
+
+class PmbBank final : public AbstractBank
+{
+public:
+	PmbBank(const std::vector<int>& ids, const std::vector<std::string>& names,
+			const std::vector<std::vector<uint8_t>>& samples);
+
+	size_t getNumInstruments() const override;
+	std::string getInstrumentIdentifier(size_t index) const override;
+	std::string getInstrumentName(size_t) const override;
+	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+
+	void setInstrumentName(size_t index, const std::string& name);
+
+private:
+	std::vector<int> ids_;
+	std::vector<std::string> names_;
+	std::vector<std::vector<uint8_t>> samples_;
+};
