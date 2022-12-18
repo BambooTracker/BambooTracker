@@ -80,8 +80,8 @@ jobs:
           brew unlink python@3.10
           brew link --overwrite python@3.10
           brew upgrade --force python@3.10
-          brew install qt@5 pkg-config jack coreutils
-          brew link --force qt@5
+          brew install qt@6 pkg-config jack coreutils
+          brew link --force qt@6
 
       ## End macOS-specific steps
 

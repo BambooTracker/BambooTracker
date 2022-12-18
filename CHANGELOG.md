@@ -30,6 +30,7 @@
 - Fix visibility of FM 3,4ch when song mode is changed from expanded to standard (thanks TotO)
 - Run tick process when echo buffer is empty
 - Reset `0Qxy`, `0Rxy` note slide in the next note on (thanks Getsuka-P)
+- [#470] - Fix sliders not to move during editing unrelated slider ([#468], [#469]; thanks [@OPNA2608], [@cxong], [@Zexxerd])
 
 [#464]: https://github.com/BambooTracker/BambooTracker/pull/464
 [#386]: https://github.com/BambooTracker/BambooTracker/issues/386
@@ -38,6 +39,9 @@
 [#433]: https://github.com/BambooTracker/BambooTracker/issues/433
 [#434]: https://github.com/BambooTracker/BambooTracker/issues/434
 [#471]: https://github.com/BambooTracker/BambooTracker/pull/471
+[#470]: https://github.com/BambooTracker/BambooTracker/pull/470
+[#468]: https://github.com/BambooTracker/BambooTracker/issues/468
+[#469]: https://github.com/BambooTracker/BambooTracker/issues/469
 
 ## v0.5.3 (2022-09-18)
 
