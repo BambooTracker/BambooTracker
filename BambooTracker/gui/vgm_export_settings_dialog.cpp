@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -224,6 +224,16 @@ int VgmExportSettingsDialog::getExportTarget() const
 		target |= io::Export_YM2149Psg;
 
 	return target;
+}
+
+bool VgmExportSettingsDialog::isEnabledMix() const
+{
+	return ui->mixGroupBox->isChecked();
+}
+
+double VgmExportSettingsDialog::getGain() const
+{
+	return ui->gainDoubleSpinBox->value();
 }
 
 void VgmExportSettingsDialog::updateSupportInformation()

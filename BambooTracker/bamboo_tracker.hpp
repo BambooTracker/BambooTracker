@@ -352,7 +352,7 @@ public:
 	using ExportCancellCallback = std::function<bool()>;
 	bool exportToWav(io::WavContainer& container, int loopCnt, ExportCancellCallback checkFunc);
 	bool exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-					 const io::GD3Tag& tag, ExportCancellCallback checkFunc);
+					 const io::GD3Tag& tag, bool shouldSetMix, double gain, ExportCancellCallback checkFunc);
 	bool exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
 					 const io::S98Tag& tag, int rate, ExportCancellCallback checkFunc);
 

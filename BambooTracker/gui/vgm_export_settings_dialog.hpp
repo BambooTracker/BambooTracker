@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -56,6 +56,8 @@ public:
 	QString getNotes() const;
 	io::GD3Tag getGD3Tag() const;
 	int getExportTarget() const;
+	bool isEnabledMix() const;
+	double getGain() const;
 
 private slots:
 	void updateSupportInformation();
