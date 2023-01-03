@@ -14,23 +14,23 @@
   </a>
   <br>
   [Build Tests]<br>
-  <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+7+and+up+%2832-bit%2C+Qt5%29%22">
-    <img src="https://img.shields.io/github/workflow/status/BambooTracker/BambooTracker/Windows%207%20and%20up%20(32-bit,%20Qt5)?logo=windows-xp&logoColor=white" alt="BambooTracker Build-Test Status on Windows (Qt5)">
-  </a>
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+10+%2864-bit%2C+Qt6%29%22">
-    <img src="https://img.shields.io/github/workflow/status/BambooTracker/BambooTracker/Windows%2010%20(64-bit,%20Qt6)?logo=windows&logoColor=white" alt="BambooTracker Build-Test Status on Windows (Qt6)">
+    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/windows-10-qt6.yml?label=Windows%2010&logo=windows" alt="BambooTracker Build-Test Status on Windows (Qt6)">
+  </a>
+  <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+7+and+up+%2832-bit%2C+Qt5%29%22">
+    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/windows.yml?label=Windows%207&logo=windows-xp" alt="BambooTracker Build-Test Status on Windows (Qt5)">
   </a>
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3AmacOS">
-    <img src="https://img.shields.io/github/workflow/status/BambooTracker/BambooTracker/macOS?logo=apple&logoColor=white" alt="BambooTracker Build-Test Status on macOS">
+    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/macos.yml?label=macOS&logo=apple" alt="BambooTracker Build-Test Status on macOS">
   </a>
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Linux+%28Ubuntu%29%22">
-    <img src="https://img.shields.io/github/workflow/status/BambooTracker/BambooTracker/Linux%20(Ubuntu)?logo=ubuntu&logoColor=white" alt="BambooTracker Build-Test Status on Linux (Ubuntu)">
+    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/ubuntu.yml?label=Ubuntu&logo=ubuntu&logoColor=white" alt="BambooTracker Build-Test Status on Linux (Ubuntu)">
   </a>
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Linux+%28Nixpkgs%29%22">
-    <img src="https://img.shields.io/github/workflow/status/BambooTracker/BambooTracker/Linux%20(Nixpkgs)?logo=nixos&logoColor=white" alt="BambooTracker Build-Test Status on Linux (Nixpkgs)">
+    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/ubuntu.yml?label=Nixpkgs&logo=nixos&logoColor=white" alt="BambooTracker Build-Test Status on Linux (Nixpkgs)">
   </a>
   <a href="https://ci.appveyor.com/project/BambooTracker/bambootracker">
-    <img src="https://img.shields.io/appveyor/build/BambooTracker/BambooTracker?logo=appveyor&logoColor=white" alt="BambooTracker Development-Build Status">
+    <img src="https://img.shields.io/appveyor/build/BambooTracker/BambooTracker?label=Appveyor&logo=appveyor&logoColor=white" alt="BambooTracker Development-Build Status">
   </a>
   <br>
   <a href="./README.md">English</a> | <a href="./README_ja.md">日本語</a>
