@@ -3582,7 +3582,7 @@ void MainWindow::on_actionVGM_triggered()
 		QByteArray bytes;
 		{
 			io::BinaryContainer container;
-			if (!bt_->exportToVgm(container, dialog.getExportTarget(), dialog.enabledGD3(), tag, bar))
+			if (!bt_->exportToVgm(container, dialog.getExportTarget(), dialog.enabledGD3(), tag, dialog.isEnabledMix(), dialog.getGain(), bar))
 				goto AFTER_VGM_WRITE;	// Jump if cancelled
 			bytes.reserve(container.size());
 			std::move(container.begin(), container.end(), std::back_inserter(bytes));

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2022 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,6 +27,8 @@
 
 #include <vector>
 #include <string>
+#include <cmath>
+#include <cstdint>
 
 namespace io
 {
@@ -44,9 +46,20 @@ struct GD3Tag
 	std::string notes;
 };
 
+/**
+ * @brief Helper struct of SSG volume level for VGM export.
+ */
+struct VgmMix
+{
+	const uint16_t ssgMultiplier;
+
+	VgmMix(double fmLevel, double ssgLevel, double gain)
+		: ssgMultiplier(static_cast<uint16_t>(std::pow(10.0, (ssgLevel + gain - fmLevel) / 20.0) * 0x100) | 0x8000) {}
+};
+
 void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>& samples,
 			  uint32_t clock, uint32_t rate, bool loopFlag, uint32_t loopPoint,
-			  uint32_t loopSamples, uint32_t totalSamples, bool gd3TagEnabled, const GD3Tag& tag);
+			  uint32_t loopSamples, uint32_t totalSamples, const GD3Tag* tag, const VgmMix* mix);
 
 // S98 ----------
 struct S98Tag

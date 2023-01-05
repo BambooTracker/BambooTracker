@@ -1011,6 +1011,11 @@ void OPNAController::setMasterVolumeFM(double dB)
 	opna_->setVolumeFM(dB);
 }
 
+double OPNAController::getMasterVolumeFM() const
+{
+	return opna_->getVolumeFM();
+}
+
 /********** Set effect **********/
 void OPNAController::setPanFM(int ch, int value)
 {
@@ -2256,6 +2261,11 @@ void OPNAController::setRealVolumeSSG(SSGChannel& ssg)
 void OPNAController::setMasterVolumeSSG(double dB)
 {
 	opna_->setVolumeSSG(dB);
+}
+
+double OPNAController::getMasterVolumeSSG() const
+{
+	return opna_->getVolumeSSG();
 }
 
 /********** Set effect **********/

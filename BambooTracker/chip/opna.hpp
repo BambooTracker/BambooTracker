@@ -60,7 +60,9 @@ public:
 	void setRegister(uint32_t offset, uint8_t value) override;
 	uint8_t getRegister(uint32_t offset) const override;
 	void setVolumeFM(double dB);
+	double getVolumeFM() const noexcept { return volumeFm_; }
 	void setVolumeSSG(double dB);
+	double getVolumeSSG() const noexcept { return volumeSsg_; }
 	size_t getDRAMSize() const noexcept;
 	void mix(int16_t* stream, size_t nSamples) override;
 
@@ -75,6 +77,7 @@ private:
 	static size_t count_;
 
 	std::unique_ptr<Ym2608Interface> intf_;
+	double volumeFm_, volumeSsg_;
 	size_t dramSize_;
 
 	std::unique_ptr<SimpleRealChipInterface> rcIntf_;

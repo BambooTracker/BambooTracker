@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>507</width>
-    <height>654</height>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -418,6 +418,53 @@
            <property name="text">
             <string>YM2149 PSG</string>
            </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mixGroupBox">
+           <property name="title">
+            <string>Mix</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QFormLayout" name="formLayout_2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="gainLabel">
+              <property name="text">
+               <string>Gain</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="gainDoubleSpinBox">
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="suffix">
+               <string notr="true">dB</string>
+              </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>-10.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+              <property name="value">
+               <double>-1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>

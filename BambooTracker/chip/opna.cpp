@@ -72,6 +72,8 @@ OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dra
 	: Chip(count_++, clock, rate, DEFAULT_AUTO_RATE, maxDuration,
 		   std::move(fmResampler), std::move(ssgResampler),
 		   logger),
+	  volumeFm_(0),
+	  volumeSsg_(0),
 	  dramSize_(dramSize),
 	  rcIntf_(std::make_unique<SimpleRealChipInterface>()),
 	  isForcedRegWrite_(false),
@@ -198,6 +200,7 @@ uint8_t OPNA::getRegister(uint32_t offset) const
 void OPNA::setVolumeFM(double dB)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
+	volumeFm_ = dB;
 	busVolumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
 	updateVolumeRatio(FM);
 }
@@ -205,6 +208,7 @@ void OPNA::setVolumeFM(double dB)
 void OPNA::setVolumeSSG(double dB)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
+	volumeSsg_ = dB;
 	busVolumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
 	updateVolumeRatio(SSG);
 

@@ -10,6 +10,7 @@
 - Add wait-write mode
 - [#433] - Add key cut note (thanks [@wildmatsu])
 - [#471] - Support FM Towns .pmb file import (thanks [@OPNA2608])
+- [#472] - Add SSG mixing level configuration for VGM export ([#436]; thanks [@ValleyBell], [@nyanpasu64])
 
 ### Changed
 
@@ -42,6 +43,8 @@
 [#470]: https://github.com/BambooTracker/BambooTracker/pull/470
 [#468]: https://github.com/BambooTracker/BambooTracker/issues/468
 [#469]: https://github.com/BambooTracker/BambooTracker/issues/469
+[#472]: https://github.com/BambooTracker/BambooTracker/pull/472
+[#436]: https://github.com/BambooTracker/BambooTracker/issues/436
 
 ## v0.5.3 (2022-09-18)
 

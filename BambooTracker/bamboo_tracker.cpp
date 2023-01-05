@@ -1827,7 +1827,8 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, Export
 }
 
 bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
-								const io::GD3Tag& tag, ExportCancellCallback checkFunc)
+								const io::GD3Tag& tag, bool shouldSetMix, double gain,
+								ExportCancellCallback checkFunc)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1896,10 +1897,17 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 	isFollowPlay_ = tmpFollow;
 	opnaCtrl_->setRate(tmpRate);
 
+	const io::GD3Tag* gd3Tag = gd3TagEnabled ? &tag : nullptr;
+
+	std::unique_ptr<io::VgmMix> mix;
+	if (shouldSetMix) {
+		mix = std::make_unique<io::VgmMix>(opnaCtrl_->getMasterVolumeFM(), opnaCtrl_->getMasterVolumeSSG(), gain);
+	}
+
 	try {
 		io::writeVgm(container, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
 					 loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
-					 exCntr->getSampleLength(), gd3TagEnabled, tag);
+					 exCntr->getSampleLength(), gd3Tag, mix.get());
 		return true;
 	} catch (...) {
 		throw;

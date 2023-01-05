@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Rerrah
+ * Copyright (C) 2019-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,35 +32,36 @@ namespace io
 {
 void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>& samples,
 			  uint32_t clock, uint32_t rate, bool loopFlag, uint32_t loopPoint,
-			  uint32_t loopSamples, uint32_t totalSamples, bool gd3TagEnabled, const GD3Tag& tag)
+			  uint32_t loopSamples, uint32_t totalSamples, const GD3Tag* tag, const VgmMix* mix)
 {
 	uint32_t tagLen = 0;
 	uint32_t tagDataLen = 0;
-	if (gd3TagEnabled) {
-		tagDataLen = tag.trackNameEn.length() + tag.trackNameJp.length()
-					 + tag.gameNameEn.length() + tag.gameNameJp.length()
-					 + tag.systemNameEn.length() + tag.systemNameJp.length()
-					 + tag.authorEn.length() + tag.authorJp.length()
-					 + tag.releaseDate.length() + tag.vgmCreator.length() + tag.notes.length();
+	if (tag) {
+		tagDataLen = tag->trackNameEn.length() + tag->trackNameJp.length()
+					 + tag->gameNameEn.length() + tag->gameNameJp.length()
+					 + tag->systemNameEn.length() + tag->systemNameJp.length()
+					 + tag->authorEn.length() + tag->authorJp.length()
+					 + tag->releaseDate.length() + tag->vgmCreator.length() + tag->notes.length();
 		tagLen = 12 + tagDataLen;
 	}
+	uint32_t extraLen = mix ? 17 : 0;
 
 	// Header
 	// 0x00: "Vgm " ident
 	uint8_t header[0x100] = {'V', 'g', 'm', ' '};
 	// 0x04: EOF offset
-	uint32_t offset = 0x100 + samples.size() + 1 + tagLen - 4;
+	uint32_t offset = 0x100+ extraLen + samples.size() + 1 + tagLen - 4;
 	*reinterpret_cast<uint32_t*>(header + 0x04) = offset;
 	// 0x08: Version [v1.71]
 	uint32_t version = 0x171;
 	*reinterpret_cast<uint32_t*>(header + 0x08) = version;
 	// 0x14: GD3 offset
-	uint32_t gd3Offset = gd3TagEnabled ? (0x100 + samples.size() + 1 - 0x14) : 0;
+	uint32_t gd3Offset = tag ? (0x100 + extraLen + samples.size() + 1 - 0x14) : 0;
 	*reinterpret_cast<uint32_t*>(header + 0x14) = gd3Offset;
 	// 0x18: Total # samples
 	*reinterpret_cast<uint32_t*>(header + 0x18) = totalSamples;
 	// 0x1c: Loop offset
-	uint32_t loopOffset = loopFlag ? (loopPoint + 0x100 - 0x1c) : 0;
+	uint32_t loopOffset = loopFlag ? (loopPoint + 0x100 + extraLen - 0x1c) : 0;
 	*reinterpret_cast<uint32_t*>(header + 0x1c) = loopOffset;
 	// 0x20: Loop # samples
 	uint32_t loopSamps = loopFlag ? loopSamples : 0;
@@ -68,8 +69,7 @@ void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>
 	// 0x24: Rate
 	*reinterpret_cast<uint32_t*>(header + 0x24) = rate;
 	// 0x34: VGM data offset
-	uint32_t dataOffset = 0xcc;
-	*reinterpret_cast<uint32_t*>(header + 0x34) = dataOffset;
+	*reinterpret_cast<uint32_t*>(header + 0x34) = 0x100 + extraLen - 0x34;
 
 	switch (target & Export_FmMask) {
 	default:
@@ -107,14 +107,36 @@ void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>
 		break;
 	}
 
+	// 0xbc: Extra header offset
+	*reinterpret_cast<uint32_t*>(header + 0xbc) = mix ? (0x100 - 0xbc) : 0;
+
 	container.appendArray(header, 0x100);
+
+	// Extra header
+	if (mix) {
+		// Extra header size
+		container.appendUint32(12);
+		// Chip clock offset
+		container.appendUint32(0);
+		// Chip volime offset
+		container.appendUint32(4);
+
+		// Entry count
+		container.appendUint8(1);
+		// Set SSG volume of YM2608
+		container.appendUint8(0x87);
+		// Flags
+		container.appendUint8(0);
+		// Volume
+		container.appendUint16(mix->ssgMultiplier);
+	}
 
 	// Commands
 	container.appendVector(samples);
 	container.appendUint8(0x66);	// End
 
 	// GD3 tag
-	if (gd3TagEnabled) {
+	if (tag) {
 		// "Gd3 " ident
 		container.appendString("Gd3 ");
 		// Version [v1.00]
@@ -123,27 +145,27 @@ void writeVgm(BinaryContainer& container, int target, const std::vector<uint8_t>
 		// Data size
 		container.appendUint32(tagDataLen);
 		// Track name in english
-		container.appendString(tag.trackNameEn);
+		container.appendString(tag->trackNameEn);
 		// Track name in japanes
-		container.appendString(tag.trackNameJp);
+		container.appendString(tag->trackNameJp);
 		// Game name in english
-		container.appendString(tag.gameNameEn);
+		container.appendString(tag->gameNameEn);
 		// Game name in japanese
-		container.appendString(tag.gameNameJp);
+		container.appendString(tag->gameNameJp);
 		// System name in english
-		container.appendString(tag.systemNameEn);
+		container.appendString(tag->systemNameEn);
 		// System name in japanese
-		container.appendString(tag.systemNameJp);
+		container.appendString(tag->systemNameJp);
 		// Track author in english
-		container.appendString(tag.authorEn);
+		container.appendString(tag->authorEn);
 		// Track author in japanese
-		container.appendString(tag.authorJp);
+		container.appendString(tag->authorJp);
 		// Release date
-		container.appendString(tag.releaseDate);
+		container.appendString(tag->releaseDate);
 		// VGM creator
-		container.appendString(tag.vgmCreator);
+		container.appendString(tag->vgmCreator);
 		// Notes
-		container.appendString(tag.notes);
+		container.appendString(tag->notes);
 	}
 }
 

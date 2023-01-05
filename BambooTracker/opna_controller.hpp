@@ -137,6 +137,7 @@ public:
 	void setVolumeFM(int ch, int volume);
 	void setOneshotVolumeFM(int ch, int volume);
 	void setMasterVolumeFM(double dB);
+	double getMasterVolumeFM() const;
 
 	// Set effect
 	void setPanFM(int ch, int value);
@@ -264,6 +265,7 @@ public:
 	void setVolumeSSG(int ch, int volume);
 	void setOneshotVolumeSSG(int ch, int volume);
 	void setMasterVolumeSSG(double dB);
+	double getMasterVolumeSSG() const;
 
 	// Set effect
 	void setArpeggioEffectSSG(int ch, int second, int third);
