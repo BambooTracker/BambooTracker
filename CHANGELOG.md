@@ -22,6 +22,7 @@
   - `0Sxx`: Note release
   - `ESxx`: Note cut
 - [#433] - Enable to use `ESxx` in SSG, RSS, ADPCM channels (thanks [@wildmatsu])
+- [#473] - Use Ubuntu 20.04 GHA runner image
 
 ### Fixed
 
@@ -45,6 +46,7 @@
 [#469]: https://github.com/BambooTracker/BambooTracker/issues/469
 [#472]: https://github.com/BambooTracker/BambooTracker/pull/472
 [#436]: https://github.com/BambooTracker/BambooTracker/issues/436
+[#473]: https://github.com/BambooTracker/BambooTracker/pull/473
 
 ## v0.5.3 (2022-09-18)
 
