@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -277,8 +277,8 @@ void ADPCMSampleEditor::dropEvent(QDropEvent* event)
 	importSampleFrom(reinterpret_cast<QDropEvent*>(event)->mimeData()->urls().first().toLocalFile());
 }
 
-void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatable, int rKeyNum,
-													  int rDeltaN, size_t start, size_t stop,
+void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatable, const SampleRepeatRange& repeatRange,
+													  int rKeyNum, int rDeltaN, size_t start, size_t stop,
 													  std::vector<uint8_t> sample)
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -288,6 +288,10 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	updateUsersView();
 
 	ui->repeatCheckBox->setChecked(repeatable);
+	ui->repeatEndSpinBox->setMaximumByBytes(sample.size() - 1);
+	ui->repeatBeginSpinBox->setMaximumByBytes(sample.size() - 1);
+	ui->repeatEndSpinBox->setValueByAddress(repeatRange.last());
+	ui->repeatBeginSpinBox->setValueByAddress(repeatRange.first());
 	ui->rootKeyComboBox->setCurrentIndex(rKeyNum % 12);
 	ui->rootKeySpinBox->setValue(rKeyNum / 12);
 	ui->rootRateSpinBox->setValue(rDeltaN);
@@ -298,21 +302,22 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	ui->memoryWidget->update();
 
 	if (!ui->action_Draw_Sample->isChecked()) {
-		sample_.resize(sample.size() * 2);
-		codec::ymb_decode(sample.data(), sample_.data(), static_cast<long>(sample_.size()));
+		size_t sampSize = sample.size() << 1;
+		sample_.resize(sampSize);
+		codec::ymb_decode(sample.data(), sample_.data(), static_cast<long>(sampSize));
 
 		// Slider settings
-		for (int z = 0, len = sample_.size(); ; ++z) {
+		for (int z = 0, len = sampSize; ; ++z) {
 			int tmp = (len + 1) >> 1;
 			if (tmp < 2) {
 				zoom_ = z;
 				viewedSampLen_ = len;
-				ui->horizontalScrollBar->setMaximum(sample_.size() - len);
+				ui->horizontalScrollBar->setMaximum(sampSize - len);
 				break;
 			}
 			else if (z == zoom_) {
 				viewedSampLen_ = len;
-				ui->horizontalScrollBar->setMaximum(sample_.size() - len);
+				ui->horizontalScrollBar->setMaximum(sampSize - len);
 				break;
 			}
 			else {
@@ -375,7 +380,12 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	std::vector<uint8_t> adpcm((raw.size() + 1) / 2);
 	codec::ymb_encode(raw.data(), adpcm.data(), static_cast<long>(raw.size()));
 
-	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), adpcm);
+	ui->repeatCheckBox->setChecked(false);
+	ui->repeatBeginSpinBox->setMaximumByBytes(adpcm.size() - 1);
+	ui->repeatEndSpinBox->setMaximumByBytes(adpcm.size() - 1);
+	ui->repeatBeginSpinBox->setValueByBytes(0);
+	ui->repeatEndSpinBox->setValueByBytes(adpcm.size() - 1);
 	ui->rootKeyComboBox->setCurrentIndex(SampleADPCM::DEF_ROOT_KEY % 12);
 	ui->rootKeySpinBox->setValue(SampleADPCM::DEF_ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(SampleADPCM::calculateADPCMDeltaN(wav->getSampleRate()));
@@ -428,9 +438,13 @@ void ADPCMSampleEditor::updateSampleView()
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
 	const size_t first = ui->horizontalScrollBar->value();
 	const bool showGrid = ui->action_Grid_View->isChecked();
+	const bool showRepeat = ui->repeatCheckBox->isChecked();
+	size_t repeatBegin = static_cast<size_t>(ui->repeatBeginSpinBox->value());
+	size_t repeatEnd = static_cast<size_t>(ui->repeatEndSpinBox->value());
 	if (maxX < viewedSampLen_) {
 		int prevY = centerY;
 		size_t g = first;
+		size_t prevp = -(viewedSampLen_ - 1) / (maxX - 1);
 		for (int x = 0; x < maxX; ++x) {
 			size_t i = (viewedSampLen_ - 1) * x / (maxX - 1);
 			size_t p = i + first;
@@ -442,20 +456,46 @@ void ADPCMSampleEditor::updateSampleView()
 				g = (g / gridIntr_ + 1) * gridIntr_;
 				painter.setPen(foreColor);
 			}
+			if (showRepeat) {
+				if (prevp < repeatBegin && repeatBegin <= p) {
+					painter.setPen(palette_->instADPCMSampViewRepeatBeginColor);
+					painter.drawLine(x, 0, x, rect.height());
+					painter.setPen(foreColor);
+				}
+				if (prevp < repeatEnd && repeatEnd <= p) {
+					painter.setPen(palette_->instADPCMSampViewRepeatEndColor);
+					painter.drawLine(x, 0, x, rect.height());
+					painter.setPen(foreColor);
+				}
+			}
 			if (x) painter.drawLine(x - 1, prevY, x, y);
 			prevY = y;
+			prevp = p;
 		}
 	}
 	else {
 		QPoint prev, p;
 		for (int i = 0; i < viewedSampLen_; ++i) {
 			p.setX((maxX - 1) * i / (viewedSampLen_ - 1));
-			int16_t sample = sample_[i + first];
+			size_t sampP = i + first;
+			int16_t sample = sample_[sampP];
 			p.setY(centerY - (centerY * sample / maxY));
 			if (showGrid && !(i % gridIntr_)) {
 				painter.setPen(palette_->instADPCMSampViewGridColor);
 				painter.drawLine(p.x(), 0, p.x(), rect.height());
 				painter.setPen(foreColor);
+			}
+			if (showRepeat) {
+				if (sampP == repeatBegin) {
+					painter.setPen(palette_->instADPCMSampViewRepeatBeginColor);
+					painter.drawLine(p.x(), 0, p.x(), rect.height());
+					painter.setPen(foreColor);
+				}
+				if (sampP == repeatEnd) {
+					painter.setPen(palette_->instADPCMSampViewRepeatEndColor);
+					painter.drawLine(p.x(), 0, p.x(), rect.height());
+					painter.setPen(foreColor);
+				}
 			}
 			if (p.x()) painter.drawLine(prev, p);
 			prev = p;
@@ -545,11 +585,47 @@ void ADPCMSampleEditor::on_sampleNumSpinBox_valueChanged(int arg1)
 
 void ADPCMSampleEditor::on_repeatCheckBox_toggled(bool checked)
 {
+	ui->repeatBeginSpinBox->setEnabled(checked);
+	ui->repeatEndSpinBox->setEnabled(checked);
+
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setSampleADPCMRepeatEnabled(ui->sampleNumSpinBox->value(), checked);
 		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 		emit modified();
 	}
+}
+
+void ADPCMSampleEditor::on_repeatBeginSpinBox_valueChanged(int)
+{
+	if (isIgnoreEvent_) return;
+
+	int begin = ui->repeatBeginSpinBox->valueByAddress();
+
+	if (ui->repeatEndSpinBox->valueByAddress() < begin) {
+		ui->repeatEndSpinBox->setValueByAddress(begin);
+	}
+
+	bt_.lock()->setSampleADPCMRepeatRange(ui->sampleNumSpinBox->value(), SampleRepeatRange(begin, ui->repeatEndSpinBox->valueByAddress()));
+
+	updateSampleView();
+	ui->sampleViewWidget->update();
+}
+
+
+void ADPCMSampleEditor::on_repeatEndSpinBox_valueChanged(int)
+{
+	if (isIgnoreEvent_) return;
+
+	int end = ui->repeatEndSpinBox->valueByAddress();
+
+	if (end < ui->repeatBeginSpinBox->valueByAddress()) {
+		ui->repeatBeginSpinBox->setValueByAddress(end);
+	}
+
+	bt_.lock()->setSampleADPCMRepeatRange(ui->sampleNumSpinBox->value(), SampleRepeatRange(ui->repeatBeginSpinBox->valueByAddress(), end));
+
+	updateSampleView();
+	ui->sampleViewWidget->update();
 }
 
 void ADPCMSampleEditor::on_rootRateSpinBox_valueChanged(int arg1)
@@ -569,6 +645,9 @@ void ADPCMSampleEditor::on_action_Resize_triggered()
 {
 	SampleLengthDialog dialog(sample_.size(), this);
 	if (dialog.exec() == QDialog::Accepted) {
+		ui->repeatBeginSpinBox->setMaximumByBytes((dialog.getLength() - 1) >> 1);
+		ui->repeatEndSpinBox->setMaximumByBytes((dialog.getLength() - 1) >> 1);
+
 		sample_.resize(dialog.getLength());
 		sendEditedSample();
 

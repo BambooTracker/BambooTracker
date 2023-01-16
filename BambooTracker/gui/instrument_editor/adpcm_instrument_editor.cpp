@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -459,9 +459,13 @@ void AdpcmInstrumentEditor::setInstrumentSampleParameters()
 	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
 
 	ui->sampleEditor->setInstrumentSampleParameters(
-				instADPCM->getSampleNumber(), instADPCM->isSampleRepeatable(),
-				instADPCM->getSampleRootKeyNumber(), instADPCM->getSampleRootDeltaN(),
-				instADPCM->getSampleStartAddress(), instADPCM->getSampleStopAddress(),
+				instADPCM->getSampleNumber(),
+				instADPCM->isSampleRepeatable(),
+				instADPCM->getSampleRepeatRange(),
+				instADPCM->getSampleRootKeyNumber(),
+				instADPCM->getSampleRootDeltaN(),
+				instADPCM->getSampleStartAddress(),
+				instADPCM->getSampleStopAddress(),
 				instADPCM->getRawSample());
 }
 

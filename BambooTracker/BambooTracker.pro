@@ -75,6 +75,7 @@ SOURCES += \
     gui/go_to_dialog.cpp \
     gui/gui_utils.cpp \
     gui/hide_tracks_dialog.cpp \
+    gui/instrument_editor/adpcm_address_spin_box.cpp \
     gui/instrument_editor/adpcm_drumkit_editor.cpp \
     gui/instrument_editor/adpcm_instrument_editor.cpp \
     gui/instrument_editor/adpcm_sample_editor.cpp \
@@ -267,6 +268,7 @@ HEADERS += \
     gui/go_to_dialog.hpp \
     gui/gui_utils.hpp \
     gui/hide_tracks_dialog.hpp \
+    gui/instrument_editor/adpcm_address_spin_box.hpp \
     gui/instrument_editor/adpcm_drumkit_editor.hpp \
     gui/instrument_editor/adpcm_instrument_editor.hpp \
     gui/instrument_editor/adpcm_sample_editor.hpp \
@@ -295,6 +297,7 @@ HEADERS += \
     gui/wheel_spin_box.hpp \
     instrument/instrument_property_defs.hpp \
     instrument/sample_adpcm.hpp \
+    instrument/sample_repeat.hpp \
     instrument/sequence_property.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,6 +32,7 @@
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
 #include "sequence_property.hpp"
+#include "sample_repeat.hpp"
 #include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
 #include "bamboo_tracker_defs.hpp"
@@ -219,6 +220,7 @@ public:
 	int getSampleRootKeyNumber() const;
 	int getSampleRootDeltaN() const;
 	bool isSampleRepeatable() const;
+	SampleRepeatRange getSampleRepeatRange() const;
 	std::vector<uint8_t> getRawSample() const;
 	size_t getSampleStartAddress() const;
 	size_t getSampleStopAddress() const;
@@ -289,6 +291,7 @@ public:
 	int getSampleRootKeyNumber(int key) const;
 	int getSampleRootDeltaN(int key) const;
 	bool isSampleRepeatable(int key) const;
+	SampleRepeatRange getSampleRepeatRange(int key) const;
 	std::vector<uint8_t> getRawSample(int key) const;
 	size_t getSampleStartAddress(int key) const;
 	size_t getSampleStopAddress(int key) const;

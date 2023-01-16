@@ -137,6 +137,7 @@ set (BT_SOURCES
 	gui/groove_settings_dialog.cpp
 	gui/gui_utils.cpp
 	gui/hide_tracks_dialog.cpp
+	gui/instrument_editor/adpcm_address_spin_box.cpp
 	gui/instrument_editor/adpcm_drumkit_editor.cpp
 	gui/instrument_editor/adpcm_instrument_editor.cpp
 	gui/instrument_editor/adpcm_sample_editor.cpp

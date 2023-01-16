@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -321,6 +321,8 @@ public:
 	int getSampleADPCMRootDeltaN(int sampNum) const;
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool isSampleADPCMRepeatable(int sampNum) const;
+	bool setSampleADPCMRepeatrange(int sampNum, const SampleRepeatRange& range);
+	SampleRepeatRange getSampleADPCMRepeatRange(int sampNum) const;
 	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
 	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	void clearSampleADPCMRawSample(int sampNum);
