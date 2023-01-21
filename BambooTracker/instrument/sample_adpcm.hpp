@@ -46,9 +46,21 @@ public:
 	int getRootKeyNumber() const noexcept {return rootKeyNum_; }
 	void setRootDeltaN(int dn) noexcept { rootDeltaN_ = dn; }
 	int getRootDeltaN() const noexcept { return rootDeltaN_; }
+
 	void setRepeatEnabled(bool enabled) noexcept { isRepeated_ = enabled; }
 	bool isRepeatable() const noexcept { return isRepeated_; }
+	SampleRepeatFlag getRepeatFlag() const noexcept {
+		if (!isRepeated_) return SampleRepeatFlag::Disabled;
 
+		int flags = SampleRepeatFlag::ShouldRepeat;
+		if (repeatRange_.first() != 0) {
+			flags |= SampleRepeatFlag::ShouldRewriteStart;
+		}
+		if (repeatRange_.last() != sample_.size() - 1) {
+			flags |= SampleRepeatFlag::ShouldRewriteStop;
+		}
+		return static_cast<SampleRepeatFlag>(flags);
+	}
 	bool setRepeatRange(const SampleRepeatRange& range) noexcept;
 	SampleRepeatRange getRepeatRange() const noexcept { return repeatRange_; }
 

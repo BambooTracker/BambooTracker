@@ -536,6 +536,11 @@ bool InstrumentADPCM::isSampleRepeatable() const
 	return owner_->isSampleADPCMRepeatable(sampNum_);
 }
 
+SampleRepeatFlag InstrumentADPCM::getSampleRepeatFlag() const
+{
+	return owner_->getSampleADPCMRepeatFlag(sampNum_);
+}
+
 SampleRepeatRange InstrumentADPCM::getSampleRepeatRange() const
 {
 	return owner_->getSampleADPCMRepeatRange(sampNum_);
@@ -697,6 +702,11 @@ int InstrumentDrumkit::getSampleRootDeltaN(int key) const
 bool InstrumentDrumkit::isSampleRepeatable(int key) const
 {
 	return owner_->isSampleADPCMRepeatable(kit_.at(key).sampNum);
+}
+
+SampleRepeatFlag InstrumentDrumkit::getSampleRepeatFlag(int key) const
+{
+	return owner_->getSampleADPCMRepeatFlag(kit_.at(key).sampNum);
 }
 
 SampleRepeatRange InstrumentDrumkit::getSampleRepeatRange(int key) const

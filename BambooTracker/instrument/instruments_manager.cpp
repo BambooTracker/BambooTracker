@@ -2031,6 +2031,11 @@ bool InstrumentsManager::setSampleADPCMRepeatrange(int sampNum, const SampleRepe
 	return sampADPCM_.at(static_cast<size_t>(sampNum))->setRepeatRange(range);
 }
 
+SampleRepeatFlag InstrumentsManager::getSampleADPCMRepeatFlag(int sampNum) const
+{
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getRepeatFlag();
+}
+
 SampleRepeatRange InstrumentsManager::getSampleADPCMRepeatRange(int sampNum) const
 {
 	return sampADPCM_.at(static_cast<size_t>(sampNum))->getRepeatRange();

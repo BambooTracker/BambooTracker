@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -771,6 +771,9 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			std::vector<uint8_t> samples = instMan.lock()->getSampleADPCMRawSample(idx);
 			ctr.appendUint32(samples.size());
 			ctr.appendVector(samples);
+			SampleRepeatRange range = instMan.lock()->getSampleADPCMRepeatRange(idx);
+			ctr.appendUint16(range.first());
+			ctr.appendUint16(range.last());
 			ctr.writeUint32(ofs, ctr.size() - ofs);
 		}
 	}
@@ -1887,7 +1890,17 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				sampCsr += 4;
 				std::vector<uint8_t> samples = propCtr.getSubcontainer(sampCsr, len).toVector();
 				sampCsr += len;
-				instManLocked->storeSampleADPCMRawSample(sampNum, std::move(samples));
+				instManLocked->storeSampleADPCMRawSample(sampNum, samples);
+				if (bankVersion >= Version::toBCD(1, 3, 1)) {
+					uint16_t repeatBegin = propCtr.readUint16(sampCsr);
+					sampCsr += 2;
+					uint16_t repeatEnd = propCtr.readUint16(sampCsr);
+					sampCsr += 2;
+					instManLocked->setSampleADPCMRepeatrange(sampNum, SampleRepeatRange(repeatBegin, repeatEnd));
+				}
+				else {
+					instManLocked->setSampleADPCMRepeatrange(sampNum, SampleRepeatRange(0, (samples.size() - 1) >> 5));
+				}
 			}
 		}
 
@@ -2215,7 +2228,17 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						sampCsr += 4;
 						std::vector<uint8_t> samples = propCtr.getSubcontainer(sampCsr, len).toVector();
 						sampCsr += len;
-						instManLocked->storeSampleADPCMRawSample(newSamp, std::move(samples));
+						instManLocked->storeSampleADPCMRawSample(newSamp, samples);
+						if (bankVersion >= Version::toBCD(1, 3, 1)) {
+							uint16_t repeatBegin = propCtr.readUint16(sampCsr);
+							sampCsr += 2;
+							uint16_t repeatEnd = propCtr.readUint16(sampCsr);
+							sampCsr += 2;
+							instManLocked->setSampleADPCMRepeatrange(newSamp, SampleRepeatRange(repeatBegin, repeatEnd));
+						}
+						else {
+							instManLocked->setSampleADPCMRepeatrange(newSamp, SampleRepeatRange(0, (samples.size() - 1) >> 5));
+						}
 						++newSamp;	// Increment for search
 					}
 				}

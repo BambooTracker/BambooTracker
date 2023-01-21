@@ -11,6 +11,7 @@
 - [#433] - Add key cut note (thanks [@wildmatsu])
 - [#471] - Support FM Towns .pmb file import (thanks [@OPNA2608])
 - [#472] - Add SSG mixing level configuration for VGM export ([#436]; thanks [@ValleyBell], [@nyanpasu64])
+- Add partial repeat settings for ADPCM samples ([#465]; thanks [@pedipanol])
 
 ### Changed
 
@@ -47,6 +48,7 @@
 [#472]: https://github.com/BambooTracker/BambooTracker/pull/472
 [#436]: https://github.com/BambooTracker/BambooTracker/issues/436
 [#473]: https://github.com/BambooTracker/BambooTracker/pull/473
+[#465]: https://github.com/BambooTracker/BambooTracker/issues/465
 
 ## v0.5.3 (2022-09-18)
 

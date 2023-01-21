@@ -28,7 +28,27 @@
 #include <algorithm>
 #include <stdexcept>
 
-enum class SampleRepeat { Disabled, Partial, Simple };
+/// Repeat type
+enum SampleRepeatFlag : int
+{
+	ShouldRewriteStart	= 0b001,
+	ShouldRewriteStop	= 0b010,
+	ShouldRepeat		= 0b100,
+
+	/*
+	 * |---| repeat range
+	 * Disabled:		|        |
+	 * LeftPartial:		|-----|  |
+	 * RightPartial:	|  |-----|
+	 * MiddlePartial:	| |----| |
+	 * Simple:			|--------|
+	 */
+	Disabled		= 0,
+	LeftPartial		= ShouldRepeat | ShouldRewriteStop,
+	RightPartial	= ShouldRepeat | ShouldRewriteStart,
+	MiddlePartial	= ShouldRepeat | ShouldRewriteStart | ShouldRewriteStop,
+	Simple			= ShouldRepeat,
+};
 
 /// Immutable safe range class
 /// handles position as ADPCM memory address by 32 bytes

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,6 +32,7 @@
 #include "song.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
+#include "sample_repeat.hpp"
 #include "note.hpp"
 #include "echo_buffer.hpp"
 #include "chip/opna.hpp"
@@ -474,6 +475,7 @@ private:
 	int nsSumADPCM_;
 	int transposeADPCM_;
 	bool hasStartRequestedKit_;
+	std::vector<size_t> repeatAddrADPCM_;
 
 	void initADPCM();
 
@@ -501,7 +503,7 @@ private:
 
 	void setRealVolumeADPCM();
 
-	void triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable);
+	void triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool shouldRepeat);
 };
 
 //-----------------------------------------------------------------------------

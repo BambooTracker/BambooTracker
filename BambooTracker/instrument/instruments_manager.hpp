@@ -322,6 +322,7 @@ public:
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool isSampleADPCMRepeatable(int sampNum) const;
 	bool setSampleADPCMRepeatrange(int sampNum, const SampleRepeatRange& range);
+	SampleRepeatFlag getSampleADPCMRepeatFlag(int sampNum) const;
 	SampleRepeatRange getSampleADPCMRepeatRange(int sampNum) const;
 	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
 	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);

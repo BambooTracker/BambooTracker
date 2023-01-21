@@ -220,6 +220,7 @@ public:
 	int getSampleRootKeyNumber() const;
 	int getSampleRootDeltaN() const;
 	bool isSampleRepeatable() const;
+	SampleRepeatFlag getSampleRepeatFlag() const;
 	SampleRepeatRange getSampleRepeatRange() const;
 	std::vector<uint8_t> getRawSample() const;
 	size_t getSampleStartAddress() const;
@@ -291,6 +292,7 @@ public:
 	int getSampleRootKeyNumber(int key) const;
 	int getSampleRootDeltaN(int key) const;
 	bool isSampleRepeatable(int key) const;
+	SampleRepeatFlag getSampleRepeatFlag(int key) const;
 	SampleRepeatRange getSampleRepeatRange(int key) const;
 	std::vector<uint8_t> getRawSample(int key) const;
 	size_t getSampleStartAddress(int key) const;
