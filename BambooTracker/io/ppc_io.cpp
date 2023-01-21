@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -82,6 +82,8 @@ AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t>& sample,
 	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
 	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
 	instManLocked->setSampleADPCMRootDeltaN(sampIdx, 0x49cd);	// 16000Hz
+	instManLocked->setSampleADPCMRepeatEnabled(sampIdx, false);
+	instManLocked->setSampleADPCMRepeatrange(sampIdx, SampleRepeatRange(0, (sample.size() - 1) >> 5));
 
 	return adpcm;
 }

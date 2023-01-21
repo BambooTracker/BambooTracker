@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,6 +37,7 @@
 #include <QPoint>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
+#include "instrument/sample_repeat.hpp"
 #include "gui/color_palette.hpp"
 
 namespace Ui {
@@ -56,8 +57,8 @@ public:
 
 	int getSampleNumber() const;
 
-	void setInstrumentSampleParameters(int sampNum, bool repeatable, int rKeyNum, int rDeltaN,
-									   size_t start, size_t stop, std::vector<uint8_t> sample);
+	void setInstrumentSampleParameters(int sampNum, bool repeatable, const SampleRepeatRange& repeatRange,
+									   int rKeyNum, int rDeltaN, size_t start, size_t stop, std::vector<uint8_t> sample);
 
 signals:
 	void modified();
@@ -112,6 +113,8 @@ private:
 private slots:
 	void on_sampleNumSpinBox_valueChanged(int arg1);
 	void on_repeatCheckBox_toggled(bool checked);
+	void on_repeatBeginSpinBox_valueChanged(int);
+	void on_repeatEndSpinBox_valueChanged(int);
 	void on_rootRateSpinBox_valueChanged(int arg1);
 	void on_action_Resize_triggered();
 	void on_actionRe_verse_triggered();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1569,8 +1569,18 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					uint32_t len = ctr.readUint32(csr);
 					csr += 4;
 					std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
-					/* csr += len; */
-					instManLocked->storeSampleADPCMRawSample(idx, std::move(samples));
+					 csr += len;
+					instManLocked->storeSampleADPCMRawSample(idx, samples);
+					if (fileVersion >= Version::toBCD(1, 5, 1)) {
+						uint16_t repeatBegin = ctr.readUint16(csr);
+						csr += 2;
+						uint16_t repeatEnd = ctr.readUint16(csr);
+						csr += 2;
+						instManLocked->setSampleADPCMRepeatrange(idx, SampleRepeatRange(repeatBegin, repeatEnd));
+					}
+					else {
+						instManLocked->setSampleADPCMRepeatrange(idx, SampleRepeatRange(0, (samples.size() - 1) >> 5));
+					}
 
 					instPropCsr += ofs;
 					break;
@@ -2456,6 +2466,9 @@ void BtiIO::save(BinaryContainer& ctr,
 			std::vector<uint8_t> samples = instManLocked->getSampleADPCMRawSample(sampNum);
 			ctr.appendUint32(samples.size());
 			ctr.appendVector(std::move(samples));
+			SampleRepeatRange range = instMan.lock()->getSampleADPCMRepeatRange(sampNum);
+			ctr.appendUint16(range.first());
+			ctr.appendUint16(range.last());
 			ctr.writeUint32(ofs, ctr.size() - ofs);
 		}
 
@@ -2649,6 +2662,9 @@ void BtiIO::save(BinaryContainer& ctr,
 					std::vector<uint8_t> samples = instManLocked->getSampleADPCMRawSample(samp);
 					ctr.appendUint32(samples.size());
 					ctr.appendVector(std::move(samples));
+					SampleRepeatRange range = instMan.lock()->getSampleADPCMRepeatRange(samp);
+					ctr.appendUint16(range.first());
+					ctr.appendUint16(range.last());
 					ctr.writeUint32(ofs, ctr.size() - ofs);
 				}
 			}

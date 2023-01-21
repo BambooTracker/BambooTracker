@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -3532,15 +3532,46 @@ void OPNAController::keyOnADPCM(const Note& note, bool isJam)
 		opna_->setRegister(0x100, 0xa1);
 
 		if (refInstADPCM_) {
-			triggerSamplePlayADPCM(refInstADPCM_->getSampleStartAddress(),
-								   refInstADPCM_->getSampleStopAddress(),
-								   refInstADPCM_->isSampleRepeatable());
+			SampleRepeatFlag flag = refInstADPCM_->getSampleRepeatFlag();
+			size_t startAddr = refInstADPCM_->getSampleStartAddress();
+			SampleRepeatRange range = refInstADPCM_->getSampleRepeatRange();
+
+			if (flag & SampleRepeatFlag::ShouldRewriteStop) {
+				triggerSamplePlayADPCM(startAddr,
+									   startAddr + range.last(),
+									   refInstADPCM_->isSampleRepeatable());
+			}
+			else {
+				triggerSamplePlayADPCM(startAddr,
+									   refInstADPCM_->getSampleStopAddress(),
+									   refInstADPCM_->isSampleRepeatable());
+			}
+
+			if (flag & SampleRepeatFlag::ShouldRewriteStart) {
+				repeatAddrADPCM_.push_back(startAddr + range.first());
+			}
 		}
 		else if (hasStartRequestedKit_) {	// valid key in refInstKit_
 			int key = baseNoteADPCM_.getNoteNumber();
-			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
-								   refInstKit_->getSampleStopAddress(key),
-								   refInstKit_->isSampleRepeatable(key));
+			SampleRepeatFlag flag = refInstKit_->getSampleRepeatFlag(key);
+			size_t startAddr = refInstKit_->getSampleStartAddress(key);
+			SampleRepeatRange range = refInstKit_->getSampleRepeatRange(key);
+
+			if (flag & SampleRepeatFlag::ShouldRewriteStop) {
+				triggerSamplePlayADPCM(startAddr,
+									   startAddr + range.last(),
+									   refInstKit_->isSampleRepeatable(key));
+			}
+			else {
+				triggerSamplePlayADPCM(startAddr,
+									   refInstKit_->getSampleStopAddress(key),
+									   refInstKit_->isSampleRepeatable(key));
+			}
+
+			if (flag & SampleRepeatFlag::ShouldRewriteStart) {
+				repeatAddrADPCM_.push_back(startAddr + range.first());
+			}
+
 			hasStartRequestedKit_ = false;
 		}
 
@@ -3593,15 +3624,46 @@ void OPNAController::retriggerKeyOnADPCM(int volDiff)
 	opna_->setRegister(0x100, 0xa1);
 
 	if (refInstADPCM_) {
-		triggerSamplePlayADPCM(refInstADPCM_->getSampleStartAddress(),
-							   refInstADPCM_->getSampleStopAddress(),
-							   refInstADPCM_->isSampleRepeatable());
+		SampleRepeatFlag flag = refInstADPCM_->getSampleRepeatFlag();
+		size_t startAddr = refInstADPCM_->getSampleStartAddress();
+		SampleRepeatRange range = refInstADPCM_->getSampleRepeatRange();
+
+		if (flag & SampleRepeatFlag::ShouldRewriteStop) {
+			triggerSamplePlayADPCM(startAddr,
+								   startAddr + range.last(),
+								   refInstADPCM_->isSampleRepeatable());
+		}
+		else {
+			triggerSamplePlayADPCM(startAddr,
+								   refInstADPCM_->getSampleStopAddress(),
+								   refInstADPCM_->isSampleRepeatable());
+		}
+
+		if (flag & SampleRepeatFlag::ShouldRewriteStart) {
+			repeatAddrADPCM_.push_back(startAddr + range.first());
+		}
 	}
 	else if (hasStartRequestedKit_) {	// valid key in refInstKit_
 		int key = baseNoteADPCM_.getNoteNumber();
-		triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
-							   refInstKit_->getSampleStopAddress(key),
-							   refInstKit_->isSampleRepeatable(key));
+		SampleRepeatFlag flag = refInstKit_->getSampleRepeatFlag(key);
+		size_t startAddr = refInstKit_->getSampleStartAddress(key);
+		SampleRepeatRange range = refInstKit_->getSampleRepeatRange(key);
+
+		if (flag & SampleRepeatFlag::ShouldRewriteStop) {
+			triggerSamplePlayADPCM(startAddr,
+								   startAddr + range.last(),
+								   refInstKit_->isSampleRepeatable(key));
+		}
+		else {
+			triggerSamplePlayADPCM(startAddr,
+								   refInstKit_->getSampleStopAddress(key),
+								   refInstKit_->isSampleRepeatable(key));
+		}
+
+		if (flag & SampleRepeatFlag::ShouldRewriteStart) {
+			repeatAddrADPCM_.push_back(startAddr + range.first());
+		}
+
 		hasStartRequestedKit_ = false;
 	}
 }
@@ -3894,6 +3956,7 @@ void OPNAController::initADPCM()
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
 	stopAddrADPCM_ = startAddrADPCM_;
 	hasStartRequestedKit_ = false;
+	repeatAddrADPCM_.clear();
 
 	// Init sequence
 	shouldSkip1stTickExecADPCM_ = false;
@@ -4005,6 +4068,8 @@ void OPNAController::releaseStartADPCMSequences(bool forceSilence)
 		xVolSldItrAdpcm_->next();
 		xslideVolumeAdpcm();
 	}
+
+	bool hasSilence = false;
 	if (envItrADPCM_) {
 		envItrADPCM_->release();
 		if (forceSilence || envItrADPCM_->hasEnded()) {
@@ -4012,12 +4077,21 @@ void OPNAController::releaseStartADPCMSequences(bool forceSilence)
 			envItrADPCM_->end();
 			opna_->setRegister(0x10b, 0);
 			shouldWriteEnvADPCM_ = false;
+			hasSilence = true;
 		}
 		else writeEnvelopeADPCMToRegister();
 	}
 	else {
-		opna_->setRegister(0x10b, 0);	// Silence
-		shouldWriteEnvADPCM_ = false;
+		if (forceSilence) {
+			// Silence
+			opna_->setRegister(0x10b, 0);
+			shouldWriteEnvADPCM_ = false;
+			hasSilence = true;
+		}
+		else {
+			// Maybe silence, need to check it before repeating process
+			shouldWriteEnvADPCM_ = true;
+		}
 	}
 
 	checkPanADPCM(2);
@@ -4046,7 +4120,45 @@ void OPNAController::releaseStartADPCMSequences(bool forceSilence)
 
 	if (shouldSetToneADPCM_) writePitchADPCM();
 
-	hasStartRequestedKit_ = false;	// Always silent at relase in drumkit
+	if (hasSilence) {
+		// Stop synthesis
+		opna_->setRegister(0x100, 0xa1);
+	}
+	else {
+		// Play after repeat if neccessary
+		if (refInstADPCM_) {
+			if (refInstADPCM_->getSampleRepeatFlag() & SampleRepeatFlag::ShouldRewriteStop) {
+				opna_->setRegister(0x100, 0xa1);
+				size_t startAddr = refInstADPCM_->getSampleStartAddress();
+				SampleRepeatRange range = refInstADPCM_->getSampleRepeatRange();
+				triggerSamplePlayADPCM(startAddr + range.last(),
+									   refInstADPCM_->getSampleStopAddress(),
+									   false);
+				return;
+			}
+		}
+		else {
+			int key = baseNoteADPCM_.getNoteNumber();
+			if (hasStartRequestedKit_
+					|| (refInstKit_->getSampleEnabled(key) && (refInstKit_->getSampleRepeatFlag(key) & SampleRepeatFlag::ShouldRewriteStop))) {
+				opna_->setRegister(0x100, 0xa1);
+				size_t startAddr = refInstKit_->getSampleStartAddress(key);
+				SampleRepeatRange range = refInstKit_->getSampleRepeatRange(key);
+				triggerSamplePlayADPCM(startAddr + range.last(),
+									   refInstKit_->getSampleStopAddress(key),
+									   false);
+				hasStartRequestedKit_ = false;
+				return;
+			}
+		}
+
+		// If there is no sample after repeat stop and it is neccessary to change envelope, stop synthesis.
+		if (shouldWriteEnvADPCM_) {
+			opna_->setRegister(0x100, 0xa1);
+		}
+	}
+
+	hasStartRequestedKit_ = false;
 }
 
 void OPNAController::tickEventADPCM()
@@ -4108,10 +4220,34 @@ void OPNAController::tickEventADPCM()
 			opna_->setRegister(0x100, 0xa1);
 
 			int key = baseNoteADPCM_.getNoteNumber();
-			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
-								   refInstKit_->getSampleStopAddress(key),
-								   refInstKit_->isSampleRepeatable(key));
+			SampleRepeatFlag flag = refInstKit_->getSampleRepeatFlag(key);
+			size_t startAddr = refInstKit_->getSampleStartAddress(key);
+			SampleRepeatRange range = refInstKit_->getSampleRepeatRange(key);
+
+			if (flag & SampleRepeatFlag::ShouldRewriteStop) {
+				triggerSamplePlayADPCM(startAddr,
+									   startAddr + range.last(),
+									   refInstADPCM_->isSampleRepeatable());
+			}
+			else {
+				triggerSamplePlayADPCM(startAddr,
+									   refInstKit_->getSampleStopAddress(key),
+									   refInstKit_->isSampleRepeatable(key));
+			}
+
+			if (flag & SampleRepeatFlag::ShouldRewriteStart) {
+				repeatAddrADPCM_.push_back(startAddr + range.first());
+			}
+
 			hasStartRequestedKit_ = false;
+		}
+		else if (!repeatAddrADPCM_.empty()) {
+			// Partial repeat: rewrite start address
+			size_t addr = repeatAddrADPCM_.front();
+			opna_->setRegister(0x102, addr & 0xff);
+			opna_->setRegister(0x103, (addr >> 8) & 0xff);
+			startAddrADPCM_ = addr;
+			repeatAddrADPCM_.pop_back();
 		}
 	}
 }
@@ -4201,10 +4337,10 @@ void OPNAController::writePitchADPCMToRegister(int pitchDiff, int rtDeltaN)
 	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
 }
 
-void OPNAController::triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable)
+void OPNAController::triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool shouldRepeat)
 {
-	uint8_t repeatFlag = repeatable ? 0x10 : 0;
-	opna_->setRegister(0x100, 0x21 | repeatFlag);
+	// Reset synthesis
+	opna_->setRegister(0x100, 0x21);
 
 	if (startAddress != startAddrADPCM_) {
 		opna_->setRegister(0x102, startAddress & 0xff);
@@ -4218,6 +4354,7 @@ void OPNAController::triggerSamplePlayADPCM(size_t startAddress, size_t stopAddr
 		stopAddrADPCM_ = stopAddress;
 	}
 
+	uint8_t repeatFlag = shouldRepeat ? 0x10 : 0;
 	opna_->setRegister(0x100, 0xa0 | repeatFlag);
 	opna_->setRegister(0x101, panStateADPCM_ | 0x02);
 }

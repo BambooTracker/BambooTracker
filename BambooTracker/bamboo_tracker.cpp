@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -877,6 +877,16 @@ void BambooTracker::setSampleADPCMRepeatEnabled(int sampNum, bool enabled)
 bool BambooTracker::getSampleADPCMRepeatEnabled(int sampNum) const
 {
 	return instMan_->isSampleADPCMRepeatable(sampNum);
+}
+
+bool BambooTracker::setSampleADPCMRepeatRange(int sampNum, const SampleRepeatRange& range)
+{
+	return instMan_->setSampleADPCMRepeatrange(sampNum, range);
+}
+
+SampleRepeatRange BambooTracker::getSampleADPCMRepeatRange(int sampNum) const
+{
+	return instMan_->getSampleADPCMRepeatRange(sampNum);
 }
 
 void BambooTracker::storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample)

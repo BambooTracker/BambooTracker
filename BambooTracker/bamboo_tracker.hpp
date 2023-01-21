@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,6 +35,7 @@
 #include <array>
 #include "jamming.hpp"
 #include "instrument.hpp"
+#include "instrument/sample_repeat.hpp"
 #include "module.hpp"
 #include "command/command_manager.hpp"
 #include "chip/real_chip_interface.hpp"
@@ -50,6 +51,7 @@ class AbstractBank;
 class OPNAController;
 class PlaybackManager;
 class TickCounter;
+class SampleRepeatRange;
 
 class BambooTracker
 {
@@ -231,6 +233,8 @@ public:
 	int getSampleADPCMRootDeltaN(int sampNum) const;
 	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
 	bool getSampleADPCMRepeatEnabled(int sampNum) const;
+	bool setSampleADPCMRepeatRange(int sampNum, const SampleRepeatRange& range);
+	SampleRepeatRange getSampleADPCMRepeatRange(int sampNum) const;
 	void storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample);
 	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t>&& sample);
 	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;

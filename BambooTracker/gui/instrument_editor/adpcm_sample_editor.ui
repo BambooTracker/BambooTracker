@@ -136,6 +136,32 @@
       </widget>
      </item>
      <item>
+      <widget class="AdpcmStartAddressSpinBox" name="repeatBeginSpinBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>70</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="AdpcmStopAddressSpinBox" name="repeatEndSpinBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>70</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -315,10 +341,24 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AdpcmStartAddressSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>gui/instrument_editor/adpcm_address_spin_box.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>AdpcmStopAddressSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>gui/instrument_editor/adpcm_address_spin_box.hpp</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>sampleNumSpinBox</tabstop>
   <tabstop>usersLineEdit</tabstop>
   <tabstop>repeatCheckBox</tabstop>
+  <tabstop>repeatBeginSpinBox</tabstop>
+  <tabstop>repeatEndSpinBox</tabstop>
   <tabstop>rootKeyComboBox</tabstop>
   <tabstop>rootKeySpinBox</tabstop>
   <tabstop>rootRateSpinBox</tabstop>

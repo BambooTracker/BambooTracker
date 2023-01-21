@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -71,6 +71,8 @@ ColorPalette::ColorPalette()
 	instADPCMSampViewGridColor = QColor::fromRgb(63, 63, 63, 170);
 	instADPCMSampViewDrawColor = QColor::fromRgb(255, 0, 0, 255);
 	instADPCMSampViewDirectDrawColor = QColor::fromRgb(255, 150, 0, 255);
+	instADPCMSampViewRepeatBeginColor = QColor::fromRgb(204, 102, 255, 255);
+	instADPCMSampViewRepeatEndColor = QColor::fromRgb(137, 167, 255, 255);
 
 	// Tone/Noise editor
 	tnToneCellColor = QColor::fromRgb(225, 209, 47, 255);

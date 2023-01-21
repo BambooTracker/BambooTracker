@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -2024,6 +2024,21 @@ void InstrumentsManager::setSampleADPCMRepeatEnabled(int sampNum, bool enabled)
 bool InstrumentsManager::isSampleADPCMRepeatable(int sampNum) const
 {
 	return sampADPCM_.at(static_cast<size_t>(sampNum))->isRepeatable();
+}
+
+bool InstrumentsManager::setSampleADPCMRepeatrange(int sampNum, const SampleRepeatRange& range)
+{
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->setRepeatRange(range);
+}
+
+SampleRepeatFlag InstrumentsManager::getSampleADPCMRepeatFlag(int sampNum) const
+{
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getRepeatFlag();
+}
+
+SampleRepeatRange InstrumentsManager::getSampleADPCMRepeatRange(int sampNum) const
+{
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getRepeatRange();
 }
 
 void InstrumentsManager::storeSampleADPCMRawSample(int sampNum, const std::vector<uint8_t>& sample)

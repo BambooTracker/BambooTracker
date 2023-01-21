@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +30,7 @@
 #include <memory>
 #include <cmath>
 #include "abstract_instrument_property.hpp"
+#include "sample_repeat.hpp"
 
 class SampleADPCM final : public AbstractInstrumentProperty
 {
@@ -41,27 +42,43 @@ public:
 
 	std::unique_ptr<SampleADPCM> clone();
 
-	inline void setRootKeyNumber(int n) noexcept { rootKeyNum_ = n; }
-	inline int getRootKeyNumber() const noexcept {return rootKeyNum_; }
-	inline void setRootDeltaN(int dn) noexcept { rootDeltaN_ = dn; }
-	inline int getRootDeltaN() const noexcept { return rootDeltaN_; }
-	inline void setRepeatEnabled(bool enabled) noexcept { isRepeated_ = enabled; }
-	inline bool isRepeatable() const noexcept { return isRepeated_; }
-	inline void storeSample(const std::vector<uint8_t>& sample) { sample_ = sample; }
-	inline void storeSample(std::vector<uint8_t>&& sample) { sample_ = std::move(sample); }
-	inline std::vector<uint8_t> getSamples() const { return sample_; }
+	void setRootKeyNumber(int n) noexcept { rootKeyNum_ = n; }
+	int getRootKeyNumber() const noexcept {return rootKeyNum_; }
+	void setRootDeltaN(int dn) noexcept { rootDeltaN_ = dn; }
+	int getRootDeltaN() const noexcept { return rootDeltaN_; }
+
+	void setRepeatEnabled(bool enabled) noexcept { isRepeated_ = enabled; }
+	bool isRepeatable() const noexcept { return isRepeated_; }
+	SampleRepeatFlag getRepeatFlag() const noexcept {
+		if (!isRepeated_) return SampleRepeatFlag::Disabled;
+
+		int flags = SampleRepeatFlag::ShouldRepeat;
+		if (repeatRange_.first() != 0) {
+			flags |= SampleRepeatFlag::ShouldRewriteStart;
+		}
+		if (repeatRange_.last() != sample_.size() - 1) {
+			flags |= SampleRepeatFlag::ShouldRewriteStop;
+		}
+		return static_cast<SampleRepeatFlag>(flags);
+	}
+	bool setRepeatRange(const SampleRepeatRange& range) noexcept;
+	SampleRepeatRange getRepeatRange() const noexcept { return repeatRange_; }
+
+	bool storeSample(const std::vector<uint8_t>& sample);
+	bool storeSample(std::vector<uint8_t>&& sample);
+	std::vector<uint8_t> getSamples() const { return sample_; }
 	void clearSample();
-	inline void setStartAddress(size_t addr) noexcept { startAddress_ = addr; }
-	inline size_t getStartAddress() const noexcept { return startAddress_; }
-	inline void setStopAddress(size_t addr) noexcept { stopAddress_ = addr; }
-	inline size_t getStopAddress() const noexcept { return stopAddress_; }
+	void setStartAddress(size_t addr) noexcept { startAddress_ = addr; }
+	size_t getStartAddress() const noexcept { return startAddress_; }
+	void setStopAddress(size_t addr) noexcept { stopAddress_ = addr; }
+	size_t getStopAddress() const noexcept { return stopAddress_; }
 
 	bool isEdited() const override;
 	void clearParameters() override;
 
 	static constexpr int DEF_ROOT_KEY = 60;	// C5
 
-	inline static int calculateADPCMDeltaN(unsigned int rate)
+	static int calculateADPCMDeltaN(unsigned int rate)
 	{
 		return static_cast<int>(std::round((rate << 16) / 55500.));
 	}
@@ -69,6 +86,8 @@ public:
 private:
 	int rootKeyNum_, rootDeltaN_;
 	bool isRepeated_;
+	/// Range (first byte, last byte)
+	SampleRepeatRange repeatRange_;
 	std::vector<uint8_t> sample_;
 	size_t startAddress_, stopAddress_;
 };

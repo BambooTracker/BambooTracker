@@ -1,6 +1,6 @@
 # BambooTracker Module File (.btm) Format Specification
 
-v1.6.1 - 202Y-MM-DD
+v1.6.1 - 2023-01-21
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -213,15 +213,17 @@ After this, repeat parameters in the table below for each operator.
 
 ### ADPCM sample
 
-| Type      | Field         | Description                                              |
-| --------- | ------------- | -------------------------------------------------------- |
-| uint8     | Index         | Sample index number.                                     |
-| uint32    | Offset        | Relative offset to end of the sample block.              |
-| uint8     | Root key      | Root key number.                                         |
-| uint16    | Root delta-N  | Delta-N (sample rate) in root key.                       |
-| uint8     | Repeat flag   | If bit 0 is set, this ADPCM sample is played repeatedly. |
-| uint32    | Sample length | Length of ADPCM sample.                                  |
-| uint8 x N | Sample        | Raw ADPCM sample is stored.                              |
+| Type      | Field                   | Description                                                 |
+| --------- | ----------------------- | ----------------------------------------------------------- |
+| uint8     | Index                   | Sample index number.                                        |
+| uint32    | Offset                  | Relative offset to end of the sample block.                 |
+| uint8     | Root key                | Root key number.                                            |
+| uint16    | Root delta-N            | Delta-N (sample rate) in root key.                          |
+| uint8     | Repeat flag             | If bit 0 is set, this ADPCM sample is played repeatedly.    |
+| uint32    | Sample length           | Length of ADPCM sample.                                     |
+| uint8 x N | Sample                  | Raw ADPCM sample is stored.                                 |
+| uint16    | Repeat beginning offset | Offset of repeat beginning point from sample start address. |
+| uint16    | Repeat ending offset    | Offset of repeat ending point from sample start address.    |
 
 ### Sequence
 
@@ -515,7 +517,7 @@ Key event details:
 
 | Version | Date       | Detail                                                                                                                           |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 1.6.1   | 202Y-MM-DD | Add key cut.                                                                                                                     |
+| 1.6.1   | 2023-01-21 | Add key cut and ADPCM sample repeat range settings.                                                                              |
 | 1.6.0   | 2021-06-13 | Added track visibility, key signature, FM/ADPCM panning sequence, drumkit panning, and removed unused subdata of ADPCM envelope. |
 | 1.5.0   | 2020-04-28 | Added ADPCM drumkit instrument.                                                                                                  |
 | 1.4.1   | 2020-03-01 | Added bookmark section.                                                                                                          |

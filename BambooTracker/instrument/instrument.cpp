@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -536,6 +536,16 @@ bool InstrumentADPCM::isSampleRepeatable() const
 	return owner_->isSampleADPCMRepeatable(sampNum_);
 }
 
+SampleRepeatFlag InstrumentADPCM::getSampleRepeatFlag() const
+{
+	return owner_->getSampleADPCMRepeatFlag(sampNum_);
+}
+
+SampleRepeatRange InstrumentADPCM::getSampleRepeatRange() const
+{
+	return owner_->getSampleADPCMRepeatRange(sampNum_);
+}
+
 std::vector<uint8_t> InstrumentADPCM::getRawSample() const
 {
 	return owner_->getSampleADPCMRawSample(sampNum_);
@@ -692,6 +702,16 @@ int InstrumentDrumkit::getSampleRootDeltaN(int key) const
 bool InstrumentDrumkit::isSampleRepeatable(int key) const
 {
 	return owner_->isSampleADPCMRepeatable(kit_.at(key).sampNum);
+}
+
+SampleRepeatFlag InstrumentDrumkit::getSampleRepeatFlag(int key) const
+{
+	return owner_->getSampleADPCMRepeatFlag(kit_.at(key).sampNum);
+}
+
+SampleRepeatRange InstrumentDrumkit::getSampleRepeatRange(int key) const
+{
+	return owner_->getSampleADPCMRepeatRange(kit_.at(key).sampNum);
 }
 
 std::vector<uint8_t> InstrumentDrumkit::getRawSample(int key) const

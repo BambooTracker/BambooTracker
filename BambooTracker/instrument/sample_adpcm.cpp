@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,6 +24,7 @@
  */
 
 #include "sample_adpcm.hpp"
+#include <algorithm>
 
 namespace
 {
@@ -32,7 +33,7 @@ constexpr bool DEF_REPET_ = false;
 }
 
 SampleADPCM::SampleADPCM(int num)
-	: AbstractInstrumentProperty (num)
+	: AbstractInstrumentProperty (num), repeatRange_(0, 0)
 {
 	clearParameters();
 }
@@ -54,6 +55,7 @@ void SampleADPCM::clearSample()
 	startAddress_ = 0;
 	stopAddress_ = 0;
 	sample_ = std::vector<uint8_t>(1);
+	repeatRange_ = SampleRepeatRange(0, (sample_.size() - 1) >> 5);	// By 32 bytes
 }
 
 bool SampleADPCM::isEdited() const
@@ -69,8 +71,39 @@ bool SampleADPCM::isEdited() const
 
 void SampleADPCM::clearParameters()
 {
+	clearSample();
+
 	rootKeyNum_ = DEF_ROOT_KEY;
 	rootDeltaN_ = DEF_RT_DELTAN_;
 	isRepeated_ = DEF_REPET_;
-	clearSample();
+}
+
+bool SampleADPCM::setRepeatRange(const SampleRepeatRange& range) noexcept
+{
+	if (sample_.size() <= range.last()) {
+		return false;
+	}
+
+	repeatRange_ = range;
+	return true;
+}
+
+bool SampleADPCM::storeSample(const std::vector<uint8_t>& sample)
+{
+	if (sample.empty()) return false;
+
+	repeatRange_ = repeatRange_.clampLast((sample.size() - 1) >> 5);	// By 32 bytes
+	sample_ = sample;
+
+	return true;
+}
+
+bool SampleADPCM::storeSample(std::vector<uint8_t>&& sample)
+{
+	if (sample.empty()) return false;
+
+	repeatRange_ = repeatRange_.clampLast((sample.size() - 1) >> 5);	// By 32 bytes
+	sample_ = std::move(sample);
+
+	return true;
 }

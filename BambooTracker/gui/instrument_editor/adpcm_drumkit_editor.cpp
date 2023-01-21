@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Rerrah
+ * Copyright (C) 2020-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -269,9 +269,13 @@ void AdpcmDrumkitEditor::setInstrumentSampleParameters(int key)
 	if (instKit->getSampleEnabled(key)) {
 		int sampNum = instKit->getSampleNumber(key);
 		ui->sampleEditor->setInstrumentSampleParameters(
-					sampNum, instKit->isSampleRepeatable(key),
-					instKit->getSampleRootKeyNumber(key), instKit->getSampleRootDeltaN(key),
-					instKit->getSampleStartAddress(key), instKit->getSampleStopAddress(key),
+					sampNum,
+					instKit->isSampleRepeatable(key),
+					instKit->getSampleRepeatRange(key),
+					instKit->getSampleRootKeyNumber(key),
+					instKit->getSampleRootDeltaN(key),
+					instKit->getSampleStartAddress(key),
+					instKit->getSampleStopAddress(key),
 					instKit->getRawSample(key));
 		item->setText(1, QString::number(sampNum));
 		item->setText(2, QString::number(instKit->getPitch(key)));
@@ -279,7 +283,9 @@ void AdpcmDrumkitEditor::setInstrumentSampleParameters(int key)
 	}
 	else {
 		ui->sampleEditor->setInstrumentSampleParameters(
-					0, bt_.lock()->getSampleADPCMRepeatEnabled(0),
+					0,
+					bt_.lock()->getSampleADPCMRepeatEnabled(0),
+					bt_.lock()->getSampleADPCMRepeatRange(0),
 					bt_.lock()->getSampleADPCMRootKeyNumber(0),
 					bt_.lock()->getSampleADPCMRootDeltaN(0),
 					bt_.lock()->getSampleADPCMStartAddress(0),
@@ -334,7 +340,9 @@ void AdpcmDrumkitEditor::on_sampleGroupBox_clicked(bool checked)
 	else {
 		// Clear parameters
 		ui->sampleEditor->setInstrumentSampleParameters(
-					0, bt_.lock()->getSampleADPCMRepeatEnabled(0),
+					0,
+					bt_.lock()->getSampleADPCMRepeatEnabled(0),
+					bt_.lock()->getSampleADPCMRepeatRange(0),
 					bt_.lock()->getSampleADPCMRootKeyNumber(0),
 					bt_.lock()->getSampleADPCMRootDeltaN(0),
 					bt_.lock()->getSampleADPCMStartAddress(0),
