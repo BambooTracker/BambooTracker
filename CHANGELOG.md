@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.6.0 (2023-01-22)
+
 ### Added
 
 - Add toolbar items of importing/exporting a bank file to the instrument list
@@ -11,7 +13,7 @@
 - [#433] - Add key cut note (thanks [@wildmatsu])
 - [#471] - Support FM Towns .pmb file import (thanks [@OPNA2608])
 - [#472] - Add SSG mixing level configuration for VGM export ([#436]; thanks [@ValleyBell], [@nyanpasu64])
-- Add partial repeat settings for ADPCM samples ([#465]; thanks [@pedipanol])
+- [#476] - Add partial repeat settings for ADPCM samples ([#465]; thanks [@pedipanol])
 
 ### Changed
 
@@ -49,6 +51,7 @@
 [#436]: https://github.com/BambooTracker/BambooTracker/issues/436
 [#473]: https://github.com/BambooTracker/BambooTracker/pull/473
 [#465]: https://github.com/BambooTracker/BambooTracker/issues/465
+[#476]: https://github.com/BambooTracker/BambooTracker/pull/476
 
 ## v0.5.3 (2022-09-18)
 
