@@ -2,17 +2,18 @@
 
 set -e
 
-if [[ "$#" -lt 4 ]]; then
+if [[ "$#" -lt 5 ]]; then
   echo "Incomplete list of arguments." >&2
-  echo "Need: <target-dir> <target-version> <target-toolchain> <target-component> [<target-component>...]" >&2
+  echo "Need: <target-dir> <target-version> <target-os> <target-toolchain> <target-component> [<target-component>...]" >&2
   exit 1
 fi
 
 QT_TARGETDIR="$1"
 QT_TARGETVER="$2"
-QT_TARGETTCH="$3"
+QT_TARGETOS="$3"
+QT_TARGETTCH="$4"
 
-shift 3
+shift 4
 
 QT6_QT5COMPAT=
 QT_TARGETCMP=
@@ -33,9 +34,9 @@ if [[ -d "$QT_TARGETDIR"/"$QT_TARGETVER" ]]; then
   exit 0
 else
   curl https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh > install-qt.sh
-  bash ./install-qt.sh -d "$QT_TARGETDIR" --host "windows_x86" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" $QT_TARGETCMP
+  bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" $QT_TARGETCMP
   if [ x$QT6_QT5COMPAT != x ]; then
-    bash ./install-qt.sh -d "$QT_TARGETDIR" --host "windows_x86" --version "$QT_TARGETVER" --toolchain "qt5compat.$QT_TARGETTCH" "qt5compat"
+    bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "qt5compat.$QT_TARGETTCH" "qt5compat"
   fi
   echo "Qt fetched."
   if [[ "$(echo "$QT_TARGETCMP" | grep essentials 2>&1 >/dev/null; echo $?)" -eq 0 ]]; then
@@ -50,4 +51,3 @@ EOF
   fi
   exit 0
 fi
-

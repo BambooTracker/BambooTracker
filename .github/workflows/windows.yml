@@ -30,6 +30,7 @@ env:
   MINGW_CHOCOBASE: /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw32
   MINGW_INSTALLBASE: ${{ github.workspace }}/mingw32/
   QT_VERSION: 5.15.2
+  QT_HOSTOS: windows_x86
   QT_TOOLCHAIN: win32_mingw81
   QT_MODULES: qtbase qttools qttranslations
   QT_INSTALLBASE: ${{ github.workspace }}/Qt/
@@ -110,7 +111,7 @@ jobs:
 
       - name: Installing Qt.
         run: |
-          ./scripts/fetch_qt.sh ${QT_INSTALLBASE} ${QT_VERSION} ${QT_TOOLCHAIN} ${QT_MODULES}
+          ./scripts/fetch_qt.sh ${QT_INSTALLBASE} ${QT_VERSION} ${QT_HOSTOS} ${QT_TOOLCHAIN} ${QT_MODULES}
 
       - name: Adding Qt to PATH.
         run: |

@@ -26,6 +26,11 @@ env:
   SCRIPT_NAME: osx
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
+  QT_VERSION: 6.4.0
+  QT_HOSTOS: mac_x64
+  QT_TOOLCHAIN: clang_64
+  QT_MODULES: qtbase qttools qttranslations qt5compat qtdeclarative
+  QT_INSTALLBASE: ${{ github.workspace }}/Qt/
   QMAKE_EXTRA_ARGUMENTS: CONFIG+=install_flat CONFIG+=use_jack
 
 jobs:
@@ -72,6 +77,21 @@ jobs:
       - name: Pin Xcode version
         run: sudo xcode-select -s "/Applications/Xcode_13.2.1.app"
 
+      # Cache Qt installations, very costly & flakey to fetch
+      - name: Fetching Qt cache.
+        id: qt-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.QT_INSTALLBASE }}
+          key: ${{ runner.os }} Qt${{ env.QT_VERSION }} ${{ env.QT_TOOLCHAIN }} ${{ env.QT_MODULES }}
+
+      - name: Installing Qt.
+        run: |
+          ./scripts/fetch_qt.sh ${QT_INSTALLBASE} ${QT_VERSION} ${QT_HOSTOS} ${QT_TOOLCHAIN} ${QT_MODULES}
+      - name: Adding Qt to PATH.
+        run: |
+          find ${QT_INSTALLBASE} -type d -name bin >> ${GITHUB_PATH}
+
       - name: Installing dependencies.
         run: |
           export HOMEBREW_NO_INSTALL_CLEANUP=1
@@ -80,8 +100,7 @@ jobs:
           brew unlink python@3.10 python@3.11
           brew link --overwrite python@3.10 python@3.11
           brew upgrade --force python@3.10 python@3.11
-          brew install qt@6 pkg-config jack coreutils
-          brew link --force qt@6
+          brew install pkg-config jack coreutils
 
       ## End macOS-specific steps
 
