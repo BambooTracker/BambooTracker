@@ -18,10 +18,10 @@ jobs:
         run: |
           TAG=${GITHUB_REF#refs/tags/}
           echo "Release ${TAG}"
-          echo "::set-output name=build-tag::${TAG}"
+          echo "build-tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Checking out repository.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -29,7 +29,7 @@ jobs:
         id: packaging
         run: |
           export package_name="BambooTracker-src-${{ steps.identify-build.outputs.build-tag }}"
-          echo "::set-output name=package-name::${package_name}"
+          echo "package-name=${package_name}" >> $GITHUB_OUTPUT
           export checkout_name="$(basename ${PWD})"
           pushd ..
           mv ${checkout_name} ${package_name}
