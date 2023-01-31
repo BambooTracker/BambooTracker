@@ -30,6 +30,7 @@ env:
   MINGW_CHOCOBASE: /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
   MINGW_INSTALLBASE: ${{ github.workspace }}/mingw64/
   QT_VERSION: 6.4.0
+  QT_HOSTOS: windows_x86
   QT_TOOLCHAIN: win64_mingw
   QT_MODULES: qtbase qttools qttranslations qt5compat qtdeclarative
   QT_INSTALLBASE: ${{ github.workspace }}/Qt/
@@ -46,30 +47,30 @@ jobs:
             refs/tags/* )
               TAG=${GITHUB_REF#refs/tags/}
               echo "Release ${TAG}"
-              echo "::set-output name=build-tag::${TAG}"
-              echo "::set-output name=release::true"
+              echo "build-tag=${TAG}" >> $GITHUB_OUTPUT
+              echo "release=true" >> $GITHUB_OUTPUT
               ;;
             refs/pull/*)
               PR=$(echo ${GITHUB_REF} | cut -d/ -f3)
               echo "Test PR #${PR}"
-              echo "::set-output name=build-tag::pr-${PR}"
-              echo "::set-output name=release::false"
+              echo "build-tag=pr-${PR}" >> $GITHUB_OUTPUT
+              echo "release=false" >> $GITHUB_OUTPUT
               ;;
             refs/heads/* )
               BRANCH=${GITHUB_REF#refs/heads/}
               echo "Test ${BRANCH}"
-              echo "::set-output name=build-tag::${BRANCH}"
-              echo "::set-output name=release::false"
+              echo "build-tag=${BRANCH}" >> $GITHUB_OUTPUT
+              echo "release=false" >> $GITHUB_OUTPUT
               ;;
             * )
               echo "Test (unknown)"
-              echo "::set-output name=build-tag::unknown"
-              echo "::set-output name=release::false"
+              echo "build-tag=unknown" >> $GITHUB_OUTPUT
+              echo "release=false" >> $GITHUB_OUTPUT
               ;;
           esac
 
       - name: Checking out repository.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -83,7 +84,7 @@ jobs:
       # ugly but it works. :/
       - name: Fetching MinGW cache.
         id: mingw-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.MINGW_INSTALLBASE }}
           key: ${{ env.MINGW_VERSION }} ${{ env.MINGW_BITNESS }}
@@ -103,14 +104,14 @@ jobs:
       # Cache Qt installations, very costly & flakey to fetch
       - name: Fetching Qt cache.
         id: qt-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.QT_INSTALLBASE }}
           key: ${{ runner.os }} Qt${{ env.QT_VERSION }} ${{ env.QT_TOOLCHAIN }} ${{ env.QT_MODULES }}
 
       - name: Installing Qt.
         run: |
-          ./scripts/fetch_qt.sh ${QT_INSTALLBASE} ${QT_VERSION} ${QT_TOOLCHAIN} ${QT_MODULES}
+          ./scripts/fetch_qt.sh ${QT_INSTALLBASE} ${QT_VERSION} ${QT_HOSTOS} ${QT_TOOLCHAIN} ${QT_MODULES}
 
       - name: Adding Qt to PATH.
         run: |
@@ -154,7 +155,7 @@ jobs:
         if: steps.identify-build.outputs.release == 'true' && env.DONT_PACKAGE != 'true'
         run: |
           export package_name="BambooTracker-${{ steps.identify-build.outputs.build-tag }}-${BUILD_TARGET}"
-          echo "::set-output name=package-name::${package_name}"
+          echo "package-name=${package_name}" >> $GITHUB_OUTPUT
           mv -v ${BT_INSTALLBASE} ${package_name}
           7z a -tzip ${package_name}{.zip,}
 

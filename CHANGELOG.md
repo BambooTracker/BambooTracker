@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Fixed
+
+- [#480] - Fix GitHub Actions flow ([#477], [#479]; thanks [@cxong], [@Zexxerd])
+
+[#477]: https://github.com/BambooTracker/BambooTracker/issues/477
+[#479]: https://github.com/BambooTracker/BambooTracker/issues/479
+[#480]: https://github.com/BambooTracker/BambooTracker/pull/480
+
 ## v0.6.0 (2023-01-22)
 
 ### Added
