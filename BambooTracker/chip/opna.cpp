@@ -201,7 +201,7 @@ void OPNA::setVolumeFM(double dB)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
 	volumeFm_ = dB;
-	busVolumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
+	busVolumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0) / VOLUME_RATIO_MOD_;
 	updateVolumeRatio(FM);
 }
 
@@ -209,7 +209,7 @@ void OPNA::setVolumeSSG(double dB)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
 	volumeSsg_ = dB;
-	busVolumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
+	busVolumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0) / VOLUME_RATIO_MOD_;
 	updateVolumeRatio(SSG);
 
 	rcIntf_->setSSGVolume(dB);
@@ -242,7 +242,7 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	int16_t* p = stream;
 	for (size_t i = 0; i < nSamples; ++i) {
 		for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
-			*p++ = static_cast<int16_t>(clamp(bufFM[pan][i] + bufSSG[pan][i], -32768, 32767));
+			*p++ = static_cast<int16_t>(clamp((bufFM[pan][i] + bufSSG[pan][i]) * VOLUME_RATIO_MOD_, -32768, 32767));
 		}
 	}
 }

@@ -78,6 +78,7 @@ private:
 
 	std::unique_ptr<Ym2608Interface> intf_;
 	double volumeFm_, volumeSsg_;
+	constexpr static int VOLUME_RATIO_MOD_ = 2;
 	size_t dramSize_;
 
 	std::unique_ptr<SimpleRealChipInterface> rcIntf_;
