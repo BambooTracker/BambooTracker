@@ -6,11 +6,15 @@
 
 - [#480] - Fix GitHub Actions flow ([#477], [#479]; thanks [@cxong], [@Zexxerd])
 - [#478] - Suppress noise caused by overflow in blip_buf resampling (thanks [@Drillimation], TotO)
+- [#481] - Fix font configuration to restore last saved font sizes (thanks [@staticanimal])
+
+[@staticanimal]: https://github.com/staticanimal
 
 [#477]: https://github.com/BambooTracker/BambooTracker/issues/477
 [#479]: https://github.com/BambooTracker/BambooTracker/issues/479
 [#480]: https://github.com/BambooTracker/BambooTracker/pull/480
 [#478]: https://github.com/BambooTracker/BambooTracker/issues/478
+[#481]: https://github.com/BambooTracker/BambooTracker/issues/481
 
 ## v0.6.0 (2023-01-22)
 

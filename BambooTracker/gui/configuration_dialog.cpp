@@ -415,10 +415,15 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->colorsTreeWidget->setColumnWidth(0, 250);
 	updateColorTreeFrom(palette.lock().get());
 
-	ui->ptnHdFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorHeaderFont())));
-	ui->ptnRowFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorRowsFont())));
-	ui->odrHdFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getOrderListHeaderFont())));
-	ui->odrRowFontInfoWidget->setFontInfo(QFont(gui_utils::utf8ToQString(configLocked->getOrderListRowsFont())));
+	auto deserializeFont = [](const std::string& fontStr) {
+		QFont font;
+		font.fromString(gui_utils::utf8ToQString(fontStr));
+		return font;
+	};
+	ui->ptnHdFontInfoWidget->setFontInfo(deserializeFont(configLocked->getPatternEditorHeaderFont()));
+	ui->ptnRowFontInfoWidget->setFontInfo(deserializeFont(configLocked->getPatternEditorRowsFont()));
+	ui->odrHdFontInfoWidget->setFontInfo(deserializeFont(configLocked->getOrderListHeaderFont()));
+	ui->odrRowFontInfoWidget->setFontInfo(deserializeFont(configLocked->getOrderListRowsFont()));
 }
 
 ConfigurationDialog::~ConfigurationDialog()
