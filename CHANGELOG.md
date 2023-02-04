@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.6.1 (2023-02-04)
+
 ### Fixed
 
 - [#480] - Fix GitHub Actions flow ([#477], [#479]; thanks [@cxong], [@Zexxerd])
