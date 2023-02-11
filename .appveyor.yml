@@ -10,7 +10,7 @@ branches:
   # whitelist
   only:
     - master
-    - /v\d*\.\d*\.\d*/
+    # - /v\d*\.\d*\.\d*/
 
 # Skipping commits with particular message or from specific user
 skip_commits:
@@ -73,12 +73,12 @@ for:
     only:
       - RELEASE_BUILD: false
   skip_tags: true
--
-  # Release
-  matrix:
-    only:
-      - RELEASE_BUILD: true
-  skip_non_tags: true
+# -
+#   # Release
+#   matrix:
+#     only:
+#       - RELEASE_BUILD: true
+#   skip_non_tags: true
 
 # scripts that run after cloning repository
 install:
