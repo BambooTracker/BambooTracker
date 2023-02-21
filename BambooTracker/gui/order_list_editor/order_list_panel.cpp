@@ -709,9 +709,8 @@ void OrderListPanel::drawBorders(int maxWidth)
 	QPainter painter(&backPixmap_);
 	painter.setPen(palette_->odrBorderColor);
 	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, backPixmap_.height());
-	for (int x = rowNumWidth_ + trackWidth_, trackVisIdx = leftTrackVisIdx_; x <= maxWidth; ++trackVisIdx) {
+	for (int x = rowNumWidth_ + trackWidth_; x <= maxWidth; x += trackWidth_) {
 		painter.drawLine(x, 0, x, backPixmap_.height());
-		x += trackWidth_;
 	}
 }
 
