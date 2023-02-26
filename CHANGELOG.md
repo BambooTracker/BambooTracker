@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- [#482] - Fix compiler error with clang15 (thanks [@ehaupt])
+
+[#482]: https://github.com/BambooTracker/BambooTracker/pull/482
+
 ## v0.6.1 (2023-02-04)
 
 ### Fixed
