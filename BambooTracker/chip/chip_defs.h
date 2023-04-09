@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,6 +29,6 @@
 
 typedef int32_t	sample;
 
-enum { CHIP_SMPL_BUF_SIZE_ = 0x20000 };
+enum { CHIP_SMPL_BUF_SIZE_ = 0x10000 };
 
 enum Stereo { STEREO_LEFT, STEREO_RIGHT };
