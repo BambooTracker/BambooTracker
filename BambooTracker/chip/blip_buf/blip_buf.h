@@ -36,7 +36,10 @@ void blip_add_delta( blip_t*, unsigned int clock_time, int delta );
 void blip_add_delta_fast( blip_t*, unsigned int clock_time, int delta );
 
 /** Length of time frame, in clocks, needed to make sample_count additional
-samples available. */
+samples available.
+
+Returns negative value if buffer cannnot hold many more samples.
+*/
 int blip_clocks_needed( const blip_t*, int sample_count );
 
 enum { /** Maximum number of samples that can be generated from one time frame. */

@@ -65,7 +65,13 @@ public:
 	bool hasConnectedToRealChip() const;
 
 	// Stream samples
-	void getStreamSamples(int16_t* container, size_t nSamples);
+	/**
+	 * @brief getStreamSamples
+	 * @param container buffer where generated samples are stored.
+	 * @param nSamples number of generated samples
+	 * @return true if sample generatrion is success, otherwise false.
+	 */
+	bool getStreamSamples(int16_t* container, size_t nSamples);
 	void getOutputHistory(int16_t* history);
 
 	// Chip mode

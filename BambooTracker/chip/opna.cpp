@@ -220,7 +220,7 @@ size_t OPNA::getDRAMSize() const noexcept
 	return dramSize_;
 }
 
-void OPNA::mix(int16_t* stream, size_t nSamples)
+bool OPNA::mix(int16_t* stream, size_t nSamples)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
 
@@ -228,7 +228,8 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	size_t pointSsg = 0;
 
 	// Store samples to internal buffer
-	(this->*writeFunc->storeBuffer)(nSamples, pointFm, pointSsg);
+	bool result = (this->*writeFunc->storeBuffer)(nSamples, pointFm, pointSsg);
+	if (!result) return false;
 
 	// Gain volume
 	gainSamples(buffer_[FM], pointFm, volumeRatio_[FM]);
@@ -245,6 +246,8 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 			*p++ = static_cast<int16_t>(clamp((bufFM[pan][i] + bufSSG[pan][i]) * VOLUME_RATIO_MOD_, -32768, 32767));
 		}
 	}
+
+	return true;
 }
 
 /**
@@ -285,21 +288,26 @@ size_t OPNA::dequeueData()
 	return waitCount;
 }
 
-void OPNA::storeBufferForImmediate(size_t nSamples, size_t& pointFm, size_t& pointSsg)
+bool OPNA::storeBufferForImmediate(size_t nSamples, size_t& pointFm, size_t& pointSsg)
 {
-	size_t intrSizeFm = resampler_[FM]->calculateInternalSampleSize(nSamples);
+	bool ok = false;
+	size_t intrSizeFm = resampler_[FM]->calculateInternalSampleSize(nSamples, ok);
+	if (!ok) return false;
 	intf_->updateStream(tmpBuf_, intrSizeFm);
 	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		std::copy_n(tmpBuf_[pan], intrSizeFm, buffer_[FM][pan] + pointFm);
 	}
 	pointFm += intrSizeFm;
 
-	size_t intrSizeSsg = resampler_[SSG]->calculateInternalSampleSize(nSamples);
+	size_t intrSizeSsg = resampler_[SSG]->calculateInternalSampleSize(nSamples, ok);
+	if (!ok) return false;
 	intf_->updateSsgStream(tmpBuf_, intrSizeSsg);
 	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		std::copy_n(tmpBuf_[pan], intrSizeSsg, buffer_[SSG][pan] + pointSsg);
 	}
 	pointSsg += intrSizeSsg;
+
+	return true;
 }
 
 void OPNA::flushWait(size_t& pointFm, size_t maxFm, size_t& pointSsg2, size_t maxSsg2)
@@ -324,10 +332,13 @@ void OPNA::flushWait(size_t& pointFm, size_t maxFm, size_t& pointSsg2, size_t ma
 	pointSsg2 += sizeSsg2;
 }
 
-void OPNA::storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg)
+bool OPNA::storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg)
 {	
-	size_t intrSizeFm = resampler_[FM]->calculateInternalSampleSize(nSamples);
-	size_t intrSizeSsg2 = resampler_[SSG]->calculateInternalSampleSize(nSamples) << 1;
+	bool ok = false;
+	size_t intrSizeFm = resampler_[FM]->calculateInternalSampleSize(nSamples, ok);
+	if (!ok) return false;
+	size_t intrSizeSsg2 = resampler_[SSG]->calculateInternalSampleSize(nSamples, ok) << 1;
+	if (!ok) return false;
 
 	size_t pointSsg2 = pointSsg << 1;
 
@@ -363,6 +374,8 @@ void OPNA::storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg
 	size_t sizeSsg2 = intrSizeSsg2 - pointSsg2;
 	if (sizeSsg2 <= waitRestSsg2_) waitRestSsg2_ -= sizeSsg2;
 	pointSsg = (pointSsg2 + sizeSsg2) >> 1;
+
+	return true;
 }
 
 void OPNA::setFmResampler(std::unique_ptr<AbstractResampler> resampler)

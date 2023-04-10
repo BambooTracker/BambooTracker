@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,13 +26,14 @@
 #pragma once
 
 #include <QObject>
-#include <QSemaphore>
-#include <QString>
 #include <thread>
 #include <mutex>
 #include <memory>
 #include <atomic>
 #include <cstdint>
+#include <QSemaphore>
+#include <QString>
+#include <QVariant>
 
 class AudioStream : public QObject
 {
@@ -42,7 +43,7 @@ public:
 	explicit AudioStream(QObject* parent = nullptr);
 	virtual ~AudioStream() override;
 
-	using GenerateCallback = void (int16_t*, size_t, void*);
+	using GenerateCallback = bool (int16_t*, size_t, void*);
 	void setGenerateCallback(GenerateCallback* cb, void* cbPtr);
 
 	using TickUpdateCallback = int (void*);
@@ -69,10 +70,11 @@ public:
 
 signals:
 	void streamInterrupted(int state);
+	void streamErrorInCallback(const QVariant& data);
 
 protected:
 	static const std::string AUDIO_OUT_CLIENT_NAME;
-	void generate(int16_t* container, uint32_t nSamples);
+	bool generate(int16_t* container, uint32_t nSamples);
 
 private:
 	uint32_t rate_;

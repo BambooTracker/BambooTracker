@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -46,6 +46,7 @@
 #include <QToolButton>
 #include <QSignalBlocker>
 #include <QTextCodec>
+#include <QVariant>
 #include "jamming.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -738,9 +739,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	}, bt_.get());
 	stream_->setGenerateCallback(+[](int16_t* container, size_t nSamples, void* cbPtr) {
 		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
-		bt->getStreamSamples(container, nSamples);
+		return bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
+	QObject::connect(stream_.get(), &AudioStream::streamErrorInCallback,
+					 this, [&](const QVariant&) {
+		QMessageBox::critical(this, tr("Error"), tr("An error occurred in the audio playback.\n"
+													"Please change the settings in the configuration."));
+	});
 	QString audioApi = gui_utils::utf8ToQString(config.lock()->getSoundAPI());
 	if (isFirstLaunch) {
 		bool streamState = false;

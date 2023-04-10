@@ -64,7 +64,14 @@ public:
 	void setVolumeSSG(double dB);
 	double getVolumeSSG() const noexcept { return volumeSsg_; }
 	size_t getDRAMSize() const noexcept;
-	void mix(int16_t* stream, size_t nSamples) override;
+
+	/**
+	 * @brief mix samples.
+	 * @param stream buffer where mixed samples are stored.
+	 * @param nSamples number of samples
+	 * @return true if sample generation is success, otherwise false.
+	 */
+	bool mix(int16_t* stream, size_t nSamples) override;
 
 	void setFmResampler(std::unique_ptr<AbstractResampler> resampler);
 	void setSsgResampler(std::unique_ptr<AbstractResampler> resampler);
@@ -103,14 +110,14 @@ private:
 	size_t waitRestFm_, waitRestSsg2_;
 	size_t rate2_;
 	sample* tmpBuf_[2];
-	void storeBufferForImmediate(size_t nSamples, size_t& pointFm, size_t& pointSsg);
-	void storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg);
+	bool storeBufferForImmediate(size_t nSamples, size_t& pointFm, size_t& pointSsg);
+	bool storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg);
 	void flushWait(size_t& pointFm, size_t maxFm, size_t& pointSsg2, size_t maxSsg2);
 
 	struct WriteModeFuncs
 	{
 		void (OPNA::*setRegister)(uint32_t, uint8_t);
-		void (OPNA::*storeBuffer)(size_t, size_t&, size_t&);
+		bool (OPNA::*storeBuffer)(size_t, size_t&, size_t&);
 	} writeFuncs[2];
 	WriteModeFuncs* writeFunc;
 };

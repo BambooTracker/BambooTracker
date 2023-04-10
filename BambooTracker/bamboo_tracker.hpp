@@ -370,7 +370,13 @@ public:
 	///  0: Step
 	/// -1: Stop
 	int streamCountUp();
-	void getStreamSamples(int16_t *container, size_t nSamples);
+	/**
+	 * @brief getStreamSamples
+	 * @param container buffer where generated samples are stored.
+	 * @param nSamples number of needed samples.
+	 * @return true if sample generation is success, otherwise false.
+	 */
+	bool getStreamSamples(int16_t *container, size_t nSamples);
 	void killSound();
 
 	// Stream details

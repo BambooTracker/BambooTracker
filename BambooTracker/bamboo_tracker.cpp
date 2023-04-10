@@ -1822,7 +1822,13 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, Export
 			sampCntRest -= count;
 			intrCntRest -= count;
 
-			opnaCtrl_->getStreamSamples(buf.data(), count);
+			bool result = opnaCtrl_->getStreamSamples(buf.data(), count);
+			if (!result) {
+				stopPlaySong();
+				isFollowPlay_ = tmpFollow;
+				opnaCtrl_->setRate(tmpRate);
+				return false;
+			}
 			container.appendSample(buf.data(), count);
 		}
 
@@ -2015,9 +2021,9 @@ int BambooTracker::streamCountUp()
 	return state;
 }
 
-void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
+bool BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 {
-	opnaCtrl_->getStreamSamples(container, nSamples);
+	return opnaCtrl_->getStreamSamples(container, nSamples);
 }
 
 void BambooTracker::killSound()

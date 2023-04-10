@@ -171,7 +171,10 @@ int blip_clocks_needed( const blip_t* m, int samples )
 	fixed_t needed;
 	
 	/* Fails if buffer can't hold that many more samples */
-	assert( samples >= 0 && m->avail + samples <= m->size );
+	//assert( samples >= 0 && m->avail + samples <= m->size );
+	if (samples < 0 || m->size < m->avail + samples) {
+		return -1;
+	}
 	
 	needed = (fixed_t) samples * time_unit;
 	if ( needed < m->offset )

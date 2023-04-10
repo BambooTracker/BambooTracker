@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -116,9 +116,17 @@ void BlipResampler::reset()
 	}
 }
 
-size_t BlipResampler::calculateInternalSampleSize(size_t nSamples)
+size_t BlipResampler::calculateInternalSampleSize(size_t nSamples, bool& ok)
 {
-	return ((srcRate_ == destRate_) ? nSamples : blip_clocks_needed(ch_[0].blipBuf_, nSamples - blip_samples_avail(ch_[0].blipBuf_)));
+	if (srcRate_ == destRate_) {
+		ok = true;
+		return nSamples;
+	}
+	else {
+		int clocks = blip_clocks_needed(ch_[0].blipBuf_, nSamples - blip_samples_avail(ch_[0].blipBuf_));
+		ok = clocks >= 0;
+		return clocks;
+	}
 }
 
 sample** BlipResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
