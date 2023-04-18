@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -102,7 +102,7 @@ void AudioStream::stop()
 	started_ = false;
 }
 
-void AudioStream::generate(int16_t* container, uint32_t nSamples)
+bool AudioStream::generate(int16_t* container, uint32_t nSamples)
 {
 	GenerateCallback* gcb = nullptr;
 	void* gcbPtr = nullptr;
@@ -119,7 +119,7 @@ void AudioStream::generate(int16_t* container, uint32_t nSamples)
 
 	if (!gcb || !tucb || !started) {
 		std::fill(container, container + (nSamples << 1), 0);
-		return;
+		return true;
 	}
 
 	int16_t* destPtr = container;
@@ -133,10 +133,17 @@ void AudioStream::generate(int16_t* container, uint32_t nSamples)
 		nSamples -= count;
 		intrCountRest_ -= count;
 
-		gcb(destPtr, count, gcbPtr);
+		bool result = gcb(destPtr, count, gcbPtr);
+		if (!result) {
+			// Something went wrong in sample generation callback
+			emit streamErrorInCallback(QVariant());
+			return false;
+		}
 
 		destPtr += (count << 1);	// Move head
 	}
+
+	return true;
 }
 
 void AudioStream::generateTick()

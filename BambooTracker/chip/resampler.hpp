@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -56,8 +56,15 @@ public:
 	virtual void setMaxDuration(size_t maxDuration) noexcept;
 	virtual sample** interpolate(sample** src, size_t nSamples, size_t intrSize) = 0;
 
-	virtual size_t calculateInternalSampleSize(size_t nSamples)
+	/**
+	 * @brief calculateInternalSampleSize
+	 * @param nSamples number of samples after resampling
+	 * @param ok false is stored if something went wrong during calculation, otherwise true
+	 * @return number of samples to resmple
+	 */
+	virtual size_t calculateInternalSampleSize(size_t nSamples, bool& ok)
 	{
+		ok = true;
 		return static_cast<size_t>(std::ceil(nSamples * rateRatio_));
 	}
 
@@ -92,7 +99,7 @@ public:
 		init(srcRate_, destRate, maxDuration_);
 	}
 
-	size_t calculateInternalSampleSize(size_t nSamples) override;
+	size_t calculateInternalSampleSize(size_t nSamples, bool& ok) override;
 	sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
 
 private:

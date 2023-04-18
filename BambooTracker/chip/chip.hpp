@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -61,7 +61,7 @@ public:
 
 	void setMasterVolume(int percentage);
 
-	virtual void mix(int16_t* stream, size_t nSamples) = 0;
+	virtual bool mix(int16_t* stream, size_t nSamples) = 0;
 
 protected:
 	const int id_;

@@ -186,12 +186,15 @@ bool OPNAController::hasConnectedToRealChip() const
 }
 
 /********** Stream samples **********/
-void OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
+bool OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
 {
-	opna_->mix(container, nSamples);
+	bool result = opna_->mix(container, nSamples);
+	if (!result) return false;
 
 	size_t nHistory = std::min<size_t>(nSamples, bt_defs::OUTPUT_HISTORY_SIZE);
 	fillOutputHistory(&container[2 * (nSamples - nHistory)], nHistory);
+
+	return true;
 }
 
 void OPNAController::getOutputHistory(int16_t* container)

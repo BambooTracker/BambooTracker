@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #include "audio_stream_rtaudio.hpp"
 #include <string>
 #include <vector>
+#include <QVariant>
 #include "RtAudio.h"
 
 AudioStreamRtAudio::AudioStreamRtAudio(QObject* parent)
@@ -67,8 +68,8 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 			+[](void* outputBuffer, void*, unsigned int nFrames,
 			double, RtAudioStreamStatus, void* userData) -> int {
 		auto stream = reinterpret_cast<AudioStreamRtAudio*>(userData);
-		stream->generate(static_cast<int16_t*>(outputBuffer), nFrames);
-		return 0;
+		bool result = stream->generate(static_cast<int16_t*>(outputBuffer), nFrames);
+		return result ? 0 : 1;
 	};
 
 	unsigned int bufferSize = rate * duration / 1000;
