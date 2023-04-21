@@ -5,8 +5,11 @@
 ### Fixed
 
 - [#482] - Fix compiler error with clang15 (thanks [@ehaupt])
+- [#484] - Show error message when resampling is failed ([#483]; thanks [@freq-mod])
 
 [#482]: https://github.com/BambooTracker/BambooTracker/pull/482
+[#483]: https://github.com/BambooTracker/BambooTracker/issues/483
+[#484]: https://github.com/BambooTracker/BambooTracker/pull/484
 
 ## v0.6.1 (2023-02-04)
 
