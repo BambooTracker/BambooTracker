@@ -400,10 +400,24 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 					 this, [&](int num) {
 		if (num == -1) return;
 		freezeViews();
-		if (!tickTimerForRealChip_) stream_->stop();
+        if (!tickTimerForRealChip_) {
+            try {
+                stream_->stop();
+            }
+            catch (std::exception& e) {
+                showStreamFailedDialog(e.what());
+            }
+        }
 		bt_->setCurrentSongNumber(num);
-		loadSong();
-		if (!tickTimerForRealChip_) stream_->start();
+        loadSong();
+        if (!tickTimerForRealChip_) {
+            try {
+                stream_->start();
+            }
+            catch (std::exception& e) {
+                showStreamFailedDialog(e.what());
+            }
+        }
 	});
 
 	/* Song settings */
@@ -748,29 +762,34 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 													"Please change the settings in the configuration."));
 	});
 	QString audioApi = gui_utils::utf8ToQString(config.lock()->getSoundAPI());
-	if (isFirstLaunch) {
-		bool streamState = false;
-		QString streamErr;
-		for (const QString& audioApi : stream_->getAvailableBackends()) {
-			config.lock()->setSoundAPI(audioApi.toUtf8().toStdString());
-			QString audioDevice = stream_->getDefaultOutputDevice(audioApi);
-			config.lock()->setSoundDevice(audioDevice.toUtf8().toStdString());
-			streamState = stream_->initialize(
-							  static_cast<uint32_t>(bt_->getStreamRate()),
-							  static_cast<uint32_t>(bt_->getStreamDuration()),
-							  bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
-			if (streamState) break;
-		}
-		if (streamState) {
-			uint32_t sr = stream_->getStreamRate();
-			if (config.lock()->getSampleRate() != sr) {
-				showStreamRateWarningDialog(sr);
-				bt_->setStreamRate(sr);
-			}
-		}
-		else {
-			showStreamFailedDialog(streamErr);
-		}
+    if (isFirstLaunch) {
+        try {
+            bool streamState = false;
+            QString streamErr;
+            for (const QString& audioApi : stream_->getAvailableBackends()) {
+                config.lock()->setSoundAPI(audioApi.toUtf8().toStdString());
+                QString audioDevice = stream_->getDefaultOutputDevice(audioApi);
+                config.lock()->setSoundDevice(audioDevice.toUtf8().toStdString());
+                streamState = stream_->initialize(
+                    static_cast<uint32_t>(bt_->getStreamRate()),
+                    static_cast<uint32_t>(bt_->getStreamDuration()),
+                    bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
+                if (streamState) break;
+            }
+            if (streamState) {
+                uint32_t sr = stream_->getStreamRate();
+                if (config.lock()->getSampleRate() != sr) {
+                    showStreamRateWarningDialog(sr);
+                    bt_->setStreamRate(sr);
+                }
+            }
+            else {
+                showStreamFailedDialog(streamErr);
+            }
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
 	}
 	else {	// Ordinary launch
 		bool savedApiExists = false;
@@ -797,21 +816,26 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 			audioDevice = stream_->getDefaultOutputDevice(audioApi);
 			config.lock()->setSoundDevice(audioDevice.toUtf8().toStdString());
 		}
-		QString streamErr;
-		bool streamState = stream_->initialize(
-							   static_cast<uint32_t>(bt_->getStreamRate()),
-							   static_cast<uint32_t>(bt_->getStreamDuration()),
-							   bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
-		if (streamState) {
-			uint32_t sr = stream_->getStreamRate();
-			if (config.lock()->getSampleRate() != sr) {
-				showStreamRateWarningDialog(sr);
-				bt_->setStreamRate(sr);
-			}
-		}
-		else {
-			showStreamFailedDialog(streamErr);
-		}
+        try {
+            QString streamErr;
+            bool streamState = stream_->initialize(
+                static_cast<uint32_t>(bt_->getStreamRate()),
+                static_cast<uint32_t>(bt_->getStreamDuration()),
+                bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
+            if (streamState) {
+                uint32_t sr = stream_->getStreamRate();
+                if (config.lock()->getSampleRate() != sr) {
+                    showStreamRateWarningDialog(sr);
+                    bt_->setStreamRate(sr);
+                }
+            }
+            else {
+                showStreamFailedDialog(streamErr);
+            }
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
 	}
 	RealChipInterfaceType intf = config.lock()->getRealChipInterface();
 	if (intf != RealChipInterfaceType::NONE) {
@@ -833,8 +857,15 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, bo
 	if (filePath.isEmpty()) {
 		loadModule();
 		setInitialSelectedInstrument();
-		assignADPCMSamples();
-		if (!tickTimerForRealChip_) stream_->start();
+        assignADPCMSamples();
+        if (!tickTimerForRealChip_) {
+            try {
+                stream_->start();
+            }
+            catch (std::exception& e) {
+                showStreamFailedDialog(e.what());
+            }
+        }
 	}
 	else {
 		openModule(QFileInfo(filePath).absoluteFilePath());	// If use emulation, stream starts
@@ -2165,8 +2196,15 @@ void MainWindow::openModule(const QString& file)
 {
 	try {
 		freezeViews();
-		if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
-		else stream_->stop();
+        if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
+        else {
+            try {
+                stream_->stop();
+            }
+            catch (std::exception& e) {
+                showStreamFailedDialog(e.what());
+            }
+        }
 
 		QFile fp(file);
 		if (fp.open(QIODevice::ReadOnly)) {
@@ -2208,8 +2246,16 @@ void MainWindow::openModule(const QString& file)
 AFTER_MOD_LOADING:	// Post process of module loading
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
-	else stream_->start();
+    if (tickTimerForRealChip_) tickTimerForRealChip_->start();
+    else {
+        try {
+            stream_->start();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+    }
+
 	setInitialSelectedInstrument();
 	assignADPCMSamples();
 }
@@ -2278,8 +2324,16 @@ void MainWindow::assignADPCMSamples()
 {
 	bt_->stopPlaySong();
 	lockWidgets(false);
-	if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
-	else stream_->stop();
+    if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
+    else {
+        try {
+            stream_->stop();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+    }
+
 	bool isStoredAll = bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instDialogMan_->onInstrumentADPCMSampleMemoryUpdated();
 
@@ -2288,8 +2342,15 @@ void MainWindow::assignADPCMSamples()
 							 tr("Insufficient memory size to load ADPCM samples. Please delete the unused samples."));
 	}
 
-	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
-	else stream_->start();
+    if (tickTimerForRealChip_) tickTimerForRealChip_->start();
+    else {
+        try {
+            stream_->start();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+    }
 }
 
 /********** Play song **********/
@@ -2370,19 +2431,37 @@ void MainWindow::changeConfiguration()
 	if (intf == RealChipInterfaceType::NONE) {
 		tickTimerForRealChip_.reset();
 		bt_->connectToRealChip(RealChipInterfaceType::NONE);
-		QString streamErr;
-		streamState = stream_->initialize(
-						  config_.lock()->getSampleRate(),
-						  config_.lock()->getBufferLength(),
-						  bt_->getModuleTickFrequency(),
-						  gui_utils::utf8ToQString(config_.lock()->getSoundAPI()),
-						  gui_utils::utf8ToQString(config_.lock()->getSoundDevice()),
-						  &streamErr);
-		if (!streamState) showStreamFailedDialog(streamErr);
-		stream_->start();
+
+        try {
+            QString streamErr;
+            streamState = stream_->initialize(
+                config_.lock()->getSampleRate(),
+                config_.lock()->getBufferLength(),
+                bt_->getModuleTickFrequency(),
+                gui_utils::utf8ToQString(config_.lock()->getSoundAPI()),
+                gui_utils::utf8ToQString(config_.lock()->getSoundDevice()),
+                &streamErr);
+            if (!streamState) showStreamFailedDialog(streamErr);
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+
+        try {
+            stream_->start();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
 	}
-	else {
-		stream_->stop();
+    else {
+        try {
+            stream_->stop();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+
 		if (tickTimerForRealChip_) {
 			tickTimerForRealChip_->stop();
 		}
@@ -2924,13 +3003,27 @@ void MainWindow::on_actionModule_Properties_triggered()
 		bt_->stopPlaySong();
 		lockWidgets(false);
 		dialog.onAccepted();
-		freezeViews();
-		if (!tickTimerForRealChip_) stream_->stop();
+        freezeViews();
+        if (!tickTimerForRealChip_) {
+            try {
+                stream_->stop();
+            }
+            catch (std::exception& e) {
+                showStreamFailedDialog(e.what());
+            }
+        }
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
-		ui->instrumentList->setCurrentRow(instRow);
-		if (!tickTimerForRealChip_) stream_->start();
+        ui->instrumentList->setCurrentRow(instRow);
+        if (!tickTimerForRealChip_) {
+            try {
+                stream_->start();
+            }
+            catch (std::exception& e) {
+                showStreamFailedDialog(e.what());
+            }
+        }
 		assignADPCMSamples();
 	}
 }
@@ -3159,14 +3252,29 @@ void MainWindow::on_actionNew_triggered()
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
-	freezeViews();
-	if (!tickTimerForRealChip_) stream_->stop();
+    freezeViews();
+    if (!tickTimerForRealChip_) {
+        try {
+            stream_->stop();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+    }
+
 	bt_->makeNewModule();
 	loadModule();
 	setInitialSelectedInstrument();
 	isModifiedForNotCommand_ = false;
-	setWindowModified(false);
-	if (!tickTimerForRealChip_) stream_->start();
+    setWindowModified(false);
+    if (!tickTimerForRealChip_) {
+        try {
+            stream_->start();
+        }
+        catch (std::exception& e) {
+            showStreamFailedDialog(e.what());
+        }
+    }
 	assignADPCMSamples();
 }
 
@@ -3448,8 +3556,14 @@ void MainWindow::on_actionWAV_triggered()
 	unmuteTracks.insert(unmuteTracks.begin(), -1);
 
 	bt_->stopPlaySong();
-	lockWidgets(false);
-	stream_->stop();
+    lockWidgets(false);
+
+    try {
+        stream_->stop();
+    }
+    catch (std::exception& e) {
+        showStreamFailedDialog(e.what());
+    }
 
 	for (size_t i = 0; i < unmuteTracks.size(); ++i) {
 		int curTrack = unmuteTracks[i];
@@ -3543,8 +3657,14 @@ void MainWindow::on_actionWAV_triggered()
 	// Restore states
 	for (size_t i = 0 ; i < attribs.size(); ++i) {
 		bt_->setTrackMuteState(attribs[i].number, muteStates[i]);
-	}
-	stream_->start();
+    }
+
+    try {
+        stream_->start();
+    }
+    catch (std::exception& e) {
+        showStreamFailedDialog(e.what());
+    }
 }
 
 void MainWindow::on_actionVGM_triggered()
@@ -3575,8 +3695,14 @@ void MainWindow::on_actionVGM_triggered()
 	progress.open();
 
 	bt_->stopPlaySong();
-	lockWidgets(false);
-	stream_->stop();
+    lockWidgets(false);
+
+    try {
+        stream_->stop();
+    }
+    catch (std::exception& e) {
+        showStreamFailedDialog(e.what());
+    }
 
 	try {
 		auto bar = [&progress]() -> bool {
@@ -3612,7 +3738,12 @@ void MainWindow::on_actionVGM_triggered()
 	}
 
 AFTER_VGM_WRITE:
-	stream_->start();
+    try {
+        stream_->start();
+    }
+    catch (std::exception& e) {
+        showStreamFailedDialog(e.what());
+    }
 }
 
 void MainWindow::on_actionS98_triggered()
@@ -3644,7 +3775,13 @@ void MainWindow::on_actionS98_triggered()
 
 	bt_->stopPlaySong();
 	lockWidgets(false);
-	stream_->stop();
+
+    try {
+        stream_->stop();
+    }
+    catch (std::exception& e) {
+        showStreamFailedDialog(e.what());
+    }
 
 	try {
 		auto bar = [&progress]() -> bool {
@@ -3682,7 +3819,12 @@ void MainWindow::on_actionS98_triggered()
 	}
 
 AFTER_S98_WRITE:
-	stream_->start();
+    try {
+        stream_->start();
+    }
+    catch (std::exception& e) {
+        showStreamFailedDialog(e.what());
+    }
 }
 
 void MainWindow::on_actionMix_triggered()
