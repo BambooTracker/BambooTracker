@@ -91,12 +91,15 @@ void EffectListDialog::addRow(EffectType effect, std::unordered_set<SoundSource>
 	int row = ui->tableWidget->rowCount();
 	ui->tableWidget->insertRow(row);
 	ui->tableWidget->setItem(row, 0, new QTableWidgetItem(effect_desc::getEffectFormat(effect)));
-	ui->tableWidget->setRowHeight(row, ui->tableWidget->horizontalHeader()->height());
-	QString typeStr("");
-	if (types.count(SoundSource::FM)) typeStr += "FM";
-	if (types.count(SoundSource::SSG)) typeStr = typeStr + (typeStr.isEmpty() ? "" : ", ") + "SSG";
-	if (types.count(SoundSource::RHYTHM)) typeStr = typeStr + (typeStr.isEmpty() ? "" : ", ") + tr("Rhythm");
-	if (types.count(SoundSource::ADPCM)) typeStr = typeStr + (typeStr.isEmpty() ? "" : ", ") + "ADPCM";
-	ui->tableWidget->setItem(row, 1, new QTableWidgetItem(typeStr));
-	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(effect_desc::getEffectDescription(effect)));
+    ui->tableWidget->setRowHeight(row, ui->tableWidget->horizontalHeader()->height());
+    ui->tableWidget->setItem(row, 1, new QTableWidgetItem(QString(types.count(SoundSource::FM) ? "Yes" : "")));
+    ui->tableWidget->setItem(row, 2, new QTableWidgetItem(QString(types.count(SoundSource::SSG) ? "Yes" : "")));
+    ui->tableWidget->setItem(row, 3, new QTableWidgetItem(QString(types.count(SoundSource::RHYTHM) ? "Yes" : "")));
+    ui->tableWidget->setItem(row, 4, new QTableWidgetItem(QString(types.count(SoundSource::ADPCM) ? "Yes" : "")));
+    ui->tableWidget->setItem(row, 5, new QTableWidgetItem(effect_desc::getEffectDescription(effect)));
+    ui->tableWidget->resizeColumnToContents(0);
+    ui->tableWidget->resizeColumnToContents(1);
+    ui->tableWidget->resizeColumnToContents(2);
+    ui->tableWidget->resizeColumnToContents(3);
+    ui->tableWidget->resizeColumnToContents(4);
 }

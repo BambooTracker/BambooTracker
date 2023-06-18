@@ -35,7 +35,22 @@
      </column>
      <column>
       <property name="text">
-       <string>Track type</string>
+       <string>FM</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>SSG</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Rhythm</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>ADPCM</string>
       </property>
      </column>
      <column>
