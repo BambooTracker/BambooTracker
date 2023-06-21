@@ -92,14 +92,14 @@ void EffectListDialog::addRow(EffectType effect, std::unordered_set<SoundSource>
 	ui->tableWidget->insertRow(row);
 	ui->tableWidget->setItem(row, 0, new QTableWidgetItem(effect_desc::getEffectFormat(effect)));
     ui->tableWidget->setRowHeight(row, ui->tableWidget->horizontalHeader()->height());
-    ui->tableWidget->setItem(row, 1, new QTableWidgetItem(QString(types.count(SoundSource::FM) ? "Yes" : "")));
-    ui->tableWidget->setItem(row, 2, new QTableWidgetItem(QString(types.count(SoundSource::SSG) ? "Yes" : "")));
-    ui->tableWidget->setItem(row, 3, new QTableWidgetItem(QString(types.count(SoundSource::RHYTHM) ? "Yes" : "")));
-    ui->tableWidget->setItem(row, 4, new QTableWidgetItem(QString(types.count(SoundSource::ADPCM) ? "Yes" : "")));
-    ui->tableWidget->setItem(row, 5, new QTableWidgetItem(effect_desc::getEffectDescription(effect)));
-    ui->tableWidget->resizeColumnToContents(0);
-    ui->tableWidget->resizeColumnToContents(1);
-    ui->tableWidget->resizeColumnToContents(2);
-    ui->tableWidget->resizeColumnToContents(3);
-    ui->tableWidget->resizeColumnToContents(4);
+    auto trackTypes = {
+        SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM
+    };
+    int col = 1;
+    for (const auto trackType : trackTypes){
+        ui->tableWidget->setItem(row, col, new QTableWidgetItem(QString(types.count(trackType) ? "✓" : "")));
+        ui->tableWidget->resizeColumnToContents(col);
+        col++;
+    }
+    ui->tableWidget->setItem(row, col, new QTableWidgetItem(effect_desc::getEffectDescription(effect)));
 }
