@@ -50,6 +50,7 @@ else {
 
   equals(pthread_required, "true") {
     LIBS += -lpthread
+    DEFINES += _GNU_SOURCE
   }
   equals(pkgconfig_required, "true") {
     CONFIG += link_pkgconfig
