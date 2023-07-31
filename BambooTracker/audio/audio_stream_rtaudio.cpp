@@ -51,10 +51,10 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 	RtAudio::StreamParameters param;
 	param.nChannels = 2;
 	param.deviceId = ~0u;
-	for (unsigned int i = 0, n = audio->getDeviceCount(); i < n && param.deviceId == ~0u; ++i) {
-		RtAudio::DeviceInfo info = audio->getDeviceInfo(i);
+	for (unsigned int id : audio->getDeviceIds()) {
+		RtAudio::DeviceInfo info = audio->getDeviceInfo(id);
 		if (info.outputChannels >= 2 && info.name == deviceUtf8)
-			param.deviceId = i;
+			param.deviceId = id;
 	}
 	if (param.deviceId == ~0u)
 		param.deviceId = audio->getDefaultOutputDevice();
@@ -74,15 +74,14 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 
 	unsigned int bufferSize = rate * duration / 1000;
 	bool isSuccessed = false;
-	try {
-		audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
+	const RtAudioErrorType errorType = audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
+	if (errorType == RtAudioErrorType::RTAUDIO_NO_ERROR) {
 		if (errDetail) *errDetail = "";
 		isSuccessed = true;
 		rate = audio->getStreamSampleRate();	// Match to real rate (for ALSA)
 	}
-	catch (RtAudioError& error) {
-		error.printMessage();
-		if (errDetail) *errDetail = QString::fromStdString(error.getMessage());
+	else {
+		if (errDetail) *errDetail = QString::fromStdString(audio->getErrorText());
 	}
 
 	AudioStream::initialize(rate, duration, intrRate, backend, device);
@@ -129,8 +128,8 @@ std::vector<QString> AudioStreamRtAudio::getAvailableDevices() const
 	RtAudio* audio = audio_.get();
 	std::vector<QString> devices;
 
-	for (unsigned int i = 0, n = audio->getDeviceCount(); i < n; ++i) {
-		RtAudio::DeviceInfo info = audio->getDeviceInfo(i);
+	for (unsigned int id : audio->getDeviceIds()) {
+		RtAudio::DeviceInfo info = audio->getDeviceInfo(id);
 		if (info.outputChannels >= 2)
 			devices.push_back(QString::fromStdString(info.name));
 	}
@@ -152,10 +151,9 @@ std::vector<QString> AudioStreamRtAudio::getAvailableDevices(const QString& back
 
 	std::vector<QString> list;
 	auto a = std::make_unique<RtAudio>(api);
-	unsigned int deviceCnt = a->getDeviceCount();
-	list.reserve(deviceCnt);
-	for (unsigned int i = 0; i < deviceCnt; ++i) {
-		RtAudio::DeviceInfo info = a->getDeviceInfo(i);
+	list.reserve(a->getDeviceCount());
+	for (unsigned int id : a->getDeviceIds()) {
+		RtAudio::DeviceInfo info = a->getDeviceInfo(id);
 		if (info.outputChannels >= 2)
 			list.push_back(QString::fromStdString(info.name));
 	}
