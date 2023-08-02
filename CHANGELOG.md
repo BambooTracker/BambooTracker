@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.6.2 (2023-08-02)
+
+### Chnaged
+
+- [#490] - Show Effect list track types as separate columns ([#489]; thanks [@cxong])
+- [#493] - Update RtAudio v6.0.0 ([#492]; thanks [@OPNA2608])
+
 ### Fixed
 
 - [#482] - Fix compiler error with clang15 (thanks [@ehaupt])
@@ -10,6 +17,10 @@
 [#482]: https://github.com/BambooTracker/BambooTracker/pull/482
 [#483]: https://github.com/BambooTracker/BambooTracker/issues/483
 [#484]: https://github.com/BambooTracker/BambooTracker/pull/484
+[#490]: https://github.com/BambooTracker/BambooTracker/pull/490
+[#489]: https://github.com/BambooTracker/BambooTracker/issues/489
+[#492]: https://github.com/BambooTracker/BambooTracker/issues/492
+[#493]: https://github.com/BambooTracker/BambooTracker/pull/493
 
 ## v0.6.1 (2023-02-04)
 
