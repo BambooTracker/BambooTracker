@@ -6,6 +6,7 @@ TRANSLATIONS += \
     $$PWD/bamboo_tracker_fr.ts \
     $$PWD/bamboo_tracker_ja.ts \
     $$PWD/bamboo_tracker_pl.ts \
+    $$PWD/bamboo_tracker_es.ts \
 
 equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
     message(Using a workaround for missing 'lrelease' option in Qt <5.12...)

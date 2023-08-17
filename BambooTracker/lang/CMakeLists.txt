@@ -2,6 +2,7 @@ set (BT_TRANSLATIONS
 	bamboo_tracker_ja.ts
 	bamboo_tracker_fr.ts
 	bamboo_tracker_pl.ts
+	bamboo_tracker_es.ts
 )
 
 if (QT_VERSION EQUAL 6)
