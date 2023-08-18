@@ -493,7 +493,7 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="465"/>
         <source>Zero-wait write</source>
-        <translation type="unfinished"></translation>
+        <translation>No esperar para escritura de registro</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="476"/>
@@ -1352,7 +1352,7 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="382"/>
         <source>Master</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="521"/>
@@ -1367,7 +1367,7 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="606"/>
         <source>Virtual port</source>
-        <translation type="unfinished"></translation>
+        <translation>Puerto virtual</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="626"/>
@@ -1498,7 +1498,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="58"/>
         <source>Retrigger, x: volume slide (0-7: up, 8-F: down), y: tick (1-F)</source>
-        <translation type="unfinished">Retrigger, x: slide de volúmen (0-7: arriba, 8-F: abajo), y: tick (1-F)</translation>
+        <translation>Retrigger, x: deslizar volúmen (0-7: arriba, 8-F: abajo), y: tick (1-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="59"/>
@@ -1538,7 +1538,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="66"/>
         <source>Master volume, xx: volume (00-3F)</source>
-        <translation type="unfinished">Volúmen Master, xx: volúmen (00-3F)</translation>
+        <translation>Volúmen Master, xx: volúmen (00-3F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="67"/>
@@ -1548,17 +1548,17 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="68"/>
         <source>Register address bank 0, xx: address (00-6B)</source>
-        <translation type="unfinished"></translation>
+        <translation>Registrar dirección del banco de sonido 0, xx: dirección (00-6B)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="69"/>
         <source>Register address bank 1, xx: address (00-6B)</source>
-        <translation type="unfinished"></translation>
+        <translation>Registrar dirección del banco de sonido 1, xx: dirección (00-6B)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="70"/>
         <source>Register value set, xx: value (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Registrar valor, xx: valor (00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="71"/>
@@ -1578,7 +1578,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="74"/>
         <source>Extended volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation type="unfinished">Slide de volúmen extendido, x: arriba (0-F), y: abajo (0-F)</translation>
+        <translation>Slide de volúmen extendido, x: arriba (0-F), y: abajo (0-F)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="75"/>
@@ -1593,7 +1593,7 @@
     <message>
         <location filename="../gui/effect_description.cpp" line="77"/>
         <source>Fine detune, xx: pitch (00-FF)</source>
-        <translation type="unfinished">Desafinación fina, xx: tono (00-FF)</translation>
+        <translation>Desafinación fina, xx: tono (00-FF)</translation>
     </message>
     <message>
         <location filename="../gui/effect_description.cpp" line="78"/>
@@ -2605,7 +2605,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1118"/>
         <source>&amp;Deep Clone Instrument</source>
-        <translation type="unfinished">Clonar instrumento profundo(&amp;D)</translation>
+        <translation>Clonación profunda de instrumento(&amp;D)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1130"/>
@@ -2705,7 +2705,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1242"/>
         <source>&amp;Kill Sound</source>
-        <translation type="unfinished"></translation>
+        <translation>Silenciar sonido(&amp;K)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1245"/>
@@ -3085,7 +3085,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1662"/>
         <source>&amp;Hide Tracks...</source>
-        <translation>Ocultar pistas(&amp;H)</translation>
+        <translation>Ocultar pistas(&amp;H)...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1667"/>
@@ -4207,7 +4207,7 @@ Please change the settings in the configuration.</source>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.ui" line="100"/>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.ui" line="277"/>
         <source>Raw</source>
-        <translation type="unfinished">Valor de registro</translation>
+        <translation>Valor de registro</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.ui" line="126"/>
@@ -4576,7 +4576,7 @@ Please change the settings in the configuration.</source>
         <location filename="../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="319"/>
         <location filename="../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="437"/>
         <source>Release</source>
-        <translation type="unfinished"></translation>
+        <translation>Soltar</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="400"/>
