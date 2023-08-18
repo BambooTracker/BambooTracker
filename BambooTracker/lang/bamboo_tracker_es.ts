@@ -21,8 +21,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="204"/>
         <source>Root key</source>
-        <translatorcomment>Tonalidad fundamental</translatorcomment>
-        <translation>Tónica</translation>
+        <translation>Tonalidad fundamental</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="210"/>
@@ -42,12 +41,12 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="263"/>
         <source>Re&amp;verse</source>
-        <translation>Revertir(&amp;V)</translation>
+        <translation>Revertir(&amp;v)</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="272"/>
         <source>Zoom I&amp;n</source>
-        <translation>Acercar(&amp;N)</translation>
+        <translation>Acercar(&amp;n)</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="281"/>
@@ -82,7 +81,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="340"/>
         <source>Direc&amp;t Draw</source>
-        <translation>Dibujar directamente(&amp;T)</translation>
+        <translation>Dibujar directamente(&amp;t)</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.cpp" line="363"/>
@@ -107,7 +106,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.cpp" line="706"/>
         <source>All files (*)</source>
-        <translation>Todos los archivos(*)</translation>
+        <translation>Todos los archivos (*)</translation>
     </message>
 </context>
 <context>
@@ -519,14 +518,12 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="555"/>
         <source>Appearance</source>
-        <translatorcomment>Apariencia</translatorcomment>
-        <translation></translation>
+        <translation>Apariencia</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="561"/>
         <source>Font and size</source>
-        <translatorcomment>Fuente y tamaño</translatorcomment>
-        <translation></translation>
+        <translation>Fuente y tamaño</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="567"/>
@@ -553,27 +550,23 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="610"/>
         <source>Colors</source>
-        <translatorcomment>Colores</translatorcomment>
-        <translation></translation>
+        <translation>Colores</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="629"/>
         <location filename="../gui/configuration_dialog.ui" line="979"/>
         <source>Edit</source>
-        <translatorcomment>Editar</translatorcomment>
-        <translation></translation>
+        <translation>Editar</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="643"/>
         <source>Item</source>
-        <translatorcomment>Elemento</translatorcomment>
-        <translation></translation>
+        <translation>Elemento</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="648"/>
         <source>Color</source>
-        <translatorcomment>Color</translatorcomment>
-        <translation></translation>
+        <translation>Color</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="653"/>
@@ -1066,38 +1059,32 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="187"/>
         <source>Paste and mix</source>
-        <translatorcomment>Pegar y mezclar</translatorcomment>
-        <translation></translation>
+        <translation>Pegar y mezclar</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="188"/>
         <source>Paste and overwrite</source>
-        <translatorcomment>Pegar y sobrescribir</translatorcomment>
-        <translation></translation>
+        <translation>Pegar y sobrescribir</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="189"/>
         <source>Paste and insert</source>
-        <translatorcomment>Pegar e insertar</translatorcomment>
-        <translation></translation>
+        <translation>Pegar e insertar</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="190"/>
         <source>Select all</source>
-        <translatorcomment>Seleccionar todo</translatorcomment>
-        <translation></translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="191"/>
         <source>Deselect</source>
-        <translatorcomment>Deseleccionar</translatorcomment>
-        <translation></translation>
+        <translation>Deseleccionar</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="192"/>
         <source>Select row</source>
-        <translatorcomment>Seleccionar fila</translatorcomment>
-        <translation></translation>
+        <translation>Seleccionar fila</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="193"/>
@@ -1389,7 +1376,7 @@
         <location filename="../gui/configuration_dialog.cpp" line="768"/>
         <location filename="../gui/configuration_dialog.cpp" line="788"/>
         <source>All files (*)</source>
-        <translation>Todos los archivos(*)</translation>
+        <translation>Todos los archivos (*)</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="780"/>
@@ -3154,7 +3141,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="714"/>
         <source>Check the demo modules and instruments included with your download of BambooTracker.</source>
-        <translation>Chequee los módulos e instrumentos de demo incluidos con su descarga de BampooTracker.</translation>
+        <translation>Chequee los módulos e instrumentos de demo incluidos con su descarga de BambooTracker.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="716"/>
@@ -3189,7 +3176,7 @@
     <message>
         <location filename="../gui/mainwindow.cpp" line="725"/>
         <source>Please report any bugs you find and requests and features you&apos;d like to see on our Discord server or our bug tracker (%1).</source>
-        <translation>Por favor reporte cualquier error que encuentre y peticiones y funcionalidades que quiera ver en nuestro servidor de Discord or en nuestro rastreador de errores (%1).</translation>
+        <translation>Por favor reporte cualquier error que encuentre y peticiones y funcionalidades que quiera ver en nuestro servidor de Discord o en nuestro rastreador de errores (%1).</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="729"/>
@@ -3958,7 +3945,7 @@ Please change the settings in the configuration.</source>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2186"/>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="3010"/>
         <source>&amp;Solo Track</source>
-        <translation>Pista solista(&amp;o)</translation>
+        <translation>Pista solista(&amp;S)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2189"/>
