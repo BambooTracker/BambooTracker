@@ -41,12 +41,12 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="263"/>
         <source>Re&amp;verse</source>
-        <translation>Revertir(&amp;v)</translation>
+        <translation>Re&amp;vertir</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="272"/>
         <source>Zoom I&amp;n</source>
-        <translation>Acercar(&amp;n)</translation>
+        <translation>Acercar(&amp;N)</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="281"/>
@@ -56,7 +56,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="290"/>
         <source>&amp;Import</source>
-        <translation>Importar(&amp;I)</translation>
+        <translation>&amp;Importar</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="299"/>
@@ -76,12 +76,12 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="328"/>
         <source>&amp;Draw Sample</source>
-        <translation>Dibujar muestra(&amp;D)</translation>
+        <translation>&amp;Dibujar muestra</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.ui" line="340"/>
         <source>Direc&amp;t Draw</source>
-        <translation>Dibujar directamente(&amp;t)</translation>
+        <translation>Dibujar direc&amp;tamente</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.cpp" line="363"/>
@@ -101,7 +101,7 @@
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.cpp" line="706"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
-        <translation></translation>
+        <translation>WAV con signo 16-bit PCM (*.wav)</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/adpcm_sample_editor.cpp" line="706"/>
@@ -455,7 +455,7 @@
     <message>
         <location filename="../gui/configuration_dialog.ui" line="349"/>
         <source>1ms</source>
-        <translation></translation>
+        <translation>1ms</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="375"/>
@@ -472,7 +472,7 @@
         <location filename="../gui/configuration_dialog.ui" line="394"/>
         <location filename="../gui/configuration_dialog.ui" line="436"/>
         <source>API</source>
-        <translation></translation>
+        <translation>API</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.ui" line="410"/>
@@ -1089,14 +1089,12 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="193"/>
         <source>Select column</source>
-        <translatorcomment>Seleccionar columna</translatorcomment>
-        <translation></translation>
+        <translation>Seleccionar columna</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="194"/>
         <source>Select pattern</source>
-        <translatorcomment>Seleccionar patrón</translatorcomment>
-        <translation></translation>
+        <translation>Seleccionar patrón</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="195"/>
@@ -1106,8 +1104,7 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="196"/>
         <source>Go to step</source>
-        <translatorcomment>Ir al paso</translatorcomment>
-        <translation></translation>
+        <translation>Ir al paso</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="197"/>
@@ -1122,8 +1119,7 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="199"/>
         <source>Interpolate</source>
-        <translatorcomment>Interpolar</translatorcomment>
-        <translation></translation>
+        <translation>Interpolar</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="200"/>
@@ -1329,17 +1325,17 @@
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="364"/>
         <source>old, deprecated</source>
-        <translation type="unfinished"></translation>
+        <translation>viejo, obsoleto</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="366"/>
         <source>fast</source>
-        <translation type="unfinished"></translation>
+        <translation>rápido</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="382"/>
         <source>Master</source>
-        <translation></translation>
+        <translation>Master</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="521"/>
@@ -1382,7 +1378,7 @@
         <location filename="../gui/configuration_dialog.cpp" line="780"/>
         <location filename="../gui/configuration_dialog.cpp" line="799"/>
         <source>Error</source>
-        <translation></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../gui/configuration_dialog.cpp" line="780"/>
@@ -1623,12 +1619,12 @@
     <message>
         <location filename="../gui/effect_list_dialog.ui" line="38"/>
         <source>FM</source>
-        <translation></translation>
+        <translation>FM</translation>
     </message>
     <message>
         <location filename="../gui/effect_list_dialog.ui" line="43"/>
         <source>SSG</source>
-        <translation></translation>
+        <translation>SSG</translation>
     </message>
     <message>
         <location filename="../gui/effect_list_dialog.ui" line="48"/>
@@ -1638,7 +1634,7 @@
     <message>
         <location filename="../gui/effect_list_dialog.ui" line="53"/>
         <source>ADPCM</source>
-        <translation></translation>
+        <translation>ADPCM</translation>
     </message>
     <message>
         <location filename="../gui/effect_list_dialog.ui" line="58"/>
@@ -1689,7 +1685,7 @@
     <message>
         <location filename="../gui/instrument_editor/fm_operator_table.ui" line="104"/>
         <source>SSGEG</source>
-        <translation></translation>
+        <translation>SSGEG</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/fm_operator_table.cpp" line="103"/>
@@ -1767,7 +1763,7 @@
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="93"/>
         <source>Error</source>
-        <translation></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.hpp" line="47"/>
@@ -1785,17 +1781,17 @@
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="34"/>
         <source>s98</source>
-        <translation></translation>
+        <translation>s98</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="35"/>
         <source>vgm</source>
-        <translation></translation>
+        <translation>vgm</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="36"/>
         <source>wav</source>
-        <translation></translation>
+        <translation>wav</translation>
     </message>
     <message>
         <location filename="../gui/file_io_error_message_box.cpp" line="37"/>
@@ -1853,7 +1849,7 @@
     <message>
         <location filename="../gui/instrument_editor/fm_instrument_editor.ui" line="290"/>
         <source>LFO</source>
-        <translation></translation>
+        <translation>LFO</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/fm_instrument_editor.ui" line="369"/>
@@ -1902,7 +1898,7 @@
     <message>
         <location filename="../gui/instrument_editor/fm_instrument_editor.ui" line="458"/>
         <source>FM 3ch</source>
-        <translation></translation>
+        <translation>FM 3ch</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/fm_instrument_editor.ui" line="514"/>
@@ -1963,7 +1959,7 @@
         <location filename="../gui/instrument_editor/fm_instrument_editor.cpp" line="976"/>
         <location filename="../gui/instrument_editor/fm_instrument_editor.cpp" line="1043"/>
         <source>Error</source>
-        <translation></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/fm_instrument_editor.cpp" line="977"/>
@@ -2101,7 +2097,7 @@
     <message>
         <location filename="../gui/groove_settings_dialog.ui" line="204"/>
         <source>Pad</source>
-        <translation></translation>
+        <translation>Pad</translation>
     </message>
     <message>
         <location filename="../gui/groove_settings_dialog.cpp" line="169"/>
@@ -2203,7 +2199,7 @@
     <message>
         <location filename="../gui/keyboard_shortcut_list_dialog.ui" line="21"/>
         <source>qrc:/doc/shortcuts</source>
-        <translation></translation>
+        <translation>qrc:/doc/shortcuts</translation>
     </message>
 </context>
 <context>
@@ -2211,7 +2207,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="17"/>
         <source>BambooTracker</source>
-        <translation></translation>
+        <translation>BambooTracker</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="70"/>
@@ -2226,7 +2222,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="148"/>
         <source>Tempo</source>
-        <translation></translation>
+        <translation>Tempo</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="180"/>
@@ -2242,7 +2238,7 @@
         <location filename="../gui/mainwindow.ui" line="244"/>
         <location filename="../gui/mainwindow.cpp" line="3877"/>
         <source>Groove</source>
-        <translation></translation>
+        <translation>Groove</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="276"/>
@@ -2297,12 +2293,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="575"/>
         <source>&amp;Export</source>
-        <translation>Exportar(&amp;E)</translation>
+        <translation>&amp;Exportar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="584"/>
         <source>&amp;Recent Files</source>
-        <translation>Archivos recientes(&amp;R)</translation>
+        <translation>Archivos &amp;Recientes</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="604"/>
@@ -2312,12 +2308,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="608"/>
         <source>&amp;Select</source>
-        <translation>Seleccionar(&amp;S)</translation>
+        <translation>&amp;Seleccionar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="621"/>
         <source>Paste Specia&amp;l</source>
-        <translation>Pegar Especial(&amp;l)</translation>
+        <translation>Pegar Especial(&amp;I)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="634"/>
@@ -2327,42 +2323,42 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="659"/>
         <source>Patter&amp;n</source>
-        <translation>Patrón(&amp;n)</translation>
+        <translation>Patró&amp;n</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="663"/>
         <source>&amp;Transpose</source>
-        <translation>Transponer(&amp;T)</translation>
+        <translation>&amp;Transponer</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="672"/>
         <source>&amp;Change Values</source>
-        <translation>Cambiar valores(&amp;C)</translation>
+        <translation>&amp;Cambiar valores</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="691"/>
         <source>S&amp;ong</source>
-        <translation>Canción(&amp;o)</translation>
+        <translation>Canción(&amp;O)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="711"/>
         <source>&amp;Module</source>
-        <translation>Módulo(&amp;M)</translation>
+        <translation>&amp;Módulo</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="715"/>
         <source>Clean&amp;up</source>
-        <translation>Limpiar(&amp;u)</translation>
+        <translation>Limpiar(&amp;U)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="733"/>
         <source>&amp;Instrument</source>
-        <translation>Instrumento(&amp;I)</translation>
+        <translation>&amp;Instrumento</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="753"/>
         <source>&amp;Tracker</source>
-        <translation>Tracker(&amp;T)</translation>
+        <translation>&amp;Tracker</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="772"/>
@@ -2372,7 +2368,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="782"/>
         <source>Vie&amp;w</source>
-        <translation>Vista(&amp;w)</translation>
+        <translation>Vista(&amp;W)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="802"/>
@@ -2387,12 +2383,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="863"/>
         <source>&amp;New...</source>
-        <translation>Nuevo(&amp;N)...</translation>
+        <translation>&amp;Nuevo...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="866"/>
         <source>Ctrl+N</source>
-        <translation></translation>
+        <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="878"/>
@@ -2402,7 +2398,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="881"/>
         <source>Ctrl+O</source>
-        <translation></translation>
+        <translation>Ctrl+O</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="893"/>
@@ -2412,7 +2408,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="896"/>
         <source>Ctrl+S</source>
-        <translation></translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="904"/>
@@ -2432,47 +2428,47 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="924"/>
         <source>Ctrl+Z</source>
-        <translation></translation>
+        <translation>Ctrl+Z</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="936"/>
         <source>&amp;Redo</source>
-        <translation>Rehacer(&amp;R)</translation>
+        <translation>&amp;Rehacer</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="939"/>
         <source>Ctrl+Y</source>
-        <translation></translation>
+        <translation>Ctrl+Y</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="948"/>
         <source>Cu&amp;t</source>
-        <translation>Cortar(&amp;t)</translation>
+        <translation>Cor&amp;tar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="951"/>
         <source>Ctrl+X</source>
-        <translation></translation>
+        <translation>Ctrl+X</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="960"/>
         <source>&amp;Copy</source>
-        <translation>Copiar(&amp;C)</translation>
+        <translation>&amp;Copiar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="963"/>
         <source>Ctrl+C</source>
-        <translation></translation>
+        <translation>Ctrl+C</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="972"/>
         <source>&amp;Paste</source>
-        <translation>Pegar(&amp;P)</translation>
+        <translation>&amp;Pegar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="975"/>
         <source>Ctrl+V</source>
-        <translation></translation>
+        <translation>Ctrl+V</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="980"/>
@@ -2482,7 +2478,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="983"/>
         <source>Del</source>
-        <translation></translation>
+        <translation>Supr</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="988"/>
@@ -2492,12 +2488,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="991"/>
         <source>Ctrl+A</source>
-        <translation></translation>
+        <translation>Ctrl+A</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="996"/>
         <source>&amp;None</source>
-        <translation>Ninguno(&amp;N)</translation>
+        <translation>&amp;Ninguno</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="999"/>
@@ -2507,57 +2503,57 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1007"/>
         <source>E&amp;xpand</source>
-        <translation>Expandir(&amp;x)</translation>
+        <translation>E&amp;xpandir</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1015"/>
         <source>S&amp;hrink</source>
-        <translation>Encoger(&amp;h)</translation>
+        <translation>Encoger(&amp;H)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1020"/>
         <source>&amp;Decrease Note</source>
-        <translation>DIsminuir nota(&amp;D)</translation>
+        <translation>&amp;Disminuir nota</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1023"/>
         <source>Ctrl+F1</source>
-        <translation></translation>
+        <translation>Ctrl+F1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1028"/>
         <source>&amp;Increase Note</source>
-        <translation>Incrementar nota(&amp;I)</translation>
+        <translation>&amp;Incrementar nota</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1031"/>
         <source>Ctrl+F2</source>
-        <translation></translation>
+        <translation>Ctrl+F2</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1036"/>
         <source>D&amp;ecrease Octave</source>
-        <translation>Disminuir octava(&amp;e)</translation>
+        <translation>Disminuir octava(&amp;E)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1039"/>
         <source>Ctrl+F3</source>
-        <translation></translation>
+        <translation>Ctrl+F3</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1044"/>
         <source>I&amp;ncrease Octave</source>
-        <translation>Incrementar octava(&amp;n)</translation>
+        <translation>I&amp;ncrementar octava</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1047"/>
         <source>Ctrl+F4</source>
-        <translation></translation>
+        <translation>Ctrl+F4</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1056"/>
         <source>&amp;Insert Order</source>
-        <translation>Insertar orden(&amp;I)</translation>
+        <translation>&amp;Insertar orden</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1065"/>
@@ -2567,17 +2563,17 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1074"/>
         <source>&amp;Module Properties...</source>
-        <translation>Propiedades del módulo(&amp;M)...</translation>
+        <translation>Propiedades del &amp;Módulo...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1077"/>
         <source>Ctrl+P</source>
-        <translation></translation>
+        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1086"/>
         <source>&amp;New Instrument</source>
-        <translation>Nuevo instrumento(&amp;N)</translation>
+        <translation>&amp;Nuevo instrumento</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1098"/>
@@ -2587,7 +2583,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1110"/>
         <source>&amp;Clone Instrument</source>
-        <translation>Clonar instrumento(&amp;C)</translation>
+        <translation>&amp;Clonar instrumento</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1118"/>
@@ -2607,12 +2603,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1154"/>
         <source>&amp;Edit...</source>
-        <translation>Editar(&amp;E)...</translation>
+        <translation>&amp;Editar...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1157"/>
         <source>Ctrl+I</source>
-        <translation></translation>
+        <translation>Ctrl+I</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1166"/>
@@ -2622,12 +2618,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1175"/>
         <source>Play P&amp;attern</source>
-        <translation>Reproducir patrón(&amp;a)</translation>
+        <translation>Reproducir p&amp;atrón</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1178"/>
         <source>F6</source>
-        <translation></translation>
+        <translation>F6</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1183"/>
@@ -2637,17 +2633,17 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1186"/>
         <source>F5</source>
-        <translation></translation>
+        <translation>F5</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1191"/>
         <source>Play From C&amp;ursor</source>
-        <translation>Reproducir desde cursor(&amp;u)</translation>
+        <translation>Reproducir desde c&amp;ursor</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1194"/>
         <source>F7</source>
-        <translation></translation>
+        <translation>F7</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1203"/>
@@ -2657,37 +2653,37 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1206"/>
         <source>F8</source>
-        <translation></translation>
+        <translation>F8</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1218"/>
         <source>&amp;Edit Mode</source>
-        <translation>Modo Edición(&amp;E)</translation>
+        <translation>Modo &amp;Edición</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1221"/>
         <source>Space</source>
-        <translation></translation>
+        <translation>Espacio</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1226"/>
         <source>To&amp;ggle Track</source>
-        <translation>Reproducir pista(&amp;g)</translation>
+        <translation>Reproducir pista(&amp;G)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1229"/>
         <source>Alt+F9</source>
-        <translation></translation>
+        <translation>Alt+F9</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1234"/>
         <source>S&amp;olo Track</source>
-        <translation>Pista solista(&amp;o)</translation>
+        <translation>Pista s&amp;olista</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1237"/>
         <source>Alt+F10</source>
-        <translation></translation>
+        <translation>Alt+F10</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1242"/>
@@ -2697,42 +2693,42 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1245"/>
         <source>F12</source>
-        <translation></translation>
+        <translation>F12</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1250"/>
         <source>&amp;About...</source>
-        <translation>Acerca de(&amp;A)...</translation>
+        <translation>&amp;Acerca de...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1261"/>
         <source>Fo&amp;llow Mode</source>
-        <translation>Modo de seguimiento(&amp;l)</translation>
+        <translation>Modo de seguimiento(&amp;L)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1264"/>
         <source>ScrollLock</source>
-        <translation></translation>
+        <translation>BloqScroll</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1269"/>
         <source>&amp;Groove Settings...</source>
-        <translation>Configuración de groove(&amp;G)...</translation>
+        <translation>Configuración de &amp;Groove...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1278"/>
         <source>&amp;Configuration...</source>
-        <translation>Configuración(&amp;C)...</translation>
+        <translation>&amp;Configuración...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1287"/>
         <source>&amp;Duplicate Order</source>
-        <translation>Duplicar orden(&amp;D)</translation>
+        <translation>&amp;Duplicar orden</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1290"/>
         <source>Ctrl+D</source>
-        <translation></translation>
+        <translation>Ctrl+D</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1299"/>
@@ -2742,57 +2738,57 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1308"/>
         <source>Move Order Do&amp;wn</source>
-        <translation>Mover orden hacia abajo(&amp;w)</translation>
+        <translation>Mover orden hacia abajo(&amp;W)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1313"/>
         <source>&amp;Clone Patterns</source>
-        <translation>Clonar patrones(&amp;C)</translation>
+        <translation>&amp;Clonar patrones</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1316"/>
         <source>Alt+D</source>
-        <translation></translation>
+        <translation>Alt+D</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1321"/>
         <source>Clone &amp;Order</source>
-        <translation>Clonar orden(&amp;O)</translation>
+        <translation>Clonar &amp;Orden</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1326"/>
         <source>&amp;Comments...</source>
-        <translation>Comentarios(&amp;C)...</translation>
+        <translation>&amp;Comentarios...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1334"/>
         <source>&amp;Interpolate</source>
-        <translation>Interpolar(&amp;I)</translation>
+        <translation>&amp;Interpolar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1337"/>
         <source>Ctrl+G</source>
-        <translation></translation>
+        <translation>Ctrl+G</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1345"/>
         <source>&amp;Reverse</source>
-        <translation>Revertir(&amp;R)</translation>
+        <translation>&amp;Revertir</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1348"/>
         <source>Ctrl+R</source>
-        <translation></translation>
+        <translation>Ctrl+R</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1356"/>
         <source>R&amp;eplace Instrument</source>
-        <translation>Reemplazar instrumento(&amp;e)</translation>
+        <translation>R&amp;eemplazar instrumento</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1359"/>
         <source>Alt+S</source>
-        <translation></translation>
+        <translation>Alt+S</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1364"/>
@@ -2802,47 +2798,47 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1369"/>
         <source>&amp;Column</source>
-        <translation>Columna(&amp;C)</translation>
+        <translation>&amp;Columna</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1374"/>
         <source>&amp;Pattern</source>
-        <translation>Patrón(&amp;P)</translation>
+        <translation>&amp;Patrón</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1379"/>
         <source>&amp;Order</source>
-        <translation>Orden(&amp;O)</translation>
+        <translation>&amp;Orden</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1384"/>
         <source>Remove Unused &amp;Instruments</source>
-        <translation>Eliminar instrumentos no utilizados(&amp;I)</translation>
+        <translation>Eliminar &amp;Instrumentos no utilizados</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1389"/>
         <source>Remove Unused &amp;Patterns</source>
-        <translation>Eliminar patrones no utilizados(&amp;P)</translation>
+        <translation>Eliminar &amp;Patrones no utilizados</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1394"/>
         <source>&amp;WAV...</source>
-        <translation></translation>
+        <translation>&amp;WAV...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1399"/>
         <source>&amp;VGM...</source>
-        <translation></translation>
+        <translation>&amp;VGM...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1404"/>
         <source>&amp;Mix</source>
-        <translation>Mezclar(&amp;M)</translation>
+        <translation>&amp;Mezclar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1407"/>
         <source>Ctrl+M</source>
-        <translation></translation>
+        <translation>Ctrl+M</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1412"/>
@@ -2852,12 +2848,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1417"/>
         <source>&amp;Import From Bank File...</source>
-        <translation>Importar desde banco de sonido(&amp;I)...</translation>
+        <translation>&amp;Importar desde banco de sonido...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1422"/>
         <source>&amp;S98...</source>
-        <translation></translation>
+        <translation>&amp;S98...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1427"/>
@@ -2867,7 +2863,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1432"/>
         <source>&amp;Effect List...</source>
-        <translation>Lista de efectos(&amp;E)...</translation>
+        <translation>Lista de &amp;Efectos...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1435"/>
@@ -2877,7 +2873,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1438"/>
         <source>F1</source>
-        <translation></translation>
+        <translation>F1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1443"/>
@@ -2887,17 +2883,17 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1451"/>
         <source>E&amp;xport To Bank File...</source>
-        <translation>Exportar a banco de sonido(&amp;x)...</translation>
+        <translation>E&amp;xportar a banco de sonido...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1456"/>
         <source>Remove &amp;Duplicate Instruments</source>
-        <translation>Eliminar instrumentos duplicados(&amp;D)</translation>
+        <translation>Eliminar Instrumentos &amp;Duplicados</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1468"/>
         <source>Re&amp;name Instrument</source>
-        <translation>Renombrar instrumento(&amp;n)</translation>
+        <translation>Re&amp;nombrar instrumento</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1473"/>
@@ -2907,42 +2903,42 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1478"/>
         <source>Fine &amp;Decrease Values</source>
-        <translation>Disminuir el valor en 1(&amp;D)</translation>
+        <translation>&amp;Disminuir el valor en 1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1481"/>
         <source>Shift+F1</source>
-        <translation></translation>
+        <translation>Shift+F1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1486"/>
         <source>Fine &amp;Increase Values</source>
-        <translation>Incrementar el valor en 1(&amp;I)</translation>
+        <translation>&amp;Incrementar el valor en 1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1489"/>
         <source>Shift+F2</source>
-        <translation></translation>
+        <translation>Shift+F2</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1494"/>
         <source>Coarse D&amp;ecrease Values</source>
-        <translation>Disminuir el valor en 16(&amp;e)</translation>
+        <translation>Disminuir el valor en 16(&amp;E)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1497"/>
         <source>Shift+F3</source>
-        <translation></translation>
+        <translation>Shift+F3</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1502"/>
         <source>Coarse I&amp;ncrease Values</source>
-        <translation>Incrementar el valor en 16(&amp;n)</translation>
+        <translation>I&amp;ncrementar el valor en 16</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1505"/>
         <source>Shift+F4</source>
-        <translation></translation>
+        <translation>Shift+F4</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1513"/>
@@ -2952,7 +2948,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1516"/>
         <source>Ctrl+K</source>
-        <translation></translation>
+        <translation>Ctrl+K</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1521"/>
@@ -2962,7 +2958,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1524"/>
         <source>Ctrl+PgDown</source>
-        <translation></translation>
+        <translation>Ctrl+AvPág</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1529"/>
@@ -2972,37 +2968,37 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1532"/>
         <source>Ctrl+PgUp</source>
-        <translation></translation>
+        <translation>Ctrl+RePág</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1540"/>
         <source>&amp;Instrument Mask</source>
-        <translation>Máscara de instrumento(&amp;I)</translation>
+        <translation>Máscara de &amp;Instrumento</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1548"/>
         <source>&amp;Volume Mask</source>
-        <translation>Máscara de volúmen(&amp;V)</translation>
+        <translation>Máscara de &amp;Volúmen</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1553"/>
         <source>Set Ro&amp;w Marker</source>
-        <translation>Establecer marcador de fila(&amp;w)</translation>
+        <translation>Establecer marcador de fila(&amp;W)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1556"/>
         <source>Ctrl+B</source>
-        <translation></translation>
+        <translation>Ctrl+B</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1561"/>
         <source>Play From &amp;Marker</source>
-        <translation>Reproducir desde marcador(&amp;M)</translation>
+        <translation>Reproducir desde &amp;Marcador</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1564"/>
         <source>Ctrl+F7</source>
-        <translation></translation>
+        <translation>Ctrl+F7</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1569"/>
@@ -3012,12 +3008,12 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1572"/>
         <source>Alt+G</source>
-        <translation></translation>
+        <translation>Alt+G</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1577"/>
         <source>Remove Unused &amp;ADPCM Samples</source>
-        <translation>Eliminar samples ADPCM no utilizados(&amp;A)</translation>
+        <translation>Eliminar samples &amp;ADPCM no utilizados</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1588"/>
@@ -3032,7 +3028,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1607"/>
         <source>New Drumki&amp;t</source>
-        <translation>Nuevo kit de batería(&amp;t)</translation>
+        <translation>Nuevo ki&amp;t de batería</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1618"/>
@@ -3042,7 +3038,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1623"/>
         <source>&amp;Transpose Song...</source>
-        <translation>Transponer canción(&amp;T)...</translation>
+        <translation>&amp;Transponer canción...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1628"/>
@@ -3052,17 +3048,17 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1633"/>
         <source>&amp;Insert</source>
-        <translation>Insertar(&amp;I)</translation>
+        <translation>&amp;Insertar</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1641"/>
         <source>&amp;Cursor</source>
-        <translation>Cursor(&amp;C)</translation>
+        <translation>&amp;Cursor</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1649"/>
         <source>&amp;Selection</source>
-        <translation>Selección(&amp;S)</translation>
+        <translation>&amp;Selección</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1657"/>
@@ -3077,7 +3073,7 @@
     <message>
         <location filename="../gui/mainwindow.ui" line="1667"/>
         <source>&amp;Estimate Song Length...</source>
-        <translation>Estimar duración de canción(&amp;E)...</translation>
+        <translation>&amp;Estimar duración de canción...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="1672"/>
@@ -3194,7 +3190,7 @@
         <location filename="../gui/mainwindow.hpp" line="246"/>
         <location filename="../gui/mainwindow.hpp" line="262"/>
         <source>Error</source>
-        <translation></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="761"/>
@@ -3255,7 +3251,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2156"/>
         <source>-</source>
-        <translation></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2161"/>
@@ -3275,12 +3271,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2176"/>
         <source>PC-88VA2</source>
-        <translation></translation>
+        <translation>PC-88VA2</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2181"/>
         <source>NEC PC-8801mkIISR</source>
-        <translation></translation>
+        <translation>NEC PC-8801mkIISR</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="2304"/>
@@ -3344,7 +3340,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3113"/>
         <source>YM2608 Music Tracker</source>
-        <translation></translation>
+        <translation>YM2608 Music Tracker</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3115"/>
@@ -3464,7 +3460,7 @@ Please change the settings in the configuration.</source>
         <location filename="../gui/mainwindow.cpp" line="3680"/>
         <location filename="../gui/mainwindow.cpp" line="3759"/>
         <source>All files (*)</source>
-        <translation>Todos los archivos(*)</translation>
+        <translation>Todos los archivos (*)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3411"/>
@@ -3490,7 +3486,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3533"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
-        <translation></translation>
+        <translation>WAV con signo 16-bit PCM (*.wav)</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="3544"/>
@@ -3587,12 +3583,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="26"/>
         <source>60Hz (NTSC)</source>
-        <translation></translation>
+        <translation>60Hz (NTSC)</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="39"/>
         <source>50Hz (PAL)</source>
-        <translation></translation>
+        <translation>50Hz (PAL)</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="54"/>
@@ -3618,12 +3614,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="116"/>
         <source>PC-88VA2</source>
-        <translation></translation>
+        <translation>PC-88VA2</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="121"/>
         <source>PC-8801mkIISR</source>
-        <translation></translation>
+        <translation>PC-8801mkIISR</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="132"/>
@@ -3633,12 +3629,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="138"/>
         <source>FM</source>
-        <translation></translation>
+        <translation>FM</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="164"/>
         <source>SSG</source>
-        <translation></translation>
+        <translation>SSG</translation>
     </message>
     <message>
         <location filename="../gui/module_properties_dialog.ui" line="190"/>
@@ -3724,7 +3720,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1104"/>
         <source>&amp;Insert Order</source>
-        <translation>Insertar orden(&amp;I)</translation>
+        <translation>&amp;Insertar orden</translation>
     </message>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1107"/>
@@ -3734,17 +3730,17 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1110"/>
         <source>&amp;Duplicate Order</source>
-        <translation>Duplicar orden(&amp;D)</translation>
+        <translation>&amp;Duplicar orden</translation>
     </message>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1113"/>
         <source>&amp;Clone Patterns</source>
-        <translation>Clonar patrones(&amp;C)</translation>
+        <translation>&amp;Clonar patrones</translation>
     </message>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1115"/>
         <source>Clone &amp;Order</source>
-        <translation>Clonar orden(&amp;O)</translation>
+        <translation>Clonar &amp;Orden</translation>
     </message>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1118"/>
@@ -3754,17 +3750,17 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1121"/>
         <source>Move Order Do&amp;wn</source>
-        <translation>Mover orden hacia abajo(&amp;w)</translation>
+        <translation>Mover orden hacia abajo(&amp;W)</translation>
     </message>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1125"/>
         <source>Cop&amp;y</source>
-        <translation>Copiar(&amp;y)</translation>
+        <translation>Copiar(&amp;Y)</translation>
     </message>
     <message>
         <location filename="../gui/order_list_editor/order_list_panel.cpp" line="1128"/>
         <source>&amp;Paste</source>
-        <translation>Pegar(&amp;P)</translation>
+        <translation>&amp;Pegar</translation>
     </message>
 </context>
 <context>
@@ -3808,32 +3804,32 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2120"/>
         <source>&amp;Redo</source>
-        <translation>Rehacer(&amp;R)</translation>
+        <translation>&amp;Rehacer</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2127"/>
         <source>&amp;Copy</source>
-        <translation>Copiar(&amp;C)</translation>
+        <translation>&amp;Copiar</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2130"/>
         <source>Cu&amp;t</source>
-        <translation>Cortar(&amp;t)</translation>
+        <translation>Cor&amp;tar</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2133"/>
         <source>&amp;Paste</source>
-        <translation>Pegar(&amp;P)</translation>
+        <translation>&amp;Pegar</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2136"/>
         <source>Paste Specia&amp;l</source>
-        <translation>Pegar Especial(&amp;l)</translation>
+        <translation>Pegar Especial(&amp;I)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2138"/>
         <source>&amp;Mix</source>
-        <translation>Mezclar(&amp;M)</translation>
+        <translation>&amp;Mezclar</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2140"/>
@@ -3843,7 +3839,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2142"/>
         <source>&amp;Insert</source>
-        <translation>Insertar(&amp;I)</translation>
+        <translation>&amp;Insertar</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2144"/>
@@ -3858,104 +3854,104 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2149"/>
         <source>Patter&amp;n</source>
-        <translation>Patrón(&amp;n)</translation>
+        <translation>Patró&amp;n</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2151"/>
         <source>&amp;Interpolate</source>
-        <translation>Interpolar(&amp;I)</translation>
+        <translation>&amp;Interpolar</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2153"/>
         <source>&amp;Reverse</source>
-        <translation>Revertir(&amp;R)</translation>
+        <translation>&amp;Revertir</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2155"/>
         <source>R&amp;eplace Instrument</source>
-        <translation>Reemplazar instrumento(&amp;e)</translation>
+        <translation>R&amp;eemplazar instrumento</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2158"/>
         <source>E&amp;xpand</source>
-        <translation>Expandir(&amp;x)</translation>
+        <translation>E&amp;xpandir</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2160"/>
         <source>S&amp;hrink</source>
-        <translation>Encoger(&amp;h)</translation>
+        <translation>Encoger(&amp;H)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2163"/>
         <source>&amp;Transpose</source>
-        <translation>Transponer(&amp;T)</translation>
+        <translation>&amp;Transponer</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2165"/>
         <source>&amp;Decrease Note</source>
-        <translation>DIsminuir nota(&amp;D)</translation>
+        <translation>&amp;Disminuir nota</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2167"/>
         <source>&amp;Increase Note</source>
-        <translation>Incrementar nota(&amp;I)</translation>
+        <translation>&amp;Incrementar nota</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2169"/>
         <source>D&amp;ecrease Octave</source>
-        <translation>Disminuir octava(&amp;e)</translation>
+        <translation>Disminuir octava(&amp;E)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2171"/>
         <source>I&amp;ncrease Octave</source>
-        <translation>Incrementar octava(&amp;n)</translation>
+        <translation>I&amp;ncrementar octava</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2173"/>
         <source>&amp;Change Values</source>
-        <translation>Cambiar valores(&amp;C)</translation>
+        <translation>&amp;Cambiar valores</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2175"/>
         <source>Fine &amp;Decrease Values</source>
-        <translation>Disminuir el valor en 1(&amp;D)</translation>
+        <translation>&amp;Disminuir el valor en 1</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2177"/>
         <source>Fine &amp;Increase Values</source>
-        <translation>Incrementar el valor en 1(&amp;I)</translation>
+        <translation>&amp;Incrementar el valor en 1</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2179"/>
         <source>Coarse D&amp;ecrease Values</source>
-        <translation>Disminuir el valor en 16(&amp;e)</translation>
+        <translation>Disminuir el valor en 16(&amp;E)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2181"/>
         <source>Coarse I&amp;ncrease Values</source>
-        <translation>Incrementar el valor en 16(&amp;n)</translation>
+        <translation>I&amp;ncrementar el valor en 16</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2184"/>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="3008"/>
         <source>To&amp;ggle Track</source>
-        <translation>Reproducir pista(&amp;g)</translation>
+        <translation>Reproducir pista(&amp;G)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2186"/>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="3010"/>
         <source>&amp;Solo Track</source>
-        <translation>Pista solista(&amp;S)</translation>
+        <translation>Pista &amp;Solista</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2189"/>
         <source>Expand E&amp;ffect Column</source>
-        <translation>Expandir columna de efectos(&amp;f)</translation>
+        <translation>Expandir columna de e&amp;fectos</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="2191"/>
         <source>Shrin&amp;k Effect Column</source>
-        <translation>Encoger columna de efectos(&amp;k)</translation>
+        <translation>Encoger columna de efectos(&amp;K)</translation>
     </message>
     <message>
         <location filename="../gui/pattern_editor/pattern_editor_panel.cpp" line="3012"/>
@@ -3970,7 +3966,7 @@ Please change the settings in the configuration.</source>
         <location filename="../main.cpp" line="75"/>
         <location filename="../main.cpp" line="80"/>
         <source>Error</source>
-        <translation></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../gui/q_application_wrapper.cpp" line="39"/>
@@ -4041,7 +4037,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="124"/>
         <source>S98by</source>
-        <translation></translation>
+        <translation>S98by</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="134"/>
@@ -4051,7 +4047,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="141"/>
         <source>NEC PC-9801</source>
-        <translation></translation>
+        <translation>NEC PC-9801</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="151"/>
@@ -4061,22 +4057,22 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="157"/>
         <source>FM</source>
-        <translation></translation>
+        <translation>FM</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="163"/>
         <source>YM2608 OPNA</source>
-        <translation></translation>
+        <translation>YM2608 OPNA</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="173"/>
         <source>YM2612 OPN2</source>
-        <translation></translation>
+        <translation>YM2612 OPN2</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="180"/>
         <source>YM2203 OPN</source>
-        <translation></translation>
+        <translation>YM2203 OPN</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="187"/>
@@ -4087,7 +4083,7 @@ Please change the settings in the configuration.</source>
         <location filename="../gui/s98_export_settings_dialog.ui" line="197"/>
         <location filename="../gui/s98_export_settings_dialog.ui" line="275"/>
         <source>SSG</source>
-        <translation></translation>
+        <translation>SSG</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="203"/>
@@ -4097,12 +4093,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="213"/>
         <source>AY-3-8910 PSG</source>
-        <translation></translation>
+        <translation>AY-3-8910 PSG</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="220"/>
         <source>YM2149 PSG</source>
-        <translation></translation>
+        <translation>YM2149 PSG</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="243"/>
@@ -4127,12 +4123,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="301"/>
         <source>Rhythm</source>
-        <translation></translation>
+        <translation>Ritmo</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.ui" line="327"/>
         <source>ADPCM</source>
-        <translation></translation>
+        <translation>ADPCM</translation>
     </message>
     <message>
         <location filename="../gui/s98_export_settings_dialog.cpp" line="121"/>
@@ -4244,42 +4240,42 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="67"/>
         <source>Sq</source>
-        <translation></translation>
+        <translation>Sq</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="68"/>
         <source>Tri</source>
-        <translation></translation>
+        <translation>Tri</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="69"/>
         <source>Saw</source>
-        <translation></translation>
+        <translation>Saw</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="70"/>
         <source>InvSaw</source>
-        <translation></translation>
+        <translation>InvSaw</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="71"/>
         <source>SMTri</source>
-        <translation></translation>
+        <translation>SMTri</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="72"/>
         <source>SMSaw</source>
-        <translation></translation>
+        <translation>SMSaw</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="73"/>
         <source>SMInvSaw</source>
-        <translation></translation>
+        <translation>SMInvSaw</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="226"/>
         <source>HEnv %1</source>
-        <translation></translation>
+        <translation>HEnv %1</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/ssg_instrument_editor.cpp" line="313"/>
@@ -4409,7 +4405,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="162"/>
         <source>NEC PC-9801</source>
-        <translation></translation>
+        <translation>NEC PC-9801</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="175"/>
@@ -4449,27 +4445,27 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="349"/>
         <source>FM</source>
-        <translation></translation>
+        <translation>FM</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="355"/>
         <source>YM2608 OPNA</source>
-        <translation></translation>
+        <translation>YM2608 OPNA</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="365"/>
         <source>YM2612 OPN2</source>
-        <translation></translation>
+        <translation>YM2612 OPN2</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="372"/>
         <source>YM2203 OPN</source>
-        <translation></translation>
+        <translation>YM2203 OPN</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="379"/>
         <source>YM2610B OPNB</source>
-        <translation></translation>
+        <translation>YM2610B OPNB</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="386"/>
@@ -4480,7 +4476,7 @@ Please change the settings in the configuration.</source>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="396"/>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="521"/>
         <source>SSG</source>
-        <translation></translation>
+        <translation>SSG</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="402"/>
@@ -4490,12 +4486,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="412"/>
         <source>AY-3-8910 PSG</source>
-        <translation></translation>
+        <translation>AY-3-8910 PSG</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="419"/>
         <source>YM2149 PSG</source>
-        <translation></translation>
+        <translation>YM2149 PSG</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="426"/>
@@ -4530,12 +4526,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="547"/>
         <source>Rhythm</source>
-        <translation></translation>
+        <translation>Ritmo</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.ui" line="573"/>
         <source>ADPCM</source>
-        <translation></translation>
+        <translation>ADPCM</translation>
     </message>
     <message>
         <location filename="../gui/vgm_export_settings_dialog.cpp" line="264"/>
@@ -4568,12 +4564,12 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="400"/>
         <source>Loop</source>
-        <translation></translation>
+        <translation>Número de repeticiones</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="413"/>
         <source>Loop %1</source>
-        <translation></translation>
+        <translation>Número de repeticiones %1</translation>
     </message>
     <message>
         <location filename="../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="441"/>
@@ -4601,7 +4597,7 @@ Please change the settings in the configuration.</source>
     <message>
         <location filename="../gui/wave_export_settings_dialog.ui" line="20"/>
         <source>Loop</source>
-        <translation></translation>
+        <translation>Número de repeticiones</translation>
     </message>
     <message>
         <location filename="../gui/wave_export_settings_dialog.ui" line="47"/>
