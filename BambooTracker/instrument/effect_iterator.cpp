@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
+ * Copyright (C) 2018-2023 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -138,12 +138,12 @@ InstrumentSequenceBaseUnit NoteSlideEffectIterator::data() const
 int NoteSlideEffectIterator::next()
 {			
 	if (!hasEnded()) {
-		if (++pos_ >= static_cast<int>(seq_.size())) {
-			state_ = SequenceIteratorState::End;
-			pos_ = END_SEQ_POS;
+		if (state_ == SequenceIteratorState::NotBegin || ++pos_ < static_cast<int>(seq_.size())) {
+			state_ = SequenceIteratorState::Run;
 		}
 		else {
-			state_ = SequenceIteratorState::Run;
+			state_ = SequenceIteratorState::End;
+			pos_ = END_SEQ_POS;
 		}
 	}
 

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fix a bug that `0Q0y` and `0R0y` after note-on is not worked.
+
 ## v0.6.2 (2023-08-02)
 
 ### Chnaged
