@@ -58,9 +58,9 @@ environment:
     #   DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-windows-xp-32bit.zip
     #   MAKE: mingw32-make
     #   RELEASE_BUILD: true
-    # macOS Catalina
+    # macOS Big Sur
     - APPVEYOR_JOB_NAME: for macOS
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-bigsur
       PLATFORM: macos
       DEST: BambooTracker-v$APPVEYOR_BUILD_VERSION-dev-macos-64bit.zip
       MAKE: make
