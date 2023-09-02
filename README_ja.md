@@ -69,12 +69,13 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 
 ## 対応言語
 
-現在、Bambootrackerでは以下の言語に対応しています。
+現在、BambooTrackerでは以下の言語に対応しています。
 
 - English / 英語 (デフォルト)
 - 日本語
 - Français / フランス語
 - Polski / ポーランド語
+- Español / スペイン語
 
 ## ダウンロード
 
@@ -420,6 +421,7 @@ make install clean
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん
 - ポーランド語翻訳に関してfreq-modさん、Midoriさん
+- スペイン語翻訳に関してbinarycasperさん
 - ADPCMエンコーダ/デコーダに関してIan Karlssonさん
 - ymfmに関してAaron Gilesさん
 - リサンプリングライブラリに関してShay Greenさん

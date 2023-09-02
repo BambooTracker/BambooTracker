@@ -75,6 +75,7 @@ BambooTracker currently supports the following languages:
 - 日本語 / Japanese
 - Français / French
 - Polski / Polish
+- Español / Spanish
 
 If you'd like to see your language of choice added to the list, join the Discord server and let us know! We can walk you through the steps required to set up the translation tool.
 
@@ -420,6 +421,7 @@ I would like to thank the following people for making it:
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Jean Pierre Cimalando and Olivier Humbert for French translation
 - freq-mod and Midori for Polish translation
+- binarycasper for Spanish translation
 - Ian Karlsson for ADPCM encoder/decoder
 - Aaron Giles for ymfm
 - Shay Green for resampling library

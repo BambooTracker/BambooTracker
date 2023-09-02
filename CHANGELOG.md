@@ -2,9 +2,15 @@
 
 ## Unreleased
 
+## v0.6.3 (2023-09-02)
+
+### Added
+
+- [#496] - Support Spanish translation (thanks [@binarycasper])
+
 ### Fixed
 
-- Fix a bug that `0Q0y` and `0R0y` after note-on is not worked.
+- Fix a bug that `0Q0y` and `0R0y` after note-on is not worked
 
 ## v0.6.2 (2023-08-02)
 
@@ -18,6 +24,8 @@
 - [#482] - Fix compiler error with clang15 (thanks [@ehaupt])
 - [#484] - Show error message when resampling is failed ([#483]; thanks [@freq-mod])
 
+[@binarycasper]: https://github.com/binarycasper
+
 [#482]: https://github.com/BambooTracker/BambooTracker/pull/482
 [#483]: https://github.com/BambooTracker/BambooTracker/issues/483
 [#484]: https://github.com/BambooTracker/BambooTracker/pull/484
@@ -25,6 +33,7 @@
 [#489]: https://github.com/BambooTracker/BambooTracker/issues/489
 [#492]: https://github.com/BambooTracker/BambooTracker/issues/492
 [#493]: https://github.com/BambooTracker/BambooTracker/pull/493
+[#496]: https://github.com/BambooTracker/BambooTracker/pull/496
 
 ## v0.6.1 (2023-02-04)
 
