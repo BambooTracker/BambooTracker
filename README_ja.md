@@ -17,9 +17,6 @@
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+10+%2864-bit%2C+Qt6%29%22">
     <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/windows-10-qt6.yml?label=Windows%2010&logo=windows" alt="BambooTracker Build-Test Status on Windows (Qt6)">
   </a>
-  <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+7+and+up+%2832-bit%2C+Qt5%29%22">
-    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/windows.yml?label=Windows%207&logo=windows-xp" alt="BambooTracker Build-Test Status on Windows (Qt5)">
-  </a>
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3AmacOS">
     <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/macos.yml?label=macOS&logo=apple" alt="BambooTracker Build-Test Status on macOS">
   </a>
@@ -44,8 +41,8 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 2. [コミュニティ](#コミュニティ)
 3. [対応言語](#対応言語)
 4. [ダウンロード](#ダウンロード)  
-  4.1. [リリース (Windows 7以降, Windows XP, macOS, Linux)](#リリース-windows-7以降,-windows-xp,-macos,-linux)  
-  4.2. [開発版ビルド (Windows 7以降, Windows XP, macOS)](#開発版ビルド-windows-7以降,-windows-xp,-macos)  
+  4.1. [リリース (Windows, macOS, Linux)](#リリース-windows,-macos,-linux)  
+  4.2. [開発版ビルド (Windows, macOS)](#開発版ビルド-windows,-macos)  
   4.3. [パッケージ (macOS, Linux, BSD)](#packages-macos,-linux,-bsd)
 5. [ショートカット](#ショートカット)
 6. [エフェクトリスト](#エフェクトリスト)
@@ -81,13 +78,13 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 
 ## ダウンロード
 
-### リリース (Windows 7以降, Windows XP, macOS, Linux)
+### リリース (Windows, macOS, Linux)
 
 リリースは、優れた安定したエクスペリエンスを提供する必要があるため、ほとんどのユーザーに推奨されます。
 
 [![Release](https://img.shields.io/badge/Download-Release-brightgreen?style=for-the-badge)](https://github.com/BambooTracker/BambooTracker/releases/latest)
 
-### 開発版ビルド (Windows 7以降, Windows XP, macOS)
+### 開発版ビルド (Windows, macOS)
 
 開発版のビルドはコードの変更がベースリポジトリにコミットされるたびにビルドされ、アップロードされます。
 そのため最新または開発中の機能や修正を提供しますが、通常の使用には最適化されていません。
@@ -187,7 +184,7 @@ BambooTrackerをビルドする際には全てのプラットフォームで以�
     未テストですが恐らく動作します。
   - MSVC  
     [Visual Studio](https://visualstudio.microsoft.com)にバンドルされているものか、スタンドアロン版("Build Tools for Visual Studio 2019"のダウンロードを確認してください)
-- [Qt](https://www.qt.io/download-qt-installer)
+- [Qt](https://www.qt.io/download-qt-installer):
   古いバージョンのQt(XPビルドなど)では、自分でチェックアウトしてコンパイルする必要があるかもしれませんが、公式のプリビルド版はQtによって削除されました。
 
 #### macOS

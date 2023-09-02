@@ -17,9 +17,6 @@
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+10+%2864-bit%2C+Qt6%29%22">
     <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/windows-10-qt6.yml?label=Windows%2010&logo=windows" alt="BambooTracker Build-Test Status on Windows (Qt6)">
   </a>
-  <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Windows+7+and+up+%2832-bit%2C+Qt5%29%22">
-    <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/windows.yml?label=Windows%207&logo=windows-xp" alt="BambooTracker Build-Test Status on Windows (Qt5)">
-  </a>
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3AmacOS">
     <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/macos.yml?label=macOS&logo=apple" alt="BambooTracker Build-Test Status on macOS">
   </a>
@@ -44,8 +41,8 @@ BambooTracker is a cross-platform music tracker for the Yamaha YM2608 (OPNA) sou
 2. [Community](#community)
 3. [Translations](#translations)
 4. [Downloads](#downloads)  
-  4.1. [Releases (Windows 7+, Windows XP, macOS, Linux)](#releases-windows-7-windows-xp-macos-linux)  
-  4.2. [Development Builds (Windows 7+, Windows XP, macOS)](#development-builds-windows-7-windows-xp-macos)  
+  4.1. [Releases (Windows, macOS, Linux)](#releases-windows-macos-linux)  
+  4.2. [Development Builds (Windows, macOS)](#development-builds-windows-macos)  
   4.3. [Packages (macOS, Linux, BSD)](#packages-macos-linux-bsd)
 5. [Key Commands](#key-commands)
 6. [Effect List](#effect-list)
@@ -83,13 +80,13 @@ If you'd like to see your language of choice added to the list, join the Discord
 
 ## Downloads
 
-### Releases (Windows 7+, Windows XP, macOS, Linux)
+### Releases (Windows, macOS, Linux)
 
 Releases are recommended for most users, as they should provide a good & stable experience.
 
 [![Release](https://img.shields.io/badge/Download-Release-brightgreen?style=for-the-badge)](https://github.com/BambooTracker/BambooTracker/releases/latest)
 
-### Development Builds (Windows 7+, Windows XP, macOS)
+### Development Builds (Windows, macOS)
 
 Development builds are built & uploaded whenever a code change has been committed to the base repository *or a pull request*.
 They thus offer the latest or in-development features and fixes, but are not optimised for regular use.
@@ -188,7 +185,7 @@ How to acquire these and further required / optional dependencies are specific t
     Untested but might work.
   - MSVC  
     Either bundled with [Visual Studio](https://visualstudio.microsoft.com) or standalone (check "Build Tools for Visual Studio 2019" download).
-- [Qt](https://www.qt.io/download-qt-installer)
+- [Qt](https://www.qt.io/download-qt-installer):
   Older Qt versions (e.g. for an XP builds) may require you to checkout & compile Qt yourself, official prebuilt versions were removed by Qt.
 
 #### macOS
