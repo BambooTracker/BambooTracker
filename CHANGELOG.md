@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Replace "breeze 2608.btm" with the author's intended module (thanks maakmusic)
+
 ## v0.6.3 (2023-09-02)
 
 ### Added
