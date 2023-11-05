@@ -5,6 +5,12 @@
 ### Fixed
 
 - Replace "breeze 2608.btm" with the author's intended module (thanks maakmusic)
+- [#500] - Fix build workflow for Linux due to link error ([#498]; thanks [@OPNA2608], [@defensem3ch])
+
+[@defensem3ch]: https://github.com/defensem3ch
+
+[#500]: https://github.com/BambooTracker/BambooTracker/pull/500
+[#498]: https://github.com/BambooTracker/BambooTracker/issues/498
 
 ## v0.6.3 (2023-09-02)
 
