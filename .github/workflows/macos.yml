@@ -133,13 +133,14 @@ jobs:
           export package_name="BambooTracker-${{ steps.identify-build.outputs.build-tag }}-${BUILD_TARGET}"
           echo "package-name=${package_name}" >> $GITHUB_OUTPUT
           mv -v ${BT_INSTALLBASE} ${package_name}
-          7z a -tzip ${package_name}{.zip,}
+          tar -cvf- \
+            ${package_name} | gzip -9c > ${package_name}.tar.gz
 
       - name: Upload release package.
         if: steps.identify-build.outputs.release == 'true' && env.DONT_PACKAGE != 'true'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ steps.packaging.outputs.package-name }}.zip
-          asset_name: ${{ steps.packaging.outputs.package-name }}.zip
+          file: ${{ steps.packaging.outputs.package-name }}.tar.gz
+          asset_name: ${{ steps.packaging.outputs.package-name }}.tar.gz
           tag: ${{ github.ref }}
