@@ -296,6 +296,31 @@ add_executable (BambooTracker WIN32 MACOSX_BUNDLE
 	${MACOSX_ICNS}
 )
 
+# CMake Qt lacks a publicly-supported way of generating the data required for setting the Windows app icon at build time, unlike QMake. Use an internal Qt function.
+# https://bugreports.qt.io/browse/QTBUG-87618
+# https://gitlab.kitware.com/cmake/cmake/-/issues/21314
+if (WIN32 AND QT_VERSION EQUAL 6)
+	set_target_properties (BambooTracker PROPERTIES
+		QT_TARGET_VERSION "${PROJECT_VERSION}"
+		QT_TARGET_COMPANY_NAME "${PROJECT_NAME}"
+		QT_TARGET_DESCRIPTION "YM2608 music tracker"
+		QT_TARGET_COPYRIGHT "Copyright (C) Rerrah and other BambooTracker contributors"
+		QT_TARGET_PRODUCT_NAME "${PROJECT_NAME}"
+		QT_TARGET_RC_ICONS "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/BambooTracker.ico"
+	)
+
+	# In case this ever gets changed / breaks, only try it if there's some chance of it working & allow opt-out
+	set (GENERATE_WIN32_RC_DEFAULT OFF)
+	if (COMMAND _qt_internal_generate_win32_rc_file)
+		set (GENERATE_WIN32_RC_DEFAULT ON)
+	endif()
+	option (GENERATE_WIN32_RC "Use a Qt6-internal function to generate a Win32 RC file for the project. This is needed to get an app icon when using CMake." ${GENERATE_WIN32_RC_DEFAULT})
+
+	if (GENERATE_WIN32_RC)
+		_qt_internal_generate_win32_rc_file (BambooTracker)
+	endif()
+endif()
+
 target_include_directories (BambooTracker PRIVATE ${BT_INCLUDEPATHS})
 target_compile_options (BambooTracker PRIVATE ${BT_WARNFLAGS})
 
