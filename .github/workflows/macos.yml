@@ -68,7 +68,7 @@ jobs:
           esac
 
       - name: Checking out repository.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -80,7 +80,7 @@ jobs:
       # Cache Qt installations, very costly & flakey to fetch
       - name: Fetching Qt cache.
         id: qt-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.QT_INSTALLBASE }}
           key: ${{ runner.os }} Qt${{ env.QT_VERSION }} ${{ env.QT_TOOLCHAIN }} ${{ env.QT_MODULES }}

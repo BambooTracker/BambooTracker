@@ -70,7 +70,7 @@ jobs:
           esac
 
       - name: Checking out repository.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -84,7 +84,7 @@ jobs:
       # ugly but it works. :/
       - name: Fetching MinGW cache.
         id: mingw-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.MINGW_INSTALLBASE }}
           key: ${{ env.MINGW_VERSION }} ${{ env.MINGW_BITNESS }}
@@ -104,7 +104,7 @@ jobs:
       # Cache Qt installations, very costly & flakey to fetch
       - name: Fetching Qt cache.
         id: qt-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.QT_INSTALLBASE }}
           key: ${{ runner.os }} Qt${{ env.QT_VERSION }} ${{ env.QT_TOOLCHAIN }} ${{ env.QT_MODULES }}
