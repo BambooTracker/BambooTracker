@@ -59,7 +59,7 @@ bool C86ctl::createInstance(RealChipInterfaceGeneratorFunc* f)
 		int nChip = base_->getNumberOfChip();
 		for (int i = 0; i < nChip; ++i) {
 			c86ctl::IRealChip2* rc = nullptr;
-			base_->getChipInterface(i, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
+			base_->getChipInterface(i, c86ctl::IID_IRealChip, reinterpret_cast<void**>(&rc));
 			if (rc) {
 				if (rc_) rc_->Release();
 				rc_ = rc;
@@ -69,10 +69,15 @@ bool C86ctl::createInstance(RealChipInterfaceGeneratorFunc* f)
 				if (rc_->QueryInterface(c86ctl::IID_IGimic2, reinterpret_cast<void**>(&gm)) == S_OK) {
 					c86ctl::ChipType type;
 					gm->getModuleType(&type);
-					if (type == c86ctl::CHIP_OPNA) {
+					switch (type) {
+					case c86ctl::CHIP_YM2608:
+					case c86ctl::CHIP_YM2608NOADPCM:
 						if (gm_) gm_->Release();
 						gm_ = gm;
 						return true;
+
+					default:
+						break;
 					}
 					gm->Release();
 				}

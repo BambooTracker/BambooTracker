@@ -31,7 +31,7 @@
 namespace c86ctl
 {
 struct IRealChipBase;
-struct IRealChip2;
+struct IRealChip;
 struct IGimic2;
 }
 
@@ -51,6 +51,6 @@ public:
 
 private:
 	c86ctl::IRealChipBase* base_;
-	c86ctl::IRealChip2* rc_;
+	c86ctl::IRealChip* rc_;
 	c86ctl::IGimic2* gm_;
 };

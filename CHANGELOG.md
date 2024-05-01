@@ -7,6 +7,7 @@
 - Replace "breeze 2608.btm" with the author's intended module (thanks maakmusic)
 - [#500] - Fix build workflow for Linux due to link error ([#498]; thanks [@OPNA2608], [@defensem3ch])
 - [#503] - Fix Windows app icon (thanks [@OPNA2608])
+- Update c86ctl interface (thanks Lyra)
 
 [@defensem3ch]: https://github.com/defensem3ch
 

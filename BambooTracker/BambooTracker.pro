@@ -226,6 +226,7 @@ HEADERS += \
     bamboo_tracker_defs.hpp \
     chip/2608_interface.hpp \
     chip/blip_buf/blip_buf.h \
+    chip/c86ctl/cbus_boardtype.h \
     chip/chip_defs.h \
     chip/codec/ymb_codec.hpp \
     chip/mame/fmopn.h \
