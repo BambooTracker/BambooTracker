@@ -34,7 +34,7 @@ else {
     target.path = $$PREFIX/bin
 }
 
-CONFIG += c++14
+CONFIG += c++17
 clang|if(gcc:!intel_icc) {
   QMAKE_CFLAGS += -std=gnu11
 }
