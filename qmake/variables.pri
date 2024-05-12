@@ -32,7 +32,10 @@ message("Qt is version" $$QT_VERSION)
 msvc|clang|if(gcc:!intel_icc) {
   msvc {
     message("Configured compiler is MSVC")
-    CPP_WARNING_FLAGS += /W3 /WX
+    CPP_WARNING_FLAGS += /W3
+    !no_warnings_are_errors {
+      CPP_WARNING_FLAGS += /WX
+    }
     CPP_WARNING_FLAGS += /utf-8
     CPP_WARNING_FLAGS += /D_CRT_SECURE_NO_WARNINGS # non _s functions cause errors, cross-platform support for them is terrible
     COMPILER_MAJOR_VERSION = $$QT_MSC_VER
@@ -44,7 +47,10 @@ msvc|clang|if(gcc:!intel_icc) {
   }
   else {
     # Compiler is most likely GCC-ish
-    CPP_WARNING_FLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
+    CPP_WARNING_FLAGS += -Wall -Wextra -pedantic
+    !no_warnings_are_errors {
+      CPP_WARNING_FLAGS += -Werror -pedantic-errors
+    }
 
     clang {
       defined(QMAKE_APPLE_CLANG_MAJOR_VERSION, var) {
