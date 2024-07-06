@@ -96,10 +96,6 @@ jobs:
         run: |
           export HOMEBREW_NO_INSTALL_CLEANUP=1
           brew update
-          # JACK implies brew link python-3.10, fails due to shipped python binaries
-          brew unlink python@3.10 python@3.11
-          brew link --overwrite python@3.10 python@3.11
-          brew upgrade --force python@3.10 python@3.11
           brew install pkg-config jack coreutils
 
       ## End macOS-specific steps
