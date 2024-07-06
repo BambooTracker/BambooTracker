@@ -58,9 +58,9 @@ environment:
     #   DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-windows-xp-32bit.zip
     #   MAKE: mingw32-make
     #   RELEASE_BUILD: true
-    # macOS Big Sur
+    # macOS Monterey
     - APPVEYOR_JOB_NAME: for macOS
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-bigsur
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-monterey
       PLATFORM: macos
       DEST: BambooTracker-v$APPVEYOR_BUILD_VERSION-dev-macos-64bit.zip
       MAKE: make
@@ -107,7 +107,7 @@ before_build:
       brew install curl
       brew install pkg-config jack p7zip
 
-      export PATH="$HOME/Qt/6.4/macos/bin:$PATH"
+      export PATH="$HOME/Qt/6.5/macos/bin:$PATH"
       export PKG_CONFIG_PATH="/usr/local/opt/jack/lib/pkgconfig"${PKG_CONFIG_PATH:+':'}$PKG_CONFIG_PATH
 
 # to run your custom scripts instead of automatic MSBuild
@@ -119,7 +119,7 @@ build_script:
       Invoke-Expression ($env:MAKE + " qmake_all")
       Invoke-Expression ($env:MAKE + " -j2")
   - sh: |
-      qmake Project.pro PREFIX="$APPVEYOR_BUILD_FOLDER"/target CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack
+      qmake Project.pro PREFIX="$APPVEYOR_BUILD_FOLDER"/target CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack CONFIG+=no_warnings_are_errors
       $MAKE qmake_all
       $MAKE -j2
 
