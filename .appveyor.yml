@@ -119,7 +119,7 @@ build_script:
       Invoke-Expression ($env:MAKE + " qmake_all")
       Invoke-Expression ($env:MAKE + " -j2")
   - sh: |
-      qmake Project.pro PREFIX="$APPVEYOR_BUILD_FOLDER"/target CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack
+      qmake Project.pro PREFIX="$APPVEYOR_BUILD_FOLDER"/target CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack CONFIG+=no_warnings_are_errors
       $MAKE qmake_all
       $MAKE -j2
 

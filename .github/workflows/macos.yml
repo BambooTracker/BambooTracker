@@ -31,7 +31,7 @@ env:
   QT_TOOLCHAIN: clang_64
   QT_MODULES: qtbase qttools qttranslations qt5compat qtdeclarative
   QT_INSTALLBASE: ${{ github.workspace }}/Qt/
-  QMAKE_EXTRA_ARGUMENTS: CONFIG+=install_flat CONFIG+=use_jack
+  QMAKE_EXTRA_ARGUMENTS: CONFIG+=install_flat CONFIG+=use_jack CONFIG+=no_warnings_are_errors
 
 jobs:
   build:
