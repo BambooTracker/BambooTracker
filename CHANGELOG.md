@@ -2,18 +2,30 @@
 
 ## Unreleased
 
+## v0.6.4 (2024-09-24)
+
 ### Fixed
 
 - Replace "breeze 2608.btm" with the author's intended module (thanks maakmusic)
 - [#500] - Fix build workflow for Linux due to link error ([#498]; thanks [@OPNA2608], [@defensem3ch])
 - [#503] - Fix Windows app icon (thanks [@OPNA2608])
 - Update c86ctl interface (thanks Lyra)
+- [#507] - Use tarball format for Darwin release archive ([#502]; thanks [@OPNA2608], [@djmaximum17])
+- [#509] - Modify build options (thanks [@OPNA2608])
+- [#513] - Fix latent bug related to strncpy ([#505]; thanks [@noisecode3], [@ycollet])
 
 [@defensem3ch]: https://github.com/defensem3ch
+[@noisecode3]: https://github.com/noisecode3
+[@ycollet]: https://github.com/ycollet
 
 [#500]: https://github.com/BambooTracker/BambooTracker/pull/500
 [#498]: https://github.com/BambooTracker/BambooTracker/issues/498
 [#503]: https://github.com/BambooTracker/BambooTracker/pull/503
+[#502]: https://github.com/BambooTracker/BambooTracker/issues/502
+[#507]: https://github.com/BambooTracker/BambooTracker/pull/507
+[#509]: https://github.com/BambooTracker/BambooTracker/pull/509
+[#513]: https://github.com/BambooTracker/BambooTracker/pull/513
+[#505]: https://github.com/BambooTracker/BambooTracker/issues/505
 
 ## v0.6.3 (2023-09-02)
 
