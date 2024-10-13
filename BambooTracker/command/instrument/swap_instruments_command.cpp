@@ -52,17 +52,18 @@ void SwapInstrumentsCommand::undo()
 
 void SwapInstrumentsCommand::swapInstrumentsInPatterns()
 {
-	// NOTE: Is it better to execute this as the method of Song to use global replace action?
-	// Too slow...
-	Song& song = mod_.lock()->getSong(songNum_);
-	for (const auto& attrib : song.getStyle().trackAttribs) {
-		Track& track = song.getTrack(attrib.number);
-		for (int i = 0; i < 256; ++i) {	// Used track size
-			Pattern& pat = track.getPattern(i);
-			for (size_t j = 0; j < pat.getSize(); ++j) {
-				Step& step = pat.getStep(static_cast<int>(j));
-				if (step.getInstrumentNumber() == inst1Num_) step.setInstrumentNumber(inst2Num_);
-				else if (step.getInstrumentNumber() == inst2Num_) step.setInstrumentNumber(inst1Num_);
+	// OPTIMIZE: It is too slow!
+	for (size_t n = 0; n < mod_.lock()->getSongCount(); ++n) {
+		Song& song = mod_.lock()->getSong(static_cast<int>(n));
+		for (const auto& attrib : song.getStyle().trackAttribs) {
+			Track& track = song.getTrack(attrib.number);
+			for (int i = 0; i < 256; ++i) {	// Used track size
+				Pattern& pat = track.getPattern(i);
+				for (size_t j = 0; j < pat.getSize(); ++j) {
+					Step& step = pat.getStep(static_cast<int>(j));
+					if (step.getInstrumentNumber() == inst1Num_) step.setInstrumentNumber(inst2Num_);
+					else if (step.getInstrumentNumber() == inst2Num_) step.setInstrumentNumber(inst1Num_);
+				}
 			}
 		}
 	}

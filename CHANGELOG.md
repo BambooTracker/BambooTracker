@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Chnaged
+
+- [#516] - Replace instrument numbers in all songs on "Reflect Instrument Number Change" ([#515]; thanks [@Esmerea])
+
+[#515]: https://github.com/BambooTracker/BambooTracker/issues/515
+[#516]: https://github.com/BambooTracker/BambooTracker/pull/516
+
+[@Esmerea]: https://github.com/Esmerea
+
 ## v0.6.4 (2024-09-24)
 
 ### Fixed
