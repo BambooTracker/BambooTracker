@@ -26,7 +26,7 @@ env:
   SCRIPT_NAME: osx
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
-  QT_VERSION: 6.4.0
+  QT_VERSION: 6.6.1
   QT_HOSTOS: mac_x64
   QT_TOOLCHAIN: clang_64
   QT_MODULES: qtbase qttools qttranslations qt5compat qtdeclarative
