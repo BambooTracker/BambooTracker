@@ -35,7 +35,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
       - name: Identify build type.
@@ -75,7 +75,7 @@ jobs:
       ## macOS-specific steps
 
       - name: Pin Xcode version
-        run: sudo xcode-select -s "/Applications/Xcode_14.2.app"
+        run: sudo xcode-select -s "/Applications/Xcode_15.2.app"
 
       # Cache Qt installations, very costly & flakey to fetch
       - name: Fetching Qt cache.
