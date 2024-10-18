@@ -2,12 +2,14 @@
 
 ## Unreleased
 
-### Chnaged
+### Changed
 
 - [#516] - Replace instrument numbers in all songs on "Reflect Instrument Number Change" ([#515]; thanks [@Esmerea])
+- [#517] - Raise macOS version of GitHub Actions workflow to 13
 
 [#515]: https://github.com/BambooTracker/BambooTracker/issues/515
 [#516]: https://github.com/BambooTracker/BambooTracker/pull/516
+[#517]: https://github.com/BambooTracker/BambooTracker/pull/517
 
 [@Esmerea]: https://github.com/Esmerea
 
@@ -48,7 +50,7 @@
 
 ## v0.6.2 (2023-08-02)
 
-### Chnaged
+### Changed
 
 - [#490] - Show Effect list track types as separate columns ([#489]; thanks [@cxong])
 - [#493] - Update RtAudio v6.0.0 ([#492]; thanks [@OPNA2608])
