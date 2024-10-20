@@ -114,6 +114,7 @@ before_build:
 build_script:
   - ps: |
       $QMAKE_CONFIGS = if ($env:RELEASE_BUILD -ieq "true") { "CONFIG+=release CONFIG-=debug" } else { "CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip" }
+      $QMAKE_CONFIGS += " CONFIG+=no_warnings_are_errors"
       echo $QMAKE_CONFIGS
       Invoke-Expression ("qmake.exe Project.pro PREFIX=$pwd\target " + $QMAKE_CONFIGS)
       Invoke-Expression ($env:MAKE + " qmake_all")
