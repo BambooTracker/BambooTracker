@@ -1872,9 +1872,9 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
 	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
-
+	bool overflow = config_->getOverflowPaste();
 	bt_->pastePatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
 }
 
@@ -1886,9 +1886,9 @@ void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
 	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
-
+	bool overflow = config_->getOverflowPaste();
 	bt_->pasteMixPatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
 	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
 }
 
@@ -1900,9 +1900,9 @@ void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursor
 	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
-
+	bool overflow = config_->getOverflowPaste();
 	bt_->pasteOverwritePatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
 	comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
 }
 
@@ -1914,9 +1914,9 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
-
+	bool overflow = config_->getOverflowPaste();
 	bt_->pasteInsertPatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
 	comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
 }
 

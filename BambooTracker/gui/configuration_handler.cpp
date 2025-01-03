@@ -219,6 +219,7 @@ bool saveConfiguration(std::weak_ptr<Configuration> config)
 		settings.setValue("fixJammingVolume",		configLocked->getFixJammingVolume());
 		settings.setValue("muteHiddenTracks",		configLocked->getMuteHiddenTracks());
 		settings.setValue("restoreTrackVisibility",	configLocked->getRestoreTrackVisibility());
+		settings.setValue("overflowPaste",			configLocked->getOverflowPaste());
 		settings.endGroup();
 
 		// Edit settings
@@ -374,6 +375,7 @@ bool loadConfiguration(std::weak_ptr<Configuration> config)
 		configLocked->setFixJammingVolume(settings.value("fixJammingVolume", configLocked->getFixJammingVolume()).toBool());
 		configLocked->setMuteHiddenTracks(settings.value("muteHiddenTracks", configLocked->getMuteHiddenTracks()).toBool());
 		configLocked->setRestoreTrackVisibility(settings.value("restoreTrackVisibility", configLocked->getRestoreTrackVisibility()).toBool());
+		configLocked->setOverflowPaste(settings.value("overflowPaste", configLocked->getOverflowPaste()).toBool());
 		if (settings.contains("autosetInstrument")) {	// For compatibility before v0.4.0
 			configLocked->setInstrumentMask(!settings.value("autosetInstrument").toBool());
 			settings.remove("autosetInstrument");

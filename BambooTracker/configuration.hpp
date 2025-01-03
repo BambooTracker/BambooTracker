@@ -213,12 +213,14 @@ public:
 	bool getMuteHiddenTracks() const { return muteHiddenTracks_; }
 	void setRestoreTrackVisibility(bool enabled) { restoreTrackVis_ = enabled; }
 	bool getRestoreTrackVisibility() const { return restoreTrackVis_; }
+	void setOverflowPaste(bool enabled) { overflowPaste_ = enabled; }
+	bool getOverflowPaste() const { return overflowPaste_; }
 private:
 	bool warpCursor_, warpAcrossOrders_, showRowNumHex_, showPrevNextOrders_, backupModules_;
 	bool dontSelectOnDoubleClick_, reverseFMVolumeOrder_, moveCursorToRight_, retrieveChannelState_;
 	bool enableTranslation_, showFMDetuneSigned_, fill00ToEffectValue_, moveCursorHScroll_;
 	bool overwriteUnusedUnedited_, writeOnlyUsedSamples_, reflectInstNumChange_, fixJamVol_;
-	bool muteHiddenTracks_, restoreTrackVis_;
+	bool muteHiddenTracks_, restoreTrackVis_, overflowPaste_;
 
 	// Edit settings
 public:
