@@ -48,11 +48,16 @@ void PasteOverwriteCopiedDataToPatternCommand::redo()
 	auto& sng = mod_.lock()->getSong(song_);
 
 	int s = step_;
+	int o = order_;
 	for (const auto& row : cells_) {
 		int t = track_;
 		int c = col_;
 		for (const std::string& cell : row) {
-			Step& st = command_utils::getStep(sng, t, order_, s);
+			if (static_cast<size_t>(s) >= sng.getTrack(t).getPatternFromOrderNumber(o).getSize()) {
+				if (static_cast<size_t>(++o) < sng.getTrack(t).getOrderSize()) { s = 0; }
+				else { return; }
+			}
+			Step& st = command_utils::getStep(sng, t, o, s);
 			switch (c) {
 			case 0:
 			{

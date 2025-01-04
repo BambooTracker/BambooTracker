@@ -521,8 +521,7 @@ public:
 									int beginStep, const std::vector<std::vector<std::string>>& cells,
 									bool overflow);
 	void pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-								 int beginStep, const std::vector<std::vector<std::string>>& cells,
-								 bool overflow);
+								 int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,

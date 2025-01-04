@@ -2744,11 +2744,10 @@ void BambooTracker::pasteOverwritePatternCells(int songNum, int beginTrack, int 
 }
 
 void BambooTracker::pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-											int beginStep, const std::vector<std::vector<std::string> >& cells,
-											bool overflow)
+											int beginStep, const std::vector<std::vector<std::string> >& cells)
 {
 	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
-									 beginTrack, beginColmn, beginStep, cells, overflow);
+									 beginTrack, beginColmn, beginStep, cells, false);
 	comMan_.invoke(std::make_unique<PasteInsertCopiedDataToPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
 }

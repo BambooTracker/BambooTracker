@@ -1914,9 +1914,9 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
 		cells = compandPasteCells(pos, cells);
 	}
-	bool overflow = config_->getOverflowPaste();
+
 	bt_->pasteInsertPatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
 }
 
