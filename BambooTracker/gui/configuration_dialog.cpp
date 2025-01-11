@@ -139,6 +139,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		   tr("Automatically mute tracks when they are hidden."));
 	glfunc(18, configLocked->getRestoreTrackVisibility(),
 		   tr("Restore the previous track visibility on startup."));
+	glfunc(19, configLocked->getOverflowPaste(),
+		   tr("Move pasted pattern data outside the rows of the current frame to subsequent frames."));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -455,6 +457,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setFixJammingVolume(fromCheckState(ui->generalSettingsListWidget->item(16)->checkState()));
 	configLocked->setMuteHiddenTracks(fromCheckState(ui->generalSettingsListWidget->item(17)->checkState()));
 	configLocked->setRestoreTrackVisibility(fromCheckState(ui->generalSettingsListWidget->item(18)->checkState()));
+	configLocked->setOverflowPaste(fromCheckState(ui->generalSettingsListWidget->item(19)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));

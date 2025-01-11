@@ -199,6 +199,7 @@ Configuration::Configuration()
 	fixJamVol_ = true;
 	muteHiddenTracks_ = true;
 	restoreTrackVis_ = false;
+	overflowPaste_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;

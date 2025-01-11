@@ -512,11 +512,14 @@ public:
 	///		3: effect ID
 	///		4: effect value
 	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-						   const std::vector<std::vector<std::string>>& cells);
+						   const std::vector<std::vector<std::string>>& cells,
+						   bool overflow);
 	void pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-							  const std::vector<std::vector<std::string>>& cells);
+							  const std::vector<std::vector<std::string>>& cells,
+							  bool overflow);
 	void pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-									int beginStep, const std::vector<std::vector<std::string>>& cells);
+									int beginStep, const std::vector<std::vector<std::string>>& cells,
+									bool overflow);
 	void pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
 								 int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

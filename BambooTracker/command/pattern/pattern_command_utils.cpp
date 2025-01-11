@@ -58,6 +58,10 @@ std::vector<std::vector<std::string>> getPreviousCells(Song& song, size_t w, siz
 		int c = beginColumn;
 		cells[i].resize(w);
 		for (size_t j = 0; j < w; ++j) {
+			if (static_cast<size_t>(s) >= song.getTrack(t).getPatternFromOrderNumber(beginOrder).getSize()) {
+				if (static_cast<size_t>(++beginOrder) < song.getTrack(t).getOrderSize()) { s = 0; }
+				else { return cells; }
+			}
 			Step& st = song.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s);
 			std::string val;
 			switch (c) {
@@ -95,6 +99,10 @@ void restorePattern(Song& song, const std::vector<std::vector<std::string>>& cel
 		int t = beginTrack;
 		int c = beginColumn;
 		for (const std::string& cell : row) {
+			if (static_cast<size_t>(s) >= song.getTrack(t).getPatternFromOrderNumber(beginOrder).getSize()) {
+				if (static_cast<size_t>(++beginOrder) < song.getTrack(t).getOrderSize()) { s = 0; }
+				else { return; }
+			}
 			Step& st = song.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s);
 			switch (c) {
 			case 0:		st.setNoteNumber(std::stoi(cell));			break;
