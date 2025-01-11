@@ -109,7 +109,7 @@ They thus offer the latest or in-development features and fixes, but are not opt
 
 ### Packages (macOS, Linux, BSD)
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/bambootracker.svg)](https://repology.org/project/bambootracker/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/bambootracker.svg?columns=3)](https://repology.org/project/bambootracker/versions)
 
 #### Nixpkgs (macOS, Linux)
 
