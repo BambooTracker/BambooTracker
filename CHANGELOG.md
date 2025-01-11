@@ -2,16 +2,23 @@
 
 ## Unreleased
 
+### Added
+
+- [#521] - Added setting to enable paste function across pattern boundaries ([#467]; thanks [@grayedsol], [@staticanimal])
+
 ### Changed
 
 - [#516] - Replace instrument numbers in all songs on "Reflect Instrument Number Change" ([#515]; thanks [@Esmerea])
 - [#517] - Raise macOS version of GitHub Actions workflow to 13
 
+[@grayedsol]: https://github.com/grayedsol
+[@Esmerea]: https://github.com/Esmerea
+
+[#467]: https://github.com/BambooTracker/BambooTracker/issues/467
 [#515]: https://github.com/BambooTracker/BambooTracker/issues/515
 [#516]: https://github.com/BambooTracker/BambooTracker/pull/516
 [#517]: https://github.com/BambooTracker/BambooTracker/pull/517
-
-[@Esmerea]: https://github.com/Esmerea
+[#521]: https://github.com/BambooTracker/BambooTracker/pull/521
 
 ## v0.6.4 (2024-09-24)
 
