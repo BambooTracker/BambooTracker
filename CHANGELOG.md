@@ -12,9 +12,14 @@
 - [#517] - Raise macOS version of GitHub Actions workflow to 13
 - [#522] - README: Change repology badge to 3 columns (thanks [@luzpaz])
 
+### Fixed
+
+- [#524] - Improve error handling on undo/redo ([#523]; thanks [@brickblock369])
+
 [@grayedsol]: https://github.com/grayedsol
 [@Esmerea]: https://github.com/Esmerea
 [@luzpaz]: https://github.com/luzpaz
+[@brickblock369]: https://github.com/brickblock369
 
 [#467]: https://github.com/BambooTracker/BambooTracker/issues/467
 [#515]: https://github.com/BambooTracker/BambooTracker/issues/515
@@ -22,6 +27,8 @@
 [#517]: https://github.com/BambooTracker/BambooTracker/pull/517
 [#521]: https://github.com/BambooTracker/BambooTracker/pull/521
 [#522]: https://github.com/BambooTracker/BambooTracker/pull/522
+[#523]: https://github.com/BambooTracker/BambooTracker/issues/523
+[#524]: https://github.com/BambooTracker/BambooTracker/pull/524
 
 ## v0.6.4 (2024-09-24)
 
