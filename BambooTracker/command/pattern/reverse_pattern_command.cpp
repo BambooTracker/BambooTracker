@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "reverse_pattern_command.hpp"
@@ -38,45 +18,70 @@ ReversePatternCommand::ReversePatternCommand(
 	  bStep_(beginStep)
 {
 	auto& song = mod.lock()->getSong(songNum);
-	size_t h = static_cast<size_t>(endStep - beginStep + 1);
-	size_t w = command_utils::calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
+	std::size_t h = static_cast<size_t>(endStep - beginStep + 1);
+	std::size_t w = command_utils::calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
 	prevCells_ = command_utils::getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
 }
 
-void ReversePatternCommand::redo()
+bool ReversePatternCommand::redo()
 {
-	auto& sng = mod_.lock()->getSong(song_);
+	auto& song = mod_.lock()->getSong(song_);
 
-	size_t l = prevCells_.size() - 1;
-	int s = bStep_;
-	for (size_t i = 0; i < prevCells_.size(); ++i) {
-		int t = bTrack_;
-		int c = bCol_;
-		for (size_t j = 0; j < prevCells_.at(i).size(); ++j) {
-			Step& st = command_utils::getStep(sng, t, order_, s);
-			switch (c) {
-			case 0:		st.setNoteNumber(std::stoi(prevCells_.at(l - i).at(j)));		break;
-			case 1:		st.setInstrumentNumber(std::stoi(prevCells_.at(l - i).at(j)));	break;
-			case 2:		st.setVolume(std::stoi(prevCells_.at(l - i).at(j)));			break;
-			default:
-			{
-				int ec = c - 3;
-				int ei = ec / 2;
-				if (ec % 2) st.setEffectValue(ei, std::stoi(prevCells_.at(l - i).at(j)));
-				else st.setEffectId(ei, prevCells_.at(l - i).at(j));
+	std::size_t lastRowIndex = prevCells_.rowSize() - 1;
+	int stepIndex = bStep_;
+
+	for (std::size_t i = 0; i < prevCells_.rowSize(); ++i) {
+		int trackIndex = bTrack_;
+		int columnIndex = bCol_;
+
+		for (std::size_t j = 0; j < prevCells_.columnSize(); ++j) {
+			Step& step = command_utils::getStep(song, trackIndex, order_, stepIndex);
+
+			switch (columnIndex) {
+			case 0:
+				step.setNoteNumber(std::stoi(prevCells_.at(lastRowIndex - i).at(j)));
+				break;
+
+			case 1:
+				step.setInstrumentNumber(std::stoi(prevCells_.at(lastRowIndex - i).at(j)));
+				break;
+
+			case 2:
+				step.setVolume(std::stoi(prevCells_.at(lastRowIndex - i).at(j)));
+				break;
+
+			default: {
+				int effectColumnIndex = columnIndex - 3;
+				int effectNumber = effectColumnIndex / 2;
+				if (effectColumnIndex % 2) {
+					// Effect value column.
+					step.setEffectValue(effectNumber, std::stoi(prevCells_.at(lastRowIndex - i).at(j)));
+				}
+				else {
+					// Effect ID column.
+					step.setEffectId(effectNumber, prevCells_.at(lastRowIndex - i).at(j));
+				}
 				break;
 			}
 			}
 
-			t += (++c / Step::N_COLUMN);
-			c %= Step::N_COLUMN;
+			trackIndex += (++columnIndex / Step::N_COLUMN);
+			columnIndex %= Step::N_COLUMN;
 		}
 
-		++s;
+		++stepIndex;
 	}
+
+	return true;
 }
 
-void ReversePatternCommand::undo()
+bool ReversePatternCommand::undo()
 {
-	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
+	try {
+		command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
 }

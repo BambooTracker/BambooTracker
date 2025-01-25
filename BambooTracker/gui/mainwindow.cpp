@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "mainwindow.hpp"
@@ -86,6 +66,7 @@
 #include "gui/file_io_error_message_box.hpp"
 #include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
+#include "gui/command_result_message_box.hpp"
 #include "utils.hpp"
 
 namespace
@@ -2096,13 +2077,19 @@ void MainWindow::swapInstruments(int row1, int row2)
 /********** Undo-Redo **********/
 void MainWindow::undo()
 {
-	bt_->undo();
+	if (!bt_->undo()) {
+		command_result_message_box::showCommandUndoingErrorMessageBox(this);
+		return;
+	}
 	comStack_->undo();
 }
 
 void MainWindow::redo()
 {
-	bt_->redo();
+	if (!bt_->redo()) {
+		command_result_message_box::showCommandRedoingErrorMessageBox(this);
+		return;
+	}
 	comStack_->redo();
 }
 
@@ -3111,7 +3098,7 @@ void MainWindow::on_actionAbout_triggered()
 {
 	static const QString APP_NAME = "BambooTracker v" + QString::fromStdString(Version::ofApplicationInString());
 	static const QString APP_DESC = tr("YM2608 Music Tracker");
-	static constexpr char COPY[] = "Copyright (C) 2018-2024 Rerrah";
+	static constexpr char COPY[] = "Copyright (C) 2018 Rerrah";
 	static const QString WEB = tr("Web:")
 							   + R"( <a href="https://bambootracker.github.io/BambooTracker/">https://bambootracker.github.io/BambooTracker/</a>)";
 

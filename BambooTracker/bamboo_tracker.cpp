@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "bamboo_tracker.hpp"
@@ -1279,14 +1259,14 @@ void BambooTracker::setCurrentStepNumber(int num)
 }
 
 /********** Undo-Redo **********/
-void BambooTracker::undo()
+bool BambooTracker::undo()
 {
-	comMan_.undo();
+	return comMan_.undo();
 }
 
-void BambooTracker::redo()
+bool BambooTracker::redo()
 {
-	comMan_.redo();
+	return comMan_.redo();
 }
 
 void BambooTracker::clearCommandHistory()
@@ -2530,17 +2510,17 @@ void BambooTracker::deleteOrder(int songNum, int orderNum)
 	comMan_.invoke(std::make_unique<DeleteOrderCommand>(mod_, songNum, orderNum));
 }
 
-void BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder,
-									const std::vector<std::vector<std::string>>& cells)
+bool BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder, const Vector2d<int>& cells)
 {
-	// Arrange data
-	size_t w = std::min(cells[0].size(), songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack));
-	size_t h = std::min(cells.size(), getOrderSize(songNum) - static_cast<size_t>(beginOrder));
+	// Clip given cells to fit the size of pasted area.
+	std::size_t w = std::min(cells.rowSize(), songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack));
+	std::size_t h = std::min(cells.columnSize(), getOrderSize(songNum) - static_cast<size_t>(beginOrder));
+	if (w == 0 || h == 0) return false;
 
-	std::vector<std::vector<std::string>> d(h);
-	for (size_t i = 0; i < h; ++i) d[i].assign(cells[i].begin(), cells[i].begin() + w);
+	auto clipped = cells.clip(0, 0, h, w);
+	if (!clipped.isValid() || clipped.empty()) return false;
 
-	comMan_.invoke(std::make_unique<PasteCopiedDataToOrderCommand>(mod_, songNum, beginTrack, beginOrder, std::move(d)));
+	return comMan_.invoke(std::make_unique<PasteCopiedDataToOrderCommand>(mod_, songNum, beginTrack, beginOrder, clipped));
 }
 
 void BambooTracker::duplicateOrder(int songNum, int orderNum)
@@ -2696,67 +2676,66 @@ void BambooTracker::deletePreviousStep(int songNum, int trackNum, int orderNum, 
 
 namespace
 {
-std::vector<std::vector<std::string>> arrangePatternDataCells(
-		size_t trackCnt, size_t ptnSize, int beginTrack, int beginColmn, int beginStep,
-		const std::vector<std::vector<std::string>>& cells, bool overflow)
+Vector2d<std::string> clipCellsToFitPastedArea(
+	size_t trackCnt, size_t ptnSize, int beginTrack, int beginColmn, int beginStep,
+	const Vector2d<std::string>& cells, bool overflow)
 {
-	size_t w = (trackCnt - static_cast<size_t>(beginTrack) - 1) * 11
-			   + (11 - static_cast<size_t>(beginColmn));
-	size_t h = ptnSize - static_cast<size_t>(beginStep);
+	std::size_t w = (trackCnt - static_cast<std::size_t>(beginTrack) - 1) * Step::N_COLUMN
+					+ (Step::N_COLUMN - static_cast<std::size_t>(beginColmn));
+	std::size_t h = ptnSize - static_cast<std::size_t>(beginStep);
 
-	size_t width = std::min(cells.at(0).size(), w);
-	size_t height = overflow ? cells.size() : std::min(cells.size(), h);
+	std::size_t width = std::min(cells.columnSize(), w);
+	std::size_t height = overflow ? cells.rowSize() : std::min(cells.rowSize(), h);
 
-	std::vector<std::vector<std::string>> d(height);
-	for (size_t i = 0; i < height; ++i) {
-		d[i].assign(cells[i].begin(), cells[i].begin() + width);
-	}
-	return d;
+	return cells.clip(0, 0, height, width);
 }
 }
 
-void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-									  const std::vector<std::vector<std::string>>& cells, bool overflow)
+bool BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+									  const Vector2d<std::string>& cells, bool overflow)
 {
-	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
-									 beginTrack, beginColmn, beginStep, cells, overflow);
-	comMan_.invoke(std::make_unique<PasteCopiedDataToPatternCommand>(
-					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+	const auto clipped = clipCellsToFitPastedArea(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+												  beginTrack, beginColmn, beginStep, cells, overflow);
+	if (!clipped.isValid() || clipped.empty()) return false;
+
+	return comMan_.invoke(std::make_unique<PasteCopiedDataToPatternCommand>(
+		mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, clipped));
 }
 
-void BambooTracker::pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-										 const std::vector<std::vector<std::string> >& cells, bool overflow)
+bool BambooTracker::pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+										 const Vector2d<std::string>& cells, bool overflow)
 {
-	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
-									 beginTrack, beginColmn, beginStep, cells, overflow);
-	comMan_.invoke(std::make_unique<PasteMixCopiedDataToPatternCommand>(
-					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+	const auto clipped = clipCellsToFitPastedArea(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+												  beginTrack, beginColmn, beginStep, cells, overflow);
+	if (!clipped.isValid() || clipped.empty()) return false;
+
+	return comMan_.invoke(std::make_unique<PasteMixCopiedDataToPatternCommand>(
+		mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, clipped));
 }
 
-void BambooTracker::pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-											   int beginStep, const std::vector<std::vector<std::string> >& cells,
-											   bool overflow)
+bool BambooTracker::pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+											   int beginStep, const Vector2d<std::string>& cells, bool overflow)
 {
-	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
-									 beginTrack, beginColmn, beginStep, cells, overflow);
-	comMan_.invoke(std::make_unique<PasteOverwriteCopiedDataToPatternCommand>(
-					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+	const auto clipped = clipCellsToFitPastedArea(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+												  beginTrack, beginColmn, beginStep, cells, overflow);
+	return comMan_.invoke(std::make_unique<PasteOverwriteCopiedDataToPatternCommand>(
+		mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, clipped));
 }
 
-void BambooTracker::pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-											int beginStep, const std::vector<std::vector<std::string> >& cells)
+bool BambooTracker::pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+											int beginStep, const Vector2d<std::string>& cells)
 {
-	auto d = arrangePatternDataCells(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
-									 beginTrack, beginColmn, beginStep, cells, false);
-	comMan_.invoke(std::make_unique<PasteInsertCopiedDataToPatternCommand>(
-					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+	const auto clipped = clipCellsToFitPastedArea(songStyle_.trackAttribs.size(), getPatternSizeFromOrderNumber(songNum, beginOrder),
+												  beginTrack, beginColmn, beginStep, cells, false);
+	return comMan_.invoke(std::make_unique<PasteInsertCopiedDataToPatternCommand>(
+		mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, clipped));
 }
 
-void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+bool BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 									  int endTrack, int endColmn, int endStep)
 {
-	comMan_.invoke(std::make_unique<EraseCellsInPatternCommand>(
-					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
+	return comMan_.invoke(std::make_unique<EraseCellsInPatternCommand>(
+		mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
 }
 
 void BambooTracker::transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,

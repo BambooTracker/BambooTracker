@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "order_list_panel.hpp"
@@ -29,6 +9,7 @@
 #include <utility>
 #include <thread>
 #include <numeric>
+#include <optional>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QFontInfo>
@@ -42,13 +23,16 @@
 #endif
 #include <QString>
 #include <QIcon>
+#include <QRegularExpression>
 #include "playback.hpp"
 #include "track.hpp"
 #include "bamboo_tracker_defs.hpp"
 #include "gui/dpi.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands_qt.hpp"
+#include "gui/command_result_message_box.hpp"
 #include "gui/gui_utils.hpp"
+#include "vector_2d.hpp"
 #include "utils.hpp"
 
 using Dpi::scaledQPixmap;
@@ -1022,25 +1006,45 @@ void OrderListPanel::copySelectedCells()
 
 void OrderListPanel::pasteCopiedCells(const OrderPosition& startPos)
 {
-	// Analyze text
-	QString str = QApplication::clipboard()->text().remove("ORDER_COPY:");
-	QStringList data = str.split(",");
-	if (data.size() < 2) return;
-	size_t w = data[0].toUInt();
-	size_t h = data[1].toUInt();
-	data.erase(data.begin(), data.begin() + 2);
-	if (static_cast<int>(w * h) != data.size()) return;
+	bool result = [&] {
+		// Analyze text in clopboard.
+		static const QRegularExpression COMMAND_REGEX {
+			R"(^ORDER_COPY:(?<width>\d+),(?<height>\d+),(?<data>.+)$)"
+		};
+		const auto match = COMMAND_REGEX.match(QApplication::clipboard()->text());
+		if (!match.hasMatch()) return false;
 
-	std::vector<std::vector<std::string>> cells(h, std::vector<std::string>(w));
-	for (size_t i = 0; i < h; ++i) {
-		for (size_t j = 0; j < w; ++j) {
-			cells[i][j] = data[i * w + j].toStdString();
+		std::size_t w = match.captured("width").toUInt();
+		std::size_t h = match.captured("height").toUInt();
+		if (w == 0 || h == 0) return false;
+
+		QStringList data = match.captured("data").split(",");
+		auto unmodifiedSize = data.size();
+		data.removeAll("");
+		if (static_cast<std::size_t>(data.size()) != w * h || data.size() != unmodifiedSize) {
+			return false;
 		}
-	}
 
-	// Send cells data
-	bt_->pasteOrderCells(curSongNum_, visTracks_.at(startPos.trackVisIdx), startPos.row, std::move(cells));
-	comStack_.lock()->push(new PasteCopiedDataToOrderQtCommand(this));
+		// Parse text.
+		Vector2d<int> cells(h, w);
+		for (std::size_t i = 0; i < h; ++i) {
+			for (std::size_t j = 0; j < w; ++j) {
+				bool isOk{};
+				cells[i][j] = data[i * w + j].toInt(&isOk);
+				if (!isOk) return false;
+			}
+		}
+
+		// Send cells data.
+		if (!bt_->pasteOrderCells(curSongNum_, visTracks_.at(startPos.trackVisIdx), startPos.row, cells)) {
+			return false;
+		}
+		comStack_.lock()->push(new PasteCopiedDataToOrderQtCommand(this));
+
+		return true;
+	}();
+
+	if (!result) command_result_message_box::showCommandInvokingErrorMessageBox(window());
 }
 
 void OrderListPanel::clonePatterns(const OrderPosition& singlePos)

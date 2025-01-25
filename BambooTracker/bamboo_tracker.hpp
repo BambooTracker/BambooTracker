@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -44,6 +24,7 @@
 #include "io/wav_container.hpp"
 #include "bamboo_tracker_defs.hpp"
 #include "enum_hash.hpp"
+#include "vector_2d.hpp"
 
 class Configuration;
 enum class EffectDisplayControl;
@@ -314,8 +295,8 @@ public:
 	void setCurrentStepNumber(int num);
 
 	// Undo-Redo
-	void undo();
-	void redo();
+	bool undo();
+	bool redo();
 	void clearCommandHistory();
 
 	// Jam mode
@@ -476,8 +457,7 @@ public:
 	void setOrderPatternDigit(int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry);
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
-	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
-						 const std::vector<std::vector<std::string>>& cells);
+	bool pasteOrderCells(int songNum, int beginTrack, int beginOrder, const Vector2d<int>& cells);
 	void duplicateOrder(int songNum, int orderNum);
 	void MoveOrder(int songNum, int orderNum, bool isUp);
 	void clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack);
@@ -511,18 +491,15 @@ public:
 	///		2: volume
 	///		3: effect ID
 	///		4: effect value
-	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-						   const std::vector<std::vector<std::string>>& cells,
-						   bool overflow);
-	void pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
-							  const std::vector<std::vector<std::string>>& cells,
-							  bool overflow);
-	void pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-									int beginStep, const std::vector<std::vector<std::string>>& cells,
-									bool overflow);
-	void pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
-								 int beginStep, const std::vector<std::vector<std::string>>& cells);
-	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+	bool pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+						   const Vector2d<std::string>& cells, bool overflow);
+	bool pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+							  const Vector2d<std::string>& cells, bool overflow);
+	bool pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+									int beginStep, const Vector2d<std::string>& cells, bool overflow);
+	bool pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+								 int beginStep, const Vector2d<std::string>& cells);
+	bool erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
 								int endTrack, int endStep, int semitone);

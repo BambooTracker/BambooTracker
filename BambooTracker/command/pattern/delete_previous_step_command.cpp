@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "delete_previous_step_command.hpp"
@@ -44,12 +24,13 @@ DeletePreviousStepCommand::DeletePreviousStepCommand(
 	}
 }
 
-void DeletePreviousStepCommand::redo()
+bool DeletePreviousStepCommand::redo()
 {
 	command_utils::getPattern(mod_, song_, track_, order_).deletePreviousStep(step_);
+	return true;
 }
 
-void DeletePreviousStepCommand::undo()
+bool DeletePreviousStepCommand::undo()
 {
 	auto& pt = command_utils::getPattern(mod_, song_, track_, order_);
 	pt.insertStep(step_ - 1);	// Insert previous step
@@ -60,4 +41,5 @@ void DeletePreviousStepCommand::undo()
 	for (int i = 0; i < Step::N_EFFECT; ++i) {
 		st.setEffect(i, prevEff_[i]);
 	}
+	return true;
 }

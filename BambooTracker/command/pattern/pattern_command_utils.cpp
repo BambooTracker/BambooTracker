@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2020 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2020 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "pattern_command_utils.hpp"
@@ -48,84 +28,119 @@ size_t calculateColumnSize(int beginTrack, int beginColumn, int endTrack, int en
 	return static_cast<size_t>(w);
 }
 
-std::vector<std::vector<std::string>> getPreviousCells(Song& song, size_t w, size_t h, int beginTrack,
-													   int beginColumn, int beginOrder, int beginStep)
+Vector2d<std::string> getPreviousCells(Song& song, std::size_t w, std::size_t h, int beginTrack,
+									   int beginColumn, int beginOrder, int beginStep)
 {
-	std::vector<std::vector<std::string>> cells(h);
-	int s = beginStep;
-	for (size_t i = 0; i < h; ++i) {
-		int t = beginTrack;
-		int c = beginColumn;
-		cells[i].resize(w);
-		for (size_t j = 0; j < w; ++j) {
-			if (static_cast<size_t>(s) >= song.getTrack(t).getPatternFromOrderNumber(beginOrder).getSize()) {
-				if (static_cast<size_t>(++beginOrder) < song.getTrack(t).getOrderSize()) { s = 0; }
-				else { return cells; }
-			}
-			Step& st = song.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s);
-			std::string val;
-			switch (c) {
-			case 0:		val = std::to_string(st.getNoteNumber());		break;
-			case 1:		val = std::to_string(st.getInstrumentNumber());	break;
-			case 2:		val = std::to_string(st.getVolume());			break;
-			default:
-			{
-				int ec = c - 3;
-				int ei = ec / 2;
-				if (ec % 2) {	// Value
-					val = std::to_string(st.getEffectValue(ei));
+	Vector2d<std::string> cells(h, w);
+	int stepIndex = beginStep;
+	for (std::size_t i = 0; i < h; ++i) {
+		int trackIndex = beginTrack;
+		int columnIndex = beginColumn;
+
+		for (std::size_t j = 0; j < w; ++j) {
+			if (static_cast<std::size_t>(stepIndex) >= song.getTrack(trackIndex).getPatternFromOrderNumber(beginOrder).getSize()) {
+				if (static_cast<std::size_t>(++beginOrder) < song.getTrack(trackIndex).getOrderSize()) {
+					stepIndex = 0;
 				}
-				else {	// ID
-					val = st.getEffectId(ei);
+				else {
+					return cells;
+				}
+			}
+
+			Step& step = song.getTrack(trackIndex).getPatternFromOrderNumber(beginOrder).getStep(stepIndex);
+			std::string value;
+			switch (columnIndex) {
+			case 0:
+				value = std::to_string(step.getNoteNumber());
+				break;
+
+			case 1:
+				value = std::to_string(step.getInstrumentNumber());
+				break;
+
+			case 2:
+				value = std::to_string(step.getVolume());
+				break;
+
+			default: {
+				int effectColumnIndex = columnIndex - 3;
+				int effectNumber = effectColumnIndex / 2;
+				if (effectColumnIndex % 2) {
+					// Effect value column.
+					value = std::to_string(step.getEffectValue(effectNumber));
+				}
+				else {
+					// Effect ID column.
+					value = step.getEffectId(effectNumber);
 				}
 				break;
 			}
 			}
-			cells[i][j] = val;
+			cells[i][j] = value;
 
-			t += (++c / Step::N_COLUMN);
-			c %= 11;
+			trackIndex += (++columnIndex / Step::N_COLUMN);
+			columnIndex %= Step::N_COLUMN;
 		}
-		++s;
+
+		++stepIndex;
 	}
+
 	return cells;
 }
 
-void restorePattern(Song& song, const std::vector<std::vector<std::string>>& cells, int beginTrack,
+void restorePattern(Song& song, const Vector2d<std::string>& cells, int beginTrack,
 					int beginColumn, int beginOrder, int beginStep)
 {
-	int s = beginStep;
+	int stepIndex = beginStep;
+
 	for (const auto& row : cells) {
-		int t = beginTrack;
-		int c = beginColumn;
+		int trackIndex = beginTrack;
+		int columnIndex = beginColumn;
+
 		for (const std::string& cell : row) {
-			if (static_cast<size_t>(s) >= song.getTrack(t).getPatternFromOrderNumber(beginOrder).getSize()) {
-				if (static_cast<size_t>(++beginOrder) < song.getTrack(t).getOrderSize()) { s = 0; }
-				else { return; }
-			}
-			Step& st = song.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s);
-			switch (c) {
-			case 0:		st.setNoteNumber(std::stoi(cell));			break;
-			case 1:		st.setInstrumentNumber(std::stoi(cell));	break;
-			case 2:		st.setVolume(std::stoi(cell));				break;
-			default:
-			{
-				int ec = c - 3;
-				int ei = ec / 2;
-				if (ec % 2) {	// Value
-					st.setEffectValue(ei, std::stoi(cell));
+			if (static_cast<std::size_t>(stepIndex) >= song.getTrack(trackIndex).getPatternFromOrderNumber(beginOrder).getSize()) {
+				if (static_cast<std::size_t>(++beginOrder) < song.getTrack(trackIndex).getOrderSize()) {
+					stepIndex = 0;
 				}
-				else {	// ID
-					st.setEffectId(ei, cell);
+				else {
+					return;
+				}
+			}
+
+			Step& step = song.getTrack(trackIndex).getPatternFromOrderNumber(beginOrder).getStep(stepIndex);
+			switch (columnIndex) {
+			case 0:
+				step.setNoteNumber(std::stoi(cell));
+				break;
+
+			case 1:
+				step.setInstrumentNumber(std::stoi(cell));
+				break;
+
+			case 2:
+				step.setVolume(std::stoi(cell));
+				break;
+
+			default: {
+				int effectColumnIndex = columnIndex - 3;
+				int effectNumber = effectColumnIndex / 2;
+				if (effectColumnIndex % 2) {
+					// Effect value column.
+					step.setEffectValue(effectNumber, std::stoi(cell));
+				}
+				else {
+					// Effect ID column.
+					step.setEffectId(effectNumber, cell);
 				}
 				break;
 			}
 			}
 
-			t += (++c / Step::N_COLUMN);
-			c %= Step::N_COLUMN;
+			trackIndex += (++columnIndex / Step::N_COLUMN);
+			columnIndex %= Step::N_COLUMN;
 		}
-		++s;
+
+		++stepIndex;
 	}
 }
 }

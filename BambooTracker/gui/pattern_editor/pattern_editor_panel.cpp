@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2022 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "pattern_editor_panel.hpp"
@@ -31,6 +11,7 @@
 #include <thread>
 #include <unordered_map>
 #include <numeric>
+#include <optional>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QFontInfo>
@@ -58,6 +39,7 @@
 #include "gui/jam_layout.hpp"
 #include "gui/note_name_manager.hpp"
 #include "gui/gui_utils.hpp"
+#include "gui/command_result_message_box.hpp"
 #include "utils.hpp"
 
 using Dpi::scaledQPixmap;
@@ -1858,87 +1840,151 @@ void PatternEditorPanel::copySelectedCells()
 
 void PatternEditorPanel::eraseSelectedCells()
 {
-	bt_->erasePatternCells(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
-						   selLeftAbovePos_.order, selLeftAbovePos_.step,
-						   visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+	if (!bt_->erasePatternCells(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
+								selLeftAbovePos_.order, selLeftAbovePos_.step,
+								visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step)) {
+		command_result_message_box::showCommandInvokingErrorMessageBox(window());
+	}
 	comStack_.lock()->push(new EraseCellsInPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
+namespace
 {
-	int sCol = 0;
-	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
-	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
-		cells = compandPasteCells(pos, cells);
-	}
-	bool overflow = config_->getOverflowPaste();
-	bt_->pastePatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
-	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
-}
+std::optional <std::pair<int, Vector2d<std::string>>> decodeTextForPatternPasting(const QString& decodedText)
+{
+	static const QRegularExpression COMMAND_REGEX {
+		R"(^PATTERN_(COPY|CUT):(?<startCol>\d+),(?<width>\d+),(?<height>\d+),(?<data>.+)$)"
+	};
+	const auto match = COMMAND_REGEX.match(decodedText);
+	if (!match.hasMatch()) return std::nullopt;
 
-void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
-{
-	int sCol = 0;
-	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
-	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
-		cells = compandPasteCells(pos, cells);
-	}
-	bool overflow = config_->getOverflowPaste();
-	bt_->pasteMixPatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
-	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
-}
+	bool isOk{};
+	int startCol = match.captured("startCol").toInt(&isOk);
+	if (!isOk || startCol < 0 || Step::N_COLUMN <= startCol) return std::nullopt;
 
-void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursorPos)
-{
-	int sCol = 0;
-	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
-	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
-		cells = compandPasteCells(pos, cells);
-	}
-	bool overflow = config_->getOverflowPaste();
-	bt_->pasteOverwritePatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells), overflow);
-	comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
-}
+	std::size_t w = match.captured("width").toUInt();
+	std::size_t h = match.captured("height").toUInt();
+	if (w == 0 || h == 0) return std::nullopt;
 
-void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos)
-{
-	int sCol = 0;
-	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
-	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
-	if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
-		cells = compandPasteCells(pos, cells);
+	QStringList data = match.captured("data").split(",");
+	auto unmodifiedSize = data.size();
+	data.removeAll("");
+	if (static_cast<std::size_t>(data.size()) != w * h || data.size() != unmodifiedSize) {
+		return std::nullopt;
 	}
 
-	bt_->pasteInsertPatternCells(
-				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
-	comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
-}
-
-PatternEditorPanel::PatternCells PatternEditorPanel::decodeCells(QString str, int& startCol)
-{
-	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
-	QStringList data = str.split(",");
-	if (data.size() < 3) {};	// Error
-	startCol = data[0].toInt();
-	size_t w = data[1].toUInt();
-	size_t h = data[2].toUInt();
-	data.erase(data.begin(), data.begin() + 3);
-	if (static_cast<int>(w * h) != data.size()) return {};	// Error
-
-	PatternCells cells(h, PatternCells::value_type(w));
-	for (size_t i = 0; i < h; ++i) {
-		for (size_t j = 0; j < w; ++j) {
+	Vector2d<std::string> cells(h, w);
+	for (std::size_t i = 0; i < h; ++i) {
+		for (std::size_t j = 0; j < w; ++j) {
 			cells[i][j] = data[i * w + j].toStdString();
 		}
 	}
 
-	return cells;
+	return std::make_pair(startCol, std::move(cells));
+}
+}
+
+void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
+{
+	bool result = [&] {
+		const auto decoded = decodeTextForPatternPasting(QApplication::clipboard()->text());
+		if (!decoded.has_value()) return false;
+		auto [sCol, cells] = decoded.value();
+
+		PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.columnSize());
+		if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
+			cells = makeCopiedCellsForPasteFull(pos, cells);
+		}
+
+		bool overflow = config_->getOverflowPaste();
+		if (!bt_->pastePatternCells(
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack,
+				pos.order, pos.step, cells, overflow)) {
+			return false;
+		}
+		comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
+
+		return true;
+	}();
+
+	if (!result) command_result_message_box::showCommandInvokingErrorMessageBox(window());
+}
+
+void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
+{
+	bool result = [&] {
+		const auto decoded = decodeTextForPatternPasting(QApplication::clipboard()->text());
+		if (!decoded.has_value()) return false;
+		auto [sCol, cells] = decoded.value();
+
+		PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.columnSize());
+		if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
+			cells = makeCopiedCellsForPasteFull(pos, cells);
+		}
+
+		bool overflow = config_->getOverflowPaste();
+		if (!bt_->pasteMixPatternCells(
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack,
+				pos.order, pos.step, cells, overflow)) {
+			return false;
+		}
+		comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
+
+		return true;
+	}();
+
+	if (!result) command_result_message_box::showCommandInvokingErrorMessageBox(window());
+}
+
+void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursorPos)
+{
+	bool result = [&] {
+		const auto decoded = decodeTextForPatternPasting(QApplication::clipboard()->text());
+		if (!decoded.has_value()) return false;
+		auto [sCol, cells] = decoded.value();
+
+
+		PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.columnSize());
+		if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
+			cells = makeCopiedCellsForPasteFull(pos, cells);
+		}
+
+		bool overflow = config_->getOverflowPaste();
+		if (!bt_->pasteOverwritePatternCells(
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack,
+				pos.order, pos.step, cells, overflow)) {
+			return false;
+		}
+		comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
+
+		return true;
+	}();
+
+	if (!result) command_result_message_box::showCommandInvokingErrorMessageBox(window());
+}
+
+void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos)
+{
+	bool result = [&] {
+		const auto decoded = decodeTextForPatternPasting(QApplication::clipboard()->text());
+		if (!decoded.has_value()) return false;
+		auto [sCol, cells] = decoded.value();
+
+		PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.columnSize());
+		if (config_->getPasteMode() == Configuration::PasteMode::Fill && selLeftAbovePos_.order != -1) {
+			cells = makeCopiedCellsForPasteFull(pos, cells);
+		}
+
+		if (!bt_->pasteInsertPatternCells(
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, cells)) {
+			return false;
+		}
+		comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
+
+		return true;
+	}();
+
+	if (!result) command_result_message_box::showCommandInvokingErrorMessageBox(window());
 }
 
 PatternPosition PatternEditorPanel::getPasteLeftAbovePosition(
@@ -1954,7 +2000,7 @@ PatternPosition PatternEditorPanel::getPasteLeftAbovePosition(
 	else {
 		pos = cursorPos;
 		if (pasteCol < 3 || (pos.colInTrack - pasteCol) % 2
-				|| (11 - pos.colInTrack) < static_cast<int>(cellW)) {
+			|| (Step::N_COLUMN - pos.colInTrack) < static_cast<int>(cellW)) {
 			pos.colInTrack = pasteCol;
 		}
 	}
@@ -1973,21 +2019,24 @@ void PatternEditorPanel::cutSelectedCells()
 	QApplication::clipboard()->setText(str);
 }
 
-PatternEditorPanel::PatternCells PatternEditorPanel::compandPasteCells(const PatternPosition& laPos, const PatternCells& cells)
+Vector2d<std::string> PatternEditorPanel::makeCopiedCellsForPasteFull(
+	const PatternPosition& laPos, const Vector2d<std::string>& cells)
 {
-	PatternCells newCells;
-	int ow = cells.front().size();
-	int oh = cells.size();
-	int l = laPos.trackVisIdx * 11 + laPos.colInTrack;
-	int r = selRightBelowPos_.trackVisIdx * 11 + selRightBelowPos_.colInTrack;
+	int ow = cells.columnSize();
+	int oh = cells.rowSize();
+	int l = laPos.trackVisIdx * Step::N_COLUMN + laPos.colInTrack;
+	int r = selRightBelowPos_.trackVisIdx * Step::N_COLUMN + selRightBelowPos_.colInTrack;
 	int w = r - l + 1;	// Real selected region width
-	size_t h = static_cast<size_t>(calculateStepDistance(laPos.order, laPos.step,
-														 selRightBelowPos_.order, selRightBelowPos_.step) + 1);
-	int bw = ((ow - 1) / 11 + 1) * 11;
-	size_t padSize = bw - ow;
+	auto h = static_cast<std::size_t>(
+		calculateStepDistance(laPos.order, laPos.step,
+							  selRightBelowPos_.order, selRightBelowPos_.step) + 1);
+
+	int bw = ((ow - 1) / Step::N_COLUMN + 1) * Step::N_COLUMN;
+	std::size_t padSize = bw - ow;
+	int lc = (laPos.colInTrack + ow) % Step::N_COLUMN;
+
 	std::vector<std::string> pad(padSize);
-	int lc = (laPos.colInTrack + ow) % 11;
-	for (size_t i = 0; i < padSize; ++i) {
+	for (std::size_t i = 0; i < padSize; ++i) {
 		switch (lc) {
 		case 3:
 		case 5:
@@ -1999,11 +2048,12 @@ PatternEditorPanel::PatternCells PatternEditorPanel::compandPasteCells(const Pat
 			pad[i] = "-1";
 			break;
 		}
-		lc = (lc + 1) % 11;
+		lc = (lc + 1) % Step::N_COLUMN;
 	}
-	for (size_t i = 0; i < h; ++i) {
-		newCells.emplace_back(w);
-		auto&& rowBeginIt = newCells.back().begin();
+
+	Vector2d<std::string> newCells(h, w);
+	for (std::size_t i = 0; i < h; ++i) {
+		auto rowBeginIt = newCells[i].begin();
 		for (int dw = w, p = 0; dw > 0; dw -= bw, p += bw) {
 			int ws = std::min(ow, dw);
 			std::copy_n(cells.at(i % oh).begin(), ws, rowBeginIt + p);
@@ -2114,13 +2164,19 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QAction* undo = menu.addAction(tr("&Undo"));
 	undo->setIcon(QIcon(":/icon/undo"));
 	QObject::connect(undo, &QAction::triggered, this, [&]() {
-		bt_->undo();
+		if (!bt_->undo()) {
+			command_result_message_box::showCommandUndoingErrorMessageBox(this->window());
+			return;
+		}
 		comStack_.lock()->undo();
 	});
 	QAction* redo = menu.addAction(tr("&Redo"));
 	redo->setIcon(QIcon(":/icon/redo"));
 	QObject::connect(redo, &QAction::triggered, this, [&]() {
-		bt_->redo();
+		if (!bt_->redo()) {
+			command_result_message_box::showCommandRedoingErrorMessageBox(this->window());
+			return;
+		}
 		comStack_.lock()->redo();
 	});
 	menu.addSeparator();

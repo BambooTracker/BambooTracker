@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "set_effect_id_to_step_command.hpp"
@@ -44,15 +24,16 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(
 	filledValue00_ = fillValue00 && !step.hasEffectValue(n);
 }
 
-void SetEffectIDToStepCommand::redo()
+bool SetEffectIDToStepCommand::redo()
 {
 	std::string str = isSecondEntry_ ? effID_ : ("0" + effID_);
 	Step& step = command_utils::getStep(mod_, song_, track_, order_, step_);
 	step.setEffectId(n_, str);
 	if (filledValue00_) step.setEffectValue(n_, 0);
+	return true;
 }
 
-void SetEffectIDToStepCommand::undo()
+bool SetEffectIDToStepCommand::undo()
 {
 	Step& step = command_utils::getStep(mod_, song_, track_, order_, step_);
 	step.setEffectId(n_, prevEffID_);
@@ -62,6 +43,7 @@ void SetEffectIDToStepCommand::undo()
 		effID_ = "0" + effID_;
 		isSecondEntry_ = true;
 	}
+	return true;
 }
 
 bool SetEffectIDToStepCommand::mergeWith(const AbstractCommand* other)
