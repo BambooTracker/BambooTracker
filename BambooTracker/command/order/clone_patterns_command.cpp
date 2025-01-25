@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "clone_patterns_command.hpp"
@@ -44,7 +24,7 @@ ClonePatternsCommand::ClonePatternsCommand(std::weak_ptr<Module> mod, int songNu
 	}
 }
 
-void ClonePatternsCommand::redo()
+bool ClonePatternsCommand::redo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 	for (int o = bOrder_; o <= eOrder_; ++o) {
@@ -53,9 +33,10 @@ void ClonePatternsCommand::redo()
 			track.registerPatternToOrder(o, track.clonePattern(track.getOrderInfo(o).patten));
 		}
 	}
+	return true;
 }
 
-void ClonePatternsCommand::undo()
+bool ClonePatternsCommand::undo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 	for (int o = bOrder_; o <= eOrder_; ++o) {
@@ -68,4 +49,5 @@ void ClonePatternsCommand::undo()
 						prevOdrs_.at(static_cast<size_t>(o - bOrder_)).at(static_cast<size_t>(t - bTrack_)).patten);
 		}
 	}
+	return true;
 }

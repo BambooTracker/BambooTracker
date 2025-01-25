@@ -260,6 +260,7 @@ HEADERS += \
     gui/command/order/order_commands_qt.hpp \
     gui/command/order/order_list_common_qt_command.hpp \
     gui/command/pattern/pattern_editor_common_qt_command.hpp \
+    gui/command_result_message_box.hpp \
     gui/dpi.hpp \
     gui/drop_detect_list_widget.hpp \
     gui/effect_description.hpp \
@@ -403,6 +404,7 @@ HEADERS += \
     gui/comment_edit_dialog.hpp \
     io/binary_container.hpp \
     utils.hpp \
+    vector_2d.hpp \
     version.hpp \
     command/pattern/interpolate_pattern_command.hpp \
     command/pattern/reverse_pattern_command.hpp \

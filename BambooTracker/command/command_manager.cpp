@@ -1,61 +1,66 @@
 /*
- * Copyright (C) 2018-2021 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "command_manager.hpp"
 #include <utility>
 
-void CommandManager::invoke(CommandIPtr command)
+bool CommandManager::invoke(CommandIPtr command)
 {
-	command->redo();
+	redoStack_.clear();
 
-	redoStack_ = std::stack<CommandIPtr>();
-	if (undoStack_.empty() || !undoStack_.top()->mergeWith(command.get())) {
-		undoStack_.push(std::move(command));
+	if (!undoStack_.empty() && undoStack_.back()->mergeWith(command.get())) {
+		return true;
+	}
+
+	redoStack_.push_back(std::move(command));
+
+	return redo();
+}
+
+bool CommandManager::undo()
+{
+	if (undoStack_.empty()) return true;
+
+	CommandIPtr command = std::move(undoStack_.back());
+	if (!command) return false;
+
+	if (command->undo()) {
+		// Push and pop history stacks.
+		undoStack_.pop_back();
+		redoStack_.push_back(std::move(command));
+		return true;
+	}
+	else {
+		// Rollback.
+		command->redo();
+		return false;
 	}
 }
 
-void CommandManager::undo()
+bool CommandManager::redo()
 {
-	if (undoStack_.empty()) return;
-	CommandIPtr command = std::move(undoStack_.top());
-	command->undo();
-	undoStack_.pop();
-	redoStack_.push(std::move(command));
-}
+	if (redoStack_.empty()) return true;
 
-void CommandManager::redo()
-{
-	if (redoStack_.empty()) return;
-	CommandIPtr command = std::move(redoStack_.top());
-	command->redo();
-	redoStack_.pop();
-	undoStack_.push(std::move(command));
+	CommandIPtr command = std::move(redoStack_.back());
+	if (!command) return false;
+
+	if (command->redo()) {
+		// Push and pop history stacks.
+		redoStack_.pop_back();
+		undoStack_.push_back(std::move(command));
+		return true;
+	}
+	else {
+		// Rollback.
+		command->undo();
+		return false;
+	}
 }
 
 void CommandManager::clear()
 {
-	redoStack_ = std::stack<CommandIPtr>();
-	undoStack_ = std::stack<CommandIPtr>();
+	redoStack_.clear();
+	undoStack_.clear();
 }
