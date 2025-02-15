@@ -11,6 +11,7 @@
 - [#516] - Replace instrument numbers in all songs on "Reflect Instrument Number Change" ([#515]; thanks [@Esmerea])
 - [#517] - Raise macOS version of GitHub Actions workflow to 13
 - [#522] - README: Change repology badge to 3 columns (thanks [@luzpaz])
+- [#525] - Use Ubuntu 22.04 GHA runner image
 
 ### Fixed
 
@@ -29,6 +30,7 @@
 [#522]: https://github.com/BambooTracker/BambooTracker/pull/522
 [#523]: https://github.com/BambooTracker/BambooTracker/issues/523
 [#524]: https://github.com/BambooTracker/BambooTracker/pull/524
+[#525]: https://github.com/BambooTracker/BambooTracker/pull/525
 
 ## v0.6.4 (2024-09-24)
 
