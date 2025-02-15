@@ -30,7 +30,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Identify build type.
@@ -72,7 +72,7 @@ jobs:
       - name: Installing dependencies.
         run: |
           sudo apt update
-          sudo apt install qt5-default qttools5-dev-tools \
+          sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools qttools5-dev-tools \
             libasound2-dev libpulse-dev libjack-jackd2-dev
 
       ## End Ubuntu-specific steps
