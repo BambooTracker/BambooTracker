@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+### v0.6.5 (2025-03-08)
+
 ### Added
 
 - [#521] - Added setting to enable paste function across pattern boundaries ([#467]; thanks [@grayedsol], [@staticanimal])
