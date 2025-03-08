@@ -1,26 +1,6 @@
 /*
- * Copyright (C) 2019-2022 Rerrah
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-FileCopyrightText: 2019 Rerrah
+ * SPDX-License-Identifier: MIT
  */
 
 #include "playback.hpp"
@@ -36,11 +16,38 @@ EffectMemory::EffectMemory()
 	mem_.reserve(Step::N_EFFECT);
 }
 
+namespace
+{
+constexpr auto isEqualEffectType(EffectType type) {
+	return [type](const Effect& effect) { return effect.type == type; };
+}
+}
+
 void EffectMemory::enqueue(const Effect& eff)
 {
-	auto itr = utils::findIf(mem_, [type = eff.type](const Effect& a) { return a.type == type; });
+	auto itr = utils::findIf(mem_, isEqualEffectType(eff.type));
 	if (itr != mem_.end()) mem_.erase(itr);
 	mem_.push_back(eff);
+
+	switch (eff.type) {
+	case EffectType::HardEnvHighPeriod:
+	case EffectType::HardEnvLowPeriod: {
+		// Call auto envelope effect after setting period to reset envelope phase.
+		auto endPrevEff = mem_.cend() - 1;
+		auto autoEnvItr = std::find_if(mem_.cbegin(), endPrevEff, isEqualEffectType(EffectType::AutoEnvelope));
+		if (autoEnvItr == endPrevEff) {
+			return;
+		}
+
+		auto autoEnv = std::move(*autoEnvItr);
+		mem_.erase(autoEnvItr);
+		mem_.push_back(std::move(autoEnv));
+		break;
+	}
+
+	default:
+		break;
+	}
 }
 
 void EffectMemory::clear()

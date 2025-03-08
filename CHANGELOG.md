@@ -16,6 +16,7 @@
 ### Fixed
 
 - [#524] - Improve error handling on undo/redo ([#523]; thanks [@brickblock369])
+- [#526] - Fix auto envelope effect to reset phase after period change
 
 [@grayedsol]: https://github.com/grayedsol
 [@Esmerea]: https://github.com/Esmerea
@@ -31,6 +32,7 @@
 [#523]: https://github.com/BambooTracker/BambooTracker/issues/523
 [#524]: https://github.com/BambooTracker/BambooTracker/pull/524
 [#525]: https://github.com/BambooTracker/BambooTracker/pull/525
+[#526]: https://github.com/BambooTracker/BambooTracker/pull/526
 
 ## v0.6.4 (2024-09-24)
 
