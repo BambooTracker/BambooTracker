@@ -39,9 +39,8 @@ void EffectMemory::enqueue(const Effect& eff)
 			return;
 		}
 
-		auto autoEnv = std::move(*autoEnvItr);
 		mem_.erase(autoEnvItr);
-		mem_.push_back(std::move(autoEnv));
+		mem_.push_back(std::move(*autoEnvItr));
 		break;
 	}
 

@@ -277,8 +277,14 @@ FmInstrumentEditor::FmInstrumentEditor(int num, QWidget* parent) :
 		}
 	});
 
-	QObject::connect(ui->amOp1CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->amOp1CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM1,
 										  (state == Qt::Checked) ? 1 : 0);
@@ -286,8 +292,14 @@ FmInstrumentEditor::FmInstrumentEditor(int num, QWidget* parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->amOp2CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->amOp2CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM2,
 										  (state == Qt::Checked) ? 1 : 0);
@@ -295,8 +307,14 @@ FmInstrumentEditor::FmInstrumentEditor(int num, QWidget* parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->amOp3CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->amOp3CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM3,
 										  (state == Qt::Checked) ? 1 : 0);
@@ -304,8 +322,14 @@ FmInstrumentEditor::FmInstrumentEditor(int num, QWidget* parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->amOp4CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->amOp4CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM4,
 										  (state == Qt::Checked) ? 1 : 0);
@@ -685,36 +709,66 @@ FmInstrumentEditor::FmInstrumentEditor(int num, QWidget* parent) :
 	});
 
 	//========== Others ==========//
-	QObject::connect(ui->envResetCheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->envResetCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::All, (state == Qt::Checked));
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envResetOp1CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->envResetOp1CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op1, (state == Qt::Checked));
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envResetOp2CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->envResetOp2CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op2, (state == Qt::Checked));
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envResetOp3CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->envResetOp3CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op3, (state == Qt::Checked));
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envResetOp4CheckBox, &QCheckBox::stateChanged,
-					 this, [&](int state) {
+	QObject::connect(ui->envResetOp4CheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+					&QCheckBox::checkStateChanged,
+					this, [&](Qt::CheckState state) {
+#else
+					&QCheckBox::stateChanged,
+					this, [&](int state) {
+#endif
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op4, (state == Qt::Checked));
 			emit modified();
