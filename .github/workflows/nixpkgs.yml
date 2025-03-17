@@ -89,6 +89,7 @@ jobs:
           install -Dm755 $(realpath result) ${BT_INSTALLBASE}/bin/BambooTracker
           cp -r --no-preserve=all "$(cat ../outlink)/share" ${BT_INSTALLBASE}/share
           rm -rf ${BT_INSTALLBASE}/share/BambooTracker/lang # bundled into binary, presumably
+          for entry in release-data/linux/*; do rsync -av ${entry} ${BT_INSTALLBASE}/; done
 
       ## End Nixpkgs-specific steps
 
