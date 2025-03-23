@@ -7,13 +7,12 @@
 
 SwapInstrumentsCommand::SwapInstrumentsCommand(std::weak_ptr<InstrumentsManager> manager,
 											   std::weak_ptr<Module> mod, int inst1, int inst2,
-											   int song, bool patternChange)
+											   bool patternChange)
 	: AbstractCommand(CommandId::SwapInstruments),
 	  manager_(manager),
 	  mod_(mod),
 	  inst1Num_(inst1),
 	  inst2Num_(inst2),
-	  songNum_(song),
 	  patternChange_(patternChange)
 {
 }
