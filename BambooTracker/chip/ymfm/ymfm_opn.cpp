@@ -409,9 +409,9 @@ std::string opn_registers_base<IsOpnA>::log_keyon(uint32_t choffs, uint32_t opof
 	}
 
 	char buffer[256];
-	char *end = &buffer[0];
+	int end = 0;
 
-	end += sprintf(end, "%u.%02u freq=%04X dt=%u fb=%u alg=%X mul=%X tl=%02X ksr=%u adsr=%02X/%02X/%02X/%X sl=%X",
+	end += snprintf(&buffer[end], sizeof(buffer) - end, "%u.%02u freq=%04X dt=%u fb=%u alg=%X mul=%X tl=%02X ksr=%u adsr=%02X/%02X/%02X/%X sl=%X",
 		chnum, opnum,
 		block_freq,
 		op_detune(opoffs),
@@ -427,21 +427,21 @@ std::string opn_registers_base<IsOpnA>::log_keyon(uint32_t choffs, uint32_t opof
 		op_sustain_level(opoffs));
 
 	if (OUTPUTS > 1)
-		end += sprintf(end, " out=%c%c",
+		end += snprintf(&buffer[end], sizeof(buffer) - end, " out=%c%c",
 			ch_output_0(choffs) ? 'L' : '-',
 			ch_output_1(choffs) ? 'R' : '-');
 	if (op_ssg_eg_enable(opoffs))
-		end += sprintf(end, " ssg=%X", op_ssg_eg_mode(opoffs));
+		end += snprintf(&buffer[end], sizeof(buffer) - end, " ssg=%X", op_ssg_eg_mode(opoffs));
 	bool am = (op_lfo_am_enable(opoffs) && ch_lfo_am_sens(choffs) != 0);
 	if (am)
-		end += sprintf(end, " am=%u", ch_lfo_am_sens(choffs));
+		end += snprintf(&buffer[end], sizeof(buffer) - end, " am=%u", ch_lfo_am_sens(choffs));
 	bool pm = (ch_lfo_pm_sens(choffs) != 0);
 	if (pm)
-		end += sprintf(end, " pm=%u", ch_lfo_pm_sens(choffs));
+		end += snprintf(&buffer[end], sizeof(buffer) - end, " pm=%u", ch_lfo_pm_sens(choffs));
 	if (am || pm)
-		end += sprintf(end, " lfo=%02X", lfo_rate());
+		end += snprintf(&buffer[end], sizeof(buffer) - end, " lfo=%02X", lfo_rate());
 	if (multi_freq() && choffs == 2)
-		end += sprintf(end, " multi=1");
+		end += snprintf(&buffer[end], sizeof(buffer) - end, " multi=1");
 
 	return buffer;
 }
@@ -1327,6 +1327,15 @@ void ym2608::write(uint32_t offset, uint8_t data)
 //	m_ssg_resampler.resample(output - numsamples, numsamples);
 //}
 
+
+//-------------------------------------------------
+//  generate_fm_adpcm - generate one sample of sound
+//  for FM and ADPCM
+//  This only work correctly when prescale is set to 6
+//  and output rate is matched to FM synthesis rate
+//-------------------------------------------------
+
+
 /* [BambooTracker]
  * We use only prescale = 6, match output rate to FM synthesis rate */
 void ym2608::generate_fm_adpcm(output_data *output, uint32_t numsamples)
@@ -1339,12 +1348,20 @@ void ym2608::generate_fm_adpcm(output_data *output, uint32_t numsamples)
 	}
 }
 
+
+//-------------------------------------------------
+//  generate_ssg - generate one sample of sound
+//  for SSG
+//  This only work correctly when prescale is set to 6,
+//  and output is not resampled.
+//-------------------------------------------------
+
+
 /* [BambooTracker]
  * We use only prescale = 6 and do not resample SSG */
 void ym2608::generate_ssg(output_data *output, uint32_t numsamples)
 {
-	// TODO
-	// resample the SSG as configured
+	// TODO: resample the SSG as configured
 	m_ssg_resampler.resample(output, numsamples);
 }
 
@@ -1376,7 +1393,9 @@ void ym2608::update_prescale(uint8_t prescale)
 			/* [BambooTracker]
 			 * We use only prescale = 6, match output rate to FM synthesis rate
 			 * and do not resample SSG */
+			// Skip to apply resampler to output separately
 			case 6:	m_fm_samples_per_output = 1;	m_ssg_resampler.configure(1, 1);	break;
+			// case 6:	m_fm_samples_per_output = 3;	m_ssg_resampler.configure(2, 3);	break;
 			case 3: m_fm_samples_per_output = 0;	m_ssg_resampler.configure(1, 3);	break;
 			case 2: m_fm_samples_per_output = 1;	m_ssg_resampler.configure(1, 6);	break;
 		}

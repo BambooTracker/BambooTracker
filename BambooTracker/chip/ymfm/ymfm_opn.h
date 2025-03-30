@@ -141,23 +141,21 @@ public:
 	// map channel number to register offset
 	static constexpr uint32_t channel_offset(uint32_t chnum)
 	{
-		/*assert(chnum < CHANNELS);
+		/*assert(chnum < CHANNELS);*/
 		if (!IsOpnA)
 			return chnum;
 		else
-			return (chnum % 3) + 0x100 * (chnum / 3);*/
-		return (!IsOpnA ? chnum : ((chnum % 3) + 0x100 * (chnum / 3)));
+			return (chnum % 3) + 0x100 * (chnum / 3);
 	}
 
 	// map operator number to register offset
 	static constexpr uint32_t operator_offset(uint32_t opnum)
 	{
-		/*assert(opnum < OPERATORS);
+		/*assert(opnum < OPERATORS);*/
 		if (!IsOpnA)
 			return opnum + opnum / 3;
 		else
-			return (opnum % 12) + ((opnum % 12) / 3) + 0x100 * (opnum / 12);*/
-		return (!IsOpnA ? (opnum + opnum / 3) : ((opnum % 12) + ((opnum % 12) / 3) + 0x100 * (opnum / 12)));
+			return (opnum % 12) + ((opnum % 12) / 3) + 0x100 * (opnum / 12);
 	}
 
 	// return an array of operator indices for each channel
@@ -798,7 +796,7 @@ public:
 	ymf276(ymfm_interface &intf) : ym2612(intf) { }
 
 	// generate one sample of sound
-	void generate(output_data *output, uint32_t numsamples);
+	void generate(output_data *output, uint32_t numsamples = 1);
 };
 #endif
 }

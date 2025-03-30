@@ -42,6 +42,7 @@
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -106,17 +107,6 @@ inline int32_t clamp(int32_t value, int32_t minval, int32_t maxval)
 	if (value > maxval)
 		return maxval;
 	return value;
-}
-
-
-//-------------------------------------------------
-//  array_size - return the size of an array
-//-------------------------------------------------
-
-template<typename ArrayType, int ArraySize>
-constexpr uint32_t array_size(ArrayType (&/*array*/)[ArraySize])
-{
-	return ArraySize;
 }
 
 
@@ -254,7 +244,8 @@ inline int16_t roundtrip_fp(int32_t value)
 
 	// apply the shift back and forth to zero out bits that are lost
 	exponent -= 1;
-	return (value >> exponent) << exponent;
+    int32_t mask = (1 << exponent) - 1;
+	return value & ~mask;
 }
 
 
@@ -329,7 +320,7 @@ struct ymfm_output
 // ======================> ymfm_wavfile
 
 // this class is a debugging helper that accumulates data and writes it to wav files
-template<int _Channels>
+template<int Channels>
 class ymfm_wavfile
 {
 public:
@@ -350,23 +341,23 @@ public:
 		{
 			// create file
 			char name[20];
-			sprintf(name, "wavlog-%02d.wav", m_index);
+			snprintf(&name[0], sizeof(name), "wavlog-%02d.wav", m_index);
 			FILE *out = fopen(name, "wb");
 
 			// make the wav file header
 			uint8_t header[44];
-			std::memcpy(&header[0], "RIFF", 4);
+			memcpy(&header[0], "RIFF", 4);
 			*(uint32_t *)&header[4] = m_buffer.size() * 2 + 44 - 8;
-			std::memcpy(&header[8], "WAVE", 4);
-			std::memcpy(&header[12], "fmt ", 4);
+			memcpy(&header[8], "WAVE", 4);
+			memcpy(&header[12], "fmt ", 4);
 			*(uint32_t *)&header[16] = 16;
 			*(uint16_t *)&header[20] = 1;
-			*(uint16_t *)&header[22] = _Channels;
+			*(uint16_t *)&header[22] = Channels;
 			*(uint32_t *)&header[24] = m_samplerate;
-			*(uint32_t *)&header[28] = m_samplerate * 2 * _Channels;
-			*(uint16_t *)&header[32] = 2 * _Channels;
+			*(uint32_t *)&header[28] = m_samplerate * 2 * Channels;
+			*(uint16_t *)&header[32] = 2 * Channels;
 			*(uint16_t *)&header[34] = 16;
-			std::memcpy(&header[36], "data", 4);
+			memcpy(&header[36], "data", 4);
 			*(uint32_t *)&header[40] = m_buffer.size() * 2 + 44 - 44;
 
 			// write header then data
@@ -377,24 +368,24 @@ public:
 	}
 
 	// add data to the file
-	template<int _Outputs>
-	void add(ymfm_output<_Outputs> output)
+	template<int Outputs>
+	void add(ymfm_output<Outputs> output)
 	{
-		int16_t sum[_Channels] = { 0 };
-		for (int index = 0; index < _Outputs; index++)
-			sum[index % _Channels] += output.data[index];
-		for (int index = 0; index < _Channels; index++)
+		int16_t sum[Channels] = { 0 };
+		for (int index = 0; index < Outputs; index++)
+			sum[index % Channels] += output.data[index];
+		for (int index = 0; index < Channels; index++)
 			m_buffer.push_back(sum[index]);
 	}
 
 	// add data to the file, using a reference
-	template<int _Outputs>
-	void add(ymfm_output<_Outputs> output, ymfm_output<_Outputs> const &ref)
+	template<int Outputs>
+	void add(ymfm_output<Outputs> output, ymfm_output<Outputs> const &ref)
 	{
-		int16_t sum[_Channels] = { 0 };
-		for (int index = 0; index < _Outputs; index++)
-			sum[index % _Channels] += output.data[index] - ref.data[index];
-		for (int index = 0; index < _Channels; index++)
+		int16_t sum[Channels] = { 0 };
+		for (int index = 0; index < Outputs; index++)
+			sum[index % Channels] += output.data[index] - ref.data[index];
+		for (int index = 0; index < Channels; index++)
 			m_buffer.push_back(sum[index]);
 	}
 
@@ -483,6 +474,8 @@ public:
 class ymfm_engine_callbacks
 {
 public:
+	virtual ~ymfm_engine_callbacks() = default;
+
 	// timer callback; called by the interface when a timer fires
 	virtual void engine_timer_expired(uint32_t tnum) = 0;
 
@@ -504,6 +497,8 @@ class ymfm_interface
 	template<typename RegisterType> friend class fm_engine_base;
 
 public:
+	virtual ~ymfm_interface() = default;
+
 	// the following functions must be implemented by any derived classes; the
 	// default implementations are sufficient for some minimal operation, but will
 	// likely need to be overridden to integrate with the outside world; they are
