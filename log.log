@@ -1,0 +1,139 @@
+Build started
+git clone -q --depth=3 https://github.com/BambooTracker/BambooTracker.git C:\projects\bambootracker
+git fetch -q origin +refs/pull/539/merge:
+git checkout -qf FETCH_HEAD
+Running Install scripts
+git submodule init
+Submodule 'submodules/RtAudio/src' (https://github.com/thestk/rtaudio) registered for path 'submodules/RtAudio/src'
+Submodule 'submodules/RtMidi/src' (https://github.com/thestk/rtmidi) registered for path 'submodules/RtMidi/src'
+Submodule 'submodules/emu2149/src' (https://github.com/rerrahkr/emu2149) registered for path 'submodules/emu2149/src'
+git submodule update
+Cloning into 'C:/projects/bambootracker/submodules/RtAudio/src'...
+Cloning into 'C:/projects/bambootracker/submodules/RtMidi/src'...
+Cloning into 'C:/projects/bambootracker/submodules/emu2149/src'...
+Submodule path 'submodules/RtAudio/src': checked out '0e11b50a7ba85875d09d60c097092d1d4bd760b2'
+Submodule path 'submodules/RtMidi/src': checked out 'd2dd50dab05ffd12a034e8f0e9a7a9698ee38fed'
+Submodule path 'submodules/emu2149/src': checked out '63c0fe07df89bebdaccbfe982a3f737b39b409d3'
+# Fetch and install Qt
+bash scripts/fetch_qt.sh "$env:QT_INSTALLBASE" "$env:QT_VERSION" "$env:QT_HOSTOS" "$env:QT_TOOLCHAIN" $env:QT_MODULES
+$QT_INSTALL_PATH = Get-ChildItem -Path "$env:QT_INSTALLBASE$env:QT_VERSION" -Directory | Select-Object -First 1
+$env:QT = "$($QT_INSTALL_PATH.FullName)\bin"
+$env:Path = "$env:QT;$env:COMPILER;$env:Path"
+Test if fetching Qt freshly is required.
+bash :   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+At line:2 char:1
++ bash scripts/fetch_qt.sh "$env:QT_INSTALLBASE" "$env:QT_VERSION" "$en ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  % Total    % ...  Time  Current:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 17702    0 17702    0     0  26389      0 --:--:-- --:--:-- --:--:-- 26500
+Downloading qtbase http://ftp.acc.umu.se/mirror/qt.io/qtproject/online/qtsdkrepository/windows_x86/desktop/qt5_5152/qt.qt5.5152.win32_mingw81/5.15.2-0-202011130602qtbase-Windows-Windows_7-Mingw-Windows-Windows_7-X86.7z...
+#=#=#
+######################################################################## 100.0%##O#-#
+                                                                           0.0%
+                                                                           0.0%
+                                                                           0.1%
+                                                                           0.2%
+                                                                           0.4%
+                                                                           0.6%
+                                                                           0.9%
+#                                                                          1.4%
+#                                                                          1.9%
+#                                                                          2.5%
+##                                                                         3.2%
+###                                                                        4.6%
+####                                                                       6.7%
+#######                                                                   10.5%
+###########                                                               16.4%
+##################                                                        26.1%
+##############################                                            42.5%
+#################################################                         68.3%
+######################################################################## 100.0%
+C:\Qt\/5.15.2/mingw81_32/bin
+Downloading qttools http://ftp.acc.umu.se/mirror/qt.io/qtproject/online/qtsdkrepository/windows_x86/desktop/qt5_5152/qt.qt5.5152.win32_mingw81/5.15.2-0-202011130602qttools-Windows-Windows_7-Mingw-Windows-Windows_7-X86.7z...
+#=#=#
+######################################################################## 100.0%##O#-#
+                                                                           0.1%
+                                                                           0.1%
+                                                                           0.2%
+                                                                           0.3%
+                                                                           0.5%
+                                                                           0.7%
+                                                                           1.1%
+#                                                                          1.8%
+#                                                                          2.4%
+##                                                                         3.1%
+##                                                                         4.1%
+####                                                                       5.9%
+######                                                                     8.6%
+#########                                                                 13.5%
+###############                                                           21.0%
+########################                                                  34.0%
+#######################################                                   55.2%
+################################################################          90.1%
+######################################################################## 100.0%
+Downloading qttranslations
+http://ftp.acc.umu.se/mirror/qt.io/qtproject/online/qtsdkrepository/windows_x86/desktop/qt5_5152/qt.qt5.5152.win32_mingw81/5.15.2-0-202011130602qttranslations-Windows-Windows_7-Mingw-Windows-Windows_7-X86.7z...
+#=#=#
+                                                                           0.9%
+                                                                           1.0%
+##                                                                         2.9%
+###                                                                        5.1%
+#####                                                                      7.9%
+########                                                                  12.1%
+#############                                                             19.4%
+######################                                                    30.8%
+#############################                                             41.5%
+######################################                                    53.1%
+###############################################                           66.4%
+#####################################################################     97.0%
+######################################################################## 100.0%
+Qt fetched.
+$QMAKE_CONFIGS = if ($env:RELEASE_BUILD -ieq "true") { "CONFIG+=release CONFIG-=debug" } else { "CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip" }
+echo $QMAKE_CONFIGS
+Invoke-Expression ("qmake.exe Project.pro PREFIX=$pwd\target " + $QMAKE_CONFIGS)
+Invoke-Expression ($env:MAKE + " qmake_all")
+Invoke-Expression ($env:MAKE + " -j2")
+CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+qmake.exe : Project ERROR: Cannot run compiler 'g++'. Output:
+At line:1 char:1
++ qmake.exe Project.pro PREFIX=C:\projects\bambootracker\target CONFIG- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Project ERROR: ... 'g++'. Output::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+===================
+===================
+Maybe you forgot to setup the environment?
+mingw32-make : The term 'mingw32-make' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try
+again.
+At line:1 char:1
++ mingw32-make qmake_all
++ ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (mingw32-make:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+mingw32-make : The term 'mingw32-make' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try
+again.
+At line:1 char:1
++ mingw32-make -j2
++ ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (mingw32-make:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+Invoke-Expression ($env:MAKE + " install")
+mingw32-make : The term 'mingw32-make' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try
+again.
+At line:1 char:1
++ mingw32-make install
++ ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (mingw32-make:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+cd target
+The system cannot find the path specified.
+Command exited with code 1
