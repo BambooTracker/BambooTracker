@@ -2,7 +2,16 @@
 
 ## Unreleased
 
-### v0.6.5 (2025-03-08)
+### Fixed
+
+- [#537] - Fix the incorrect size of the rectangular paste for orders ([#536]; thanks [@agargara])
+
+[@agargara]: https://github.com/agargara
+
+[#536]: https://github.com/BambooTracker/BambooTracker/issues/536
+[#537]: https://github.com/BambooTracker/BambooTracker/pull/517
+
+## v0.6.5 (2025-03-08)
 
 ### Added
 
