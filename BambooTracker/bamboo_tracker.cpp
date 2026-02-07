@@ -2513,8 +2513,8 @@ void BambooTracker::deleteOrder(int songNum, int orderNum)
 bool BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder, const Vector2d<int>& cells)
 {
 	// Clip given cells to fit the size of pasted area.
-	std::size_t w = std::min(cells.rowSize(), songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack));
-	std::size_t h = std::min(cells.columnSize(), getOrderSize(songNum) - static_cast<size_t>(beginOrder));
+	std::size_t w = std::min(cells.columnSize(), songStyle_.trackAttribs.size() - static_cast<size_t>(beginTrack));
+	std::size_t h = std::min(cells.rowSize(), getOrderSize(songNum) - static_cast<size_t>(beginOrder));
 	if (w == 0 || h == 0) return false;
 
 	auto clipped = cells.clip(0, 0, h, w);
