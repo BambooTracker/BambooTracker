@@ -93,6 +93,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  isPressedMinus_(false),
 	  entryCnt_(0),
 	  selectAllState_(-1),
+	  allowCopy_(false),
 	  isMuteElse_(false),
 	  hl1Cnt_(4),
 	  hl2Cnt_(16),
@@ -271,6 +272,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	MidiInterface::getInstance().installInputHandler(&midiThreadReceivedEvent, this);
+
+	QObject::connect(this, &PatternEditorPanel::selected, this, &PatternEditorPanel::updateAllowCopy);
 }
 
 PatternEditorPanel::~PatternEditorPanel()
@@ -2301,8 +2304,9 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	exeff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ExpandEffect)));
 	sheff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShortcutAction::ShrinkEffect)));
 
+	copy->setEnabled(allowCopy_);
+
 	if (bt_->isJamMode() || pos.order < 0 || pos.trackVisIdx < 0) {
-		copy->setEnabled(false);
 		cut->setEnabled(false);
 		paste->setEnabled(false);
 		pasteMix->setEnabled(false);
@@ -3314,4 +3318,8 @@ void PatternEditorPanel::midiKeyEvent(uchar status, uchar key, uchar velocity)
 			setStepKeyOn(Note(static_cast<int>(key) - 12));
 		}
 	}
+}
+
+void PatternEditorPanel::updateAllowCopy(bool allowCopy) {
+	allowCopy_ = allowCopy;
 }
