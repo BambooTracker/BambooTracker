@@ -147,6 +147,7 @@ private:
 	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
 private slots:
 	void midiKeyEvent(uchar status, uchar key, uchar velocity);
+	void updateAllowCopy(bool allowCopy);
 
 private:
 	QPixmap completePixmap_, backPixmap_, textPixmap_, forePixmap_, headerPixmap_;
@@ -193,6 +194,7 @@ private:
 	int entryCnt_;
 
 	int selectAllState_;
+	bool allowCopy_;
 	bool isMuteElse_;
 
 	int hl1Cnt_, hl2Cnt_;

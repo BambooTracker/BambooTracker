@@ -2905,9 +2905,11 @@ void MainWindow::updateMenuByPatternSelection(bool isSelected)
 {
 	isSelectedPattern_ = isSelected;
 
+	// Copying isn't really editing, so not dependent on mode.
+	ui->actionCopy->setEnabled(isSelected);
+
 	if (bt_->isJamMode()) {
 		// Edit
-		ui->actionCopy->setEnabled(false);
 		ui->actionCut->setEnabled(false);
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
@@ -2918,7 +2920,6 @@ void MainWindow::updateMenuByPatternSelection(bool isSelected)
 	}
 	else {
 		// Edit
-		ui->actionCopy->setEnabled(isSelected);
 		ui->actionCut->setEnabled(isEditedPattern_ ? isSelected : false);
 		// Pattern
 		bool enabled = (isEditedPattern_ && isEditedPattern_) ? isSelected : false;
