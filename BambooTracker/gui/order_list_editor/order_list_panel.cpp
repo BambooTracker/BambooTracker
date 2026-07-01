@@ -70,6 +70,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  isIgnoreToPattern_(false),
 	  entryCnt_(0),
 	  selectAllState_(-1),
+	  allowCopy_(false),
 	  viewedRowCnt_(1),
 	  viewedRowsHeight_(0),
 	  viewedRowOffset_(0),
@@ -126,6 +127,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 					QPoint(calculateColumnsWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx), curRowY_ - 8));
 	});
 	onShortcutUpdated();
+
+	QObject::connect(this, &OrderListPanel::selected, this, &OrderListPanel::updateAllowCopy);
 }
 
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
@@ -1145,12 +1148,13 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	copy->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_V));
 
+	copy->setEnabled(allowCopy_);
+
 	bool notCurHov = (pos.row < 0 || pos.trackVisIdx < 0);
 	if (notCurHov) {
 		remove->setEnabled(false);
 		moveUp->setEnabled(false);
 		moveDown->setEnabled(false);
-		copy->setEnabled(false);
 		paste->setEnabled(false);
 	}
 	if (!bt_->canAddNewOrder(curSongNum_)) {
@@ -1158,7 +1162,6 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 		duplicate->setEnabled(false);
 		moveUp->setEnabled(false);
 		moveDown->setEnabled(false);
-		copy->setEnabled(false);
 		paste->setEnabled(false);
 	}
 	QString clipText = QApplication::clipboard()->text();
@@ -1170,7 +1173,6 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	}
 	if (selRightBelowPos_.row < 0
 			|| !isSelectedCell(pos.trackVisIdx, pos.row)) {
-		copy->setEnabled(false);
 		// Turn off when no pattern is hilighted
 		if (notCurHov) clonep->setEnabled(false);
 	}
@@ -1682,4 +1684,8 @@ void OrderListPanel::leaveEvent(QEvent*)
 {
 	// Clear mouse hover selection
 	hovPos_ = { -1, -1 };
+}
+
+void OrderListPanel::updateAllowCopy(bool allowCopy) {
+	allowCopy_ = allowCopy;
 }

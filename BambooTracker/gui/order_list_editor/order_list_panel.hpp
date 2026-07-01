@@ -172,6 +172,7 @@ private:
 	int entryCnt_;
 
 	int selectAllState_;
+	bool allowCopy_;
 
 	int viewedRowCnt_;
 	int viewedRegionHeight_;
@@ -225,6 +226,9 @@ private:
 	bool isSelectedCell(int trackIdx, int row);
 
 	void showContextMenu(const OrderPosition& pos, const QPoint& point);
+
+private slots:
+	void updateAllowCopy(bool allowCopy);
 };
 
 #endif // ORDER_LIST_PANEL_HPP
