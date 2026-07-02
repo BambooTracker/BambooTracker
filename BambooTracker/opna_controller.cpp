@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-FileCopyrightText: 2018 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 
@@ -723,7 +723,7 @@ void OPNAController::retriggerKeyOnFM(int ch, int volDiff)
 
 // Change register only
 void OPNAController::resetFMChannelEnvelope(int ch)
-{	
+{
 	keyOffFM(ch);
 	auto& fm = fm_[ch];
 	fm.hasResetEnv = true;

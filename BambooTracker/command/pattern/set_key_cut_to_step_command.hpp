@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2022 Rerrah
+ * SPDX-FileCopyrightText: 2022 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 
@@ -24,4 +24,3 @@ private:
 	int prevNote_, prevInst_, prevVol_;
 	Step::PlainEffect prevEff_[Step::N_EFFECT];
 };
-

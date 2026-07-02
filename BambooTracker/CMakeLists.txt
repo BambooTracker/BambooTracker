@@ -304,7 +304,7 @@ if (WIN32 AND QT_VERSION EQUAL 6)
 		QT_TARGET_VERSION "${PROJECT_VERSION}"
 		QT_TARGET_COMPANY_NAME "${PROJECT_NAME}"
 		QT_TARGET_DESCRIPTION "YM2608 music tracker"
-		QT_TARGET_COPYRIGHT "Copyright (C) Rerrah and other BambooTracker contributors"
+		QT_TARGET_COPYRIGHT "Copyright (C) 2018 BambooTracker contributors"
 		QT_TARGET_PRODUCT_NAME "${PROJECT_NAME}"
 		QT_TARGET_RC_ICONS "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/BambooTracker.ico"
 	)

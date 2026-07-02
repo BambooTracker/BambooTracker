@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
+ * Copyright (C) 2018-2023 BambooTracker contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -333,7 +333,7 @@ void OPNA::flushWait(size_t& pointFm, size_t maxFm, size_t& pointSsg2, size_t ma
 }
 
 bool OPNA::storeBufferForWait(size_t nSamples, size_t& pointFm, size_t& pointSsg)
-{	
+{
 	bool ok = false;
 	size_t intrSizeFm = resampler_[FM]->calculateInternalSampleSize(nSamples, ok);
 	if (!ok) return false;

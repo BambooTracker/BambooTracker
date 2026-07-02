@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
+ * Copyright (C) 2018-2023 BambooTracker contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -291,7 +291,7 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, const s
 }
 
 void InstrumentsManager::addInstrument(AbstractInstrument* newInstPtr)
-{	
+{
 	int num = newInstPtr->getNumber();
 	std::shared_ptr<AbstractInstrument>& inst = insts_.at(static_cast<size_t>(num));
 	inst.reset(newInstPtr);
@@ -511,7 +511,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(cloneInstNum)));
-		
+
 		envFM_[static_cast<size_t>(cloneFm->getEnvelopeNumber())]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
 		int envNum = cloneProperty(envFM_, refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);

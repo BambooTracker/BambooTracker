@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-FileCopyrightText: 2018 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 
@@ -140,7 +140,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  stepMvDnSc_(Qt::ALT | Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  expandColSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
 	  shrinkColSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut)
-{	
+{
 	setAttribute(Qt::WA_Hover);
 	setFocusPolicy(Qt::ClickFocus);
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -2922,7 +2922,7 @@ bool PatternEditorPanel::keyReleased(QKeyEvent* event)
 }
 
 void PatternEditorPanel::paintEvent(QPaintEvent *event)
-{	
+{
 	if (bt_ && isInitedFirstMod_.load()) {
 		// Check the cursor position and clamp it if neccesary.
 		int odrSize = static_cast<int>(bt_->getOrderSize(curSongNum_));

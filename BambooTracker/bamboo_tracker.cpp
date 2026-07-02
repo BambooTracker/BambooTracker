@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-FileCopyrightText: 2018 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 
@@ -2618,7 +2618,7 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 }
 
 int BambooTracker::setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool secondEntry)
-{	
+{
 	bool fmReversed = (volFMReversed_
 					   && songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source == SoundSource::FM);
 	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, fmReversed, secondEntry));
