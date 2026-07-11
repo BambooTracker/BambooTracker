@@ -26,9 +26,6 @@
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Linux+%28Nixpkgs%29%22">
     <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/ubuntu.yml?label=Nixpkgs&logo=nixos&logoColor=white" alt="BambooTracker Build-Test Status on Linux (Nixpkgs)">
   </a>
-  <a href="https://ci.appveyor.com/project/BambooTracker/bambootracker">
-    <img src="https://img.shields.io/appveyor/build/BambooTracker/BambooTracker?label=Appveyor&logo=appveyor&logoColor=white" alt="BambooTracker Development-Build Status">
-  </a>
   <br>
   <a href="./README.md">English</a> | <a href="./README_ja.md">日本語</a>
 </p>
@@ -37,22 +34,36 @@ BambooTracker is a cross-platform music tracker for the Yamaha YM2608 (OPNA) sou
 
 ## Table of Contents
 
-1. [Wiki](#wiki)
-2. [Community](#community)
-3. [Translations](#translations)
-4. [Downloads](#downloads)  
-  4.1. [Releases (Windows, macOS, Linux)](#releases-windows-macos-linux)  
-  4.2. [Development Builds (Windows, macOS)](#development-builds-windows-macos)  
-  4.3. [Packages (macOS, Linux, BSD)](#packages-macos-linux-bsd)
-5. [Key Commands](#key-commands)
-6. [Effect List](#effect-list)
-7. [File I/O](#file-io)
-8. [Building](#building)  
-  8.1. [Dependencies](#dependencies)  
-  8.2. [Compilation](#compilation)
-9. [Changelog](#changelog)
-10. [License](#license)
-11. [Credits](#credits)
+- [Table of Contents](#table-of-contents)
+- [Wiki](#wiki)
+- [Community](#community)
+- [Translations](#translations)
+- [Downloads](#downloads)
+  - [Releases (Windows, macOS, Linux)](#releases-windows-macos-linux)
+  - [Packages (macOS, Linux, BSD)](#packages-macos-linux-bsd)
+    - [Nixpkgs (macOS, Linux)](#nixpkgs-macos-linux)
+    - [Debian / Ubuntu](#debian--ubuntu)
+    - [Arch / Manjaro](#arch--manjaro)
+    - [FreeBSD](#freebsd)
+    - [Other](#other)
+- [Key Commands](#key-commands)
+- [Effect List](#effect-list)
+- [File I/O](#file-io)
+- [Building](#building)
+  - [Dependencies](#dependencies)
+    - [Windows](#windows)
+    - [macOS](#macos)
+    - [Linux](#linux)
+      - [Debian / Ubuntu](#debian--ubuntu-1)
+      - [Arch Linux / Manjaro](#arch-linux--manjaro)
+    - [BSD](#bsd)
+  - [Compilation](#compilation)
+    - [Windows](#windows-1)
+    - [macOS](#macos-1)
+      - [FreeBSD](#freebsd-1)
+- [Changelog](#changelog)
+- [License](#license)
+- [Credits](#credits)
 
 ## Wiki
 
@@ -86,26 +97,6 @@ If you'd like to see your language of choice added to the list, join the Discord
 Releases are recommended for most users, as they should provide a good & stable experience.
 
 [![Release](https://img.shields.io/badge/Download-Release-brightgreen?style=for-the-badge)](https://github.com/BambooTracker/BambooTracker/releases/latest)
-
-### Development Builds (Windows, macOS)
-
-Development builds are built & uploaded whenever a code change has been committed to the base repository *or a pull request*.
-They thus offer the latest or in-development features and fixes, but are not optimised for regular use.
-
-[![Development Build](https://img.shields.io/badge/Download-Development%20Build-yellow?style=for-the-badge)](https://ci.appveyor.com/project/BambooTracker/bambootracker)
-
-- If you're looking for
-  - the latest merged commit, make sure **ONLY**  
-    `master -o- (some numbers & letters)`  
-    is displayed at the top instead of  
-    `master -o- (some numbers & letters) ← in_development-bugfix (some numbers & letters)`
-  - a specific Pull Request, make sure that it says  
-    `Pull request #(Pull Request ID)`  
-    in the top left  
-
-  ... otherwise check the History tab to find whichever of those you need.
-- In the "Job name" column, find the row that says `APPVEYOR_JOB_NAME=for (your OS)` and click on it.
-- On the new page, click on the `Artifacts` tab on the right to get to the download page.
 
 ### Packages (macOS, Linux, BSD)
 

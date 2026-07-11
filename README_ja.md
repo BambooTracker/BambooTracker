@@ -26,9 +26,6 @@
   <a href="https://github.com/BambooTracker/BambooTracker/actions?query=workflow%3A%22Linux+%28Nixpkgs%29%22">
     <img src="https://img.shields.io/github/actions/workflow/status/BambooTracker/BambooTracker/ubuntu.yml?label=Nixpkgs&logo=nixos&logoColor=white" alt="BambooTracker Build-Test Status on Linux (Nixpkgs)">
   </a>
-  <a href="https://ci.appveyor.com/project/BambooTracker/bambootracker">
-    <img src="https://img.shields.io/appveyor/build/BambooTracker/BambooTracker?label=Appveyor&logo=appveyor&logoColor=white" alt="BambooTracker Development-Build Status">
-  </a>
   <br>
   <a href="./README.md">English</a> | <a href="./README_ja.md">日本語</a>
 </p>
@@ -37,22 +34,36 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 
 ## 目次
 
-1. [Wiki](#wiki)
-2. [コミュニティ](#コミュニティ)
-3. [対応言語](#対応言語)
-4. [ダウンロード](#ダウンロード)  
-  4.1. [リリース (Windows, macOS, Linux)](#リリース-windows,-macos,-linux)  
-  4.2. [開発版ビルド (Windows, macOS)](#開発版ビルド-windows,-macos)  
-  4.3. [パッケージ (macOS, Linux, BSD)](#packages-macos,-linux,-bsd)
-5. [ショートカット](#ショートカット)
-6. [エフェクトリスト](#エフェクトリスト)
-7. [ファイル入出力](#ファイル入出力)
-8. [ビルド方法](#ビルド方法)  
-  8.1. [依存関係](#依存関係)  
-  8.2. [コンパイル](#コンパイル)
-9. [変更履歴](#変更履歴)
-10. [ライセンス](#ライセンス)
-11. [クレジット](#クレジット)
+- [目次](#目次)
+- [Wiki](#wiki)
+- [コミュニティ](#コミュニティ)
+- [対応言語](#対応言語)
+- [ダウンロード](#ダウンロード)
+  - [リリース (Windows, macOS, Linux)](#リリース-windows-macos-linux)
+  - [パッケージ (macOS, Linux, BSD)](#パッケージ-macos-linux-bsd)
+    - [Nixpkgs (macOS, Linux)](#nixpkgs-macos-linux)
+    - [Debian / Ubuntu](#debian--ubuntu)
+    - [Arch / Manjaro](#arch--manjaro)
+    - [FreeBSD](#freebsd)
+    - [その他](#その他)
+- [ショートカット](#ショートカット)
+- [エフェクト一覧](#エフェクト一覧)
+- [ファイル入出力](#ファイル入出力)
+- [ビルド方法](#ビルド方法)
+  - [依存関係](#依存関係)
+    - [Windows](#windows)
+    - [macOS](#macos)
+    - [Linux](#linux)
+      - [Debian / Ubuntu](#debian--ubuntu-1)
+      - [Arch Linux / Manjaro](#arch-linux--manjaro)
+    - [BSD](#bsd)
+  - [コンパイル](#コンパイル)
+    - [Windows](#windows-1)
+    - [macOS](#macos-1)
+      - [FreeBSD](#freebsd-1)
+- [変更履歴](#変更履歴)
+- [ライセンス](#ライセンス)
+- [クレジット](#クレジット)
 
 ## Wiki
 
@@ -84,27 +95,6 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 リリースは、優れた安定したエクスペリエンスを提供する必要があるため、ほとんどのユーザーに推奨されます。
 
 [![Release](https://img.shields.io/badge/Download-Release-brightgreen?style=for-the-badge)](https://github.com/BambooTracker/BambooTracker/releases/latest)
-
-### 開発版ビルド (Windows, macOS)
-
-開発版のビルドはコードの変更がベースリポジトリにコミットされるたびにビルドされ、アップロードされます。
-そのため最新または開発中の機能や修正を提供しますが、通常の使用には最適化されていません。
-
-[![Development Build](https://img.shields.io/badge/Download-Development%20Build-yellow?style=for-the-badge)](https://ci.appveyor.com/project/BambooTracker/bambootracker)
-
-- ビルドの取得に関して、
-  - 最新のマージされたコミットは、  
-    `master -o- (英数字)`  
-    と表示されている一番上のもの**のみ**参照してください。  
-    `master -o- (英数字) ← 何らかのブランチ名 (英数字)`  
-    ではありません。
-  - 特定のPull Requestは、左上の
-    `Pull request #(Pull Request ID)`  
-    の表記を確認してください。
-
-  それ以外は、Historyタブから必要な物をお探しください。
-- "Job name"の欄に`APPVEYOR_JOB_NAME=for (OS名)`と書かれた行を見つけてクリックします。
-- 開いたページで、右側の`Artifacts`タブをクリックすると、ダウンロードページが表示されます。
 
 ### パッケージ (macOS, Linux, BSD)
 
