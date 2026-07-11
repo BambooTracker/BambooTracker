@@ -6,5 +6,5 @@
 	url = https://github.com/thestk/rtmidi
 [submodule "submodules/emu2149/src"]
 	path = submodules/emu2149/src
-	url = https://github.com/rerrahkr/emu2149
+	url = https://github.com/BambooTracker/emu2149
 	branch = opna-ssg
