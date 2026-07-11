@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Rerrah
+ * Copyright (C) 2023 BambooTracker contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -52,4 +52,3 @@ public:
 protected:
 	QValidator::State validate(QString& text, int& pos) const override;
 };
-

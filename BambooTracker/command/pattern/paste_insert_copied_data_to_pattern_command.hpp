@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2020 Rerrah
+ * SPDX-FileCopyrightText: 2020 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 

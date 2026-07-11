@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-FileCopyrightText: 2018 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 
@@ -837,7 +837,7 @@ int OrderListPanel::getFullColumnSize() const
 }
 
 void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJump, bool trackChanged)
-{	
+{
 	int prev = std::exchange(playingRow_, bt_->getPlayingOrderNumber());
 	if (!forceJump && !config_->getFollowMode() && prev != playingRow_) {	// Repaint only background
 		backChanged_ = true;
@@ -1397,7 +1397,7 @@ bool OrderListPanel::event(QEvent* event)
 }
 
 bool OrderListPanel::keyPressed(QKeyEvent* event)
-{	
+{
 	/* General Keys */
 	switch (event->key()) {
 	case Qt::Key_Shift:

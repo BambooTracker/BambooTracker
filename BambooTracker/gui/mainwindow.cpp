@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2018 Rerrah
+ * SPDX-FileCopyrightText: 2018 BambooTracker contributors
  * SPDX-License-Identifier: MIT
  */
 
@@ -3098,7 +3098,7 @@ void MainWindow::on_actionAbout_triggered()
 {
 	static const QString APP_NAME = "BambooTracker v" + QString::fromStdString(Version::ofApplicationInString());
 	static const QString APP_DESC = tr("YM2608 Music Tracker");
-	static constexpr char COPY[] = "Copyright (C) 2018 Rerrah";
+	static constexpr char COPY[] = "Copyright (C) 2018 BambooTracker contributors";
 	static const QString WEB = tr("Web:")
 							   + R"( <a href="https://bambootracker.github.io/BambooTracker/">https://bambootracker.github.io/BambooTracker/</a>)";
 

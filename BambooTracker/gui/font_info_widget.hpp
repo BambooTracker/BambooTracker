@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Rerrah
+ * Copyright (C) 2022 BambooTracker contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -63,4 +63,3 @@ private:
 	Ui::FontInfoWidget *ui;
 	QFont font_;
 };
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 Rerrah
+ * Copyright (C) 2018-2023 BambooTracker contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -136,7 +136,7 @@ InstrumentSequenceBaseUnit NoteSlideEffectIterator::data() const
 }
 
 int NoteSlideEffectIterator::next()
-{			
+{
 	if (!hasEnded()) {
 		if (state_ == SequenceIteratorState::NotBegin || ++pos_ < static_cast<int>(seq_.size())) {
 			state_ = SequenceIteratorState::Run;
