@@ -23,7 +23,8 @@ defaults:
 
 env:
   BUILD_TARGET: linux-64bit
-  NIXPKGS_CHANNEL: nixos-23.05
+  DONT_PACKAGE: true
+  NIXPKGS_CHANNEL: nixos-unstable
   BT_INSTALLBASE: ${{ github.workspace }}/target/
 
 jobs:
@@ -80,7 +81,7 @@ jobs:
 
       - name: Building.
         run: |
-          nix-build scripts/build_nixpkgs_local.nix --argstr buildVersion "${{ steps.identify-build.outputs.buildVersion }}" -A build --no-out-link > ../outlink
+          nix-build scripts/build_nixpkgs_local.nix --argstr buildVersion "${{ steps.identify-build.outputs.buildVersion }}" --no-out-link > ../outlink
 
       - name: Test packaging.
         if: env.DONT_PACKAGE != 'true'
