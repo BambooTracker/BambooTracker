@@ -942,7 +942,7 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			panADPCMIdcs.push_back(idx);
 	}
 	if (!panADPCMIdcs.empty()) {
-		ctr.appendUint8(0x34);
+		ctr.appendUint8(0x44);
 		ctr.appendUint8(static_cast<uint8_t>(panADPCMIdcs.size()));
 		for (auto& idx : panADPCMIdcs) {
 			ctr.appendUint8(static_cast<uint8_t>(idx));
@@ -1427,7 +1427,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				int panNum = instManLocked->findFirstAssignablePanFM();
 				if (panNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				fm->setPanNumber(panNum);
-				size_t panCsr = getPropertyPosition(propCtr, 0x34, orgPanNum);
+				size_t panCsr = getPropertyPosition(propCtr, 0x2a, orgPanNum);
 
 				if (panCsr != std::numeric_limits<size_t>::max()) {
 					uint16_t seqLen = propCtr.readUint16(panCsr);
@@ -2148,7 +2148,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				int panNum = instManLocked->findFirstAssignablePanADPCM();
 				if (panNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				adpcm->setPanNumber(panNum);
-				size_t panCsr = getPropertyPosition(propCtr, 0x34, orgPanNum);
+				size_t panCsr = getPropertyPosition(propCtr, 0x44, orgPanNum);
 
 				if (panCsr != std::numeric_limits<size_t>::max()) {
 					uint16_t seqLen = propCtr.readUint16(panCsr);
