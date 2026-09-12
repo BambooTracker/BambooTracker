@@ -1,4 +1,7 @@
-{ buildVersion }:
+{
+  buildVersion,
+  variant ? "release",
+}:
 
 let
   packageOverrides = pkgs: {
@@ -12,5 +15,23 @@ let
     });
   };
   pkgs = import <nixpkgs> { config = { inherit packageOverrides; }; };
+  lib = pkgs.lib;
+
+  # release by default
+  release = pkgs.bambootracker-qt6;
+
+  debug = release.overrideAttrs (oa: {
+    qmakeFlags = (oa.qmakeFlags or [ ]) ++ [
+      "CONFIG-=release"
+      "CONFIG+=debug"
+    ];
+
+    dontStrip = true;
+  });
+
+  variants = {
+    inherit debug release;
+  };
 in
-pkgs.bambootracker-qt6
+assert lib.asserts.assertOneOf "variant" variant (builtins.attrNames variants);
+variants.${variant}
