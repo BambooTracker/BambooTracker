@@ -838,9 +838,13 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
+				if (seqLen == 0)
+					throw FileCorruptionError(FileType::Mod, csr);
 				csr += 2;
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
+					if (data > 3)
+						throw FileCorruptionError(FileType::Mod, csr);
 					csr += 2;
 					if (l == 0)
 						instManLocked->setPanFMSequenceData(idx, 0, data);

@@ -1431,9 +1431,13 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 				if (panCsr != std::numeric_limits<size_t>::max()) {
 					uint16_t seqLen = propCtr.readUint16(panCsr);
+					if (seqLen == 0)
+						throw FileCorruptionError(FileType::Bank, panCsr);
 					panCsr += 2;
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = propCtr.readUint16(panCsr);
+						if (data > 3)
+							throw FileCorruptionError(FileType::Bank, panCsr);
 						panCsr += 2;
 						if (l == 0)
 							instManLocked->setPanFMSequenceData(panNum, 0, data);
