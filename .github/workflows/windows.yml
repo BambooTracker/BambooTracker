@@ -142,7 +142,7 @@ jobs:
         run: |
           export PATH="${MINGW_INSTALLBASE}/bin:${PATH}"
           pushd ${BT_INSTALLBASE}
-          bash ${GITHUB_WORKSPACE}/scripts/package_${SCRIPT_NAME:-${BUILD_TARGET%%-*}}.sh
+          bash ${GITHUB_WORKSPACE}/scripts/package_${SCRIPT_NAME:-${BUILD_TARGET%%-*}}.sh svg
           popd
 
       - name: Finalize packaging.

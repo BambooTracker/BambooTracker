@@ -51,3 +51,4 @@
   - BambooTracker/module/*
 - BSD 3-Clause
   - BambooTracker/chip/mame/mamedef.h
+  - BambooTracker/qtentrypoint_win.cpp
