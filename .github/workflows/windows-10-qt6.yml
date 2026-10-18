@@ -25,11 +25,11 @@ env:
   BUILD_TARGET: windows-10-64bit
   MAKE: mingw32-make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
-  MINGW_VERSION: 11.2.0
+  MINGW_VERSION: 15.1.0
   MINGW_BITNESS: 64
-  MINGW_CHOCOBASE: /c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64
+  MINGW_CHOCOBASE: /c/ProgramData/mingw64/mingw64
   MINGW_INSTALLBASE: ${{ github.workspace }}/mingw64/
-  QT_VERSION: 6.4.0
+  QT_VERSION: 6.12.0
   QT_HOSTOS: windows_x86
   QT_TOOLCHAIN: win64_mingw
   QT_MODULES: qtbase qttools qttranslations qt5compat qtdeclarative

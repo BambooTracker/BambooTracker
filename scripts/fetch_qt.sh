@@ -36,7 +36,7 @@ else
   curl https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh > install-qt.sh
   bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" $QT_TARGETCMP
   if [ x$QT6_QT5COMPAT != x ]; then
-    bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "qt5compat.$QT_TARGETTCH" "qt5compat"
+    bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" "qt5compat"
   fi
   echo "Qt fetched."
   if [[ "$(echo "$QT_TARGETCMP" | grep essentials 2>&1 >/dev/null; echo $?)" -eq 0 ]]; then

@@ -284,6 +284,34 @@ if (REAL_CHIP)
 	)
 endif (REAL_CHIP)
 
+# Something seems borked between Qt6 & MinGW, prebuilt QtEntryPoint can't find the __argc and __argv it was linked against...
+if (WIN32 AND MINGW)
+	try_compile (QTENTRYPOINT_WORKS
+		"${CMAKE_CURRENT_BINARY_DIR}/QTENTRYPOINT_WORKS" # bindir
+		"${CMAKE_CURRENT_SOURCE_DIR}/tst_qtentrypoint" # srcdir
+		tst_qtentrypoint # projectName
+		OUTPUT_VARIABLE QTENTRYPOINT_WORKS_LOG
+	)
+	message (NOTICE "${QTENTRYPOINT_WORKS_LOG}")
+
+	if (NOT QTENTRYPOINT_WORKS)
+		string (FIND "${QTENTRYPOINT_WORKS_LOG}" "__imp___argc" QTENTRYPOINT_WORKS_cant_find_argc)
+		if (NOT QTENTRYPOINT_WORKS_cant_find_argc EQUAL -1)
+			message (STATUS "QtEntryPoint seems borked, continuing with custom qtentrypoint_win.cpp")
+			list (APPEND BT_SOURCES
+				qtentrypoint_win.cpp
+			)
+		else()
+			message (FATAL_ERROR "QtEntryPoint check failed due to unknown error: ${QTENTRYPOINT_WORKS_LOG}")
+		endif()
+	else()
+		message (STATUS "QtEntryPoint seems fine, continuing without qtentrypoint_win.cpp")
+	endif(NOT QTENTRYPOINT_WORKS)
+else()
+	# Not aware of issues with it on other platforms...
+	set (QTENTRYPOINT_WORKS TRUE)
+endif()
+
 if (APPLE)
 	set (MACOSX_BUNDLE_ICON_FILE BambooTracker.icns)
 	set (MACOSX_ICNS "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/${MACOSX_BUNDLE_ICON_FILE}")
@@ -291,10 +319,18 @@ if (APPLE)
 		PROPERTIES MACOSX_PACKAGE_LOCATION "Resources"
 	)
 endif()
+
 add_executable (BambooTracker WIN32 MACOSX_BUNDLE
 	${BT_SOURCES} ${BT_FORMS}
 	${MACOSX_ICNS}
 )
+
+if (NOT QTENTRYPOINT_WORKS)
+	set_target_properties (BambooTracker PROPERTIES
+		QT_NO_ENTRYPOINT TRUE
+	)
+	target_link_libraries (BambooTracker PRIVATE shell32)
+endif ()
 
 # CMake Qt lacks a publicly-supported way of generating the data required for setting the Windows app icon at build time, unlike QMake. Use an internal Qt function.
 # https://bugreports.qt.io/browse/QTBUG-87618
