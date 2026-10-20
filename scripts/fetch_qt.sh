@@ -15,17 +15,6 @@ QT_TARGETTCH="$4"
 
 shift 4
 
-QT6_QT5COMPAT=
-QT_TARGETCMP=
-while [[ $# -gt 0 ]]; do
-  if [[ "$1" = "qt5compat" ]]; then
-    QT6_QT5COMPAT=yes
-  else
-    QT_TARGETCMP="${QT_TARGETCMP}"${QT_TARGETCMP:+' '}"$1"
-  fi
-  shift 1
-done
-
 echo "Test if fetching Qt freshly is required."
 
 if [[ -d "$QT_TARGETDIR"/"$QT_TARGETVER" ]]; then
@@ -34,10 +23,7 @@ if [[ -d "$QT_TARGETDIR"/"$QT_TARGETVER" ]]; then
   exit 0
 else
   curl https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh > install-qt.sh
-  bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" $QT_TARGETCMP
-  if [ x$QT6_QT5COMPAT != x ]; then
-    bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" "qt5compat"
-  fi
+  bash ./install-qt.sh -d "$QT_TARGETDIR" --host "$QT_TARGETOS" --version "$QT_TARGETVER" --toolchain "$QT_TARGETTCH" "$@"
   echo "Qt fetched."
   if [[ "$(echo "$QT_TARGETCMP" | grep essentials 2>&1 >/dev/null; echo $?)" -eq 0 ]]; then
     echo "Older Qt version detected, manually patching setup."
