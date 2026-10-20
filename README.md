@@ -159,7 +159,7 @@ This program and its source code are licensed under the GNU General License Vers
 
 ## Credits
 
-I would like to thank the following people for making it:
+We would like to thank the following people for making this possible:
 
 - Qt team for Qt framework
 - Tatsuyuki Satoh, Jarek Burczynski and Valley Bell for the codes of MAME YM2608 chip emulation
