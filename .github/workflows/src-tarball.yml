@@ -21,7 +21,7 @@ jobs:
           echo "build-tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Checking out repository.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -44,7 +44,7 @@ jobs:
           popd
 
       - name: Upload source tarball.
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@2.11.5
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.packaging.outputs.package-name }}.tar.gz
