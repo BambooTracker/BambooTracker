@@ -30,7 +30,7 @@ fetch("https://api.github.com/repos/BambooTracker/BambooTracker/releases/latest"
 .then(data => {
   // Update dropdown header
   const head = document.getElementById("dl-head");
-  const releaseName = data["name"];
+  const releaseName = data["tag_name"];
   const releaseDate = data["published_at"].match(/^([^T]+)/)[1];
   head.insertAdjacentHTML("beforeend", " " + releaseName + " (" + releaseDate + ")");
   document.getElementById("release-note").href = data["html_url"];
