@@ -67,7 +67,7 @@ fetch("https://api.github.com/repos/BambooTracker/BambooTracker/releases/latest"
         head.href = dlUrl;
       }
     }
-    else if (name.endsWith("macos-64bit.zip")) {
+    else if (name.endsWith("macos-64bit.tar.gz")) {
       const item = document.getElementById("dl-macos");
       item.href = dlUrl;
       item.classList.remove("disabled");
