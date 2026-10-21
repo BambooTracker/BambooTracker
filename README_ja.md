@@ -39,7 +39,7 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 - [コミュニティ](#コミュニティ)
 - [対応言語](#対応言語)
 - [ダウンロード](#ダウンロード)
-  - [リリース (Windows, macOS, Linux)](#リリース-windows-macos-linux)
+  - [リリース (Windows, macOS)](#リリース-windows-macos)
   - [パッケージ (macOS, Linux, BSD)](#パッケージ-macos-linux-bsd)
     - [Nixpkgs (macOS, Linux)](#nixpkgs-macos-linux)
     - [Debian / Ubuntu](#debian--ubuntu)
@@ -79,7 +79,7 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 
 ## ダウンロード
 
-### リリース (Windows, macOS, Linux)
+### リリース (Windows, macOS)
 
 リリースは、優れた安定したエクスペリエンスを提供する必要があるため、ほとんどのユーザーに推奨されます。
 

@@ -39,7 +39,7 @@ BambooTracker is a cross-platform music tracker for the Yamaha YM2608 (OPNA) sou
 - [Community](#community)
 - [Translations](#translations)
 - [Downloads](#downloads)
-  - [Releases (Windows, macOS, Linux)](#releases-windows-macos-linux)
+  - [Releases (Windows, macOS)](#releases-windows-macos)
   - [Packages (macOS, Linux, BSD)](#packages-macos-linux-bsd)
     - [Nixpkgs (macOS, Linux)](#nixpkgs-macos-linux)
     - [Debian / Ubuntu](#debian--ubuntu)
@@ -81,7 +81,7 @@ If you'd like to see your language of choice added to the list, join the Discord
 
 ## Downloads
 
-### Releases (Windows, macOS, Linux)
+### Releases (Windows, macOS)
 
 Releases are recommended for most users, as they should provide a good & stable experience.
 
