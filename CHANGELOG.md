@@ -1,15 +1,40 @@
 # Changelog
 
-## Unreleased
+## v0.6.6 (2026-??-??)
+
+### Added
+
+- [#544] - Allow pattern copying in Jam Mode, allow copying order without clicking into selection
+
+### Changed
+
+- Various fixes to keep the project buildable with newer compilers & tools ([#528], [#529], [#531], [#534], [#549])
+- [#540] - Drop Linux releases
+- [#549] - Updated RtMidi to version 6.0.0
+- [#560] - Update Qt6 version used in macOS & 64-bit Windows 10+ releases to Qt 6.12.0
 
 ### Fixed
 
 - [#537] - Fix the incorrect size of the rectangular paste for orders ([#536]; thanks [@agargara])
+- [#553] - Fix BTB pan sequence reading/writing ([#552]; thanks [@nobuyukinyuu])
+- [#554] - Detect (and reject) invalid sequence lengths & values during BTB/BTM loading ([#552]; thanks [@nobuyukinyuu])
 
 [@agargara]: https://github.com/agargara
+[@nobuyukinyuu]: https://github.com/nobuyukinyuu
 
+[#528]: https://github.com/BambooTracker/BambooTracker/pull/528
+[#529]: https://github.com/BambooTracker/BambooTracker/pull/529
+[#531]: https://github.com/BambooTracker/BambooTracker/pull/531
+[#534]: https://github.com/BambooTracker/BambooTracker/pull/534
 [#536]: https://github.com/BambooTracker/BambooTracker/issues/536
-[#537]: https://github.com/BambooTracker/BambooTracker/pull/517
+[#537]: https://github.com/BambooTracker/BambooTracker/pull/537
+[#540]: https://github.com/BambooTracker/BambooTracker/pull/540
+[#544]: https://github.com/BambooTracker/BambooTracker/pull/544
+[#549]: https://github.com/BambooTracker/BambooTracker/pull/549
+[#552]: https://github.com/BambooTracker/BambooTracker/issues/552
+[#553]: https://github.com/BambooTracker/BambooTracker/pull/553
+[#554]: https://github.com/BambooTracker/BambooTracker/pull/554
+[#560]: https://github.com/BambooTracker/BambooTracker/pull/560
 
 ## v0.6.5 (2025-03-08)
 

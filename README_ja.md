@@ -39,7 +39,7 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 - [コミュニティ](#コミュニティ)
 - [対応言語](#対応言語)
 - [ダウンロード](#ダウンロード)
-  - [リリース (Windows, macOS, Linux)](#リリース-windows-macos-linux)
+  - [リリース (Windows, macOS)](#リリース-windows-macos)
   - [パッケージ (macOS, Linux, BSD)](#パッケージ-macos-linux-bsd)
     - [Nixpkgs (macOS, Linux)](#nixpkgs-macos-linux)
     - [Debian / Ubuntu](#debian--ubuntu)
@@ -50,19 +50,9 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 - [エフェクト一覧](#エフェクト一覧)
 - [ファイル入出力](#ファイル入出力)
 - [ビルド方法](#ビルド方法)
-  - [依存関係](#依存関係)
-    - [Windows](#windows)
-    - [macOS](#macos)
-    - [Linux](#linux)
-      - [Debian / Ubuntu](#debian--ubuntu-1)
-      - [Arch Linux / Manjaro](#arch-linux--manjaro)
-    - [BSD](#bsd)
-  - [コンパイル](#コンパイル)
-    - [Windows](#windows-1)
-    - [macOS](#macos-1)
-      - [FreeBSD](#freebsd-1)
 - [変更履歴](#変更履歴)
 - [ライセンス](#ライセンス)
+- [貢献する](#貢献する)
 - [クレジット](#クレジット)
 
 ## Wiki
@@ -90,7 +80,7 @@ BambooTrackerはNEC PC-8801/9801シリーズに搭載されていたFM音源YM26
 
 ## ダウンロード
 
-### リリース (Windows, macOS, Linux)
+### リリース (Windows, macOS)
 
 リリースは、優れた安定したエクスペリエンスを提供する必要があるため、ほとんどのユーザーに推奨されます。
 
@@ -154,230 +144,7 @@ pkg install bambootracker
 
 ## ビルド方法
 
-### 依存関係
-
-BambooTrackerをビルドする際には全てのプラットフォームで以下の依存関係を用意してください。
-
-- Qt (5.5以降)
-- Qt Tools (qmake, lrelease, ...)
-- QtでサポートされているC++コンパイラ (GCC, Clang, MSVC, ...)
-- make
-
-それ以外の必須/オプションの依存関係を取得する方法は、OS(ディストリビューション)ごとに異なります。
-
-#### Windows
-
-- C++コンパイラ: いずれかを利用できます。
-  - MinGW  
-    Qtインストーラにバンドルされているオプションを使用することをお薦めします。  
-    それ以外のものを使用する場合は、QtのドキュメントでQtのバージョンと互換性のあるGCCのバージョンを確認してください。
-  - Clang  
-    未テストですが恐らく動作します。
-  - MSVC  
-    [Visual Studio](https://visualstudio.microsoft.com)にバンドルされているものか、スタンドアロン版("Build Tools for Visual Studio 2019"のダウンロードを確認してください)
-- [Qt](https://www.qt.io/download-qt-installer):
-  古いバージョンのQt(XPビルドなど)では、自分でチェックアウトしてコンパイルする必要があるかもしれませんが、公式のプリビルド版はQtによって削除されました。
-
-#### macOS
-
-ここではHomebrew & Qt5を用いた導入方法を紹介します。
-
-- C++コンパイラ: Xcode Command Line Tools  
-  (開発者はmacOSを使っていないので、導入方法については検索してください。すみません)
-- Qt5:  
-
-```bash
-brew install qt5
-```
-
-**オプションの依存関係**:
-
-- JACK: このリポジトリに含まれるRtAudio / RtMidiでのJACKサーバへの接続をサポートします。  
-  JACK(バージョン1または2)のヘッダとライブラリが必要です。  
-
-  ```bash
-  brew install jack
-  ```
-
-  オプション: pkg-configによってこの処理をスキップできますが、JACKのヘッダやライブラリの検出が困難になる可能性があります。  
-
-  ```bash
-  brew install pkg-config
-  ```
-
-- RtAudio / RtMidi: このリポジトリで含んでいるものの代わりにコンパイル済みのRtAudio / RtMidiを使います。  
-  (上記のオプションの依存関係は削除されます)  
-  RtAudio (5.1.0以降)と/またはRtMidi (4.0.0以降) + pkg-configが必要です。
-
-  ```bash
-  brew install rt-audio rt-midi pkg-config
-  ```
-
-#### Linux
-
-依存関係のインストールは、お使いのディストリビューションとパッケージマネージャに大きく依存します。  
-お使いのディストリビューションの項を参照し、インストール手順をテストセットを確認してください。
-
-**追加の依存関係**:
-
-- ALSA: 最小限のオーディオとMIDIをサポートするために必要です。  
-  ALSAのヘッダとライブラリが必要です。
-
-**オプションの依存関係**:
-
-- PulseAudio: リポジトリに含まれるRtAudioでPulseAudioサーバーへの接続をサポートします。  
-  PulseAudioのヘッダとライブラリが必要です。  
-  オプション: pkg-configによってこの処理をスキップできますが、PulseAudioのヘッダやライブラリの検出が困難になる可能性があります。
-- JACK: リポジトリに含まれるRtAudio / RtMidiでPulseAudioサーバーへの接続をサポートします。  
-  JACK(version 1または2)ののヘッダとライブラリが必要です。  
-  オプション: pkg-configによってこの処理をスキップできますが、JACKのヘッダやライブラリの検出が困難になる可能性があります。
-- RtAudio / RtMidi: このリポジトリで含んでいるものの代わりにコンパイル済みのRtAudio / RtMidiを使います。  
-  (上記のオプションの依存関係は削除されます)  
-  RtAudio (5.1.0以降)と/またはRtMidi (4.0.0以降) + pkg-configが必要です。
-
-##### Debian / Ubuntu
-
-```bash
-# Optional dependencies
-OPTIONALDEPS=""
-
-# PulseAudio
-OPTIONALDEPS="$OPTIONALDEPS libpulse-dev"
-
-# Either:
-# JACK 1
-OPTIONALDEPS="$OPTIONALDEPS libjack-dev"
-# JACK 2
-OPTIONALDEPS="$OPTIONALDEPS libjack-jackd2-dev"
-
-# Either / Both:
-# System-RtAudio
-OPTIONALDEPS="$OPTIONALDEPS librtaudio-dev"
-# System-RtMidi
-OPTIONALDEPS="$OPTIONALDEPS librtmidi-dev"
-
-# Install dependencies
-apt install \
-  build-essential \
-  qt5-default qttools5-dev-tools \
-  libasound2-dev \
-  $OPTIONALDEPS
-```
-
-##### Arch Linux / Manjaro
-
-```bash
-# Optional dependencies
-OPTIONALDEPS=""
-
-# PulseAudio
-OPTIONALDEPS="$OPTIONALDEPS libpulse"
-
-# Either:
-# JACK 1
-OPTIONALDEPS="$OPTIONALDEPS jack"
-# JACK 2
-OPTIONALDEPS="$OPTIONALDEPS jack2"
-
-# Either / Both:
-# System-RtAudio
-OPTIONALDEPS="$OPTIONALDEPS rtaudio"
-# System-RtMidi
-OPTIONALDEPS="$OPTIONALDEPS rtmidi"
-
-# Install dependencies
-pacman -S \
-  qt5-tools \
-  alsa-plugins \
-  $OPTIONALDEPS
-```
-
-#### BSD
-
-以下を除けばLinuxと同じです:
-
-- ALSAはオプションです。
-- OSS4のヘッダとライブラリが必須です。
-
-(もしあなたがBSDシステム上でBambooTrackerを手動でコンパイルできた場合は、Pull Requestを開いて依存関係のインストール手順をここに追加してください!)
-
-### コンパイル
-
-これらのコンパイル手順はCLIの使用を前提としていますが、代わりにQt CreatorのようなIDEを使用することも可能です。
-これらは一般的にすべてのプラットフォームで動作するはずですが、特定の変更点については以下の項で言及しています。
-
-Qmakeのオプション (フラグ/スイッチ):
-
-- PREFIX: ビルド後にインストールする場所です。  
-  デフォルト:  
-  - Windows: `C:\BambooTracker`  
-  - macOS/Linux/BSD: `/usr/local`  
-  例: `PREFIX=C:\Users\Owner\Programs\BambooTracker`
-- CONFIG  
-  複数回指定して複数のオプションを追加することができます。  
-  オプションの追加には`+=`を、削除には`-=`を使用してください。
-  - debug: デバッグビルド。クラッシュをデバッグする際に有用です。
-  - release: リリースビルド。デバッグビルドよりも最適・コンパクトにビルドします。
-  - install_flat: インストール時にPREFIX下のLinux FHSパスを使用しません。(Windowsではデフォルトで有効)
-  - install_minimal: 不要なファイルのインストールをスキップします。
-  - use_alsa: 明示的にALSA<sup>1</sup>に対応したリポジトリに含まれるRtAudioとRtMidiをコンパイルします。(Linuxではデフォルトで有効)
-  - use_oss: 明示的にOSS4<sup>2</sup>に対応してコンパイルします。(BSDではデフォルトで有効)
-  - use_pulse: 明示的にPulseAudio<sup>1</sup>に対応したリポジトリに含まれるRtAudioをコンパイルします。
-  - use_jack: 明示的にJACK 1/2<sup>13</sup>に対応してコンパイルします。
-  - system_rtaudio: RtAudioのコンパイルをスキップし、代わりにシステムのインストールされているRtAudioにリンクします。
-  - system_rtmidi: RtMidiのコンパイルをスキップし、代わりにシステムのインストールされているRtMidiにリンクします。
-  - real_chip: SCCIとC86CTLに対応したコンパイルを行います<sup>4</sup>。(Windowsではデフォルトで有効)
-
-<sup>1</sup>: LinuxとBSDでのみ動作します。  
-<sup>2</sup>: FreeBSDでは自動検出されます(?)が、RtAudioでは機能しない可能性があります。  
-<sup>3</sup>: APIは技術的にはWindowsでサポートされていますが、Rtライブラリではコンパイルが困難なようです。  
-<sup>4</sup>: OSI認証ライセンスを使用しないコードをビルドします。これらはWindowsにのみ対応しています。
-
-例:
-
-```bash
-# Where you want to locally keep the source code clone
-cd /home/owner/devel
-
-# Replace --recurse-submodules with --recurse-submodules=submodules/emu2149/src if CONFIG+=system_rtaudio AND CONFIG+=system_rtmidi will be used
-git clone https://github.com/BambooTracker/BambooTracker --recurse-submodules
-cd BambooTracker
-
-# Configure
-qmake PREFIX=/usr/local CONFIG-=debug CONFIG+=release CONFIG+=use_alsa CONFIG+=use_pulse CONFIG+=use_jack
-
-# Recursively initialises subprojects properly, dependency tests may be flakey if run multithreaded
-make qmake_all
-
-# Compile with 4 threads
-make -j4
-
-# Installs to PREFIX
-make install
-```
-
-#### Windows
-
-上記の手順を始める前に、Qtとコンパイラをセットアップしたシェルに入ります。(Qtのインストーラには、このために使えるスクリプトが追加されています)
-
-- MinGWを使う場合は`make`ではなく`mingw32-make` / `mingw64-make`を使って下さい.
-- MSVCを使う場合は**TODO**。
-
-Qt Creatorを使用すると、よりグラフィカルなコンパイル処理を行うことができます。
-
-#### macOS
-
-pkg-configを使わずにHomebrewのJACKを使用する際は、`qmake`にいくつかの引数を渡します:
- `LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include`
-
-##### FreeBSD
-
-BambooTrackerはFreeBSDのポートを使ってビルドすることができます。
-
-```bash
-cd /usr/ports/audio/bambootracker
-make install clean
-```
+*[README.md](./README.md)を参照してください。*
 
 ## 変更履歴
 
@@ -388,6 +155,12 @@ make install clean
 このプログラム及びソースコードのライセンスははGNU General License Version 2及びそれ以降のバージョンです。
 
 *詳細は[LICENSE](./LICENSE)と[licenses/list.md](./licenses/list.md)を参照してください。*
+
+## 貢献する
+
+(adapted from the NetBSD Commit Guidelines)
+
+Code generated by a large language model or similar technology is presumed to be tainted code, and may not be submitted.
 
 ## クレジット
 
